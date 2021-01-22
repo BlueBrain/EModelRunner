@@ -1,0 +1,106 @@
+{
+  "Step_220": {
+    "soma.v": [
+      {"feature": "voltage_base", "val": [-84.271, 1.5755, -904705852.2545061, 82452980.56343648, -3.0, 0], "n": 5, "fid": 922, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "voltage_after_stim", "val": [-88.1492, 3.2286, -0.9887685689874463, 0.00039442575364883795, 3.0, 0], "n": 5, "fid": 939, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AP_amplitude", "val": [57.9383, 4.6951, 1.2703914280753168, 0.0037398990539830815, -0.75, 0], "n": 5, "fid": 769, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "APlast_amp", "val": [53.0699, 6.0486, 18186.8810641616, 5176.209946726315, 2.7, 0], "n": 5, "fid": 803, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AHP_depth", "val": [23.691, 3.5661, 621.1743123604164, 191.0553138987528, 2.25, 0], "n": 5, "fid": 837, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "mean_frequency", "val": [11.5542, 10.4543, 1.3433122140764464, 0.28906703834056924, -0.4500000000000002, 0], "n": 5, "fid": 514, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_time_to_first_spike", "val": [54.7752, 16.5518, 2.3185296584154798, 0.08968026976932136, -0.30000000000000027, 0], "n": 5, "fid": 650, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "time_to_last_spike", "val": [1862.0643, 107.6669, 151066.38691525155, 14359.220677332278, 1.6499999999999995, 0], "n": 5, "fid": 633, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_first_ISI", "val": [20.4863, 18.6776, 1.5321584447348953, 0.22182874586625204, -0.4500000000000002, 0], "n": 5, "fid": 667, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_second_ISI", "val": [16.7915, 19.4614, 1.358687266595354, 0.3434762197949297, -0.4500000000000002, 0], "n": 5, "fid": 684, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_third_ISI", "val": [15.1377, 16.5205, 1.8676976445576152, 0.7148484317215739, -0.1499999999999999, 0], "n": 5, "fid": 701, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_fourth_ISI", "val": [13.267, 15.5943, 1.4438199290261964, 0.5665090703007281, -0.30000000000000027, 0], "n": 5, "fid": 718, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_fifth_ISI", "val": [13.1016, 13.5872, 2.1093722825803756, 1.107531306976287, 0.0, 0], "n": 5, "fid": 735, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_last_ISI", "val": [10.2687, 9.2182, 1.7458169901352811, 0.6124678624923411, -0.1499999999999999, 0], "n": 5, "fid": 752, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}}
+    ]
+  }, 
+  "Step_280": {
+    "soma.v": [
+      {"feature": "voltage_base", "val": [-84.4108, 2.9582, -2.077836469721304, 0.005847878785365532, 2.3999999999999995, 0], "n": 5, "fid": 926, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "voltage_after_stim", "val": [-88.6652, 3.0752, -0.9888345754557559, 0.00037407442468971515, 3.0, 0], "n": 5, "fid": 943, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AP_amplitude", "val": [52.6187, 4.6693, 0.3333310848925247, 4.859785062999118e-07, -3.0, 0], "n": 5, "fid": 773, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "APlast_amp", "val": [46.4526, 7.0369, 0.4166238066584074, 1.345108070325601e-05, -2.4, 0], "n": 5, "fid": 807, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AHP_depth", "val": [25.95, 5.0919, 14.384053034832244, 2.2428826346301194, 0.75, 0], "n": 5, "fid": 841, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "mean_frequency", "val": [13.8743, 11.7269, 1.96481058532085, 0.5639519597459614, -0.1499999999999999, 0], "n": 5, "fid": 518, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_time_to_first_spike", "val": [75.4976, 21.41, 89.74030063982522, 26.525926111027534, 1.0499999999999998, 0], "n": 5, "fid": 654, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "time_to_last_spike", "val": [1839.321, 121.9356, 2.9835632658498676, 0.006952854819167515, -0.30000000000000027, 0], "n": 5, "fid": 637, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_first_ISI", "val": [28.3926, 22.2444, 5.220983376623126, 2.2553214211109913, 0.2999999999999998, 0], "n": 5, "fid": 671, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_second_ISI", "val": [21.9187, 23.1835, 2.6070518870549044, 1.0539822159219976, 0.0, 0], "n": 5, "fid": 688, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_third_ISI", "val": [19.2426, 19.8085, 2.5150517690452037, 1.0264580533593086, 0.0, 0], "n": 5, "fid": 705, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_fourth_ISI", "val": [17.3463, 17.4278, 2.0107080255395258, 0.6543661484471491, -0.1499999999999999, 0], "n": 5, "fid": 722, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_fifth_ISI", "val": [16.4329, 15.8722, 2.3841658266790327, 1.0220115243971428, 0.0, 0], "n": 5, "fid": 739, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_last_ISI", "val": [13.0264, 8.8449, 2.981246582757361, 0.9600980491694162, 0.1499999999999999, 0], "n": 5, "fid": 756, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}}
+    ]
+  }, 
+  "Step_140": {
+    "soma.v": [
+      {"feature": "mean_frequency", "val": [9.1104, 4.9207, 1.5940526530889478, 0.2414518836517968, -0.30000000000000027, 0], "n": 6, "fid": 509, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_time_to_first_spike", "val": [30.6553, 14.5192, 16.071453164831354, 6.275709329339761, 0.75, 0], "n": 6, "fid": 645, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "time_to_last_spike", "val": [1432.6963, 509.7609, 5192.547259672258, 2146.602458132557, 1.2000000000000002, 0], "n": 6, "fid": 628, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_first_ISI", "val": [13.1964, 13.6296, 2.0568650655375724, 1.155847465185476, 0.0, 0], "n": 6, "fid": 662, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_second_ISI", "val": [11.7656, 12.8263, 1.5635342294550754, 0.9030205030703955, -0.1499999999999999, 0], "n": 6, "fid": 679, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_third_ISI", "val": [9.795, 10.9874, 1.3430952132342853, 1.0337937742570662, -0.1499999999999999, 0], "n": 6, "fid": 696, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_fourth_ISI", "val": [8.2722, 9.5405, 1.2278576254684488, 1.0522097800954484, -0.1499999999999999, 0], "n": 6, "fid": 713, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_fifth_ISI", "val": [7.3621, 8.549, 1.1911425444539516, 1.0197230607802155, -0.1499999999999999, 0], "n": 6, "fid": 730, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_last_ISI", "val": [5.7609, 5.0012, 1.6315209699782882, 0.7626905473253732, 0.0, 0], "n": 6, "fid": 747, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "burst_number", "val": [1.65, 0.817, 0.37987354436687804, 0.031017599329592173, -2.25, 0], "n": 4, "fid": 951, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "ISI_CV", "val": [0.3767, 0.1132, 0.5538301736576722, 0.2062964648194266, 3.0, 0], "n": 6, "fid": 441, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "burst_number", "val": [4.0, 0.1], "stage": [2]}
+    ]
+  }, 
+  "Step_180": {
+    "soma.v": [
+      {"feature": "mean_frequency", "val": [11.0506, 6.7136, 1.660127846652219, 0.26628811285575815, -0.30000000000000027, 0], "n": 5, "fid": 512, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_time_to_first_spike", "val": [38.1316, 12.1499, 0.9301276652791914, 0.0064100130845366025, -1.05, 0], "n": 5, "fid": 648, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "time_to_last_spike", "val": [1640.2933, 340.9475, 23242620.720325656, 10269018.796644347, 2.3999999999999995, 0], "n": 5, "fid": 631, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_first_ISI", "val": [13.4327, 14.068, 1.0424751472778089, 0.14245922128949026, -0.75, 0], "n": 5, "fid": 665, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_second_ISI", "val": [11.5531, 13.7236, 1.2300405936323586, 0.38220271571192704, -0.4500000000000002, 0], "n": 5, "fid": 682, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_third_ISI", "val": [10.638, 12.4602, 1.3663923537210845, 0.558552774174734, -0.30000000000000027, 0], "n": 5, "fid": 699, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_fourth_ISI", "val": [9.4245, 11.103, 1.2674411823868303, 0.6261105741091524, -0.30000000000000027, 0], "n": 5, "fid": 716, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_fifth_ISI", "val": [8.9225, 10.7832, 1.3207742343907836, 0.9911302120530072, -0.1499999999999999, 0], "n": 5, "fid": 733, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_last_ISI", "val": [7.5244, 6.7346, 1.559657091099609, 0.6090345046149385, -0.1499999999999999, 0], "n": 5, "fid": 750, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "burst_number", "val": [1.3043, 0.2078, 3.517811338572737, 0.9586738555037407, 2.8499999999999996, 0], "n": 5, "fid": 954, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "ISI_CV", "val": [0.4296, 0.2086, 0.2615015503829102, 0.08376250212398631, -1.5, 0], "n": 5, "fid": 444, "strict_stim": true, "stage": [2], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "burst_number", "val": [4.0, 0.1], "stage": [2]}
+    ]
+  }, 
+  "APWaveform_280": {
+    "soma.v": [
+      {"feature": "AP_amplitude", "val": [70.649, 5.9263, 50.80625304527456, 3.8671833300771192, 0.8999999999999999, 0], "n": 4, "fid": 337, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AP1_amp", "val": [71.583, 4.99, 1.5389257999611905, 0.005252092209174055, -0.6000000000000001, 0], "n": 4, "fid": 306, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AP_duration_half_width", "val": [1.2717, 0.1004, 3.5970631358025424, 0.5114301051807127, 3.0, 0], "n": 4, "fid": 369, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AHP_depth", "val": [18.9434, 3.8431, 1.6373781534150555, 0.04988038274245581, -0.4500000000000002, 0], "n": 4, "fid": 105, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}}
+    ]
+  }, 
+  "Rin": {
+    "soma.v": [
+      {"feature": "ohmic_input_resistance_vb_ssse", "val": [264.5748, 59.6196, 679.1968049230035, 180.9050898675663, 1.2000000000000002, 0], "n": 6, "fid": 384, "strict_stim": true, "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "voltage_base", "val": [-83.0483, 1.6329, -0.9880976146226078, 0.0002299372867111198, 3.0, 0], "n": 6, "fid": 376, "strict_stim": true, "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}}
+    ]
+  }, 
+  "RMP": {
+    "soma.v": [
+      {"feature": "voltage_base", "val": [-69.28, 2.765, -0.985749251382988, 0.0005584393731237434, 3.0, 0], "n": 4, "fid": 381, "strict_stim": true, "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "Spikecount", "val": [0.0, 0.001, 0.0, 0.001, -3.0, 0], "n": 4, "fid": 401, "strict_stim": true, "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}}
+    ]
+  }, 
+  "IV_-100": {
+    "soma.v": [
+      {"feature": "voltage_deflection", "val": [-15.2701, 2.918, -0.9366073083598618, 0.010795007597611721, 3.0, 0], "n": 5, "fid": 387, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "voltage_deflection_begin", "val": [-16.7279, 2.8737, -0.9421838259112876, 0.008699888060126556, 3.0, 0], "n": 5, "fid": 391, "strict_stim": true, "stage": [1], "__comment": {"source": "Interneurons/cIR", "meta": {"version": "8c4f8cd"}}}
+    ]
+  }, 
+  "RinHoldCurrent": {
+    "soma.v": [
+      {"feature": "bpo_holding_current", "val": [-0.0746, 0.0442]}
+    ]
+  }, 
+  "Threshold": {
+    "soma.v": [
+      {"feature": "bpo_threshold_current", "val": [0.0834, 0.0434]}
+    ]
+  }
+}

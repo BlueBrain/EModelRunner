@@ -1,0 +1,294 @@
+/* Copyright (c) 2015 EPFL-BBP, All rights reserved.                             
+                                                                                 
+THIS SOFTWARE IS PROVIDED BY THE BLUE BRAIN PROJECT ``AS IS''                    
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,            
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR           
+PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE BLUE BRAIN PROJECT                 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR           
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF             
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR                  
+BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,            
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE             
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN           
+IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                                    
+                                                                                 
+This work is licensed under a 
+Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
+To view a copy of this license, visit 
+http://creativecommons.org/licenses/by-nc-sa/4.0/legalcode or send a letter to 
+Creative Commons, 
+171 Second Street, Suite 300, 
+San Francisco, California, 94105, USA.                 
+*/      
+
+/*                                                                               
+ * @file synapses.hoc                                                          
+ * @brief Template that store the synapses                                
+ * @author Werner Van Geit @ BBP                                                 
+ * @date 2015                                                                    
+*/        
+
+begintemplate {{TEMPLATENAME}}                
+
+public load_synapses, synapse_list, netcon_list, \
+        stim_list, \
+        weights, delays, synconf_list, persistent_list, rng, create_netcons
+
+objref synapse_list, netcon_list,  \
+        stim_list, rng_list, \
+        weights, delays, \
+        synconf_list, stringtools, tmp_synapse, persistent_list, \
+        rng, section_list, seg_xs, this
+
+/** Constructor */                                                          
+proc init() {
+
+    // Number of m-types
+    n_of_mtypes = 1
+
+    synapse_list = new List()
+    section_list = new List()
+    rng_list = new List()
+    netcon_list = new List()
+    persistent_list = new List()
+    weights = new Vector()
+    delays = new Vector()
+    seg_xs = new Vector()
+    stim_list = new List()
+
+    stringtools = new StringFunctions()
+
+    {%- if rng_settings_mode == "Random123" %}
+    rng = new Random()
+    rng.Random123_globalindex({{SEED}})
+    {%- endif %}                                             
+}
+
+
+/** Load the synconf file
+    Arguments:                                                                   
+        nsynapses: number of synapses in cell
+*/                                                          
+proc load_synconf() { localobj synconf_file, synconf_gids
+    strdef synconf_string
+    nsynapses = $1
+
+    synconf_list = new List()
+    for isynapse=0, nsynapses-1 {
+        synconf_list.append(new List())
+    }
+
+    synconf_file = new File("{{syn_dir}}/{{syn_conf_file}}")                                                        
+    {synconf_file.ropen()}
+    
+    synconf_gids = new Vector()                                                      
+                                                                                                                                                                 
+    while (synconf_file.gets(synconf_string) > 0) {                                  
+        stringtools.left(synconf_string, stringtools.len(synconf_string)-1)          
+        synconf_gids.scantil(synconf_file, -1e15)                                    
+        for i=0, synconf_gids.size()-1 { 
+            synconf_list.o(synconf_gids.x[i]).append(new String(synconf_string))
+        }                                                 
+    }                                                     
+}
+
+/** Load all the synapses
+                                                                                 
+    Arguments:                                                                   
+        cell_ref: reference to the cell object               
+*/                                                          
+
+proc load_synapses() { local isynapse, nsynapses, ncols, synapse_id, \
+                            pre_cell_id, seg_x, synapse_type, \
+                            dep, fac, use, tau_d, delay, weight, \
+                            base_seed, gid, nrrp \
+                        localobj synapse_data, synapse_file, cell_ref, \
+                            synapse, section, rng
+
+    printf("Starting to add synapses\n")
+
+    strdef sectionlist_name, synapse_type_name, synconf_string, head_string, \
+        tail_string
+
+    cell_ref = $o1
+
+    // Load the file that contains all the information about the synapses
+    synapse_file = new File("{{syn_dir}}/{{syn_data_file}}")
+    {synapse_file.ropen()}
+
+    // Data structure to store the data in synapses.tsv
+    synapse_data = new Matrix()
+    synapse_data.scanf(synapse_file)
+    
+    synapse_file.close()
+
+    nsynapses = synapse_data.nrow
+    ncols = synapse_data.ncol
+
+    // There is only one cell in this simulation, so let's give it gid 1
+    gid = {{GID}}
+
+    // Base seed for the rngs
+    base_seed = {{SEED}}
+
+    // Load list of hoc commands that have to be execute on every synapse
+    // to set certain parameters that are not specified in synapse.tsv
+    load_synconf(nsynapses)
+
+    for isynapse=0, nsynapses-1 {
+        // Read the synapse parameters from the matrix
+        synapse_id = synapse_data.x[isynapse][0]
+        pre_cell_id = synapse_data.x[isynapse][1]
+        sectionlist_id = synapse_data.x[isynapse][2]
+        sectionlist_index = synapse_data.x[isynapse][3]
+        seg_x = synapse_data.x[isynapse][4]
+        synapse_type = synapse_data.x[isynapse][5]
+        dep = synapse_data.x[isynapse][6] 
+        fac = synapse_data.x[isynapse][7] 
+        use = synapse_data.x[isynapse][8] 
+        tau_d = synapse_data.x[isynapse][9] 
+        delay = synapse_data.x[isynapse][10] 
+        weight = synapse_data.x[isynapse][11]
+        nrrp = synapse_data.x[isynapse][12] 
+
+        // Create sectionref to the section the synapse will be placed on
+        if ( sectionlist_id == 0 ) {
+            cell_ref.soma[sectionlist_index] section = new SectionRef()        
+            sectionlist_name = "somatic" 
+        } else if ( sectionlist_id == 1 ) {
+            cell_ref.dend[sectionlist_index] section = new SectionRef()       
+            sectionlist_name = "basal" 
+        } else if ( sectionlist_id == 2 ) {
+            cell_ref.apic[sectionlist_index] section = new SectionRef()        
+            sectionlist_name = "apical" 
+        } else if ( sectionlist_id == 3 ) {
+            cell_ref.axon[sectionlist_index] section = new SectionRef()        
+            sectionlist_name = "axonal" 
+        } else {                                                                
+            printf("Sectionlist_id %d not support\n", sectionlist_id)           
+            exit(1)                                                             
+        }
+
+        // If synapse_type < 100 the synapse is inhibitory, otherwise 
+        // excitatory
+        if ( synapse_type < 100 ) {
+            synapse_type_name = "inhibitory"
+            section.sec synapse = new ProbGABAAB_EMS(seg_x)
+            synapse.tau_d_GABAA  = tau_d
+            rng = new Random()        
+            {%- if rng_settings_mode == "Random123" %}
+            rng.Random123(gid+250, isynapse+100, 450)
+            {%- endif %}
+            {%- if rng_settings_mode == "Compatibility" %}
+            rng.MCellRan4( isynapse*100000+100, gid+250+base_seed )  
+            {%- endif %}              
+            rng.lognormal(0.2, 0.1)                                                 
+            synapse.tau_r_GABAA = rng.repick()                 
+        } else {
+            synapse_type_name = "excitatory"
+            section.sec synapse = new ProbAMPANMDA_EMS(seg_x)
+            synapse.tau_d_AMPA = tau_d
+        }
+
+        synapse.Use = abs( use )                                                  
+        synapse.Dep = abs( dep )                                                  
+        synapse.Fac = abs( fac )
+        synapse.Nrrp = nrrp   
+
+        // Execute all the extra synaptic configuration lines from synconf.txt
+        tmp_synapse = synapse
+        for isynconf=0,synconf_list.o(isynapse).count()-1 {
+            synconf_string = synconf_list.o(isynapse).o(isynconf).s
+            // Replacing all occurrences of %s with the temporary synapse name
+            while( stringtools.substr( synconf_string, "%s" ) != -1 ) {
+                stringtools.head(synconf_string, "%s", head_string)
+                stringtools.tail(synconf_string, "%s", synconf_string)
+                sprint(synconf_string, "%s%s%s", head_string, "tmp_synapse", synconf_string)
+            }
+            // Add {} around the string
+            sprint(synconf_string, "{ %s }", synconf_string)
+            // Replace setting variables, but not changing vars (%s *= ...)
+            if ( stringtools.substr( synconf_string, "*" ) == -1 ) {
+                // Execute the statement 
+                execute1(synconf_string, this)
+            }
+        }
+
+        // Create the random number generator for the synapse
+        {%- if rng_settings_mode == "Random123" %}
+        synapse.setRNG(gid+250, isynapse+100, 300)
+        {%- endif %}
+        {%- if rng_settings_mode == "Compatibility" %}
+            rndd = new Random()                                                      
+            rndd.MCellRan4( isynapse*100000+100, gid+250+base_seed )                 
+            rndd.uniform(0,1)                                                            
+            synapse.setRNG( rndd )
+            rng_list.append(rndd)
+        {%- endif %}                                                              
+                                             
+        synapse_list.append(synapse)
+        weights.append(weight) 
+        delays.append(delay)
+        seg_xs.append(seg_x)
+        section_list.append(section)
+
+    }    
+
+}
+
+
+proc create_netcons() { local isynapse, netstim_id, delay, weight, seg_x \
+                        localobj synapse, rand, netcon, netstim, \
+                        t_vec, vecstim, section
+
+    {%- if syn_stim_mode=="vecstim" %}
+    rand = new Random({{syn_stim_seed}})
+    rand.uniform({{syn_start}},{{syn_stop}})  
+    {%- endif %}
+
+    for isynapse=0, synapse_list.count()-1 {
+        synapse = synapse_list.o(isynapse)
+        delay = delays.x[isynapse]
+        weight = weights.x[isynapse]
+        section = section_list.o(isynapse)
+        seg_x = seg_xs.x[isynapse]
+
+        // stimuli
+        {%- if syn_stim_mode=="netstim" %}
+            // create netstim (spike generator) 
+            section.sec netstim = new NetStim(seg_x)
+            netstim.start = {{syn_start}}
+            netstim.interval = {{syn_interval}}
+            netstim.number = {{syn_nmb_of_spikes}}
+            netstim.noise = {{syn_noise}}
+
+            // Create a connection between the netstim and the synapse
+            netcon = new NetCon(netstim, synapse, -30, delay, weight)
+            netcon_list.append(netcon)
+            stim_list.append(netstim)
+        {%- endif %}
+
+        // vecstim
+        {%- if syn_stim_mode=="vecstim" %}
+            // create vecstim (spike generator)    
+            t_vec = new Vector(1)
+            t_vec.x[0] = rand.repick()
+            section.sec vecstim = new VecStim(seg_x)
+            vecstim.play(t_vec, {{syn_interval}})
+        
+            // Create a connection between the netstim and the synapse
+            netcon = new NetCon(vecstim, synapse, -30, delay, weight)
+            netcon_list.append(netcon)
+            stim_list.append(vecstim)
+            //persistent_list.append(rand)
+            persistent_list.append(t_vec)
+        {%- endif %}
+
+        //printf("Added %s synapse %d originating from cell %d on %s section %d(%f) and dep %f\n", \
+        //    synapse_type_name, synapse_id, pre_cell_id,  sectionlist_name, \
+        //    sectionlist_index, seg_x, dep)
+    }
+ }
+
+
+endtemplate {{TEMPLATENAME}}

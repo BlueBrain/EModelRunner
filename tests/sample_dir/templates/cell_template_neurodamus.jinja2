@@ -1,0 +1,297 @@
+/*
+{%- if banner %}
+{{banner}}
+{%- endif %}
+*/
+{load_file("stdrun.hoc")}
+{load_file("import3d.hoc")}
+{%- if add_synapses is sameas true %}
+{load_file("{{syn_dir}}/{{syn_hoc_filename}}")}
+{%- endif %}
+
+{%- if global_params %}
+/*
+ * Check that global parameters are the same as with the optimization
+ */
+proc check_parameter(/* name, expected_value, value */){
+  strdef error
+  if($2 != $3){
+    sprint(error, "Parameter %s has different value %f != %f", $s1, $2, $3)
+    execerror(error)
+  }
+}
+proc check_simulator() {
+  {%- for param, value in global_params.items() %}
+  check_parameter("{{param}}", {{value}}, {{param}})
+  {%- endfor %}
+}
+{%- endif %}
+{%- if ignored_global_params %}
+/* The following global parameters were set in BluePyOpt
+{%- for param, value in ignored_global_params.items() %}
+ * {{param}} = {{value}}
+{%- endfor %}
+ */
+{%- endif %}
+
+begintemplate {{template_name}}
+  public init, morphology, geom_nseg_fixed, geom_nsec, getCell, getCCell, setCCell, gid, getCell
+  public channel_seed, channel_seed_set
+  public connect2target, clear, ASCIIrpt
+  public soma, dend, apic, axon, myelin, getThreshold
+  create soma[1], dend[1], apic[1], axon[1], myelin[1]
+  public nSecAll, nSecSoma, nSecApical, nSecBasal, nSecMyelinated, nSecAxonalOrig, nSecAxonal
+  public CellRef, synHelperList, synlist
+  {%- if add_synapses is sameas true %}
+  public synapses
+  objref synapses
+  {%- endif %}
+  objref this, CellRef, segCounts, ASCIIrpt, synHelperList, synlist
+
+  public all, somatic, apical, axonal, basal, myelinated, APC
+  objref all, somatic, apical, axonal, basal, myelinated, APC
+
+
+obfunc getCell(){
+        return this
+}
+
+obfunc getCCell(){
+	return CellRef
+}
+proc setCCell(){
+       CellRef = $o1
+}
+
+//-----------------------------------------------------------------------------------------------
+
+/*!
+ * When clearing the model, the circular reference between Cells and CCells must be broken so the
+ * entity watching reference counts can work.
+ */
+proc clear() { localobj nil
+    CellRef = nil
+}
+
+
+
+/*!
+ * @param $o1 NetCon source (can be nil)
+ * @param $o2 Variable where generated NetCon will be placed
+ */
+proc connect2target() { //$o1 target point process, $o2 returned NetCon
+  soma $o2 = new NetCon(&v(1), $o1)
+  $o2.threshold = -30
+}
+
+
+proc init(/* args: morphology_dir, morphology_name */) {
+  all = new SectionList()
+  apical = new SectionList()
+  axonal = new SectionList()
+  basal = new SectionList()
+  somatic = new SectionList()
+  myelinated = new SectionList()
+
+  synHelperList = new List()                                                     
+  synlist = new List()     
+
+  //For compatibility with BBP CCells
+  CellRef = this
+
+  forall delete_section()
+
+  gid = $1
+
+  if(numarg() >= 3) {
+    load_morphology($s2, $s3)
+  } else {
+  {%- if morphology %}
+    load_morphology($s2, "{{morphology}}")
+  {%- else %}
+    execerror("Template {{template_name}} requires morphology name to instantiate")
+  {%- endif %}
+  }
+
+  geom_nseg()
+  indexSections()
+  {%- if replace_axon %}
+    replace_axon()
+  {%- endif %}
+  insertChannel()
+  biophys()
+
+  // Initialize channel_seed_set to avoid accidents
+  channel_seed_set = 0
+  // Initialize random number generators
+  re_init_rng()
+
+  {%- if add_synapses is sameas true %}
+  // Initialise synapses
+  load_synapses()
+  {%- endif %}
+}
+
+/*!
+ * Assign section indices to the section voltage value.  This will be useful later for serializing
+ * the sections into an array.  Note, that once the simulation begins, the voltage values will revert to actual data again.
+ *
+ * @param $o1 Import3d_GUI object
+ */
+proc indexSections() { local index
+    index = 0
+    forsec all {
+        v(0.0001) = index
+        index = index +1
+    }
+}
+
+func getThreshold() { return 0.0 }
+
+proc load_morphology(/* morphology_dir, morphology_name */) {localobj morph, import, sf, extension
+  strdef morph_path
+  sprint(morph_path, "%s/%s", $s1, $s2)
+
+  sf = new StringFunctions()
+  extension = new String()
+
+  sscanf(morph_path, "%s", extension.s)
+  sf.right(extension.s, sf.len(extension.s)-4)
+
+  if(strcmp(extension.s, ".ASC") == 0 ){
+    extension.s = ".asc"
+    sf.left(morph_path, sf.len(morph_path)-3)
+    sprint(morph_path,"%s%s",morph_path,"asc")
+    print "USING LOWERCASE EXTENSION", morph_path
+  }
+
+
+  if( strcmp(extension.s, ".asc") == 0 ) {
+    morph = new Import3d_Neurolucida3()
+  } else if( strcmp(extension.s, ".swc" ) == 0) {
+    morph = new Import3d_SWC_read()
+  } else {
+    printf(extension.s)
+    printf("Unsupported file format: Morphology file has to end with .asc or .swc" )
+    quit()
+  }
+
+  morph.quiet = 1
+  morph.input(morph_path)
+
+  import = new Import3d_GUI(morph, 0)
+  import.instantiate(this)
+}
+
+/*
+ * Assignment of mechanism values based on distance from the soma
+ * Matches the BluePyOpt method
+ */
+proc distribute_distance(){local x localobj sl
+  strdef stmp, distfunc, mech
+
+  sl = $o1
+  mech = $s2
+  distfunc = $s3
+  this.soma[0] distance(0, 0.5)
+  sprint(distfunc, "%%s %s(%%f) = %s", mech, distfunc)
+  forsec sl for(x, 0) {
+    sprint(stmp, distfunc, secname(), x, distance(x))
+    execute(stmp)
+  }
+}
+
+proc geom_nseg() {
+  this.geom_nsec() //To count all sections
+  //TODO: geom_nseg_fixed depends on segCounts which is calculated by
+  //  geom_nsec.  Can this be collapsed?
+  this.geom_nseg_fixed(40)
+  this.geom_nsec() //To count all sections
+}
+
+proc insertChannel() {
+  {%- for location, names in channels.items() %}
+  forsec this.{{location}} {
+  {%- for channel in names %}
+    insert {{channel}}
+  {%- endfor %}
+  }
+  {%- endfor %}
+}
+
+proc biophys() {
+  {% for loc, parameters in section_params %}
+  forsec CellRef.{{ loc }} {
+  {%- for param in parameters %}
+    {{ param.name }} = {{ param.value }}
+  {%- endfor %}
+  }
+  {% endfor %}
+  {%- for location, param_name, value in range_params %}
+  distribute_distance(CellRef.{{location}}, "{{param_name}}", "{{value}}")
+  {%- endfor %}
+}
+
+{%- if add_synapses is sameas true %}
+/** Load the synapses */                                                                             
+proc load_synapses() {
+    synapses = new {{synapses_template_name}}()
+    synapses.load_synapses(this)
+}
+{%- endif %}
+
+func sec_count(/* SectionList */) { local nSec
+  nSec = 0
+  forsec $o1 {
+      nSec += 1
+  }
+  return nSec
+}
+
+/*
+ * Iterate over the section and compute how many segments should be allocate to
+ * each.
+ */
+proc geom_nseg_fixed(/* chunkSize */) { local secIndex, chunkSize
+  chunkSize = $1
+  soma area(.5) // make sure diam reflects 3d points
+  secIndex = 0
+  forsec all {
+    nseg = 1 + 2*int(L/chunkSize)
+    segCounts.x[secIndex] = nseg
+    secIndex += 1
+  }
+}
+
+/*
+ * Count up the number of sections
+ */
+proc geom_nsec() { local nSec
+  nSecAll = sec_count(all)
+  nSecSoma = sec_count(somatic)
+  nSecApical = sec_count(apical)
+  nSecBasal = sec_count(basal)
+  nSecMyelinated = sec_count(myelinated)
+  nSecAxonalOrig = nSecAxonal = sec_count(axonal)
+
+  segCounts = new Vector()
+  segCounts.resize(nSecAll)
+  nSec = 0
+  forsec all {
+    segCounts.x[nSec] = nseg
+    nSec += 1
+  }
+}
+
+/*
+ * Replace the axon built from the original morphology file with a stub axon
+ */
+{%- if replace_axon %}
+    {{replace_axon}}
+{%- endif %}
+
+
+{{re_init_rng}}
+
+endtemplate {{template_name}}
+

@@ -1,0 +1,108 @@
+{
+  "Step_120": {
+    "soma.v": [
+      {"feature": "voltage_base", "val": [-85.1201, 0.9969, -0.9883867655629811, 0.00013373713228144137, 3.0, 0], "n": 7, "fid": 859, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "voltage_after_stim", "val": [-84.9617, 3.5653, -953915967.2611295, 172445218.4631232, -3.0, 0], "n": 7, "fid": 874, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "AP_amplitude", "val": [55.4731, 12.0977, 40.71969219995454, 8.100195613719041, 0.8999999999999999, 0], "n": 7, "fid": 724, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "APlast_amp", "val": [55.2315, 11.897, 25.928521613405827, 4.366758817227903, 0.75, 0], "n": 7, "fid": 754, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "AHP_depth", "val": [16.592, 2.7222, 1.6059417974966161, 0.04269764706423431, -0.4500000000000002, 0], "n": 7, "fid": 784, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "mean_frequency", "val": [9.8354, 5.6791, 4.025269978602677, 1.6079003900754127, 0.44999999999999973, 0], "n": 7, "fid": 491, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "time_to_first_spike", "val": [449.7112, 225.8112, 125.56746316549352, 50.5586212159043, 0.75, 0], "n": 7, "fid": 536, "strict_stim": true, "weight": 10, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "time_to_second_spike", "val": [645.9661, 314.5802, 76.85674918132482, 24.074830026179576, 0.5999999999999996, 0], "n": 7, "fid": 914, "strict_stim": true, "weight": 10, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_first_ISI", "val": [9.0292, 4.78, 5.999653972169924, 2.7670006419620847, 0.75, 0], "n": 7, "fid": 629, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_second_ISI", "val": [10.109, 4.4864, 19.16613726516132, 9.941821291922253, 1.3499999999999996, 0], "n": 7, "fid": 645, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_third_ISI", "val": [9.5408, 5.2249, 13.725742437851606, 7.967217660251133, 1.2000000000000002, 0], "n": 7, "fid": 661, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_fourth_ISI", "val": [8.5391, 5.1815, 7.206149821916134, 4.23790927519337, 0.8999999999999999, 0], "n": 7, "fid": 677, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_fifth_ISI", "val": [8.9397, 5.3181, 7.519649198427733, 4.353241968896275, 0.8999999999999999, 0], "n": 7, "fid": 693, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_last_ISI", "val": [10.1872, 5.4801, 11.159210939153045, 6.116010804742536, 1.0499999999999998, 0], "n": 7, "fid": 709, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}}
+    ]
+  }, 
+  "Step_150": {
+    "soma.v": [
+      {"feature": "voltage_base", "val": [-84.753, 1.177, -639.4429358291773, 13.614901732815918, 0.44999999999999973, 0], "n": 7, "fid": 861, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "voltage_after_stim", "val": [-84.7475, 4.6475, -952072101.6995324, 212840746.53839174, -3.0, 0], "n": 7, "fid": 876, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "AP_amplitude", "val": [54.8588, 11.1548, 40.3215967051279, 7.475944452840623, 0.8999999999999999, 0], "n": 7, "fid": 726, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "APlast_amp", "val": [54.432, 10.5102, 25.660996160234088, 3.8628233724391823, 0.75, 0], "n": 7, "fid": 756, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "AHP_depth", "val": [18.3129, 2.6089, 0.4751870795035901, 0.0002605163704544972, -2.1, 0], "n": 7, "fid": 786, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "mean_frequency", "val": [26.0207, 12.685, 66.39720717488247, 37.46952235392564, 1.3499999999999996, 0], "n": 7, "fid": 493, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "time_to_first_spike", "val": [108.2218, 173.2165, 1.2501682930107767, 0.039828867009387224, -0.75, 0], "n": 7, "fid": 538, "strict_stim": true, "weight": 10, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "time_to_second_spike", "val": [193.7321, 252.3341, 1.0905319784300394, 0.010806059245734257, -0.8999999999999999, 0], "n": 7, "fid": 916, "strict_stim": true, "weight": 10, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_first_ISI", "val": [26.2023, 13.7859, 44.64733815769822, 25.363053304908327, 1.2000000000000002, 0], "n": 7, "fid": 631, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_second_ISI", "val": [25.5591, 13.3514, 65.52724204005548, 38.18076168928794, 1.3499999999999996, 0], "n": 7, "fid": 647, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_third_ISI", "val": [26.0976, 12.9288, 66.83458151912708, 37.77380530895709, 1.3499999999999996, 0], "n": 7, "fid": 663, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_fourth_ISI", "val": [26.6781, 14.0524, 45.59912458105297, 26.048295453102476, 1.2000000000000002, 0], "n": 7, "fid": 679, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_fifth_ISI", "val": [25.7108, 12.7523, 65.57075507692608, 36.9004508823646, 1.3499999999999996, 0], "n": 7, "fid": 695, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_last_ISI", "val": [25.7963, 13.1923, 29.355971195283626, 15.375996565320643, 1.0499999999999998, 0], "n": 7, "fid": 711, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}}
+    ]
+  }, 
+  "Step_200": {
+    "soma.v": [
+      {"feature": "voltage_base", "val": [-84.8224, 1.2196, -0.9883456913524596, 0.00016483317252386913, 3.0, 0], "n": 7, "fid": 864, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "voltage_after_stim", "val": [-85.8271, 1.674, -990623735.8700125, 94038494.57704435, -3.0, 0], "n": 7, "fid": 879, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "AP_amplitude", "val": [53.1212, 10.0192, 25.184794502017997, 3.707556972593658, 0.75, 0], "n": 7, "fid": 729, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "APlast_amp", "val": [51.8885, 9.0977, 38.35242416132616, 6.125383743677591, 0.8999999999999999, 0], "n": 7, "fid": 759, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "AHP_depth", "val": [21.3572, 2.9158, 48.59181956431952, 8.617781432176553, 1.3499999999999996, 0], "n": 7, "fid": 789, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "mean_frequency", "val": [40.7443, 15.9026, 73.91849130732643, 32.8113146693941, 1.2000000000000002, 0], "n": 7, "fid": 496, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "time_to_first_spike", "val": [14.3226, 4.5233, 0.44324377074849053, 0.0005404529770188755, -2.25, 0], "n": 7, "fid": 541, "strict_stim": true, "weight": 10, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "time_to_second_spike", "val": [43.1019, 18.0791, 0.6637805408926069, 0.001259784422346302, -1.5, 0], "n": 7, "fid": 919, "strict_stim": true, "weight": 10, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_first_ISI", "val": [43.9958, 16.2704, 210.92408818570604, 102.75688923264723, 1.5, 0], "n": 7, "fid": 634, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_second_ISI", "val": [42.9291, 18.2038, 206.9275960278554, 110.42281495963293, 1.5, 0], "n": 7, "fid": 650, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_third_ISI", "val": [42.3109, 16.9606, 201.10787985383462, 102.52972125227201, 1.5, 0], "n": 7, "fid": 666, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_fourth_ISI", "val": [41.192, 15.5398, 312.76281735034553, 160.15779731462735, 1.6499999999999995, 0], "n": 7, "fid": 682, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_fifth_ISI", "val": [40.7077, 14.9873, 501.397055266712, 264.55198406962324, 1.7999999999999998, 0], "n": 7, "fid": 698, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_last_ISI", "val": [40.6812, 17.4402, 13.599720477571976, 4.046357091285157, 0.5999999999999996, 0], "n": 7, "fid": 714, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}}
+    ]
+  }, 
+  "Step_260": {
+    "soma.v": [
+      {"feature": "voltage_base", "val": [-85.2426, 1.1486, -0.9884027561498143, 0.00015394841343095201, 3.0, 0], "n": 5, "fid": 868, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "voltage_after_stim", "val": [-86.8784, 1.3729, -1050720766.8731388, 80114840.48703213, -3.0, 0], "n": 5, "fid": 883, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "AP_amplitude", "val": [52.7846, 7.2453, 0.33333099517227016, 7.278542344350107e-07, -3.0, 0], "n": 5, "fid": 733, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "APlast_amp", "val": [50.3637, 6.37, 0.33333068384095965, 7.56226429170401e-07, -3.0, 0], "n": 5, "fid": 763, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "AHP_depth", "val": [23.1926, 2.8013, 3.179358740648568, 0.11567763046696962, 0.0, 0], "n": 5, "fid": 793, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "mean_frequency", "val": [43.9393, 13.8325, 1559.051970645539, 808.1911879776804, 2.0999999999999996, 0], "n": 5, "fid": 500, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "time_to_first_spike", "val": [10.924, 3.0958, 5.646303098933098, 1.1571674897328788, 0.5999999999999996, 0], "n": 5, "fid": 545, "strict_stim": true, "weight": 10, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "time_to_second_spike", "val": [31.043, 7.567, 0.33332059440750983, 5.717623147897284e-06, -3.0, 0], "n": 5, "fid": 923, "strict_stim": true, "weight": 10, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_first_ISI", "val": [54.1294, 13.3508, 788.9097073308124, 317.0824976649323, 1.7999999999999998, 0], "n": 5, "fid": 638, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_second_ISI", "val": [48.2915, 16.3919, 5660.06357735798, 3080.7530718689236, 2.3999999999999995, 0], "n": 5, "fid": 654, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_third_ISI", "val": [45.9188, 16.5486, 1758.0020294303927, 949.5175771346227, 2.0999999999999996, 0], "n": 5, "fid": 670, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_fourth_ISI", "val": [45.6433, 16.0771, 2933.683621014173, 1586.843513792955, 2.25, 0], "n": 5, "fid": 686, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_fifth_ISI", "val": [45.4646, 15.612, 2890.1866317801896, 1583.2963949386176, 2.25, 0], "n": 5, "fid": 702, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "inv_last_ISI", "val": [42.0318, 13.041, 194.22353932788752, 82.41785394160314, 1.5, 0], "n": 5, "fid": 718, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}}
+    ]
+  }, 
+  "APWaveform_300": {
+    "soma.v": [
+      {"feature": "AP_amplitude", "val": [58.4856, 9.5702, 7.991030616828877, 0.5497653101061627, 0.2999999999999998, 0], "n": 7, "fid": 336, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "AP_duration_half_width", "val": [1.0371, 0.1759, 0.29230572723944814, 0.009197986937745673, -3.0, 0], "n": 7, "fid": 366, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}}
+    ]
+  }, 
+  "Rin": {
+    "soma.v": [
+      {"feature": "ohmic_input_resistance_vb_ssse", "val": [146.5798, 46.9182, 337.34931095131014, 125.69079336218766, 1.2000000000000002, 0], "n": 7, "fid": 380, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "voltage_base", "val": [-83.9822, 1.3392, -0.9882299565130491, 0.0001823615627034659, 3.0, 0], "n": 7, "fid": 372, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}}
+    ]
+  }, 
+  "RMP": {
+    "soma.v": [
+      {"feature": "voltage_base", "val": [-78.8171, 4.1818, -664395732.2120959, 147651237.66713408, -3.0, 0], "n": 7, "fid": 377, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "Spikecount", "val": [0.0, 0.001, 0.0, 0.001, -3.0, 0], "n": 7, "fid": 397, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}}
+    ]
+  }, 
+  "IV_-100": {
+    "soma.v": [
+      {"feature": "voltage_deflection", "val": [-18.7045, 2.7718, -0.9482559262169162, 0.007106883175258691, 3.0, 0], "n": 7, "fid": 383, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}},
+      {"feature": "voltage_deflection_begin", "val": [-19.713, 3.3207, -0.9505029239110983, 0.007648219609226283, 3.0, 0], "n": 7, "fid": 387, "strict_stim": true, "__comment": {"source": "Interneurons/dNAC", "meta": {"version": "dc1cfa4"}}}
+    ]
+  }, 
+  "RinHoldCurrent": {
+    "soma.v": [
+      {"feature": "bpo_holding_current", "val": [-0.0392, 0.0196]}
+    ]
+  }, 
+  "Threshold": {
+    "soma.v": [
+      {"feature": "bpo_threshold_current", "val": [0.1597, 0.0734]}
+    ]
+  }
+}

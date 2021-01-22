@@ -1,0 +1,53 @@
+Ca_HVA:
+  LJP: not corrected!
+
+Ca_HVA2:
+  Reuveni, Friedman, Amitai, and Gutnick, J.Neurosci. 1993
+  activation from Sayer, Schwindt and Crill (1990), LJP corrected data
+  inactivation from Dichter and Zona 1989
+  LJP: OK, inactivation corrected by 12.3 mV
+
+Ca_LVAst:
+  LJP: OK, corrected in mod
+
+CaDynamics_DC0:
+  LJP: OK, correction not necessary, no voltage values
+
+Ih:
+  Kole,Hallermann,and Stuart, J. Neurosci. 2006
+  LJP: OK, "Somatic whole- ell voltage was corrected for the 14 mV difference"
+
+K_Pst:
+  LJP: OK
+
+K_Tst:
+  LJP: OK
+
+KdShu2007:
+  Yuguo Yu  2007
+  LJP: OK, "liquid junction potential of 10 mV was subtracted from each recording"
+
+Nap_Et2:
+  LJP: OK, cell-attached modes bath and pipette solution almost identical ljp < 1mV "this procedure can be considered as valid in the case of a cell-attached or inside-out patch measurement provided that the pipette contains a solution identical to that of the bath" Erwin Neher, 1992
+
+NaTg:
+  Colbert and Pan 2002
+  LJP: not corrected!
+
+NaTg2:
+  LJP: OK, outside-out patch, corrected by 14.3 mV
+
+SK_E2:
+  Kohler et al. 1996
+  LJP: OK, correction not necessary, no voltage values
+
+SKv3_1:
+  Rettig et.al (1992) EMBO J 11, no. 7: 2473-86.
+  Methods: Grupe et al. (1990) EMBO J 9, 1749-1756.
+  LJP: OK, no LJP, "Patch pipetes were filed with the normal bathing solution in al experiments."
+
+StochKv2.mod
+  LJP: not corrected!
+
+StochKv3.mod
+  LJP: OK, whole-cell patch, corrected by 10 mV (Mendonca et al. 2016)

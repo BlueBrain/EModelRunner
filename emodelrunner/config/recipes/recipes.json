@@ -1,0 +1,318 @@
+{
+    "cADpyr_L5TPC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["L5TPCa","C060114A5.asc"]],
+        "params": "config/params/pyr.json",
+        "protocol": "config/protocols/cADpyr_L5PC.json",
+        "features": "config/features/cADpyr_L5PC.json",
+        "use_powertransform": false
+    },
+    "cADpyr_L5TPCb": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["L5TPCb","rp110119_L5-1_idA.asc"]],
+        "params": "config/params/pyr.json",
+        "protocol": "config/protocols/cADpyr_L5PC.json",
+        "features": "config/features/cADpyr_L5PC.json"
+    },
+    "cADpyr_L5TPC_multi": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [ ["L5TPCa","C060114A5.asc"],
+                        ["L5TPCb","rp110119_L5-1_idA.asc"],
+                        ["L5TPCc","vd110315_idE.asc"]
+                      ],
+        "params": "config/params/pyr.json",
+        "protocol": "config/protocols/cADpyr_L5TPC.json",
+        "features": "config/features/cADpyr_L5TPC.json"
+    },
+    "cADpyr_L4TPC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C310897A-P4.asc"]],
+        "params": "config/params/pyr.json",
+        "protocol": "config/protocols/cADpyr_L4PC.json",
+        "features": "config/features/cADpyr_L4PC.json"
+    },
+    "cADpyr_L4UPC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/extra/",
+        "morphology": [["_","RatRH2_161012_neg04_15.asc"]],
+        "params": "config/params/pyr.json",
+        "protocol": "config/protocols/cADpyr_L4PC.json",
+        "features": "config/features/cADpyr_L4PC.json"
+    },
+    "cADpyr_L6IPC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","mtC110301B_idB.asc"]],
+        "params": "config/params/pyr.json",
+        "protocol": "config/protocols/cADpyr_L6UTPC.json",
+        "features": "config/features/cADpyr_L6UTPC.json"
+    },
+    "cADpyr_L6UPC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","Fluo12_right.asc"]],
+        "params": "config/params/pyr.json",
+        "protocol": "config/protocols/cADpyr_L6UTPC.json",
+        "features": "config/features/cADpyr_L6UTPC.json"
+    },
+    "cADpyr_L6BPC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","mtC141200C_idB.asc"]],
+        "params": "config/params/pyr.json",
+        "protocol": "config/protocols/cADpyr_L6UTPC.json",
+        "features": "config/features/cADpyr_L6UTPC.json"
+    },
+    "cADpyr_L6HPC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","rp160229_A_idC.asc"]],
+        "params": "config/params/pyr.json",
+        "protocol": "config/protocols/cADpyr_L6UTPC.json",
+        "features": "config/features/cADpyr_L6UTPC.json"
+    },
+    "cADpyr_L2TPC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","mtC191200B_idA.asc"]],
+        "params": "config/params/pyr.json",
+        "protocol": "config/protocols/cADpyr_L23PC.json",
+        "features": "config/features/cADpyr_L23PC.json"
+    },
+    "cADpyr_L2IPC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","sm080522a1-5_idA.asc"]],
+        "params": "config/params/pyr.json",
+        "protocol": "config/protocols/cADpyr_L23PC.json",
+        "features": "config/features/cADpyr_L23PC.json"
+    },
+    "cADpyr_L3TPC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","mtC120800E_idB.asc"]],
+        "params": "config/params/pyr.json",
+        "protocol": "config/protocols/cADpyr_L23PC.json",
+        "features": "config/features/cADpyr_L23PC.json"
+    },
+    "cACint_L23MC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C100501A3.asc"]],
+        "params": "config/params/int.json",
+        "protocol": "config/protocols/cACint.json",
+        "features": "config/features/cACint.json"
+    },
+    "cACint_L4CHC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","vd100714B_idB.asc"]],
+        "params": "config/params/int.json",
+        "protocol": "config/protocols/cACint.json",
+        "features": "config/features/cACint.json"
+    },
+    "bAC_L23BTC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C210401C.asc"]],
+        "params": "config/params/int.json",
+        "protocol": "config/protocols/bAC.json",
+        "features": "config/features/bAC.json"
+    },
+    "bAC_L6BTC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","og060523b1-2_idD.asc"]],
+        "params": "config/params/int.json",
+        "protocol": "config/protocols/bAC.json",
+        "features": "config/features/bAC.json"
+    },
+    "cNAC_L23BTC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C210401C.asc"]],
+        "params": "config/params/int.json",
+        "protocol": "config/protocols/cNAC.json",
+        "features": "config/features/cNAC.json"
+    },
+    "cNAC_L23NGC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C170998D-I3.asc"]],
+        "params": "config/params/int.json",
+        "protocol": "config/protocols/cNAC.json",
+        "features": "config/features/cNAC.json"
+    },
+    "cNAC_L4CHC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","vd100714B_idB.asc"]],
+        "params": "config/params/int.json",
+        "protocol": "config/protocols/cNAC.json",
+        "features": "config/features/cNAC.json"
+    },
+    "cNAC_L6NGC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","rp110125_L5-2_idA.asc"]],
+        "params": "config/params/int.json",
+        "protocol": "config/protocols/cNAC.json",
+        "features": "config/features/cNAC.json"
+    },
+    "cNAC_L6BTC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","og060523b1-2_idD.asc"]],
+        "params": "config/params/int.json",
+        "protocol": "config/protocols/cNAC.json",
+        "features": "config/features/cNAC.json"
+    },
+    "bNAC_L23SBC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C010600C1.asc"]],
+        "params": "config/params/int.json",
+        "protocol": "config/protocols/bNAC.json",
+        "features": "config/features/bNAC.json"
+    },
+    "bNAC_L23NGC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C170998D-I3.asc"]],
+        "params": "config/params/int.json",
+        "protocol": "config/protocols/bNAC.json",
+        "features": "config/features/bNAC.json"
+    },
+    "dNAC_L23SBC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C010600C1.asc"]],
+        "params": "config/params/int_delayed.json",
+        "protocol": "config/protocols/dNAC.json",
+        "features": "config/features/dNAC.json"
+    },
+    "cIR_L2SBC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C010600C1.asc"]],
+        "params": "config/params/int_noise.json",
+        "protocol": "config/protocols/cIR.json",
+        "features": "config/features/cIR.json",
+        "stages": 2
+    },
+    "cIR_L4DBC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","rp100428-3_idI.asc"]],
+        "params": "config/params/int_noise.json",
+        "protocol": "config/protocols/cIR.json",
+        "features": "config/features/cIR.json",
+        "stages": 2
+    },
+    "cIR_L5DBC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","rp110127_L5-2_idE.asc"]],
+        "params": "config/params/int_noise.json",
+        "protocol": "config/protocols/cIR.json",
+        "features": "config/features/cIR.json",
+        "stages": 2
+    },
+    "bIR_L23BTC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C210401C.asc"]],
+        "params": "config/params/int_noise.json",
+        "protocol": "config/protocols/bIR.json",
+        "features": "config/features/bIR.json",
+        "stages": 2
+    },
+    "bIR_L4BTC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","mtC080800B_idB.asc"]],
+        "params": "config/params/int_noise.json",
+        "protocol": "config/protocols/bIR.json",
+        "features": "config/features/bIR.json",
+        "stages": 2
+    },
+    "bIR_L4BP": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C300797C-I1.asc"]],
+        "params": "config/params/int_noise.json",
+        "protocol": "config/protocols/bIR.json",
+        "features": "config/features/bIR.json",
+        "stages": 2
+    },
+    "bIR_L23BP": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C230998A-I3.asc"]],
+        "params": "config/params/int_noise.json",
+        "protocol": "config/protocols/bIR.json",
+        "features": "config/features/bIR.json",
+        "stages": 2
+    },
+    "bIR_L5BP": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C240300C1.asc"]],
+        "params": "config/params/int_noise.json",
+        "protocol": "config/protocols/bIR.json",
+        "features": "config/features/bIR.json",
+        "stages": 2
+    },
+    "bIR_L4DBC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","rp100428-3_idI.asc"]],
+        "params": "config/params/int_noise.json",
+        "protocol": "config/protocols/bIR.json",
+        "features": "config/features/bIR.json",
+        "stages": 2
+    },
+    "bIR_L5DBC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","rp110127_L5-2_idE.asc"]],
+        "params": "config/params/int_noise.json",
+        "protocol": "config/protocols/bIR.json",
+        "features": "config/features/bIR.json",
+        "stages": 2
+    },
+    "bSTUT_L5NBC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C290999C-I4.asc"]],
+        "params": "config/params/int_noise.json",
+        "protocol": "config/protocols/bSTUT.json",
+        "features": "config/features/bSTUT.json",
+        "stages": 2
+    },
+    "cSTUT_L5NBC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C290999C-I4.asc"]],
+        "params": "config/params/int_noise.json",
+        "protocol": "config/protocols/cSTUT.json",
+        "features": "config/features/cSTUT.json",
+        "stages": 2
+    },
+    "cSTUT_L23NGC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C170998D-I3.asc"]],
+        "params": "config/params/int_noise.json",
+        "protocol": "config/protocols/cSTUT.json",
+        "features": "config/features/cSTUT.json",
+        "stages": 2
+    },
+    "cSTUT_L6NGC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","rp110125_L5-2_idA.asc"]],
+        "params": "config/params/int_noise.json",
+        "protocol": "config/protocols/cSTUT.json",
+        "features": "config/features/cSTUT.json",
+        "stages": 2
+    },
+    "dSTUT_L2SBC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C010600C1.asc"]],
+        "params": "config/params/int_delayed_noise.json",
+        "protocol": "config/protocols/dSTUT.json",
+        "features": "config/features/dSTUT.json",
+        "stages": 2
+    },
+    "dSTUT_L4BP": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C300797C-I1.asc"]],
+        "params": "config/params/int_delayed_noise.json",
+        "protocol": "config/protocols/dSTUT.json",
+        "features": "config/features/dSTUT.json",
+        "stages": 2
+    },
+    "dSTUT_L23BP": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C230998A-I3.asc"]],
+        "params": "config/params/int_delayed_noise.json",
+        "protocol": "config/protocols/dSTUT.json",
+        "features": "config/features/dSTUT.json",
+        "stages": 2
+    },
+    "dSTUT_L5BP": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [["_","C240300C1.asc"]],
+        "params": "config/params/int_delayed_noise.json",
+        "protocol": "config/protocols/dSTUT.json",
+        "features": "config/features/dSTUT.json",
+        "stages": 2
+    }
+}

@@ -5,12 +5,18 @@ import sys
 
 from setuptools import setup, find_packages
 
-if sys.version_info < (3, 6):
-    sys.exit("Sorry, Python < 3.6 is not supported")
+if sys.version_info < (2, 7):
+    sys.exit("Sorry, Python < 2.7 is not supported")
 
 # read the contents of the README file
-with open("README.rst", encoding="utf-8") as f:
-    README = f.read()
+if sys.version_info < (3, 0):
+    import io
+
+    with io.open("README.rst", encoding="utf-8") as f:
+        README = f.read()
+else:
+    with open("README.rst", encoding="utf-8") as f:
+        README = f.read()
 
 VERSION = imp.load_source("", "emodelrunner/version.py").__version__
 
@@ -28,9 +34,13 @@ setup(
         "Source": "ssh://bbpcode.epfl.ch/cells/EModelRunner",
     },
     license="BBP-internal-confidential",
-    install_requires=[],
+    install_requires=[
+        "numpy",
+        "bluepyopt",
+        "neurom",
+    ],
     packages=find_packages(),
-    python_requires=">=3.6",
+    python_requires=">=2.7",
     extras_require={"docs": ["sphinx", "sphinx-bluebrain-theme"]},
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",

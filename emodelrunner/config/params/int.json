@@ -1,0 +1,74 @@
+{
+    "mechanisms": {
+        "all":
+            {"mech":["pas"]},
+        "allact":
+            {"mech":["CaDynamics_DC0", "Ca_HVA2", "Ca_LVAst", "SK_E2"]},
+        "somaxon":
+            {"mech":["NaTg", "SKv3_1", "K_Pst", "K_Tst"]},
+        "somadend":
+            {"mech":["Ih"]}
+    },
+    "distributions": {
+        "exp":
+            {"fun": "(-0.8696 + 2.087*math.exp(({distance})*0.0031))*{value}",
+                "__comment": "distribution based on Kole et al. 2006"}
+    },
+    "parameters": {
+        "__comment": "define constants as single values and params to optimize as tuples of bounds: [lower, upper]",
+        "global":   [
+            {"name":"v_init",                 "val":-80},
+            {"name":"celsius",                "val":34}
+        ],
+        "myelinated": [
+            {"name":"cm",                     "val":0.02}
+        ],
+        "all": [
+            {"name":"Ra",                     "val":100},
+            {"name":"g_pas",                  "val":[1e-6, 1e-4], "test":2.06356875632e-05},
+            {"name":"e_pas",                  "val":[-80, -60],   "test":-70.6654903763}
+        ],
+        "allact": [
+            {"name":"cm",                     "val":1}
+        ],
+        "axonal": [
+            {"name":"ena",                    "val":50},
+            {"name":"ek",                     "val":-90},
+            {"name":"vshifth_NaTg",           "val":10},
+            {"name":"slopem_NaTg",            "val":9},
+            {"name":"gNaTgbar_NaTg",          "val":[0, 1],         "test":0.45001599746214271},
+            {"name":"gK_Pstbar_K_Pst",        "val":[0, 1],         "test":0.247845039186},
+            {"name":"gK_Tstbar_K_Tst",        "val":[0, 0.2],       "test":0.0244883976922},
+            {"name":"gSKv3_1bar_SKv3_1",      "val":[0, 2],         "test":0.00010551232731},
+            {"name":"gCa_HVAbar_Ca_HVA2",      "val":[0, 0.001],     "test":6.88178651906e-05},
+            {"name":"gCa_LVAstbar_Ca_LVAst",  "val":[0, 0.01],      "test":1.31395358208e-05},
+            {"name":"gamma_CaDynamics_DC0",   "val":[0.005, 0.05],  "test":0.01},
+            {"name":"decay_CaDynamics_DC0",   "val":[20, 1000],     "test":350.999667567},
+            {"name":"gSK_E2bar_SK_E2",        "val":[0, 0.1],       "test":0.02396994591}
+        ],
+        "somadend": [
+            {"name":"gIhbar_Ih",              "val":[0, 5e-6],      "test":3.64825618204e-06, "dist":"exp",
+                "__comment": "distribution starts in soma (uniform) and spreads exponentially to dendrites"},
+            {"name":"gCa_HVAbar_Ca_HVA2",      "val":[0, 0.001],     "test":6.88178651906e-05},
+            {"name":"gCa_LVAstbar_Ca_LVAst",  "val":[0, 0.01],      "test":1.31395358208e-05}
+        ],
+        "alldend": [
+            {"name":"ek",                     "val":-90},
+            {"name":"gSK_E2bar_SK_E2",        "val":[0, 0.1],       "test":0.02396994591}
+        ],
+        "somatic": [
+            {"name":"ena",                    "val":50},
+            {"name":"ek",                     "val":-90},
+            {"name":"vshiftm_NaTg",           "val":13},
+            {"name":"vshifth_NaTg",           "val":15},
+            {"name":"slopem_NaTg",            "val":7},
+            {"name":"gNaTgbar_NaTg",          "val":[0, 0.3],       "test":0.05},
+            {"name":"gK_Pstbar_K_Pst",        "val":[0, 1],         "test":0.050024098244},
+            {"name":"gK_Tstbar_K_Tst",        "val":[0, 0.1],       "test":0.050323411406},
+            {"name":"gSKv3_1bar_SKv3_1",      "val":[0, 1],         "test":0.0826757217328},
+            {"name":"gamma_CaDynamics_DC0",   "val":[0.005, 0.05],  "test":0.01},
+            {"name":"decay_CaDynamics_DC0",   "val":[20, 1000],     "test":350.999667567},
+            {"name":"gSK_E2bar_SK_E2",        "val":[0, 0.1],       "test":0.02396994591}
+        ]
+    }
+}

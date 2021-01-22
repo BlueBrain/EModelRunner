@@ -1,0 +1,95 @@
+proc replace_axon(){ local nSec, L_chunk, dist, i1, i2, count, L_target, chunkSize, L_real localobj diams, lens
+
+    L_target = 60  // length of stub axon
+    nseg0 = 5  // number of segments for each of the two axon sections
+
+    nseg_total = nseg0 * 2
+    chunkSize = L_target/nseg_total
+
+    nSec = 0
+    forsec axonal{nSec = nSec + 1}
+
+    // Try to grab info from original axon
+    if(nSec < 3){ //At least two axon sections have to be present!
+
+        execerror("Less than three axon sections are present! This emodel can't be run with such a morphology!")
+
+    } else {
+
+        diams = new Vector()
+        lens = new Vector()
+
+        access axon[0]
+        axon[0] i1 = v(0.0001) // used when serializing sections prior to sim start
+        axon[1] i2 = v(0.0001) // used when serializing sections prior to sim start
+        axon[2] i3 = v(0.0001) // used when serializing sections prior to sim start
+
+        count = 0
+        forsec axonal{ // loop through all axon sections
+
+            nseg = 1 + int(L/chunkSize/2.)*2  //nseg to get diameter
+
+            for (x) {
+                if (x > 0 && x < 1) {
+                    count = count + 1
+                    diams.resize(count)
+                    diams.x[count-1] = diam(x)
+                    lens.resize(count)
+                    lens.x[count-1] = L/nseg
+                    if( count == nseg_total ){
+                        break
+                    }
+                }
+            }
+            if( count == nseg_total ){
+                break
+            }
+        }
+
+        // get rid of the old axon
+        forsec axonal{delete_section()}
+        execute1("create axon[2]", CellRef)
+
+        L_real = 0
+        count = 0
+
+        // new axon dependant on old diameters
+        for i=0,1{
+            access axon[i]
+            L =  L_target/2
+            nseg = nseg_total/2
+
+            for (x) {
+                if (x > 0 && x < 1) {
+                    diam(x) = diams.x[count]
+                    L_real = L_real+lens.x[count]
+                    count = count + 1
+                }
+            }
+
+            all.append()
+            axonal.append()
+
+            if (i == 0) {
+                v(0.0001) = i1
+            } else {
+                v(0.0001) = i2
+            }
+        }
+
+        nSecAxonal = 2
+        soma[0] connect axon[0](0), 1
+        axon[0] connect axon[1](0), 1
+
+        create myelin[1]
+        access myelin{
+                L = 1000
+                diam = diams.x[count-1]
+                nseg = 5
+                v(0.0001) = i3
+                all.append()
+                myelinated.append()
+        }
+        connect myelin(0), axon[1](1)
+    }
+}

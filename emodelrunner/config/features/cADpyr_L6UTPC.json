@@ -1,0 +1,137 @@
+{
+  "bAP": {
+    "soma.v": [
+      {"feature": "Spikecount", "val": [1.0, 0.01]}
+    ], 
+    "dend1.v": [
+      {"feature": "maximum_voltage_from_voltagebase", "val": [81.329833, 7.018952], "weight": 1, "__comment": "Stuart and Sakmann 1994"}
+    ], 
+    "ca_prox_apic.cai": [
+      {"feature": "maximum_voltage_from_voltagebase", "val": [0.000262, 9.01e-05], "weight": 1, "__comment": "Helmchen et al. 1996 (P12-14, wistar): [Ca]i (proximal apical dendrite) = 262nM (SEM:25nM, N=13) = 262e-6mM (STD:90.1mM) (STD = SEM * sqrt(N)"}
+    ], 
+    "ca_prox_basal.cai": [
+      {"feature": "maximum_voltage_from_voltagebase", "val": [0.000524, 9.01e-05], "weight": 1, "__comment": "Schiller et al. 1995 (P13-17, wistar): [Ca]i (basal) = 2 * [Ca]i (proximal apical dendrite)"}
+    ], 
+    "ca_soma.cai": [
+      {"feature": "maximum_voltage_from_voltagebase", "val": [0.000131, 9.01e-05], "weight": 1, "__comment": "Schiller et al. 1995 (P13-17, wistar): [Ca]i (soma and ais) = 0.5 * [Ca]i (proximal apical dendrite)"}
+    ], 
+    "ca_ais.cai": [
+      {"feature": "maximum_voltage_from_voltagebase", "val": [0.000131, 9.01e-05], "weight": 1, "__comment": "Schiller et al. 1995 (P13-17, wistar): [Ca]i (soma and ais) = 0.5 * [Ca]i (proximal apical dendrite)"}
+    ]
+  }, 
+  "Step_140": {
+    "soma.v": [
+      {"feature": "voltage_base", "val": [-84.6902, 1.566, -927093126.7747568, 83216853.84215702, -3.0, 0], "n": 7, "fid": 535, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "voltage_after_stim", "val": [-88.2189, 2.6138, -1140157525.407722, 160672895.34865442, -3.0, 0], "n": 7, "fid": 551, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AP_amplitude", "val": [61.9657, 9.6628, 18.289202044453926, 1.8486572795438996, 0.5999999999999996, 0], "n": 7, "fid": 391, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "APlast_amp", "val": [58.7279, 8.994, 0.6053165793918128, 0.00016900929991460714, -1.6500000000000001, 0], "n": 7, "fid": 423, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AHP_depth", "val": [28.9175, 6.4221, 2474.706868841587, 1115.2125793161254, 2.55, 0], "n": 7, "fid": 455, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "mean_frequency", "val": [10.7291, 7.9963, 2.1960766008144694, 0.7526243620761451, 0.0, 0], "n": 7, "fid": 147, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_time_to_first_spike", "val": [17.647, 8.581, 19.746170352373817, 9.80299229748455, 1.0499999999999998, 0], "n": 7, "fid": 275, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "time_to_last_spike", "val": [862.28, 739.0737, 19.163095288312423, 8.002112634182573, 0.2999999999999998, 0], "n": 7, "fid": 259, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_first_ISI", "val": [50.8213, 55.6991, 3.7839563471994757, 2.885273509377529, 0.1499999999999999, 0], "n": 7, "fid": 291, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_second_ISI", "val": [1.5213, 1.6154, 0.5342696597852299, 0.4744237802434369, -0.4500000000000002, 0], "n": 7, "fid": 308, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_third_ISI", "val": [1.2408, 1.6483, 0.3594043872770792, 0.3372897066924147, -0.8999999999999999, 0], "n": 7, "fid": 325, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_fourth_ISI", "val": [0.9439, 1.6034, 0.20577339826097885, 0.2476243913831258, -1.5, 0], "n": 7, "fid": 342, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_fifth_ISI", "val": [1.0253, 2.0306, 0.1508335228852618, 0.1955072701346855, -1.95, 0], "n": 7, "fid": 359, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_last_ISI", "val": [15.4301, 21.4269, 1.5029639966642738, 1.0815296321269345, -0.1499999999999999, 0], "n": 7, "fid": 375, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}}
+    ]
+  }, 
+  "Step_200": {
+    "soma.v": [
+      {"feature": "voltage_base", "val": [-84.3115, 2.0876, -908982965.4100777, 101934616.63816004, -3.0, 0], "n": 7, "fid": 539, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "voltage_after_stim", "val": [-88.2409, 3.4081, -1148060972.2026284, 205381155.58742246, -3.0, 0], "n": 7, "fid": 555, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AP_amplitude", "val": [59.3879, 7.7156, 43.381834631549516, 5.123243153207666, 0.8999999999999999, 0], "n": 7, "fid": 395, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "APlast_amp", "val": [58.0698, 7.7757, 4.070048700066086, 0.13181813217985033, 0.0, 0], "n": 7, "fid": 427, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AHP_depth", "val": [28.0254, 5.9594, 21.872310327065183, 4.265246742274661, 0.8999999999999999, 0], "n": 7, "fid": 459, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "mean_frequency", "val": [8.5887, 4.5136, 3.738350185550369, 1.3595904311849596, 0.44999999999999973, 0], "n": 7, "fid": 151, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_time_to_first_spike", "val": [32.0394, 11.0465, 4.517303700762403, 0.5728661051749094, 0.1499999999999999, 0], "n": 7, "fid": 279, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "time_to_last_spike", "val": [1734.8807, 318.195, 1906015056.946149, 782705621.3924619, 3.0, 0], "n": 7, "fid": 263, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_first_ISI", "val": [68.3245, 57.6372, 7.43423058938519, 3.4274801543746167, 0.2999999999999998, 0], "n": 7, "fid": 295, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_second_ISI", "val": [17.479, 25.1924, 1.837621678670952, 0.779159690083923, -0.1499999999999999, 0], "n": 7, "fid": 312, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_third_ISI", "val": [7.1151, 5.2528, 3.7757753188851155, 2.573192896877626, 0.5999999999999996, 0], "n": 7, "fid": 329, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_fourth_ISI", "val": [6.0362, 4.4886, 3.346918704890967, 2.312128340788461, 0.5999999999999996, 0], "n": 7, "fid": 346, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_fifth_ISI", "val": [5.7152, 4.684, 2.5953211624665706, 1.8735989731644491, 0.44999999999999973, 0], "n": 7, "fid": 363, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_last_ISI", "val": [9.8623, 8.5654, 1.033609761218501, 0.12437183862145644, -0.75, 0], "n": 7, "fid": 379, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}}
+    ]
+  }, 
+  "Step_250": {
+    "soma.v": [
+      {"feature": "voltage_base", "val": [-84.5324, 1.7723, -919351346.2737105, 88660412.89516944, -3.0, 0], "n": 7, "fid": 542, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "voltage_after_stim", "val": [-88.4444, 3.6987, -1163841349.1121166, 221220909.1894875, -3.0, 0], "n": 7, "fid": 558, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AP_amplitude", "val": [58.258, 7.4179, 111.09400125505451, 16.74977087984802, 1.2000000000000002, 0], "n": 7, "fid": 398, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "APlast_amp", "val": [58.191, 8.2485, 68.21520337074698, 10.10983070268805, 1.0499999999999998, 0], "n": 7, "fid": 430, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AHP_depth", "val": [28.7191, 5.8683, 3.37242073970674, 0.19717032360000067, 0.0, 0], "n": 7, "fid": 462, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "mean_frequency", "val": [10.9294, 7.2483, 2.2900205414392265, 0.6254285898340256, 0.0, 0], "n": 7, "fid": 154, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_time_to_first_spike", "val": [42.3701, 13.1607, 2.8492731948361354, 0.17308092974692085, -0.1499999999999999, 0], "n": 7, "fid": 282, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "time_to_last_spike", "val": [1882.01, 106.7512, 2246521956.4513063, 354439433.60961974, 3.0, 0], "n": 7, "fid": 266, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_first_ISI", "val": [87.3058, 47.2639, 4.345390814049108, 0.5224285033544847, 0.0, 0], "n": 7, "fid": 298, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_second_ISI", "val": [29.0249, 30.9072, 2.329262208415037, 0.6108633925129122, -0.1499999999999999, 0], "n": 7, "fid": 315, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_third_ISI", "val": [14.4399, 12.8767, 2.8833311523052987, 1.3751211810822739, 0.1499999999999999, 0], "n": 7, "fid": 332, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_fourth_ISI", "val": [12.3864, 8.4027, 3.567893208645761, 1.5084856487919178, 0.2999999999999998, 0], "n": 7, "fid": 349, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_fifth_ISI", "val": [10.6176, 8.0877, 3.189252901587273, 1.627134930342267, 0.2999999999999998, 0], "n": 7, "fid": 366, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_last_ISI", "val": [9.8384, 7.0926, 2.174055773158449, 0.6539022765095109, 0.0, 0], "n": 7, "fid": 382, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}}
+    ]
+  }, 
+  "Step_300": {
+    "soma.v": [
+      {"feature": "voltage_base", "val": [-84.5119, 2.5462, -922201557.7730882, 124605923.25977823, -3.0, 0], "n": 7, "fid": 545, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "voltage_after_stim", "val": [-88.6823, 3.6671, -1178877306.067058, 219308296.04700702, -3.0, 0], "n": 7, "fid": 561, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AP_amplitude", "val": [56.4567, 7.3245, 41.433452478525965, 4.888642635586075, 0.8999999999999999, 0], "n": 7, "fid": 401, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "APlast_amp", "val": [56.4091, 7.7933, 106.95269440605409, 17.47913873205256, 1.2000000000000002, 0], "n": 7, "fid": 433, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AHP_depth", "val": [29.004, 5.8433, 2.1232181263701118, 0.0689189199652643, -0.30000000000000027, 0], "n": 7, "fid": 465, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "mean_frequency", "val": [15.1911, 9.4325, 3.232545226934287, 0.9018400876837324, 0.1499999999999999, 0], "n": 7, "fid": 157, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_time_to_first_spike", "val": [54.8266, 15.7965, 1.5118778501403993, 0.02514482064433876, -0.6000000000000001, 0], "n": 7, "fid": 285, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "time_to_last_spike", "val": [1909.4043, 78.7872, 2335838014.243801, 279193784.9281088, 3.0, 0], "n": 7, "fid": 269, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_first_ISI", "val": [100.3109, 44.3084, 1.0914246757413832, 0.005957213581350145, -0.8999999999999999, 0], "n": 7, "fid": 301, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_second_ISI", "val": [41.2446, 37.2082, 2.62342879246492, 0.5012547966730116, -0.1499999999999999, 0], "n": 7, "fid": 318, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_third_ISI", "val": [24.4281, 20.0692, 1.6160008510556965, 0.1717692720911371, -0.4500000000000002, 0], "n": 7, "fid": 335, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_fourth_ISI", "val": [18.4697, 13.4791, 4.318434466351144, 1.8312116117527768, 0.2999999999999998, 0], "n": 7, "fid": 352, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_fifth_ISI", "val": [16.1591, 11.2684, 4.071682081738817, 1.6872016160010843, 0.2999999999999998, 0], "n": 7, "fid": 369, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "inv_last_ISI", "val": [14.735, 9.5345, 2.1251713463999335, 0.3979412191448548, -0.1499999999999999, 0], "n": 7, "fid": 385, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}}
+    ]
+  }, 
+  "APWaveform_320": {
+    "soma.v": [
+      {"feature": "AP_amplitude", "val": [59.4297, 1.8899, 11.84788586466648, 0.19807692610171054, 0.44999999999999973, 0], "n": 4, "fid": 1522, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AP1_amp", "val": [81.7111, 8.4051, 0.33333271245736007, 1.5330405161937443e-07, -3.0, 0], "n": 4, "fid": 1500, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AP2_amp", "val": [41.2053, 4.8641, 0.9334030722449506, 0.0022434491354514294, -1.05, 0], "n": 4, "fid": 1511, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AP_duration_half_width", "val": [1.3217, 0.239, 3.037115694012318, 0.8669932284289427, 2.55, 0], "n": 4, "fid": 1544, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "AHP_depth", "val": [32.8461, 2.1156, 13073.728372752803, 2353.9680726468437, 3.0, 0], "n": 4, "fid": 1357, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}}
+    ]
+  }, 
+  "Rin": {
+    "soma.v": [
+      {"feature": "ohmic_input_resistance_vb_ssse", "val": [225.189, 78.1348, 1.5986532037842787, 0.013182063346324296, -0.6000000000000001, 0], "n": 7, "fid": 15, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "voltage_base", "val": [-83.2056, 0.9267, -0.9881228701956127, 0.00013063024259457208, 3.0, 0], "n": 7, "fid": 1, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}}
+    ]
+  }, 
+  "RMP": {
+    "soma.v": [
+      {"feature": "voltage_base", "val": [-74.0748, 6.5707, -510750862.00907725, 182291518.4207275, -3.0, 0], "n": 6, "fid": 9, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "Spikecount", "val": [0.0, 0.001, 0.0, 0.001, -3.0, 0], "n": 6, "fid": 44, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}}
+    ]
+  }, 
+  "IV_-100": {
+    "soma.v": [
+      {"feature": "voltage_deflection", "val": [-15.3798, 3.4007, -1.9981526865236572, 0.10421034863471555, 2.25, 0], "n": 7, "fid": 21, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "voltage_deflection_begin", "val": [-16.6576, 3.6672, -0.9409761777066794, 0.011645312665298892, 3.0, 0], "n": 7, "fid": 28, "strict_stim": true, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}}
+    ]
+  }, 
+  "SpikeRec_all": {
+    "soma.v": [
+      {"feature": "decay_time_constant_after_stim", "val": [28.2691, 16.249, 4.175262559306715, 0.9353709826981007, 0.1499999999999999, 0], "n": 7, "fid": 47, "strict_stim": false, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}},
+      {"feature": "Spikecount", "val": [1.1429, 0.3499, 0.2958553791887125, 0.010260208358218788, -3.0, 0], "n": 7, "fid": 49, "strict_stim": false, "__comment": {"source": "cADpyr/L6PC", "meta": {"version": "8c4f8cd"}}}
+    ]
+  }, 
+  "RinHoldCurrent": {
+    "soma.v": [
+      {"feature": "bpo_holding_current", "val": [-0.0585, 0.0348]}
+    ]
+  }, 
+  "Threshold": {
+    "soma.v": [
+      {"feature": "bpo_threshold_current", "val": [0.0861, 0.0345]}
+    ]
+  }
+}
