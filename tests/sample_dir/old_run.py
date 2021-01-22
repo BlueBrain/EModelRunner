@@ -65,7 +65,8 @@ def create_stimuli(cell, step_number, config):
     iclamp.amp = float(step_amp[step_number - 1])
     print(
         "Setting up step current clamp: "
-        "amp=%f nA, delay=%f ms, duration=%f ms" % (iclamp.amp, iclamp.delay, iclamp.dur)
+        "amp=%f nA, delay=%f ms, duration=%f ms"
+        % (iclamp.amp, iclamp.delay, iclamp.dur)
     )
 
     stimuli.append(iclamp)
@@ -191,7 +192,9 @@ def save_recordings(recordings, recordings_dir, output_name):
     soma_voltage = numpy.array(recordings["soma(0.5)"])
 
     soma_voltage_filename = os.path.join(recordings_dir, output_name)
-    numpy.savetxt(soma_voltage_filename, numpy.transpose(numpy.vstack((time, soma_voltage))))
+    numpy.savetxt(
+        soma_voltage_filename, numpy.transpose(numpy.vstack((time, soma_voltage)))
+    )
 
 
 def init_simulation(recordings_dir, constants_file):
@@ -253,14 +256,18 @@ def main(config_file):
         for step_number in range(1, 4):
             stimuli = create_stimuli(cell, step_number, config)  # NOQA
             run_simulation(config)
-            save_recordings(recordings, recordings_dir, "soma_voltage_step%d.dat" % step_number)
+            save_recordings(
+                recordings, recordings_dir, "soma_voltage_step%d.dat" % step_number
+            )
             print(
                 "Soma voltage for step %d saved to: %s"
                 % (step_number, "soma_voltage_step%d.dat" % step_number)
             )
     else:
         run_simulation(config)
-        save_recordings(recordings, recordings_dir, "soma_voltage_%s.dat" % syn_stim_mode)
+        save_recordings(
+            recordings, recordings_dir, "soma_voltage_%s.dat" % syn_stim_mode
+        )
         print(
             "Soma voltage for %s saved to: %s"
             % (syn_stim_mode, "soma_voltage_%s.dat" % syn_stim_mode)

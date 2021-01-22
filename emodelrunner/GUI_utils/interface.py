@@ -1,5 +1,6 @@
 """Main Interface."""
 
+# pylint: disable=import-error
 import tkinter as tk
 from tkinter import ttk
 import time
@@ -64,7 +65,8 @@ class GUI:
 
         self.reload = False
 
-    def get_refresh_from_fps(self, fps):
+    @staticmethod
+    def get_refresh_from_fps(fps):
         """Get refresh rate from fps."""
         return 1.0 / fps
 
@@ -79,7 +81,9 @@ class GUI:
         self.frames["FrameConfig"].grid(
             row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=2, pady=2
         )
-        self.frames["FrameMain"].grid(row=0, column=1, sticky=(tk.W, tk.E, tk.N, tk.S), pady=2)
+        self.frames["FrameMain"].grid(
+            row=0, column=1, sticky=(tk.W, tk.E, tk.N, tk.S), pady=2
+        )
         self.frames["FrameSynapses"].grid(
             row=0, column=2, sticky=(tk.W, tk.E, tk.N, tk.S), padx=2, pady=2
         )
@@ -109,12 +113,10 @@ class GUI:
         self.reload = True
         self.end_simul()  # stop simul and disable continue button
 
-    def run_simul(self, v_threshold=-65, check_dt=1.5):
+    def run_simul(self, check_dt=1.5):
         """Main loop for running simulation.
 
         Args:
-            v_threshold (int): if voltage is larger than this value,
-                increase fps to have a more detailed display of spikes
             check_dt (float): check for significant voltage change every check_dt (ms)
                 (simulation time)
         """

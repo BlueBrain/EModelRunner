@@ -1,5 +1,6 @@
 """Custom Morphology class."""
 
+# pylint: disable=super-with-arguments, unnecessary-comprehension
 import logging
 import math
 import numpy
@@ -44,7 +45,8 @@ class NrnFileMorphologyCustom(ephys.morphologies.NrnFileMorphology):
         if self.do_simplify_morph:
             self.simplify_morph(sim, icell)
 
-    def section_area(self, sim, section):
+    @staticmethod
+    def section_area(sim, section):
         """Section area."""
         return sum(sim.neuron.h.area(seg.x, sec=section) for seg in section)
 
@@ -147,7 +149,7 @@ class NrnFileMorphologyCustom(ephys.morphologies.NrnFileMorphology):
         if self.do_set_nseg:
             div = 40
 
-            logger.debug("Using set_nseg divider {}".format(div))
+            logger.debug("Using set_nseg divider %d", div)
 
         for section in icell.all:
             section.nseg = 1 + 2 * int(section.L / div)
@@ -211,6 +213,8 @@ class NrnFileMorphologyCustom(ephys.morphologies.NrnFileMorphology):
         icell.myelin[0].connect(icell.axon[1], 1.0, 0.0)
 
         logger.debug(
-            "Replace axon with tapered AIS of length {}, "
-            "target length was {}, diameters are {}".format(L_real, L_target, diams)
+            "Replace axon with tapered AIS of length %d, target length was %d, diameters are %s",
+            L_real,
+            L_target,
+            diams,
         )

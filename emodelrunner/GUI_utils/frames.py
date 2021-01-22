@@ -1,16 +1,14 @@
 """Frame Classes for the GUI."""
 
-# pylint: disable=wrong-import-position
+# pylint: disable=wrong-import-position, too-many-ancestors, too-many-lines, import-error
 import tkinter as tk
 from tkinter import ttk
-import os
 import numpy as np
 import matplotlib
 
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-from mpl_toolkits.mplot3d import Axes3D  # for 3d plots
 
 try:
     from matplotlib.backends.backend_tkagg import NavigationToolbar2TkAgg
@@ -43,7 +41,6 @@ class ToolbarCustom(NavigationToolbar2TkAgg):
 
     def set_message(self, msg):
         """Do not show message. This is unstable."""
-        pass
 
 
 class FrameSetIntFromEntry(ttk.Frame):
@@ -249,7 +246,9 @@ class FrameHoldStimulus(ttk.Frame):
         style_dict = get_style_cst()
 
         self.hold_stim = tk.DoubleVar()
-        self.hold_stim.set(gui.simulation.default_hypamp)  # default hold stim is selected
+        self.hold_stim.set(
+            gui.simulation.default_hypamp
+        )  # default hold stim is selected
 
         self.hold_stim_title = ttk.Label(self, text="Select a Holding Stimulus")
 
@@ -418,7 +417,9 @@ class FrameConfig(ttk.Frame):
         title_config_fig = ttk.Label(self, text="Display configuration")
         self.frame_config_fig = FrameConfigFig(self, gui, title_config_fig)
 
-        title_protocols = ttk.Label(self, text="Simulation & Step stimulus configuration")
+        title_protocols = ttk.Label(
+            self, text="Simulation & Step stimulus configuration"
+        )
         self.frame_protocols = FrameProtocols(self, gui, title_protocols)
 
         self.frame_config_fig.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
@@ -546,7 +547,9 @@ class FrameFigures(ttk.Frame):
 
         # create canva
         self.canva_morph = FigureCanvasTkAgg(fig_morph, self)
-        self.canva_morph.get_tk_widget().grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        self.canva_morph.get_tk_widget().grid(
+            row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S)
+        )
 
         # for interactive 3d rotating with mouse
         if self.plot_3d:
@@ -580,8 +583,12 @@ class FrameFigures(ttk.Frame):
         # create canva
         self.canva_morph_syn = FigureCanvasTkAgg(fig_morph_syn, self)
         # save background for blit
-        self.ax_morph_syn_bg = self.canva_morph_syn.copy_from_bbox(self.ax_morph_syn.bbox)
-        self.canva_morph_syn.get_tk_widget().grid(row=0, column=1, sticky=(tk.W, tk.E, tk.N, tk.S))
+        self.ax_morph_syn_bg = self.canva_morph_syn.copy_from_bbox(
+            self.ax_morph_syn.bbox
+        )
+        self.canva_morph_syn.get_tk_widget().grid(
+            row=0, column=1, sticky=(tk.W, tk.E, tk.N, tk.S)
+        )
 
         # for interactive 3d rotating with mouse
         if self.plot_3d:
@@ -660,6 +667,7 @@ class FrameFigures(ttk.Frame):
     @staticmethod
     def get_interactive_3d_rotation(canva, ax):
         """Connect events to canva to enable rotative 3d plots with mouse."""
+        # pylint: disable=protected-access
         canva.mpl_connect("button_press_event", ax._button_press)
         canva.mpl_connect("button_release_event", ax._button_release)
         canva.mpl_connect("motion_notify_event", ax._on_move)
@@ -944,7 +952,9 @@ class FrameSynapses(ttk.LabelFrame):
             self.set_svs(gui, i)
 
         # -- add buttons & entries on the grid --
-        for i, (b, e1, e2, e3, e4) in enumerate(zip(*[self.mtype_buttons] + self.entries)):
+        for i, (b, e1, e2, e3, e4) in enumerate(
+            zip(*[self.mtype_buttons] + self.entries)
+        ):
             b.grid(row=i + 1, column=0, sticky=(tk.W, tk.E), padx=2)
             e1.grid(row=i + 1, column=1, sticky=(tk.E), padx=2)
             e2.grid(row=i + 1, column=2, sticky=(tk.E), padx=2)
@@ -969,6 +979,7 @@ class FrameSynapses(ttk.LabelFrame):
             gui (GUI): main class containing main frames and simulation
             i (int): mtype index
         """
+        # pylint: disable=cell-var-from-loop
         default_var = [
             gui.simulation.syn_start,
             gui.simulation.syn_interval,
@@ -981,17 +992,17 @@ class FrameSynapses(ttk.LabelFrame):
             try:
                 self.svs[4 * i + j].trace_add(
                     "write",
-                    lambda name, index, mode, sv=self.svs[4 * i + j]: self.load_current_mtype_list(
-                        gui
-                    ),
+                    lambda name, index, mode, sv=self.svs[
+                        4 * i + j
+                    ]: self.load_current_mtype_list(gui),
                 )
             # python2
             except AttributeError:
                 self.svs[4 * i + j].trace_variable(
                     "w",
-                    lambda name, index, mode, sv=self.svs[4 * i + j]: self.load_current_mtype_list(
-                        gui
-                    ),
+                    lambda name, index, mode, sv=self.svs[
+                        4 * i + j
+                    ]: self.load_current_mtype_list(gui),
                 )
 
     @staticmethod
@@ -1016,7 +1027,9 @@ class FrameSynapses(ttk.LabelFrame):
         gui.simulation.pre_mtypes = []
         gui.simulation.netstim_params = {}
 
-        for idx, var, e1, e2, e3, e4 in zip(*[self.id_list, self.var_list] + self.entries):
+        for idx, var, e1, e2, e3, e4 in zip(
+            *[self.id_list, self.var_list] + self.entries
+        ):
             if var.get():
                 gui.simulation.pre_mtypes.append(idx)
                 v1 = self.check_variable(e1.get())

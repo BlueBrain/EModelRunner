@@ -2,12 +2,13 @@
 import argparse
 import os
 
-from emodelrunner.load import (
-    load_config,
-    load_constants,
-)
+from emodelrunner.load import load_config
 from emodelrunner.create_cells import create_cell
-from emodelrunner.create_hoc_tools import create_synapse_hoc, create_simul_hoc, create_run_hoc
+from emodelrunner.create_hoc_tools import (
+    create_synapse_hoc,
+    create_simul_hoc,
+    create_run_hoc,
+)
 
 
 def write_hoc(hoc_dir, hoc_file_name, hoc):
@@ -93,16 +94,18 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     config_file = args.c
-    run_hoc_filename = "run.hoc"
-    config = load_config(filename=config_file)
+    run_hoc_filename_ = "run.hoc"
+    config_ = load_config(filename=config_file)
 
-    cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(config=config, syn_temp_name="hoc_synapses")
+    cell_hoc_, syn_hoc_, simul_hoc_, run_hoc_ = get_hoc(
+        config=config_, syn_temp_name="hoc_synapses"
+    )
 
     write_hocs(
-        config,
-        cell_hoc,
-        simul_hoc,
-        run_hoc,
-        run_hoc_filename,
-        syn_hoc,
+        config_,
+        cell_hoc_,
+        simul_hoc_,
+        run_hoc_,
+        run_hoc_filename_,
+        syn_hoc_,
     )

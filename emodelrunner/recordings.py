@@ -1,5 +1,6 @@
 """Custom Recording class."""
 
+# pylint: disable=super-with-arguments
 import logging
 
 import bluepyopt.ephys as ephys

@@ -1,8 +1,6 @@
 """Protocol creation functions."""
 
 import logging
-import json
-import os
 
 import bluepyopt.ephys as ephys
 
@@ -11,6 +9,7 @@ from emodelrunner.synapse import (
     NrnNetStimStimulusCustom,
     NrnVecStimStimulusCustom,
 )
+from emodelrunner.load import load_amps
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +19,9 @@ def get_syn_locs(cell):
     syn_locs = []
     for mech in cell.mechanisms:
         if hasattr(mech, "pprocesses"):
-            syn_locs.append(ephys.locations.NrnPointProcessLocation("synapse_locs", mech))
+            syn_locs.append(
+                ephys.locations.NrnPointProcessLocation("synapse_locs", mech)
+            )
 
     if not syn_locs:
         syn_locs = None
@@ -41,7 +42,9 @@ def get_syn_stim(syn_locs, config, syn_stim_mode):
     vecstim_random = config.get("Protocol", "vecstim_random")
 
     if syn_stim_mode == "vecstim" and vecstim_random not in ["python", "neuron"]:
-        logger.warning("vecstim random not set to 'python' nor to 'neuron' in config file.")
+        logger.warning(
+            "vecstim random not set to 'python' nor to 'neuron' in config file."
+        )
         logger.warning("vecstim random will be re-set to 'python'.")
         vecstim_random = "python"
 
@@ -66,30 +69,15 @@ def get_syn_stim(syn_locs, config, syn_stim_mode):
         return 0
 
 
-def step_stimuli(config, soma_loc, cvcode_active=False, syn_stim=None):
-    """Create Step Stimuli."""
-    step_number = 3
-    step_protocols = []
-
-    # load config data
-    total_duration = config.getint("Protocol", "total_duration")
+def get_step_numbers(config, step_number=3):
+    """Return the first and last step +1 to be run."""
     run_all_steps = config.getboolean("Protocol", "run_all_steps")
     run_step_number = config.getint("Protocol", "run_step_number")
-    step_delay = config.getint("Protocol", "stimulus_delay")
-    step_duration = config.getint("Protocol", "stimulus_duration")
-    hold_step_delay = config.getint("Protocol", "hold_stimulus_delay")
-    hold_step_duration = config.getint("Protocol", "hold_stimulus_duration")
-    amp_filename = os.path.join(
-        config.get("Paths", "protocol_amplitudes_dir"),
-        config.get("Paths", "protocol_amplitudes_file"),
-    )
 
     if run_all_steps:
-        from_step = 0
-        up_to = step_number
+        return 0, step_number
     elif run_step_number in range(1, step_number + 1):
-        from_step = run_step_number - 1
-        up_to = run_step_number
+        return run_step_number - 1, run_step_number
     else:
         logger.warning(
             " ".join(
@@ -100,47 +88,65 @@ def step_stimuli(config, soma_loc, cvcode_active=False, syn_stim=None):
                 )
             )
         )
-        from_step = 0
-        up_to = 1
+        return 0, 1
+
+
+def get_step_stimulus(config, amplitude, hypamp, soma_loc, syn_stim):
+    """Return step, holding (and synapse) stimuli for one step amplitude."""
+    # load config data
+    total_duration = config.getint("Protocol", "total_duration")
+    step_delay = config.getint("Protocol", "stimulus_delay")
+    step_duration = config.getint("Protocol", "stimulus_duration")
+    hold_step_delay = config.getint("Protocol", "hold_stimulus_delay")
+    hold_step_duration = config.getint("Protocol", "hold_stimulus_duration")
+
+    # create step stimulus
+    stim = ephys.stimuli.NrnSquarePulse(
+        step_amplitude=amplitude,
+        step_delay=step_delay,
+        step_duration=step_duration,
+        location=soma_loc,
+        total_duration=total_duration,
+    )
+
+    # create holding stimulus
+    hold_stim = ephys.stimuli.NrnSquarePulse(
+        step_amplitude=hypamp,
+        step_delay=hold_step_delay,
+        step_duration=hold_step_duration,
+        location=soma_loc,
+        total_duration=total_duration,
+    )
+
+    # return stims
+    stims = [stim, hold_stim]
+    if syn_stim is not None:
+        stims.append(syn_stim)
+    return stims
+
+
+def step_stimuli(config, soma_loc, cvcode_active=False, syn_stim=None):
+    """Create Step Stimuli and return the Protocols for all stimuli."""
+    # get current amplitude data
+    amplitudes, hypamp = load_amps(config)
+
+    from_step, up_to = get_step_numbers(config)
 
     # protocol names
     protocol_names = ["step{}".format(x) for x in range(1, 4)]
 
-    # get current amplitude data
-    with open(amp_filename, "r") as f:
-        data = json.load(f)
-    amplitudes = data["amps"]
-    hypamp = data["holding"]
-
+    step_protocols = []
     for protocol_name, amplitude in zip(
         protocol_names[from_step:up_to], amplitudes[from_step:up_to]
     ):
         # use RecordingCustom to sample time, voltage every 0.1 ms.
         rec = RecordingCustom(name=protocol_name, location=soma_loc, variable="v")
 
-        # create step stimulus
-        stim = ephys.stimuli.NrnSquarePulse(
-            step_amplitude=amplitude,
-            step_delay=step_delay,
-            step_duration=step_duration,
-            location=soma_loc,
-            total_duration=total_duration,
-        )
+        stims = get_step_stimulus(config, amplitude, hypamp, soma_loc, syn_stim)
 
-        # create holding stimulus
-        hold_stim = ephys.stimuli.NrnSquarePulse(
-            step_amplitude=hypamp,
-            step_delay=hold_step_delay,
-            step_duration=hold_step_duration,
-            location=soma_loc,
-            total_duration=total_duration,
+        protocol = ephys.protocols.SweepProtocol(
+            protocol_name, stims, [rec], cvcode_active
         )
-
-        # create protocol
-        stims = [stim, hold_stim]
-        if syn_stim is not None:
-            stims.append(syn_stim)
-        protocol = ephys.protocols.SweepProtocol(protocol_name, stims, [rec], cvcode_active)
 
         step_protocols.append(protocol)
 
@@ -183,12 +189,16 @@ def define_protocols(config, cell=None):
         rec = RecordingCustom(name=protocol_name, location=soma_loc, variable="v")
 
         stims = [syn_stim]
-        protocol = ephys.protocols.SweepProtocol(protocol_name, stims, [rec], cvcode_active)
+        protocol = ephys.protocols.SweepProtocol(
+            protocol_name, stims, [rec], cvcode_active
+        )
         step_protocols = [protocol]
     else:
         raise Exception(
             "No valid protocol was found. step_stimulus is {}".format(step_stim)
-            + " and syn_stim_mode ({}) not in ['vecstim', 'netstim'].".format(syn_stim_mode)
+            + " and syn_stim_mode ({}) not in ['vecstim', 'netstim'].".format(
+                syn_stim_mode
+            )
         )
 
     return ephys.protocols.SequenceProtocol("twostep", protocols=step_protocols)

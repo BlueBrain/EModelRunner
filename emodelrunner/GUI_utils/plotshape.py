@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Plot shape of neuron."""
+# pylint: disable=too-many-arguments, too-many-locals, too-many-branches, no-member, import-error
 from __future__ import unicode_literals  # for micrometer display
-from matplotlib.colors import to_rgb
 from matplotlib import cm
 from neuron.gui2.utilities import _segment_3d_pts
 
@@ -15,6 +15,46 @@ def auto_aspect(ax):
 
     ax.set_xlim((xmid - half_delta_max, xmid + half_delta_max))
     ax.set_ylim((ymid - half_delta_max, ymid + half_delta_max))
+
+
+def get_color_from_cmap(val, val_min, val_max, cmap):
+    """Return color."""
+    if val_min >= val_max:
+        return "black"
+    val_range = val_max - val_min
+    return cmap((min(max(val, val_min), val_max) - val_min) / (val_range))
+
+
+def plot_shape(ax, xaxis, yaxis, zaxis, plot_3d, data, linewidth):
+    """Plot shape and return line."""
+    if plot_3d:
+        (line,) = ax.plot(
+            data[xaxis],
+            data[yaxis],
+            data[zaxis],
+            "-",
+            linewidth=linewidth,
+            color="black",
+        )
+    else:
+        (line,) = ax.plot(
+            data[xaxis],
+            data[yaxis],
+            "-",
+            linewidth=linewidth,
+            color="black",
+        )
+
+    return line
+
+
+def set_labels(ax, xaxis, yaxis, zaxis, plot_3d):
+    """Set labels."""
+    labels = ["x [μm]", "y [μm]", "z [μm]"]
+    ax.set_xlabel(labels[xaxis])
+    ax.set_ylabel(labels[yaxis])
+    if plot_3d:
+        ax.set_zlabel(labels[zaxis])
 
 
 def get_morph_lines(
@@ -81,11 +121,8 @@ def get_morph_lines(
         # get lines to be actualised
         lines_list = ax.lines
 
-    val_range = val_max - val_min
     lines_to_update = []
     vals = []
-
-    labels = ["x [μm]", "y [μm]", "z [μm]"]
 
     # get lines and variable values at each segment
     for i, sec in enumerate(sections):
@@ -97,32 +134,11 @@ def get_morph_lines(
                 val = getattr(seg, variable)
                 vals.append(val)
 
-                if plot_3d:
-                    (line,) = ax.plot(
-                        data[xaxis],
-                        data[yaxis],
-                        data[zaxis],
-                        "-",
-                        linewidth=linewidth,
-                        color="black",
-                    )
-                else:
-                    (line,) = ax.plot(
-                        data[xaxis],
-                        data[yaxis],
-                        "-",
-                        linewidth=linewidth,
-                        color="black",
-                    )
+                line = plot_shape(ax, xaxis, yaxis, zaxis, plot_3d, data, linewidth)
+                set_labels(ax, xaxis, yaxis, zaxis, plot_3d)
 
-                ax.set_xlabel(labels[xaxis])
-                ax.set_ylabel(labels[yaxis])
-                if plot_3d:
-                    ax.set_zlabel(labels[zaxis])
                 if cmap:
-                    col = cmap(
-                        (min(max(val, val_min), val_max) - val_min) / (val_range)
-                    )
+                    col = get_color_from_cmap(val, val_min, val_max, cmap)
                     line.set_color(col)
                 lines_list.append(line)
 
@@ -138,10 +154,10 @@ def get_morph_lines(
         old_vals = [100] * len(vals)
 
     force_draw = False
-    if val_range and old_vals and cmap:
+    if old_vals and cmap:
         for i, (val, old_val) in enumerate(zip(vals, old_vals)):
             if val is not None and abs(val - old_val) > threshold_volt:
-                col = cmap((min(max(val, val_min), val_max) - val_min) / (val_range))
+                col = get_color_from_cmap(val, val_min, val_max, cmap)
 
                 lines_list[i].set_color(col)
                 lines_to_update.append(lines_list[i])

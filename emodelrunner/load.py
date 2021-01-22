@@ -13,6 +13,7 @@ import bluepyopt.ephys as ephys
 
 from emodelrunner.json_loader import json_load
 from emodelrunner.synapse import NrnMODPointProcessMechanismCustom
+from emodelrunner.morphology import NrnFileMorphologyCustom
 from emodelrunner.locations import multi_locations
 
 
@@ -84,6 +85,50 @@ def load_config(config_dir="config", filename=None):
     return config
 
 
+def load_amps(config):
+    """Load stimuli amplitudes from file."""
+    amp_filename = os.path.join(
+        config.get("Paths", "protocol_amplitudes_dir"),
+        config.get("Paths", "protocol_amplitudes_file"),
+    )
+    with open(amp_filename, "r") as f:
+        data = json.load(f)
+
+    return data["amps"], data["holding"]
+
+
+def get_axon_hoc(replace_axon_hoc):
+    """Returns string containing replace axon hoc."""
+    with open(replace_axon_hoc, "r") as f:
+        return f.read()
+
+
+def load_morphology(config, morph_dir, morph_fname):
+    """Create the morphology."""
+    # load morphology path
+    if config.has_option("Paths", "morph_dir"):
+        morph_dir = config.get("Paths", "morph_dir")
+    else:
+        morph_dir = os.path.join(config.get("Paths", "memodel_dir"), morph_dir)
+    if config.has_option("Paths", "morph_file"):
+        morph_fname = config.get("Paths", "morph_file")
+
+    morph_path = os.path.join(morph_dir, morph_fname)
+
+    # create morphology
+    axon_hoc_path = os.path.join(
+        config.get("Paths", "replace_axon_hoc_dir"),
+        config.get("Paths", "replace_axon_hoc_file"),
+    )
+    replace_axon_hoc = get_axon_hoc(axon_hoc_path)
+    do_replace_axon = config.getboolean("Morphology", "do_replace_axon")
+    return NrnFileMorphologyCustom(
+        morph_path,
+        do_replace_axon=do_replace_axon,
+        replace_axon_hoc=replace_axon_hoc,
+    )
+
+
 def find_param_file(recipes_path, emodel):
     """Find the parameter file for unfrozen params."""
     recipes = json_load(recipes_path)
@@ -141,6 +186,7 @@ def load_mechanisms(mechs_filepath):
 
 def define_parameters(params_filepath):
     """Define parameters."""
+    # pylint: disable=too-many-locals, too-many-branches, too-many-statements
     parameters = []
 
     definitions = json_load(params_filepath)
@@ -156,7 +202,9 @@ def define_parameters(params_filepath):
             dist_param_names = definition["parameters"]
         else:
             dist_param_names = None
-        distributions[distribution] = ephys.parameterscalers.NrnSegmentSomaDistanceScaler(
+        distributions[
+            distribution
+        ] = ephys.parameterscalers.NrnSegmentSomaDistanceScaler(
             name=distribution,
             distribution=definition["fun"],
             dist_param_names=dist_param_names,

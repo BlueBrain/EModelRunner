@@ -1,4 +1,6 @@
 """Creates .hoc from cell."""
+
+# pylint: disable=too-many-locals, too-many-arguments
 import json
 import os
 from datetime import datetime
@@ -11,6 +13,7 @@ from bluepyopt.ephys.create_hoc import (
     _generate_channels_by_location,
     _generate_reinitrng,
 )
+from emodelrunner.load import load_amps
 
 
 def create_run_hoc(template_dir, template_filename, config):
@@ -191,14 +194,7 @@ def create_simul_hoc(template_dir, template_filename, config):
     v_init = data["v_init"]
 
     # load data from current_amps
-    amp_filename = os.path.join(
-        config.get("Paths", "protocol_amplitudes_dir"),
-        config.get("Paths", "protocol_amplitudes_file"),
-    )
-    with open(amp_filename, "r") as f:
-        data = json.load(f)
-    amp1, amp2, amp3 = data["amps"]
-    holding = data["holding"]
+    (amp1, amp2, amp3), holding = load_amps(config)
 
     # load template
     template_path = os.path.join(template_dir, template_filename)

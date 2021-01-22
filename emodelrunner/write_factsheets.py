@@ -1,16 +1,17 @@
 """Produce a me-type data json file."""
+
+# pylint: disable=super-with-arguments
 import argparse
-import collections
 import json
 import logging
 import os
-import numpy as np
 import re
+import numpy as np
 
 import efel
 import neurom as nm
 
-from emodelrunner.load import find_param_file, load_config, load_params
+from emodelrunner.load import find_param_file, load_config, load_params, load_amps
 from emodelrunner.json_loader import json_load
 
 logger = logging.getLogger(__name__)
@@ -75,6 +76,50 @@ def get_neurite_list(nrn):
     return ["axon"], [nm.AXON]
 
 
+def create_neurite_len_dict(nrn, n_type, n_name):
+    """Return a dict containing total neurite length."""
+    leng = nm.get("total_length", nrn, neurite_type=n_type)
+    # to avoid error when there is no neurite
+    if len(leng) == 0:
+        leng = [0]
+    return base_dict("\u00b5m", "total {} length".format(n_name), leng[0])
+
+
+def create_neurite_vol_dict(nrn, n_type, n_name):
+    """Return a dict containing total neurite volume."""
+    vol = nm.get("neurite_volumes", nrn, neurite_type=n_type)
+    # to avoid error when there is no neurite
+    if len(vol) == 0:
+        vol = [0]
+    return base_dict("\u00b5m\u00b3", "total {} volume".format(n_name), vol[0])
+
+
+def create_neurite_max_bo_dict(nrn, n_type, n_name):
+    """Return a dict containing maximum neurite branch order."""
+    branch_order = nm.get("section_branch_orders", nrn, neurite_type=n_type)
+    # to avoid error when there is no neurite
+    if len(branch_order) == 0:
+        branch_order = [0]
+    return base_dict("", "{} maximum branch order".format(n_name), max(branch_order))
+
+
+def create_neurite_max_sec_len_dict(nrn, n_type, n_name):
+    """Return a dict containing maximum neurite section length."""
+    sec_len = nm.get("section_lengths", nrn, neurite_type=n_type)
+    # to avoid error when there is no neurite
+    if len(sec_len) == 0:
+        sec_len = [0]
+    return base_dict(
+        "\u00b5m", "{} maximum section length".format(n_name), max(sec_len)
+    )
+
+
+def create_soma_diam_dict(nrn):
+    """Return a dict containing soma diameter."""
+    soma_r = nm.get("soma_radii", nrn)
+    return base_dict("\u00b5m", "soma diameter", 2 * soma_r[0])
+
+
 def get_morph_data(config):
     """Return the morphological data in a dictionary."""
     # get morph path
@@ -86,57 +131,30 @@ def get_morph_data(config):
     neurite_names, neurite_types = get_neurite_list(nrn)
 
     for n_name, n_type in zip(neurite_names, neurite_types):
-        leng = nm.get("total_length", nrn, neurite_type=n_type)
-        # to avoid error when there is no neurite
-        if len(leng) == 0:
-            leng = [0]
-        length = base_dict("\u00b5m", "total {} length".format(n_name), leng[0])
+        length = create_neurite_len_dict(nrn, n_type, n_name)
         values.append(length)
 
-        vol = nm.get("neurite_volumes", nrn, neurite_type=n_type)
-        if len(vol) == 0:
-            vol = [0]
-        volume = base_dict("\u00b5m\u00b3", "total {} volume".format(n_name), vol[0])
+        volume = create_neurite_vol_dict(nrn, n_type, n_name)
         values.append(volume)
 
-        branch_order = nm.get("section_branch_orders", nrn, neurite_type=n_type)
-        if len(branch_order) == 0:
-            branch_order = [0]
-        max_branch_order = base_dict(
-            "", "{} maximum branch order".format(n_name), max(branch_order)
-        )
+        max_branch_order = create_neurite_max_bo_dict(nrn, n_type, n_name)
         values.append(max_branch_order)
 
-        sec_len = nm.get("section_lengths", nrn, neurite_type=n_type)
-        if len(sec_len) == 0:
-            sec_len = [0]
-        max_section_length = base_dict(
-            "\u00b5m", "{} maximum section length".format(n_name), max(sec_len)
-        )
+        max_section_length = create_neurite_max_sec_len_dict(nrn, n_type, n_name)
         values.append(max_section_length)
 
-    soma_r = nm.get("soma_radii", nrn)
-    soma_diam = base_dict("\u00b5m", "soma diameter", 2 * soma_r[0])
+    soma_diam = create_soma_diam_dict(nrn)
     values.append(soma_diam)
 
     return {"values": values, "name": "Anatomy"}
 
 
-def get_physiology_data(config):
-    """Analyse the output of the RmpRiTau protocol."""
+def get_trace_data(config):
+    """Return trace dict for efel feature computing."""
     # get parameters from config
     step_number = config.getint("Protocol", "run_step_number")
     stim_start = config.getint("Protocol", "stimulus_delay")
     stim_duration = config.getint("Protocol", "stimulus_duration")
-    amp_filename = os.path.join(
-        config.get("Paths", "protocol_amplitudes_dir"),
-        config.get("Paths", "protocol_amplitudes_file"),
-    )
-
-    # get current amplitude data
-    with open(amp_filename, "r") as f:
-        data = json.load(f)
-    current_amplitude = data["amps"][step_number - 1]
 
     # get data from run.py output
     fname = "soma_voltage_step{}.dat".format(step_number)
@@ -150,6 +168,26 @@ def get_physiology_data(config):
     trace["stim_start"] = [stim_start]
     trace["stim_end"] = [stim_start + stim_duration]
 
+    return trace
+
+
+def get_input_resistance(efel_results, trace, config):
+    """Return input resistance from efel."""
+    step_number = config.getint("Protocol", "run_step_number")
+    amps, _ = load_amps(config)
+    current_amplitude = amps[step_number - 1]
+
+    # Calculate input resistance
+    trace["decay_start_after_stim"] = efel_results[0]["voltage_base"]
+    trace["stimulus_current"] = [current_amplitude]
+    efel_results = efel.getFeatureValues([trace], ["ohmic_input_resistance_vb_ssse"])
+    return efel_results[0]["ohmic_input_resistance_vb_ssse"][0]
+
+
+def get_physiology_data(config):
+    """Analyse the output of the RmpRiTau protocol."""
+    trace = get_trace_data(config)
+
     # Calculate the necessary eFeatures
     efel_results = efel.getFeatureValues(
         [trace],
@@ -162,12 +200,7 @@ def get_physiology_data(config):
 
     voltage_base = efel_results[0]["voltage_base"][0]
     dct = efel_results[0]["decay_time_constant_after_stim"][0]
-
-    # Calculate input resistance
-    trace["decay_start_after_stim"] = efel_results[0]["voltage_base"]
-    trace["stimulus_current"] = [current_amplitude]
-    efel_results = efel.getFeatureValues([trace], ["ohmic_input_resistance_vb_ssse"])
-    input_resistance = efel_results[0]["ohmic_input_resistance_vb_ssse"][0]
+    input_resistance = get_input_resistance(efel_results, trace, config)
 
     # build dictionary to be returned
     names = ["resting membrane potential", "input resistance", "membrane time constant"]
@@ -213,7 +246,9 @@ def get_param_data(config):
     )
     params_filepath = find_param_file(recipes_path, emodel)
 
-    params_path = "/".join((config.get("Paths", "params_dir"), config.get("Paths", "params_file")))
+    params_path = "/".join(
+        (config.get("Paths", "params_dir"), config.get("Paths", "params_file"))
+    )
     release_params = load_params(params_path=params_path, emodel=emodel)
 
     definitions = json_load(params_filepath)
@@ -230,7 +265,9 @@ def get_param_data(config):
     )
 
 
-def get_channel_and_equations(name, param_config, value, exp_fun, decay_fun, decay_cst):
+def get_channel_and_equations(
+    name, param_config, full_name, exp_fun, decay_fun, release_params
+):
     """Returns the channel and a dictionary containing equation type (uniform or exp) and value.
 
     Args:
@@ -238,9 +275,11 @@ def get_channel_and_equations(name, param_config, value, exp_fun, decay_fun, dec
             should have the form parameter_channel (ex: "gCa_HVAbar_Ca_HVA2")
         param_config (dict): parameter dictionary taken from parameter data file.
             should have a "dist" key if the distribution is exponential.
-        value (float): parameter value (obtained from optimisation).
+        full_name (str): should have the form name.section
         exp_fun (str): the distribution function expressed as a string.
             ex: "(-0.8696 + 2.087*math.exp((x)*0.0031))*3.1236056887012746e-06"
+        decay_fun (str): the decay function expressed as a string.
+        release_params (dict): final parameters of the optimised cell.
 
     Returns:
         channel (str): name of the channel (ex: "Ca_HVA2")
@@ -248,6 +287,13 @@ def get_channel_and_equations(name, param_config, value, exp_fun, decay_fun, dec
         equations (dict): dictionary containing equation values (for plotting and latex display)
             and type (uniform or exponential)
     """
+    # parameter value (obtained from optimisation)
+    value = release_params[full_name]
+
+    decay_cst = None
+    if decay_fun:
+        decay_cst = release_params["constant.distribution_decay"]
+
     # isolate channel and biophys
     split_name = name.split("_")
     if len(split_name) == 4:
@@ -272,8 +318,8 @@ def get_channel_and_equations(name, param_config, value, exp_fun, decay_fun, dec
             latex, plot = edit_dist_func(value)
         else:
             logger.warning(
-                "dist is set to {}.".format(param_config["dist"])
-                + " Expected 'exp' or 'decay'. Set type to exponential anyway."
+                "dist is set to %s. Expected 'exp' or 'decay'. Set type to exponential anyway.",
+                param_config["dist"],
             )
     else:
         type_ = "uniform"
@@ -283,18 +329,109 @@ def get_channel_and_equations(name, param_config, value, exp_fun, decay_fun, dec
     return channel, biophys, {"latex": latex, "plot": plot, "type": type_}
 
 
+def append_equation(location_map, section, channel, biophys, equation_dict):
+    """Append equation to location map dict."""
+    # do not take into account "all" section
+    # set default to create keys then add equations
+    # this allows to either create channel data or append to channel key
+    if section == "alldend":
+        location_map["all dendrites"]["channels"].setdefault(
+            channel, {"equations": {biophys: equation_dict}}
+        )
+        location_map["all dendrites"]["channels"][channel]["equations"][
+            biophys
+        ] = equation_dict
+    elif section == "somadend":
+        location_map["all dendrites"]["channels"].setdefault(
+            channel, {"equations": {biophys: equation_dict}}
+        )
+        location_map["all dendrites"]["channels"][channel]["equations"][
+            biophys
+        ] = equation_dict
+        location_map["somatic"]["channels"].setdefault(
+            channel, {"equations": {biophys: equation_dict}}
+        )
+        location_map["somatic"]["channels"][channel]["equations"][
+            biophys
+        ] = equation_dict
+    elif section == "somaxon":
+        location_map["somatic"]["channels"].setdefault(
+            channel, {"equations": {biophys: equation_dict}}
+        )
+        location_map["somatic"]["channels"][channel]["equations"][
+            biophys
+        ] = equation_dict
+        location_map["axonal"]["channels"].setdefault(
+            channel, {"equations": {biophys: equation_dict}}
+        )
+        location_map["axonal"]["channels"][channel]["equations"][
+            biophys
+        ] = equation_dict
+    elif section == "allact":
+        location_map["all dendrites"]["channels"].setdefault(
+            channel, {"equations": {biophys: equation_dict}}
+        )
+        location_map["all dendrites"]["channels"][channel]["equations"][
+            biophys
+        ] = equation_dict
+        location_map["somatic"]["channels"].setdefault(
+            channel, {"equations": {biophys: equation_dict}}
+        )
+        location_map["somatic"]["channels"][channel]["equations"][
+            biophys
+        ] = equation_dict
+        location_map["axonal"]["channels"].setdefault(
+            channel, {"equations": {biophys: equation_dict}}
+        )
+        location_map["axonal"]["channels"][channel]["equations"][
+            biophys
+        ] = equation_dict
+    elif section == "apical":
+        location_map["apical"]["channels"].setdefault(
+            channel, {"equations": {biophys: equation_dict}}
+        )
+        location_map["apical"]["channels"][channel]["equations"][
+            biophys
+        ] = equation_dict
+    elif section == "basal":
+        location_map["basal"]["channels"].setdefault(
+            channel, {"equations": {biophys: equation_dict}}
+        )
+        location_map["basal"]["channels"][channel]["equations"][biophys] = equation_dict
+    elif section == "axonal":
+        location_map["axonal"]["channels"].setdefault(
+            channel, {"equations": {biophys: equation_dict}}
+        )
+        location_map["axonal"]["channels"][channel]["equations"][
+            biophys
+        ] = equation_dict
+    elif section == "somatic":
+        location_map["somatic"]["channels"].setdefault(
+            channel, {"equations": {biophys: equation_dict}}
+        )
+        location_map["somatic"]["channels"][channel]["equations"][
+            biophys
+        ] = equation_dict
+
+
+def clean_location_map(location_map):
+    """Remove empty locations."""
+    for key, loc in location_map.items():
+        if not loc["channels"]:
+            location_map.pop(key)
+
+
 def get_mechanisms_data(config):
     """Return a dictionary containing channel mechanisms for each section."""
     release_params, parameters, exp_fun, decay_fun = get_param_data(config)
-    decay_cst = None
-    if decay_fun:
-        decay_cst = release_params["constant.distribution_decay"]
 
-    dendrite = {"channels": {}}
-    apical = {"channels": {}}
-    basal = {"channels": {}}
-    axonal = {"channels": {}}
-    somatic = {"channels": {}}
+    location_map = {
+        "all dendrites": {"channels": {}},
+        "apical": {"channels": {}},
+        "basal": {"channels": {}},
+        "somatic": {"channels": {}},
+        "axonal": {"channels": {}},
+    }
 
     for section, params in parameters.items():
         # do not take into account "comment"
@@ -304,78 +441,26 @@ def get_mechanisms_data(config):
                 full_name = ".".join((name, section))
 
                 # only take into account parameters present in finals.json
-                if full_name in release_params and full_name != "constant.distribution_decay":
-                    value = release_params[full_name]
+                if (
+                    full_name in release_params
+                    and full_name != "constant.distribution_decay"
+                ):
                     channel, biophys, equation_dict = get_channel_and_equations(
-                        name, param_config, value, exp_fun, decay_fun, decay_cst
+                        name,
+                        param_config,
+                        full_name,
+                        exp_fun,
+                        decay_fun,
+                        release_params,
                     )
 
-                    # do not take into account "all" section
-                    # set default to create keys then add equations
-                    # this allows to either create channel data or append to channel key
-                    if section == "alldend":
-                        dendrite["channels"].setdefault(
-                            channel, {"equations": {biophys: equation_dict}}
-                        )
-                        dendrite["channels"][channel]["equations"][biophys] = equation_dict
-                    elif section == "somadend":
-                        dendrite["channels"].setdefault(
-                            channel, {"equations": {biophys: equation_dict}}
-                        )
-                        dendrite["channels"][channel]["equations"][biophys] = equation_dict
-                        somatic["channels"].setdefault(
-                            channel, {"equations": {biophys: equation_dict}}
-                        )
-                        somatic["channels"][channel]["equations"][biophys] = equation_dict
-                    elif section == "somaxon":
-                        somatic["channels"].setdefault(
-                            channel, {"equations": {biophys: equation_dict}}
-                        )
-                        somatic["channels"][channel]["equations"][biophys] = equation_dict
-                        axonal["channels"].setdefault(
-                            channel, {"equations": {biophys: equation_dict}}
-                        )
-                        axonal["channels"][channel]["equations"][biophys] = equation_dict
-                    elif section == "allact":
-                        dendrite["channels"].setdefault(
-                            channel, {"equations": {biophys: equation_dict}}
-                        )
-                        dendrite["channels"][channel]["equations"][biophys] = equation_dict
-                        somatic["channels"].setdefault(
-                            channel, {"equations": {biophys: equation_dict}}
-                        )
-                        somatic["channels"][channel]["equations"][biophys] = equation_dict
-                        axonal["channels"].setdefault(
-                            channel, {"equations": {biophys: equation_dict}}
-                        )
-                        axonal["channels"][channel]["equations"][biophys] = equation_dict
-                    elif section == "apical":
-                        apical["channels"].setdefault(
-                            channel, {"equations": {biophys: equation_dict}}
-                        )
-                        apical["channels"][channel]["equations"][biophys] = equation_dict
-                    elif section == "basal":
-                        basal["channels"].setdefault(
-                            channel, {"equations": {biophys: equation_dict}}
-                        )
-                        basal["channels"][channel]["equations"][biophys] = equation_dict
-                    elif section == "axonal":
-                        axonal["channels"].setdefault(
-                            channel, {"equations": {biophys: equation_dict}}
-                        )
-                        axonal["channels"][channel]["equations"][biophys] = equation_dict
-                    elif section == "somatic":
-                        somatic["channels"].setdefault(
-                            channel, {"equations": {biophys: equation_dict}}
-                        )
-                        somatic["channels"][channel]["equations"][biophys] = equation_dict
+                    # append equation in location map
+                    append_equation(
+                        location_map, section, channel, biophys, equation_dict
+                    )
 
-    location_map = {}
-    locs = [dendrite, apical, basal, somatic, axonal]
-    loc_names = ["all dendrites", "apical", "basal", "somatic", "axonal"]
-    for loc_name, loc in zip(loc_names, locs):
-        if loc["channels"]:
-            location_map[loc_name] = loc
+    # remove empty locations
+    clean_location_map(location_map)
 
     values = [
         {
@@ -427,26 +512,62 @@ def load_feature_units():
 
 def load_fitness(config, emodel):
     """Load dict containing model fitness value for each feature."""
-    params_path = "/".join((config.get("Paths", "params_dir"), config.get("Paths", "params_file")))
+    params_path = "/".join(
+        (config.get("Paths", "params_dir"), config.get("Paths", "params_file"))
+    )
     params_file = json_load(params_path)
     data = params_file[emodel]
 
     return data["fitness"]
 
 
-def get_prefix(config, recipe):
+def get_prefix(recipe):
     """Get the prefix used in the fitness keys (e.g. '_' or 'L5TPCa')."""
     return recipe["morphology"][0][0]
 
 
+def get_feature_dict(feature, units, prefix, stimulus, location, fitness):
+    """Return dict containing one feature."""
+    feature_name = feature["feature"]
+    mean = feature["val"][0]
+    std = feature["val"][1]
+
+    try:
+        unit = units[feature_name]
+    except KeyError:
+        logger.warning("%s was not found in units file. Set unit to ''.", feature_name)
+        unit = ""
+
+    key_fitness = ".".join((prefix, stimulus, location, feature_name))
+    try:
+        fit = fitness[key_fitness]
+    except KeyError:
+        logger.warning(
+            "%s was not found in fitness dict. Set fitness model fitness value to ''.",
+            key_fitness,
+        )
+        fit = ""
+
+    return {
+        "name": feature_name,
+        "values": [{"mean": mean, "std": std}],
+        "unit": unit,
+        "model fitness": fit,
+        "tooltip": "",
+    }
+
+
 def get_exp_features_data(config):
     """Returns a dict containing mean and std of experimental features and model fitness."""
+    # pylint: disable=too-many-locals
+    # it is hard to reduce number of locals without reducing readibility
     emodel = get_emodel(config)
     recipe = get_recipe(config, emodel)
+
     feat = load_raw_exp_features(recipe)
     units = load_feature_units()
     fitness = load_fitness(config, emodel)
-    prefix = get_prefix(config, recipe)
+    prefix = get_prefix(recipe)
 
     values_dict = {}
     for stimulus, stim_data in feat.items():
@@ -454,36 +575,10 @@ def get_exp_features_data(config):
         for location, loc_data in stim_data.items():
             features_list = []
             for feature in loc_data:
-                feature_name = feature["feature"]
-                mean = feature["val"][0]
-                std = feature["val"][1]
-
-                try:
-                    unit = units[feature_name]
-                except KeyError:
-                    logger.warning(
-                        "{} was not found in units file. Set unit to ''.".format(feature_name)
-                    )
-                    unit = ""
-
-                key_fitness = ".".join((prefix, stimulus, location, feature_name))
-                try:
-                    fit = fitness[key_fitness]
-                except KeyError:
-                    logger.warning(
-                        "{} was not found in fitness dict. ".format(key_fitness)
-                        + "Set fitness model fitness value to ''."
-                    )
-                    fit = ""
-
                 features_list.append(
-                    {
-                        "name": feature_name,
-                        "values": [{"mean": mean, "std": std}],
-                        "unit": unit,
-                        "model fitness": fit,
-                        "tooltip": "",
-                    }
+                    get_feature_dict(
+                        feature, units, prefix, stimulus, location, fitness
+                    )
                 )
             loc_dict = {"features": features_list}
             stim_dict[location] = loc_dict
@@ -572,9 +667,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     config_file = args.c
-    config = load_config(filename=config_file)
+    config_ = load_config(filename=config_file)
 
-    output_dir = "factsheets"
-    write_metype_json(config, output_dir)
-    write_etype_json(config, output_dir)
-    write_morph_json(config, output_dir)
+    output_dir_ = "factsheets"
+    write_metype_json(config_, output_dir_)
+    write_etype_json(config_, output_dir_)
+    write_morph_json(config_, output_dir_)

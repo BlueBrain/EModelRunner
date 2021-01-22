@@ -7,8 +7,6 @@ import numpy as np
 import bluepyopt.ephys as ephys
 
 from emodelrunner.recordings import RecordingCustom
-from emodelrunner.morphology import NrnFileMorphologyCustom
-from emodelrunner.recordings import RecordingCustom
 from emodelrunner.cell import CellModelCustom
 from emodelrunner.synapse import NrnNetStimStimulusCustom
 from emodelrunner.load import (
@@ -19,26 +17,19 @@ from emodelrunner.load import (
     load_mechanisms,
     find_param_file,
     load_constants,
+    load_morphology,
 )
-from emodelrunner.create_cells import get_axon_hoc
 from emodelrunner.protocols import get_syn_locs
 
 
-def section_coordinate_3d(sec, seg_pos, syn_type):
+def section_coordinate_3d(sec, seg_pos):
     """Returns the 3d coordinate of a point in a section.
 
     Args:
         sec: neuron section
         seg_pos (float): postion of the segment os the section
             (should be between 0 and 1)
-        syn_type (int): synaptic type. excitatory if >100,
-            inhibitory if <100
     """
-    if syn_type > 100:
-        syn_type_ = 1
-    else:
-        syn_type_ = 0
-
     n3d = sec.n3d()
 
     arc3d = [sec.arc3d(i) for i in range(n3d)]
@@ -56,6 +47,7 @@ def section_coordinate_3d(sec, seg_pos, syn_type):
         local_x = x3d[idx]
         local_y = y3d[idx]
         local_z = z3d[idx]
+        return [local_x, local_y, local_z]
     else:
         for i, arc in enumerate(arc3d[1:]):
             if arc > seg_pos > arc3d[i - 1] and arc - arc3d[i - 1] != 0:
@@ -63,9 +55,33 @@ def section_coordinate_3d(sec, seg_pos, syn_type):
                 local_x = x3d[i - 1] + proportion * (x3d[i] - x3d[i - 1])
                 local_y = y3d[i - 1] + proportion * (y3d[i] - y3d[i - 1])
                 local_z = z3d[i - 1] + proportion * (z3d[i] - z3d[i - 1])
-                return [local_x, local_y, local_z, syn_type_]
+                return [local_x, local_y, local_z]
 
     return None
+
+
+def get_pos_and_color(sec, seg_pos, syn_type):
+    """Returns the position and the synaptic type (0 for inhib. or 1 for excit.).
+
+    Args:
+        sec: neuron section
+        seg_pos (float): postion of the segment os the section
+            (should be between 0 and 1)
+        syn_type (int): synaptic type. excitatory if >100,
+            inhibitory if <100
+    """
+    pos = section_coordinate_3d(sec, seg_pos)
+
+    if pos is None:
+        return None
+
+    if syn_type > 100:
+        syn_type_ = 1
+    else:
+        syn_type_ = 0
+    pos.append(syn_type_)
+
+    return pos
 
 
 class NeuronSimulation:
@@ -93,6 +109,7 @@ class NeuronSimulation:
         syn_interval (int): default interval (ms) between two synapse firing
         syn_nmb_of_spikes (int): default number of synapse firing
         syn_noise (int): default synapse noise
+        protocol (ephys.protocols.SweepProtocol): BluePyOpt-based Protocol
         cell (CellModelCustom): BluePyOpt-based cell
         release_params (dict): optimised cell parameters to fill in
             the cell's free parameters
@@ -113,6 +130,13 @@ class NeuronSimulation:
         self.load_protocol_params()
         self.load_synapse_params()
 
+        # uninstantiated params
+        self.protocol = None
+        self.cell = None
+        self.release_params = None
+        self.sim = None
+        self.syn_display_data = None
+
     def load_protocol_params(self):
         """Load default protocol params."""
         self.total_duration = self.config.getint("Protocol", "total_duration")
@@ -125,7 +149,9 @@ class NeuronSimulation:
         self.step_delay = self.config.getint("Protocol", "stimulus_delay")
         self.step_duration = self.config.getint("Protocol", "stimulus_duration")
         self.hold_step_delay = self.config.getint("Protocol", "hold_stimulus_delay")
-        self.hold_step_duration = self.config.getint("Protocol", "hold_stimulus_duration")
+        self.hold_step_duration = self.config.getint(
+            "Protocol", "hold_stimulus_duration"
+        )
 
     def load_synapse_params(self):
         """Load default synapse params."""
@@ -215,7 +241,9 @@ class NeuronSimulation:
         if syn_stim is not None:
             stims.append(syn_stim)
 
-        self.protocol = ephys.protocols.SweepProtocol(protocol_name, stims, [rec], False)
+        self.protocol = ephys.protocols.SweepProtocol(
+            protocol_name, stims, [rec], False
+        )
 
     def create_cell_custom(self):
         """Create a cell. Returns cell, release params and time step."""
@@ -226,19 +254,12 @@ class NeuronSimulation:
         )
         emodel, morph_dir, morph_fname, dt_tmp, gid = load_constants(constants_path)
 
-        # load morphology path
-        if self.config.has_option("Paths", "morph_dir"):
-            morph_dir = self.config.get("Paths", "morph_dir")
-        else:
-            morph_dir = os.path.join(self.config.get("Paths", "memodel_dir"), morph_dir)
-        if self.config.has_option("Paths", "morph_file"):
-            morph_fname = self.config.get("Paths", "morph_file")
-
-        morph_path = os.path.join(morph_dir, morph_fname)
-
         # load mechanisms
         recipes_path = "/".join(
-            (self.config.get("Paths", "recipes_dir"), self.config.get("Paths", "recipes_file")),
+            (
+                self.config.get("Paths", "recipes_dir"),
+                self.config.get("Paths", "recipes_file"),
+            ),
         )
         params_filepath = find_param_file(recipes_path, emodel)
         mechs = load_mechanisms(params_filepath)
@@ -250,23 +271,16 @@ class NeuronSimulation:
 
         # load parameters
         params_path = "/".join(
-            (self.config.get("Paths", "params_dir"), self.config.get("Paths", "params_file"))
+            (
+                self.config.get("Paths", "params_dir"),
+                self.config.get("Paths", "params_file"),
+            )
         )
         release_params = load_params(params_path=params_path, emodel=emodel)
         params = define_parameters(params_filepath)
 
-        # create morphology
-        axon_hoc_path = os.path.join(
-            self.config.get("Paths", "replace_axon_hoc_dir"),
-            self.config.get("Paths", "replace_axon_hoc_file"),
-        )
-        replace_axon_hoc = get_axon_hoc(axon_hoc_path)
-        do_replace_axon = self.config.getboolean("Morphology", "do_replace_axon")
-        morph = NrnFileMorphologyCustom(
-            morph_path,
-            do_replace_axon=do_replace_axon,
-            replace_axon_hoc=replace_axon_hoc,
-        )
+        # load morphology
+        morph = load_morphology(self.config, morph_dir, morph_fname)
 
         # create cell
         cell = CellModelCustom(
@@ -303,8 +317,10 @@ class NeuronSimulation:
                     seg_pos = syn["seg_x"]
                     # check if a synapse of the same mtype has already the same position
                     # and add synapse only if a new position has to be displayed
-                    syn_section = mech.get_cell_section_for_synapse(syn, self.cell.icell)
-                    syn_display_data = section_coordinate_3d(
+                    syn_section = mech.get_cell_section_for_synapse(
+                        syn, self.cell.icell
+                    )
+                    syn_display_data = get_pos_and_color(
                         syn_section, seg_pos, syn["synapse_type"]
                     )
                     if (
@@ -329,7 +345,9 @@ class NeuronSimulation:
 
     def get_voltage(self):
         """Returns voltage response."""
-        responses = {recording.name: recording.response for recording in self.protocol.recordings}
+        responses = {
+            recording.name: recording.response for recording in self.protocol.recordings
+        }
         key = list(responses.keys())[0]
         resp = responses[key]
         return np.array(resp["time"]), np.array(resp["voltage"])

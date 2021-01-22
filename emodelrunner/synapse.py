@@ -1,4 +1,6 @@
 """Custom synapse-related classes."""
+
+# pylint: disable=super-with-arguments, unused-argument, too-many-arguments
 import random
 import bluepyopt.ephys as ephys
 
@@ -239,8 +241,7 @@ class NrnNetStimStimulusCustom(ephys.stimuli.Stimulus):
         super(NrnNetStimStimulusCustom, self).__init__()
         if total_duration is None:
             raise ValueError("NrnNetStimStimulus: Need to specify a total duration")
-        else:
-            self.total_duration = total_duration
+        self.total_duration = total_duration
 
         self.locations = locations
         self.interval = interval
@@ -311,9 +312,8 @@ class NrnVecStimStimulusCustom(ephys.stimuli.Stimulus):
         super(NrnVecStimStimulusCustom, self).__init__()
         if stop is None:
             raise ValueError("NrnVecStimStimulus: Need to specify a stop time")
-        else:
-            # must be named total_duration because of ephys.protocols
-            self.total_duration = stop
+        # must be named total_duration because of ephys.protocols
+        self.total_duration = stop
 
         self.locations = locations
         self.start = start

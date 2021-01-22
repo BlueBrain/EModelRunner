@@ -2,7 +2,6 @@
 # pylint: disable=wrong-import-position
 # pylint: disable=wrong-import-order
 # pylint: disable=import-error
-import configparser
 from contextlib import contextmanager
 import os
 import numpy as np
@@ -28,9 +27,6 @@ from emodelrunner.write_factsheets import (
     write_morph_json,
 )
 
-from emodelrunner.run import main as run
-from tests.sample_dir.old_run import main as old_run
-
 data_dir = os.path.join("tests", "data")
 example_dir = os.path.join("tests", "sample_dir")
 
@@ -42,6 +38,34 @@ def cwd(path):
     os.chdir(path)
     yield
     os.chdir(old_dir)
+
+
+def remove_all_outputs():
+    with cwd(example_dir):
+        for directory in [
+            "python_recordings",
+            "hoc_recordings",
+            "old_python_recordings",
+        ]:
+            for i in range(3):
+                filename = "soma_voltage_step{}.dat".format(i)
+                filepath = os.path.join(directory, filename)
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+
+            filepath = os.path.join(directory, "soma_voltage_vecstim.dat")
+            if os.path.exists(filepath):
+                os.remove(filepath)
+
+        directory = "factsheets"
+        for filename in [
+            "me_type_factsheeet.json",
+            "e_type_factsheeet.json",
+            "morphology_factsheeet.json",
+        ]:
+            filepath = os.path.join(directory, filename)
+            if os.path.exists(filepath):
+                os.remove(filepath)
 
 
 def test_voltages():
@@ -56,10 +80,14 @@ def test_voltages():
     # rewrite hocs and run cells
     run_hoc_filename = "run.hoc"
 
+    remove_all_outputs()
+
     with cwd(example_dir):
         # write hocs
         config = load_config(filename=None)
-        cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(config=config, syn_temp_name="hoc_synapses")
+        cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(
+            config=config, syn_temp_name="hoc_synapses"
+        )
         write_hocs(config, cell_hoc, simul_hoc, run_hoc, run_hoc_filename, syn_hoc)
 
         subprocess.call(["sh", "run_py.sh"])
@@ -102,10 +130,14 @@ def test_synapses(configfile="config_synapses.ini"):
     # rewrite hocs and run cell
     run_hoc_filename = "run.hoc"
 
+    remove_all_outputs()
+
     with cwd(example_dir):
         # write hocs
         config = load_config(filename=configfile)
-        cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(config=config, syn_temp_name="hoc_synapses")
+        cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(
+            config=config, syn_temp_name="hoc_synapses"
+        )
         write_hocs(config, cell_hoc, simul_hoc, run_hoc, run_hoc_filename, syn_hoc)
 
         subprocess.call(["sh", "run_py.sh", configfile])
@@ -130,11 +162,15 @@ def test_synapses_hoc_vs_py_script(configfile="config_synapses.ini"):
     # rewrite hocs and run cells
     run_hoc_filename = "run.hoc"
 
+    remove_all_outputs()
+
     # start with hoc, to compile mechs
     with cwd(example_dir):
         # write hocs
         config = load_config(filename=configfile)
-        cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(config=config, syn_temp_name="hoc_synapses")
+        cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(
+            config=config, syn_temp_name="hoc_synapses"
+        )
         write_hocs(config, cell_hoc, simul_hoc, run_hoc, run_hoc_filename, syn_hoc)
 
         subprocess.call(["sh", "./run_hoc.sh"])
@@ -144,7 +180,9 @@ def test_synapses_hoc_vs_py_script(configfile="config_synapses.ini"):
     # load output
     hoc_path = os.path.join(example_dir, "hoc_recordings", "soma_voltage_vecstim.dat")
     py_path = os.path.join(example_dir, "python_recordings", "soma_voltage_vecstim.dat")
-    old_py_path = os.path.join(example_dir, "old_python_recordings", "soma_voltage_vecstim.dat")
+    old_py_path = os.path.join(
+        example_dir, "old_python_recordings", "soma_voltage_vecstim.dat"
+    )
 
     hoc_voltage = np.loadtxt(hoc_path)
     py_voltage = np.loadtxt(py_path)
@@ -162,15 +200,22 @@ def test_metype_factsheet_exists():
 
     config = load_config(filename=None)
 
+    remove_all_outputs()
+
     output_dir = "factsheets"
     with cwd(example_dir):
+        subprocess.call(["sh", "run_py.sh", "config_singlestep.ini"])
         write_metype_json(config, output_dir)
         write_etype_json(config, output_dir)
         write_morph_json(config, output_dir)
 
-    metype_factsheet = os.path.join(example_dir, "factsheets", "me_type_factsheeet.json")
+    metype_factsheet = os.path.join(
+        example_dir, "factsheets", "me_type_factsheeet.json"
+    )
     etype_factsheet = os.path.join(example_dir, "factsheets", "e_type_factsheeet.json")
-    mtype_factsheet = os.path.join(example_dir, "factsheets", "morphology_factsheeet.json")
+    mtype_factsheet = os.path.join(
+        example_dir, "factsheets", "morphology_factsheeet.json"
+    )
     assert os.path.isfile(metype_factsheet)
     assert os.path.isfile(etype_factsheet)
     assert os.path.isfile(mtype_factsheet)
@@ -206,7 +251,7 @@ def check_features(config):
     original_feat = load_raw_exp_features(recipe)
     units = load_feature_units()
     fitness = load_fitness(config, emodel)
-    prefix = get_prefix(config, recipe)
+    prefix = get_prefix(recipe)
     # tested func
     feat_dict = get_exp_features_data(config)
 
@@ -293,20 +338,38 @@ def check_mechanisms(config):
             assert channel["equations"]
             for mech_name, mech in channel["equations"].items():
                 mech_name_for_params = "_".join((mech_name, channel_name))
-                new_loc_name, idx = get_loc_from_params(loc_name, mech_name_for_params, parameters)
-                mech_name_for_final_params = ".".join((mech_name_for_params, new_loc_name))
+                new_loc_name, idx = get_loc_from_params(
+                    loc_name, mech_name_for_params, parameters
+                )
+                mech_name_for_final_params = ".".join(
+                    (mech_name_for_params, new_loc_name)
+                )
                 if mech["type"] == "exponential":
                     assert "dist" in parameters[new_loc_name][idx]
                     assert parameters[new_loc_name][idx]["dist"] == "exp"
-                    assert str(release_params[mech_name_for_final_params]) in mech["plot"]
-                    assert str(release_params[mech_name_for_final_params]) in mech["latex"]
+                    assert (
+                        str(release_params[mech_name_for_final_params]) in mech["plot"]
+                    )
+                    assert (
+                        str(release_params[mech_name_for_final_params]) in mech["latex"]
+                    )
                 elif mech["type"] == "decay":
                     assert "dist" in parameters[new_loc_name][idx]
                     assert parameters[new_loc_name][idx]["dist"] == "decay"
-                    assert str(release_params[mech_name_for_final_params]) in mech["plot"]
-                    assert str(release_params[mech_name_for_final_params]) in mech["latex"]
-                    assert str(release_params["constant.distribution_decay"]) in mech["plot"]
-                    assert str(release_params["constant.distribution_decay"]) in mech["latex"]
+                    assert (
+                        str(release_params[mech_name_for_final_params]) in mech["plot"]
+                    )
+                    assert (
+                        str(release_params[mech_name_for_final_params]) in mech["latex"]
+                    )
+                    assert (
+                        str(release_params["constant.distribution_decay"])
+                        in mech["plot"]
+                    )
+                    assert (
+                        str(release_params["constant.distribution_decay"])
+                        in mech["latex"]
+                    )
                 else:
                     assert mech["type"] == "uniform"
                     assert release_params[mech_name_for_final_params] == mech["latex"]

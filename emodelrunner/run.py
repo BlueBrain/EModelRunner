@@ -11,12 +11,23 @@ from emodelrunner.protocols import define_protocols
 from emodelrunner.create_cells import create_cell
 
 
+def write_responses(responses, config):
+    """Write each response in a file."""
+    output_dir = config.get("Paths", "output_dir")
+    output_file = config.get("Paths", "output_file")
+
+    for key, resp in responses.items():
+        output_path = os.path.join(output_dir, output_file + key + ".dat")
+
+        time = np.array(resp["time"])
+        soma_voltage = np.array(resp["voltage"])
+
+        np.savetxt(output_path, np.transpose(np.vstack((time, soma_voltage))))
+
+
 def main(config_file):
     """Main."""
     config = load_config(filename=config_file)
-
-    output_dir = config.get("Paths", "output_dir")
-    output_file = config.get("Paths", "output_file")
 
     cell, release_params, dt_tmp = create_cell(config)
 
@@ -37,13 +48,7 @@ def main(config_file):
 
     responses = protocols.run(cell_model=cell, param_values=release_params, sim=sim)
 
-    for key, resp in responses.items():
-        output_path = os.path.join(output_dir, output_file + key + ".dat")
-
-        time = np.array(resp["time"])
-        soma_voltage = np.array(resp["voltage"])
-
-        np.savetxt(output_path, np.transpose(np.vstack((time, soma_voltage))))
+    write_responses(responses, config)
 
     print("Python Recordings Done")
 
