@@ -37,7 +37,7 @@ def main(config_file):
     else:
         dt = dt_tmp
     sim = ephys.simulators.NrnSimulator(
-        dt=dt, cvode_active=config.getboolean("Sim", "cvcode_active")
+        dt=dt, cvode_active=config.getboolean("Sim", "cvode_active")
     )
 
     # create protocols

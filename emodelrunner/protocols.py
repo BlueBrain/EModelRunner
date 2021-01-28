@@ -41,7 +41,10 @@ def get_syn_stim(syn_locs, config, syn_stim_mode):
     syn_stim_seed = config.getint("Protocol", "syn_stim_seed")
     vecstim_random = config.get("Protocol", "vecstim_random")
 
-    if syn_stim_mode == "vecstim" and vecstim_random not in ["python", "neuron"]:
+    if syn_stim_mode == "vecstim" and vecstim_random not in [
+        "python",
+        "neuron",
+    ]:
         logger.warning(
             "vecstim random not set to 'python' nor to 'neuron' in config file."
         )
@@ -125,7 +128,7 @@ def get_step_stimulus(config, amplitude, hypamp, soma_loc, syn_stim):
     return stims
 
 
-def step_stimuli(config, soma_loc, cvcode_active=False, syn_stim=None):
+def step_stimuli(config, soma_loc, cvode_active=False, syn_stim=None):
     """Create Step Stimuli and return the Protocols for all stimuli."""
     # get current amplitude data
     amplitudes, hypamp = load_amps(config)
@@ -145,7 +148,7 @@ def step_stimuli(config, soma_loc, cvcode_active=False, syn_stim=None):
         stims = get_step_stimulus(config, amplitude, hypamp, soma_loc, syn_stim)
 
         protocol = ephys.protocols.SweepProtocol(
-            protocol_name, stims, [rec], cvcode_active
+            protocol_name, stims, [rec], cvode_active
         )
 
         step_protocols.append(protocol)
@@ -156,7 +159,7 @@ def step_stimuli(config, soma_loc, cvcode_active=False, syn_stim=None):
 def define_protocols(config, cell=None):
     """Define Protocols."""
     # load config
-    cvcode_active = config.getboolean("Sim", "cvcode_active")
+    cvode_active = config.getboolean("Sim", "cvode_active")
     step_stim = config.getboolean("Protocol", "step_stimulus")
     add_synapses = config.getboolean("Synapses", "add_synapses")
     syn_stim_mode = config.get("Protocol", "syn_stim_mode")
@@ -181,7 +184,7 @@ def define_protocols(config, cell=None):
     # get step stimuli and make protocol(s)
     if step_stim:
         # get step protocols
-        step_protocols = step_stimuli(config, soma_loc, cvcode_active, syn_stim)
+        step_protocols = step_stimuli(config, soma_loc, cvode_active, syn_stim)
 
     elif syn_stim:
         protocol_name = syn_stim_mode
@@ -190,7 +193,7 @@ def define_protocols(config, cell=None):
 
         stims = [syn_stim]
         protocol = ephys.protocols.SweepProtocol(
-            protocol_name, stims, [rec], cvcode_active
+            protocol_name, stims, [rec], cvode_active
         )
         step_protocols = [protocol]
     else:

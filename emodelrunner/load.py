@@ -40,7 +40,7 @@ def load_config(config_dir="config", filename=None):
         # morphology
         "do_replace_axon": "True",
         # sim
-        "cvcode_active": "False",
+        "cvode_active": "False",
         # synapse
         "add_synapses": "False",
         "seed": "846515",
