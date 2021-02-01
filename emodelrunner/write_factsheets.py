@@ -416,7 +416,7 @@ def append_equation(location_map, section, channel, biophys, equation_dict):
 
 def clean_location_map(location_map):
     """Remove empty locations."""
-    for key, loc in location_map.items():
+    for key, loc in list(location_map.items()):
         if not loc["channels"]:
             location_map.pop(key)
 
