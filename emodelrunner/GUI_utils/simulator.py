@@ -17,8 +17,9 @@ from emodelrunner.load import (
     load_mechanisms,
     find_param_file,
     load_constants,
-    load_morphology,
+    get_morph_args,
 )
+from emodelrunner.morphology import NrnFileMorphologyCustom, get_axon_hoc
 from emodelrunner.protocols import get_syn_locs
 
 
@@ -247,6 +248,7 @@ class NeuronSimulation:
 
     def create_cell_custom(self):
         """Create a cell. Returns cell, release params and time step."""
+        # pylint: disable=too-many-locals
         # load constants
         constants_path = os.path.join(
             self.config.get("Paths", "constants_dir"),
@@ -265,9 +267,28 @@ class NeuronSimulation:
         mechs = load_mechanisms(params_filepath)
 
         # add synapses mechs
+        seed = self.config.getint("Synapses", "seed")
+        rng_settings_mode = self.config.get("Synapses", "rng_settings_mode")
+        syn_data_path = os.path.join(
+            self.config.get("Paths", "syn_dir"),
+            self.config.get("Paths", "syn_data_file"),
+        )
+        syn_conf_path = os.path.join(
+            self.config.get("Paths", "syn_dir"),
+            self.config.get("Paths", "syn_conf_file"),
+        )
         # always load synapse data for synapse display.
         # -> do not need to reload syn data each time user toggle synapse checkbox
-        mechs += [load_syn_mechs(self.config, self.pre_mtypes, self.netstim_params)]
+        mechs += [
+            load_syn_mechs(
+                seed,
+                rng_settings_mode,
+                syn_data_path,
+                syn_conf_path,
+                self.pre_mtypes,
+                self.netstim_params,
+            )
+        ]
 
         # load parameters
         params_path = "/".join(
@@ -280,7 +301,13 @@ class NeuronSimulation:
         params = define_parameters(params_filepath)
 
         # load morphology
-        morph = load_morphology(self.config, morph_dir, morph_fname)
+        morph_config = get_morph_args(self.config, morph_fname, morph_dir)
+        replace_axon_hoc = get_axon_hoc(morph_config["axon_hoc_path"])
+        morph = NrnFileMorphologyCustom(
+            morph_config["morph_path"],
+            do_replace_axon=morph_config["do_replace_axon"],
+            replace_axon_hoc=replace_axon_hoc,
+        )
 
         # create cell
         cell = CellModelCustom(

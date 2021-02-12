@@ -10,6 +10,12 @@ import bluepyopt.ephys as ephys
 logger = logging.getLogger(__name__)
 
 
+def get_axon_hoc(replace_axon_hoc):
+    """Returns string containing replace axon hoc."""
+    with open(replace_axon_hoc, "r") as f:
+        return f.read()
+
+
 class NrnFileMorphologyCustom(ephys.morphologies.NrnFileMorphology):
     """Custom Morphology."""
 

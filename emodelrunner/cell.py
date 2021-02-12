@@ -84,10 +84,12 @@ class CellModelCustom(ephys.models.CellModel):
         template="cell_template.jinja2",
         disable_banner=False,
         template_dir=None,
-        config=None,
+        syn_dir=None,
+        syn_hoc_filename=None,
         syn_temp_name="hoc_synapses",
     ):
         """Create hoc code for this model."""
+        # pylint: disable=too-many-arguments
         to_unfreeze = self.freeze_params(param_values)
 
         morphology = os.path.basename(self.morphology.morphology_path)
@@ -95,9 +97,6 @@ class CellModelCustom(ephys.models.CellModel):
         replace_axon = self.get_replace_axon()
 
         mechs = self.remove_point_process_mechs()
-
-        syn_dir = config.get("Paths", "syn_dir_for_hoc")
-        syn_hoc_filename = config.get("Paths", "syn_hoc_file")
 
         ret = create_hoc(
             mechs=mechs,

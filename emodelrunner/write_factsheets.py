@@ -33,28 +33,6 @@ def base_dict(unit, name, value):
     return {"unit": unit, "name": name, "value": value, "tooltip": ""}
 
 
-def get_morph_path(config):
-    """Return path to morphology file."""
-    # get morphology path from constants
-    constants_path = os.path.join(
-        config.get("Paths", "constants_dir"), config.get("Paths", "constants_file")
-    )
-    with open(constants_path, "r") as f:
-        data = json.load(f)
-    morph_dir = data["morph_dir"]
-    morph_fname = data["morph_fname"]
-
-    # change it if it is specified in config file
-    if config.has_option("Paths", "morph_dir"):
-        morph_dir = config.get("Paths", "morph_dir")
-    else:
-        morph_dir = os.path.join(config.get("Paths", "memodel_dir"), morph_dir)
-    if config.has_option("Paths", "morph_file"):
-        morph_fname = config.get("Paths", "morph_file")
-
-    return os.path.join(morph_dir, morph_fname)
-
-
 def get_neurite_list(nrn):
     """Return neurite names (str) and types (neurom type).
 
@@ -120,11 +98,8 @@ def create_soma_diam_dict(nrn):
     return base_dict("\u00b5m", "soma diameter", 2 * soma_r[0])
 
 
-def get_morph_data(config):
+def get_morph_data(morph_path):
     """Return the morphological data in a dictionary."""
-    # get morph path
-    morph_path = get_morph_path(config)
-
     # extract data
     values = []
     nrn = nm.load_neuron(morph_path)
@@ -149,34 +124,8 @@ def get_morph_data(config):
     return {"values": values, "name": "Anatomy"}
 
 
-def get_trace_data(config):
-    """Return trace dict for efel feature computing."""
-    # get parameters from config
-    step_number = config.getint("Protocol", "run_step_number")
-    stim_start = config.getint("Protocol", "stimulus_delay")
-    stim_duration = config.getint("Protocol", "stimulus_duration")
-
-    # get data from run.py output
-    fname = "soma_voltage_step{}.dat".format(step_number)
-    fpath = os.path.join("python_recordings", fname)
-    data = np.loadtxt(fpath)
-
-    # Prepare the trace data
-    trace = {}
-    trace["T"] = data[:, 0]  # time
-    trace["V"] = data[:, 1]  # soma voltage
-    trace["stim_start"] = [stim_start]
-    trace["stim_end"] = [stim_start + stim_duration]
-
-    return trace
-
-
-def get_input_resistance(efel_results, trace, config):
+def get_input_resistance(efel_results, trace, current_amplitude):
     """Return input resistance from efel."""
-    step_number = config.getint("Protocol", "run_step_number")
-    amps, _ = load_amps(config)
-    current_amplitude = amps[step_number - 1]
-
     # Calculate input resistance
     trace["decay_start_after_stim"] = efel_results[0]["voltage_base"]
     trace["stimulus_current"] = [current_amplitude]
@@ -184,9 +133,16 @@ def get_input_resistance(efel_results, trace, config):
     return efel_results[0]["ohmic_input_resistance_vb_ssse"][0]
 
 
-def get_physiology_data(config):
+def get_physiology_data_from_efel(
+    time, voltage, current_amplitude, stim_start, stim_duration
+):
     """Analyse the output of the RmpRiTau protocol."""
-    trace = get_trace_data(config)
+    # Prepare the trace data
+    trace = {}
+    trace["T"] = time
+    trace["V"] = voltage
+    trace["stim_start"] = [stim_start]
+    trace["stim_end"] = [stim_start + stim_duration]
 
     # Calculate the necessary eFeatures
     efel_results = efel.getFeatureValues(
@@ -200,11 +156,19 @@ def get_physiology_data(config):
 
     voltage_base = efel_results[0]["voltage_base"][0]
     dct = efel_results[0]["decay_time_constant_after_stim"][0]
-    input_resistance = get_input_resistance(efel_results, trace, config)
 
+    input_resistance = get_input_resistance(efel_results, trace, current_amplitude)
+
+    return [voltage_base, input_resistance, dct]
+
+
+def get_physiology_data(time, voltage, current_amplitude, stim_start, stim_duration):
+    """Analyse the output of the RmpRiTau protocol and return physiology dict."""
     # build dictionary to be returned
     names = ["resting membrane potential", "input resistance", "membrane time constant"]
-    vals = [voltage_base, input_resistance, dct]
+    vals = get_physiology_data_from_efel(
+        time, voltage, current_amplitude, stim_start, stim_duration
+    )
     units = ["mV", "MOhm", "ms"]
     values = []
     for name, val, unit in zip(names, vals, units):
@@ -233,36 +197,6 @@ def edit_dist_func(value):
         value = value.replace("(x)", "x")
     latex = re.sub(r"exp*\(([0-9x*-.]*)\)", "e^{\\1}", value)
     return latex, value
-
-
-def get_param_data(config):
-    """Returns final params, param data by section, exponential function expression."""
-    # get emodel
-    emodel = get_emodel(config)
-
-    # get params file
-    recipes_path = "/".join(
-        (config.get("Paths", "recipes_dir"), config.get("Paths", "recipes_file"))
-    )
-    params_filepath = find_param_file(recipes_path, emodel)
-
-    params_path = "/".join(
-        (config.get("Paths", "params_dir"), config.get("Paths", "params_file"))
-    )
-    release_params = load_params(params_path=params_path, emodel=emodel)
-
-    definitions = json_load(params_filepath)
-
-    decay_func = None
-    if "decay" in definitions["distributions"].keys():
-        decay_func = definitions["distributions"]["decay"]["fun"]
-
-    return (
-        release_params,
-        definitions["parameters"],
-        definitions["distributions"]["exp"]["fun"],
-        decay_func,
-    )
 
 
 def get_channel_and_equations(
@@ -421,9 +355,19 @@ def clean_location_map(location_map):
             location_map.pop(key)
 
 
-def get_mechanisms_data(config):
+def get_mechanisms_data(emodel, params_path, params_filepath):
     """Return a dictionary containing channel mechanisms for each section."""
-    release_params, parameters, exp_fun, decay_fun = get_param_data(config)
+    # pylint: disable=too-many-locals
+    release_params = load_params(params_path=params_path, emodel=emodel)
+
+    definitions = json_load(params_filepath)
+
+    decay_func = None
+    if "decay" in definitions["distributions"].keys():
+        decay_func = definitions["distributions"]["decay"]["fun"]
+
+    parameters = definitions["parameters"]
+    exp_fun = definitions["distributions"]["exp"]["fun"]
 
     location_map = {
         "all dendrites": {"channels": {}},
@@ -450,7 +394,7 @@ def get_mechanisms_data(config):
                         param_config,
                         full_name,
                         exp_fun,
-                        decay_fun,
+                        decay_func,
                         release_params,
                     )
 
@@ -473,24 +417,16 @@ def get_mechanisms_data(config):
     return {"values": values, "name": "Channel mechanisms"}
 
 
-def get_emodel(config):
+def get_emodel(constants_path):
     """Returns emodel as a string."""
-    # get emodel
-    constants_path = os.path.join(
-        config.get("Paths", "constants_dir"), config.get("Paths", "constants_file")
-    )
     with open(constants_path, "r") as f:
         data = json.load(f)
 
     return data["template_name"]
 
 
-def get_recipe(config, emodel):
+def get_recipe(recipes_path, emodel):
     """Get recipe dict."""
-    # get features path
-    recipes_path = "/".join(
-        (config.get("Paths", "recipes_dir"), config.get("Paths", "recipes_file"))
-    )
     recipes = json_load(recipes_path)
 
     return recipes[emodel]
@@ -510,11 +446,8 @@ def load_feature_units():
     return json_load(unit_json_path)
 
 
-def load_fitness(config, emodel):
+def load_fitness(params_path, emodel):
     """Load dict containing model fitness value for each feature."""
-    params_path = "/".join(
-        (config.get("Paths", "params_dir"), config.get("Paths", "params_file"))
-    )
     params_file = json_load(params_path)
     data = params_file[emodel]
 
@@ -557,16 +490,15 @@ def get_feature_dict(feature, units, prefix, stimulus, location, fitness):
     }
 
 
-def get_exp_features_data(config):
+def get_exp_features_data(emodel, recipes_path, params_path):
     """Returns a dict containing mean and std of experimental features and model fitness."""
     # pylint: disable=too-many-locals
     # it is hard to reduce number of locals without reducing readibility
-    emodel = get_emodel(config)
-    recipe = get_recipe(config, emodel)
+    recipe = get_recipe(recipes_path, emodel)
 
     feat = load_raw_exp_features(recipe)
     units = load_feature_units()
-    fitness = load_fitness(config, emodel)
+    fitness = load_fitness(params_path, emodel)
     prefix = get_prefix(recipe)
 
     values_dict = {}
@@ -588,27 +520,42 @@ def get_exp_features_data(config):
     return {"values": values, "name": "Experimental features"}
 
 
-def get_morph_name(config):
-    """Returns a dict containing the morphology name."""
+def get_morph_path(config):
+    """Return path to morphology file."""
+    # get morphology path from constants
+    constants_path = os.path.join(
+        config.get("Paths", "constants_dir"), config.get("Paths", "constants_file")
+    )
+    with open(constants_path, "r") as f:
+        data = json.load(f)
+    morph_fname = data["morph_fname"]
+    morph_dir = data["morph_dir"]
+
+    # change it if it is specified in config file
+    if config.has_option("Paths", "morph_dir"):
+        morph_dir = config.get("Paths", "morph_dir")
+    else:
+        morph_dir = os.path.join(config.get("Paths", "memodel_dir"), morph_dir)
     if config.has_option("Paths", "morph_file"):
         morph_fname = config.get("Paths", "morph_file")
-    else:
-        constants_path = os.path.join(
-            config.get("Paths", "constants_dir"), config.get("Paths", "constants_file")
-        )
-        with open(constants_path, "r") as f:
-            data = json.load(f)
-        morph_fname = data["morph_fname"]
+
+    return morph_dir, morph_fname
+
+
+def get_morph_name_dict(morph_fname):
+    """Returns a dict containing the morphology name."""
     morph_name = morph_fname.split(".asc")[0]
 
     return {"value": morph_name, "name": "Morphology name"}
 
 
-def write_etype_json(config, output_dir="."):
+def write_etype_json(
+    emodel, recipes_path, params_filepath, params_path, morph_fname, output_dir="."
+):
     """Write the e-type factsheet json file."""
-    exp_features = get_exp_features_data(config)
-    channel_mechanisms = get_mechanisms_data(config)
-    morphology_name = get_morph_name(config)
+    exp_features = get_exp_features_data(emodel, recipes_path, params_path)
+    channel_mechanisms = get_mechanisms_data(emodel, params_path, params_filepath)
+    morphology_name = get_morph_name_dict(morph_fname)
     # TODO exp_traces = get_exp_traces_data(config)
 
     output = [
@@ -626,10 +573,35 @@ def write_etype_json(config, output_dir="."):
     print("e-type json file written.")
 
 
-def write_morph_json(config, output_dir="."):
+def write_etype_json_from_config(config, output_dir="."):
+    """Write the e-type factsheet json file."""
+    # get parameters data
+    # get emodel
+    constants_path = os.path.join(
+        config.get("Paths", "constants_dir"), config.get("Paths", "constants_file")
+    )
+    emodel = get_emodel(constants_path)
+
+    recipes_path = "/".join(
+        (config.get("Paths", "recipes_dir"), config.get("Paths", "recipes_file"))
+    )
+    params_filepath = find_param_file(recipes_path, emodel)
+
+    params_path = "/".join(
+        (config.get("Paths", "params_dir"), config.get("Paths", "params_file"))
+    )
+
+    _, morph_fname = get_morph_path(config)
+
+    write_etype_json(
+        emodel, recipes_path, params_filepath, params_path, morph_fname, output_dir
+    )
+
+
+def write_morph_json(morph_dir, morph_fname, output_dir="."):
     """Write the morphology factsheet json file."""
-    anatomy = get_morph_data(config)
-    morphology_name = get_morph_name(config)
+    anatomy = get_morph_data(os.path.join(morph_dir, morph_fname))
+    morphology_name = get_morph_name_dict(morph_fname)
 
     output = [anatomy, morphology_name]
 
@@ -641,11 +613,36 @@ def write_morph_json(config, output_dir="."):
     print("morph json file written.")
 
 
-def write_metype_json(config, output_dir="."):
+def write_morph_json_from_config(config, output_dir="."):
+    """Write the morphology factsheet json file."""
+    # get morph path
+    morph_dir, morph_fname = get_morph_path(config)
+
+    write_morph_json(morph_dir, morph_fname, output_dir)
+
+
+def write_metype_json(
+    data_path,
+    current_amplitude,
+    stim_start,
+    stim_duration,
+    morph_dir,
+    morph_fname,
+    output_dir=".",
+):
     """Write the me-type factsheet json file."""
-    anatomy = get_morph_data(config)
-    physiology = get_physiology_data(config)
-    morphology_name = get_morph_name(config)
+    # load time, voltage
+    data = np.loadtxt(data_path)
+
+    anatomy = get_morph_data(os.path.join(morph_dir, morph_fname))
+    physiology = get_physiology_data(
+        time=data[:, 0],
+        voltage=data[:, 1],
+        current_amplitude=current_amplitude,
+        stim_start=stim_start,
+        stim_duration=stim_duration,
+    )
+    morphology_name = get_morph_name_dict(morph_fname)
 
     output = [anatomy, physiology, morphology_name]
 
@@ -655,6 +652,39 @@ def write_metype_json(config, output_dir="."):
     with open(os.path.join(output_dir, output_fname), "w") as out_file:
         json.dump(output, out_file, indent=4, cls=NpEncoder)
     print("me-type json file written.")
+
+
+def write_metype_json_from_config(config, output_dir="."):
+    """Write the me-type factsheet json file."""
+    # get current amplitude
+    amps_path = os.path.join(
+        config.get("Paths", "protocol_amplitudes_dir"),
+        config.get("Paths", "protocol_amplitudes_file"),
+    )
+    step_number = config.getint("Protocol", "run_step_number")
+    amps, _ = load_amps(amps_path)
+    current_amplitude = amps[step_number - 1]
+
+    # get parameters from config
+    stim_start = config.getint("Protocol", "stimulus_delay")
+    stim_duration = config.getint("Protocol", "stimulus_duration")
+
+    # get data path from run.py output
+    fname = "soma_voltage_step{}.dat".format(step_number)
+    fpath = os.path.join("python_recordings", fname)
+
+    # get morph path
+    morph_dir, morph_fname = get_morph_path(config)
+
+    write_metype_json(
+        fpath,
+        current_amplitude,
+        stim_start,
+        stim_duration,
+        morph_dir,
+        morph_fname,
+        output_dir,
+    )
 
 
 if __name__ == "__main__":
@@ -670,6 +700,6 @@ if __name__ == "__main__":
     config_ = load_config(filename=config_file)
 
     output_dir_ = "factsheets"
-    write_metype_json(config_, output_dir_)
-    write_etype_json(config_, output_dir_)
-    write_morph_json(config_, output_dir_)
+    write_metype_json_from_config(config_, output_dir_)
+    write_etype_json_from_config(config_, output_dir_)
+    write_morph_json_from_config(config_, output_dir_)

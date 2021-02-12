@@ -13,7 +13,6 @@ import bluepyopt.ephys as ephys
 
 from emodelrunner.json_loader import json_load
 from emodelrunner.synapse import NrnMODPointProcessMechanismCustom
-from emodelrunner.morphology import NrnFileMorphologyCustom
 from emodelrunner.locations import multi_locations
 
 
@@ -85,26 +84,65 @@ def load_config(config_dir="config", filename=None):
     return config
 
 
-def load_amps(config):
-    """Load stimuli amplitudes from file."""
-    amp_filename = os.path.join(
-        config.get("Paths", "protocol_amplitudes_dir"),
-        config.get("Paths", "protocol_amplitudes_file"),
-    )
-    with open(amp_filename, "r") as f:
-        data = json.load(f)
-
-    return data["amps"], data["holding"]
-
-
-def get_axon_hoc(replace_axon_hoc):
-    """Returns string containing replace axon hoc."""
-    with open(replace_axon_hoc, "r") as f:
-        return f.read()
+def get_hoc_paths_args(config):
+    """Get the dict containing the paths to the hoc files."""
+    return {
+        "hoc_dir": config.get("Paths", "memodel_dir"),
+        "hoc_filename": config.get("Paths", "hoc_file"),
+        "simul_hoc_filename": config.get("Paths", "simul_hoc_file"),
+        "syn_dir": config.get("Paths", "syn_dir"),
+        "syn_dir_for_hoc": config.get("Paths", "syn_dir_for_hoc"),
+        "syn_hoc_filename": config.get("Paths", "syn_hoc_file"),
+    }
 
 
-def load_morphology(config, morph_dir, morph_fname):
-    """Create the morphology."""
+def get_step_prot_args(config):
+    """Get the dict containing step & holding protocols configuration data."""
+    return {
+        "total_duration": config.getint("Protocol", "total_duration"),
+        "step_delay": config.getint("Protocol", "stimulus_delay"),
+        "step_duration": config.getint("Protocol", "stimulus_duration"),
+        "hold_step_delay": config.getint("Protocol", "hold_stimulus_delay"),
+        "hold_step_duration": config.getint("Protocol", "hold_stimulus_duration"),
+        "run_all_steps": config.getboolean("Protocol", "run_all_steps"),
+        "run_step_number": config.getint("Protocol", "run_step_number"),
+    }
+
+
+def get_syn_prot_args(config):
+    """Get the dict containing synapse protocols configuration data."""
+    return {
+        "netstim_total_duration": config.getint("Protocol", "total_duration"),
+        "syn_stop": config.getint("Protocol", "syn_stop"),
+        "syn_interval": config.getint("Protocol", "syn_interval"),
+        "syn_nmb_of_spikes": config.getint("Protocol", "syn_nmb_of_spikes"),
+        "syn_start": config.getint("Protocol", "syn_start"),
+        "syn_noise": config.getint("Protocol", "syn_noise"),
+        "syn_stim_seed": config.getint("Protocol", "syn_stim_seed"),
+        "vecstim_random": config.get("Protocol", "vecstim_random"),
+        "syn_stim_mode": config.get("Protocol", "syn_stim_mode"),
+    }
+
+
+def get_syn_mech_args(config):
+    """Get the dict containing synapse config used when loading synapse mechanisms."""
+    return {
+        "seed": config.getint("Synapses", "seed"),
+        "rng_settings_mode": config.get("Synapses", "rng_settings_mode"),
+        "syn_conf_file": config.get("Paths", "syn_conf_file"),
+        "syn_data_file": config.get("Paths", "syn_data_file"),
+        "syn_dir": config.get("Paths", "syn_dir"),
+    }
+
+
+def get_morph_args(config, morph_fname, morph_dir):
+    """Get the dict containing morphology configuration data.
+
+    Args:
+        config (dict): data from config file.
+        morph_fname (str): morphology file name according to constants file.
+        morph_dir (str): path to repo containing the morphology according to constants.
+    """
     # load morphology path
     if config.has_option("Paths", "morph_dir"):
         morph_dir = config.get("Paths", "morph_dir")
@@ -115,18 +153,24 @@ def load_morphology(config, morph_dir, morph_fname):
 
     morph_path = os.path.join(morph_dir, morph_fname)
 
-    # create morphology
+    # load axon hoc path
     axon_hoc_path = os.path.join(
         config.get("Paths", "replace_axon_hoc_dir"),
         config.get("Paths", "replace_axon_hoc_file"),
     )
-    replace_axon_hoc = get_axon_hoc(axon_hoc_path)
-    do_replace_axon = config.getboolean("Morphology", "do_replace_axon")
-    return NrnFileMorphologyCustom(
-        morph_path,
-        do_replace_axon=do_replace_axon,
-        replace_axon_hoc=replace_axon_hoc,
-    )
+    return {
+        "morph_path": morph_path,
+        "axon_hoc_path": axon_hoc_path,
+        "do_replace_axon": config.getboolean("Morphology", "do_replace_axon"),
+    }
+
+
+def load_amps(amps_path):
+    """Load stimuli amplitudes from file."""
+    with open(amps_path, "r") as f:
+        data = json.load(f)
+
+    return data["amps"], data["holding"]
 
 
 def find_param_file(recipes_path, emodel):
@@ -304,17 +348,15 @@ def define_parameters(params_filepath):
     return parameters
 
 
-def load_syn_mechs(config, pre_mtypes=None, stim_params=None):
+def load_syn_mechs(
+    seed,
+    rng_settings_mode,
+    syn_data_path,
+    syn_conf_path,
+    pre_mtypes=None,
+    stim_params=None,
+):
     """Load synapse mechanisms."""
-    seed = config.getint("Synapses", "seed")
-    rng_settings_mode = config.get("Synapses", "rng_settings_mode")
-    syn_data_path = os.path.join(
-        config.get("Paths", "syn_dir"), config.get("Paths", "syn_data_file")
-    )
-    syn_conf_path = os.path.join(
-        config.get("Paths", "syn_dir"), config.get("Paths", "syn_conf_file")
-    )
-
     # load synapse file data
     synapses_data = load_tsv_data(syn_data_path)
 
