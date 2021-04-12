@@ -15,11 +15,12 @@ then
     if [ ! -d nrn ]
     then
         echo "Downloading NEURON from github ..."
-        git clone https://github.com/nrnhines/nrn.git >download.log 2>&1
+        git clone --depth 1 https://github.com/nrnhines/nrn.git >download.log 2>&1
     else
         echo "Neuron already downloaded"
     fi
     cd nrn
+    
     echo "Preparing NEURON ..."
     ./build.sh >buildsh.log 2>&1
     echo "Configuring NEURON ..."

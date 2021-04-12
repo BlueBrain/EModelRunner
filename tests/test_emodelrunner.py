@@ -2,7 +2,6 @@
 # pylint: disable=wrong-import-position
 # pylint: disable=wrong-import-order
 # pylint: disable=import-error
-from contextlib import contextmanager
 import os
 import numpy as np
 import subprocess
@@ -33,18 +32,10 @@ from emodelrunner.write_factsheets import (
     write_etype_json_from_config,
     write_morph_json_from_config,
 )
+from tests.utils import cwd
 
 data_dir = os.path.join("tests", "data")
 example_dir = os.path.join("tests", "sample_dir")
-
-
-@contextmanager
-def cwd(path):
-    """Cwd function that can be used in a context manager."""
-    old_dir = os.getcwd()
-    os.chdir(path)
-    yield
-    os.chdir(old_dir)
 
 
 def remove_all_outputs():
@@ -456,7 +447,7 @@ def check_anatomy(config):
 
     assert ana_dict["values"]
     for item in ana_dict["values"]:
-        assert isinstance(item["value"], (float, int, np.integer))
+        assert isinstance(item["value"], (float, int, np.floating, np.integer))
         assert item["value"] > 0
 
         for l in lists_to_check:

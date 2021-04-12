@@ -11,7 +11,7 @@ from emodelrunner.load import (
     get_step_prot_args,
     get_syn_prot_args,
 )
-from emodelrunner.protocols import define_protocols
+from emodelrunner.protocols import define_sscx_protocols
 from emodelrunner.create_cells import create_cell_using_config
 
 
@@ -52,7 +52,7 @@ def main(config_file):
         config.get("Paths", "protocol_amplitudes_file"),
     )
 
-    protocols = define_protocols(
+    protocols = define_sscx_protocols(
         step_args, syn_args, step_stim, add_synapses, amps_path, cvode_active, cell
     )
 

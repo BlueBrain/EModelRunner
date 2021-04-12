@@ -8,16 +8,16 @@ import bluepyopt.ephys as ephys
 
 from emodelrunner.recordings import RecordingCustom
 from emodelrunner.cell import CellModelCustom
-from emodelrunner.synapse import NrnNetStimStimulusCustom
+from emodelrunner.synapses.stimuli import NrnNetStimStimulusCustom
 from emodelrunner.load import (
     load_config,
     load_syn_mechs,
     define_parameters,
-    load_params,
     load_mechanisms,
     find_param_file,
     load_constants,
     get_morph_args,
+    get_release_params,
 )
 from emodelrunner.morphology import NrnFileMorphologyCustom, get_axon_hoc
 from emodelrunner.protocols import get_syn_locs
@@ -291,13 +291,7 @@ class NeuronSimulation:
         ]
 
         # load parameters
-        params_path = "/".join(
-            (
-                self.config.get("Paths", "params_dir"),
-                self.config.get("Paths", "params_file"),
-            )
-        )
-        release_params = load_params(params_path=params_path, emodel=emodel)
+        release_params = get_release_params(emodel)
         params = define_parameters(params_filepath)
 
         # load morphology

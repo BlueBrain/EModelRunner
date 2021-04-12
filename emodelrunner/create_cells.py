@@ -8,10 +8,10 @@ from emodelrunner.load import (
     load_mechanisms,
     load_syn_mechs,
     define_parameters,
-    load_params,
     load_constants,
     get_morph_args,
     get_syn_mech_args,
+    get_release_params,
 )
 from emodelrunner.morphology import NrnFileMorphologyCustom, get_axon_hoc
 
@@ -23,8 +23,13 @@ def create_cell(
     syn_mech_args,
     morph_args,
     gid,
+    use_glu_synapse=False,
+    fixhp=False,
+    syn_setup_params=None,
+    v_init=None,
 ):
     """Create a cell."""
+    # pylint: disable=too-many-arguments, too-many-locals
     # load mechanisms
     params_filepath = find_param_file(recipes_path, emodel)
     mechs = load_mechanisms(params_filepath)
@@ -37,11 +42,13 @@ def create_cell(
                 syn_mech_args["rng_settings_mode"],
                 os.path.join(syn_mech_args["syn_dir"], syn_mech_args["syn_data_file"]),
                 os.path.join(syn_mech_args["syn_dir"], syn_mech_args["syn_conf_file"]),
+                use_glu_synapse=use_glu_synapse,
+                syn_setup_params=syn_setup_params,
             )
         ]
 
     # load parameters
-    params = define_parameters(params_filepath)
+    params = define_parameters(params_filepath, v_init)
 
     # load morphology
     replace_axon_hoc = get_axon_hoc(morph_args["axon_hoc_path"])
@@ -59,6 +66,7 @@ def create_cell(
         params=params,
         gid=gid,
         add_synapses=add_synapses,
+        fixhp=fixhp,
     )
 
     return cell
@@ -85,10 +93,7 @@ def create_cell_using_config(config):
     morph_args = get_morph_args(config, morph_fname, morph_dir)
 
     # load release params
-    params_path = "/".join(
-        (config.get("Paths", "params_dir"), config.get("Paths", "params_file"))
-    )
-    release_params = load_params(params_path=params_path, emodel=emodel)
+    release_params = get_release_params(emodel)
 
     # create cell
     cell = create_cell(

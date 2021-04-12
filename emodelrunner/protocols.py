@@ -1,15 +1,19 @@
 """Protocol creation functions."""
 
 import logging
+import sys
+import traceback
 
 import bluepyopt.ephys as ephys
 
+from emodelrunner.load import load_amps
+from emodelrunner.load import load_pulses
 from emodelrunner.recordings import RecordingCustom
-from emodelrunner.synapse import (
+from emodelrunner.recordings import SynapseRecordingCustom
+from emodelrunner.synapses.stimuli import (
     NrnNetStimStimulusCustom,
     NrnVecStimStimulusCustom,
 )
-from emodelrunner.load import load_amps
 
 logger = logging.getLogger(__name__)
 
@@ -146,7 +150,7 @@ def step_stimuli(
     return step_protocols
 
 
-def define_protocols(
+def define_sscx_protocols(
     step_args, syn_args, step_stim, add_synapses, amps_path, cvode_active, cell=None
 ):
     """Define Protocols."""
@@ -190,3 +194,113 @@ def define_protocols(
         )
 
     return ephys.protocols.SequenceProtocol("twostep", protocols=protocols)
+
+
+def define_glusynapse_protocols(
+    cell, pre_spike_train, protocol_name, cvode_active, synrecs, tstop, fastforward
+):
+    """Create stimuli and protocols to run glusynapse cell."""
+    syn_locs = get_syn_locs(cell)
+    syn_stim = NrnVecStimStimulusCustom(
+        syn_locs,
+        stop=tstop,
+        pre_spike_train=pre_spike_train,
+    )
+
+    # recording location
+    soma_loc = ephys.locations.NrnSeclistCompLocation(
+        name="soma", seclist_name="somatic", sec_index=0, comp_x=0.5
+    )
+    # recording
+    rec = ephys.recordings.CompRecording(
+        name=protocol_name, location=soma_loc, variable="v"
+    )
+    recs = [rec]
+
+    for syn_loc in syn_locs:
+        for synrec in synrecs:
+            recs.append(
+                SynapseRecordingCustom(name=synrec, location=syn_loc, variable=synrec)
+            )
+
+    # pulses
+    stims = load_pulses(soma_loc)
+
+    stims.append(syn_stim)
+
+    # create protocol
+    return SweepProtocolCustom(protocol_name, stims, recs, cvode_active, fastforward)
+
+
+class SweepProtocolCustom(ephys.protocols.SweepProtocol):
+    """SweepProtocol with ability of synapse fastforwarding."""
+
+    def __init__(
+        self,
+        name=None,
+        stimuli=None,
+        recordings=None,
+        cvode_active=None,
+        fastforward=None,
+    ):
+        """Constructor."""
+        # pylint: disable=super-with-arguments
+        super(SweepProtocolCustom, self).__init__(
+            name, stimuli, recordings, cvode_active
+        )
+
+        self.fastforward = fastforward
+
+    @staticmethod
+    def fastforward_synapses(cell_model):
+        """Enable synapse fast-forwarding."""
+        for mech in cell_model.mechanisms:
+            if hasattr(mech, "pprocesses"):
+                for synapse in mech.pprocesses:
+                    if synapse.hsynapse.rho_GB >= 0.5:
+                        synapse.hsynapse.rho_GB = 1.0
+                        synapse.hsynapse.Use_TM = synapse.hsynapse.Use_p_TM
+                        synapse.hsynapse.gmax_AMPA = synapse.hsynapse.gmax_p_AMPA
+                    else:
+                        synapse.hsynapse.rho_GB = 0.0
+                        synapse.hsynapse.Use_TM = synapse.hsynapse.Use_d_TM
+                        synapse.hsynapse.gmax_AMPA = synapse.hsynapse.gmax_d_AMPA
+
+    def _run_func(self, cell_model, param_values, sim=None):
+        """Run protocols."""
+        # pylint: disable=raise-missing-from
+        try:
+            cell_model.freeze(param_values)
+            cell_model.instantiate(sim=sim)
+
+            self.instantiate(sim=sim, icell=cell_model.icell)
+
+            try:
+                if self.fastforward is not None:
+                    sim.run(self.fastforward, cvode_active=self.cvode_active)
+                    self.fastforward_synapses(cell_model)
+                    sim.neuron.h.cvode_active(1)
+                    sim.neuron.h.continuerun(self.total_duration)
+                else:
+                    sim.run(self.total_duration, cvode_active=self.cvode_active)
+            except (RuntimeError, ephys.simulators.NrnSimulatorException):
+                logger.debug(
+                    "SweepProtocol: Running of parameter set {%s} generated "
+                    "an exception, returning None in responses",
+                    str(param_values),
+                )
+                responses = {recording.name: None for recording in self.recordings}
+            else:
+                responses = {
+                    recording.name: recording.response for recording in self.recordings
+                }
+
+            self.destroy(sim=sim)
+
+            cell_model.destroy(sim=sim)
+
+            cell_model.unfreeze(param_values.keys())
+
+            return responses
+        except BaseException:
+            raise Exception("".join(traceback.format_exception(*sys.exc_info())))

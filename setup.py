@@ -38,6 +38,7 @@ setup(
         "numpy",
         "bluepyopt",
         "neurom",
+        "h5py",
     ],
     packages=find_packages(),
     python_requires=">=2.7",

@@ -12,8 +12,9 @@ import os
 import bluepyopt.ephys as ephys
 
 from emodelrunner.json_loader import json_load
-from emodelrunner.synapse import NrnMODPointProcessMechanismCustom
+from emodelrunner.synapses.mechanism import NrnMODPointProcessMechanismCustom
 from emodelrunner.locations import multi_locations
+from emodelrunner.stimuli import add_pulse
 
 
 def load_config(config_dir="config", filename=None):
@@ -205,6 +206,52 @@ def load_params(emodel, params_path):
     return param_dict
 
 
+def get_syn_setup_params(syn_dir, syn_extra_params_fname, cpre_cpost_fname, constants):
+    """Load json files and return syn_setup_params dict."""
+    with open(os.path.join(syn_dir, syn_extra_params_fname), "r") as f:
+        syn_extra_params = json.load(f)
+    with open(os.path.join(syn_dir, cpre_cpost_fname), "r") as f:
+        cpre_cpost = json.load(f)
+
+    return {
+        "syn_extra_params": syn_extra_params,
+        "c_pre": cpre_cpost["c_pre"],
+        "c_post": cpre_cpost["c_post"],
+        "fit_params": constants["fit_params"],
+        "postgid": constants["gid"],
+        "invivo": constants["invivo"],
+    }
+
+
+def get_release_params(emodel):
+    """Return the final parameters."""
+    config = load_config()
+
+    params_path = "/".join(
+        (config.get("Paths", "params_dir"), config.get("Paths", "params_file"))
+    )
+    release_params = load_params(params_path=params_path, emodel=emodel)
+
+    return release_params
+
+
+def load_pulses(soma_loc, stim_dir="protocols", stim_fname="stimuli.json"):
+    """Return a list of pulse stimuli."""
+    pulse_stims = []
+    stim_path = os.path.join(stim_dir, stim_fname)
+    with open(stim_path, "r") as f:
+        stimuli = json.load(f)
+
+    for _, stim in stimuli.items():
+        if stim["Pattern"] == "Pulse":
+            pulse_stims.append(add_pulse(stim, soma_loc))
+        else:
+            ValueError(
+                "Stimulus other than Pulse in stimuli file. Not implemented yet."
+            )
+    return pulse_stims
+
+
 def load_mechanisms(mechs_filepath):
     """Define mechanisms."""
     mech_definitions = json_load(mechs_filepath)["mechanisms"]
@@ -228,7 +275,7 @@ def load_mechanisms(mechs_filepath):
     return mechanisms_list
 
 
-def define_parameters(params_filepath):
+def define_parameters(params_filepath, v_init=None):
     """Define parameters."""
     # pylint: disable=too-many-locals, too-many-branches, too-many-statements
     parameters = []
@@ -291,6 +338,9 @@ def define_parameters(params_filepath):
                 bounds = None
 
             if is_global:
+                # force v_init to the given value
+                if param_name == "v_init" and v_init is not None:
+                    value = v_init
                 parameters.append(
                     ephys.parameters.NrnGlobalParameter(
                         name=param_name,
@@ -355,6 +405,8 @@ def load_syn_mechs(
     syn_conf_path,
     pre_mtypes=None,
     stim_params=None,
+    use_glu_synapse=False,
+    syn_setup_params=None,
 ):
     """Load synapse mechanisms."""
     # load synapse file data
@@ -371,6 +423,8 @@ def load_syn_mechs(
         rng_settings_mode,
         pre_mtypes,
         stim_params,
+        use_glu_synapse=use_glu_synapse,
+        syn_setup_params=syn_setup_params,
     )
 
 

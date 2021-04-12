@@ -14,7 +14,14 @@ class CellModelCustom(ephys.models.CellModel):
     """Cell model class."""
 
     def __init__(
-        self, name, morph=None, mechs=None, params=None, gid=0, add_synapses=False
+        self,
+        name,
+        morph=None,
+        mechs=None,
+        params=None,
+        gid=0,
+        add_synapses=False,
+        fixhp=False,
     ):
         """Constructor.
 
@@ -27,9 +34,11 @@ class CellModelCustom(ephys.models.CellModel):
             params (list of Parameters): Parameters of the cell model
             gid (int): id of cell
             add_synapses (bool): set to True to add synapses to the cell
+            fixhp (bool): to uninsert SK_E2 for hyperpolarization
         """
         super(CellModelCustom, self).__init__(name, morph, mechs, params, gid)
         self.add_synapses = add_synapses
+        self.fixhp = fixhp
 
     def get_replace_axon(self):
         """Return appropriate replace_axon str."""
@@ -117,3 +126,15 @@ class CellModelCustom(ephys.models.CellModel):
         self.unfreeze(to_unfreeze)
 
         return ret
+
+    def instantiate(self, sim=None):
+        """Instantiate model in simulator."""
+        # pylint: disable=unnecessary-comprehension
+        super(CellModelCustom, self).instantiate(sim)
+
+        # Hyperpolarization workaround
+        somatic = [x for x in self.icell.somatic]
+        axonal = [x for x in self.icell.axonal]
+        if self.fixhp:
+            for sec in somatic + axonal:
+                sec.uninsert("SK_E2")
