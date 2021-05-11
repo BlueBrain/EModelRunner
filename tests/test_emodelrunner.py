@@ -38,57 +38,28 @@ data_dir = os.path.join("tests", "data")
 example_dir = os.path.join("tests", "sample_dir")
 
 
-def remove_all_outputs():
-    with cwd(example_dir):
-        for directory in [
-            "python_recordings",
-            "hoc_recordings",
-        ]:
-            for i in range(3):
-                filename = "soma_voltage_step{}.dat".format(i)
-                filepath = os.path.join(directory, filename)
-                if os.path.exists(filepath):
-                    os.remove(filepath)
-
-            filepath = os.path.join(directory, "soma_voltage_vecstim.dat")
-            if os.path.exists(filepath):
-                os.remove(filepath)
-
-        directory = "factsheets"
-        for filename in [
-            "me_type_factsheeet.json",
-            "e_type_factsheeet.json",
-            "morphology_factsheeet.json",
-        ]:
-            filepath = os.path.join(directory, filename)
-            if os.path.exists(filepath):
-                os.remove(filepath)
-
-
 def test_voltages():
     """Test to compare the voltages produced via python and hoc.
 
     The cells are run with subprocess, because if they are called directly from the module,
     neuron 'remembers' the cell template and that could make the other tests fail.
     """
-    threshold = 1e-3
-    threshold_py_recs = 1e-8
+    threshold = 1e-5
 
     # rewrite hocs and run cells
     run_hoc_filename = "run.hoc"
-
-    remove_all_outputs()
+    configfile = "config_allsteps.ini"
 
     with cwd(example_dir):
         # write hocs
-        config = load_config(filename=None)
+        config = load_config(filename=configfile)
         cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(
             config=config, syn_temp_name="hoc_synapses"
         )
         hoc_paths = get_hoc_paths_args(config)
         write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, run_hoc_filename, syn_hoc)
 
-        subprocess.call(["sh", "run_py.sh"])
+        subprocess.call(["sh", "run_py.sh", configfile])
         subprocess.call(["sh", "./run_hoc.sh"])
 
     for idx in range(3):
@@ -121,8 +92,6 @@ def test_synapses(configfile="config_synapses.ini"):
     # rewrite hocs and run cell
     run_hoc_filename = "run.hoc"
 
-    remove_all_outputs()
-
     with cwd(example_dir):
         # write hocs
         config = load_config(filename=configfile)
@@ -148,12 +117,10 @@ def test_synapses_hoc_vs_py_script(configfile="config_synapses.ini"):
     Attributes:
         configfile : name of config file in /config to use when running script / creating hoc
     """
-    threshold = 0.1
+    threshold = 1e-5
 
     # rewrite hocs and run cells
     run_hoc_filename = "run.hoc"
-
-    remove_all_outputs()
 
     # start with hoc, to compile mechs
     with cwd(example_dir):
@@ -184,8 +151,6 @@ def test_metype_factsheet_exists():
     """Check that the me-type factsheet json file has been created."""
 
     config = load_config(filename=None)
-
-    remove_all_outputs()
 
     output_dir = "factsheets"
     with cwd(example_dir):

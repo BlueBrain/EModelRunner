@@ -13,3 +13,6 @@ dist
 .vscode
 tests/sample_dir/x86_64
 tests/glusyn_sample_dir/x86_64
+tests/sample_dir/hoc_recordings
+tests/sample_dir/python_recordings
+.notebook

@@ -11,13 +11,6 @@ data_dir = os.path.join("tests", "data")
 example_dir = os.path.join("tests", "glusyn_sample_dir")
 
 
-def remove_all_outputs():
-    with cwd(example_dir):
-        filepath = "output.h5"
-        if os.path.exists(filepath):
-            os.remove(filepath)
-
-
 def test_voltages():
     """Test to compare the voltages produced with BPO with the ones produced by bglibpy.
 
@@ -25,8 +18,6 @@ def test_voltages():
     neuron 'remembers' the cell template and that could make the other tests fail.
     """
     threshold = 0.1
-
-    remove_all_outputs()
 
     with cwd(example_dir):
         subprocess.call(["sh", "run.sh"])

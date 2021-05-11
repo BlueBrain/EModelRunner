@@ -24,10 +24,10 @@ def write_hoc(hoc_dir, hoc_file_name, hoc):
         hoc_file.write(hoc)
 
 
-def write_hocs(hoc_paths, hoc, simul_hoc, run_hoc, run_hoc_filename, syn_hoc=None):
+def write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, run_hoc_filename, syn_hoc=None):
     """Write hoc files."""
     # cell hoc
-    write_hoc(hoc_paths["hoc_dir"], hoc_paths["hoc_filename"], hoc)
+    write_hoc(hoc_paths["hoc_dir"], hoc_paths["hoc_filename"], cell_hoc)
 
     # createsimulation.hoc
     write_hoc(hoc_paths["hoc_dir"], hoc_paths["simul_hoc_filename"], simul_hoc)
