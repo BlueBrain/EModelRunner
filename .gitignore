@@ -10,3 +10,6 @@ build
 dist
 .eggs
 .idea
+.vscode
+tests/sample_dir/x86_64
+tests/glusyn_sample_dir/x86_64

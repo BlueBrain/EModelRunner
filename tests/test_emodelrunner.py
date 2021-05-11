@@ -43,7 +43,6 @@ def remove_all_outputs():
         for directory in [
             "python_recordings",
             "hoc_recordings",
-            "old_python_recordings",
         ]:
             for i in range(3):
                 filename = "soma_voltage_step{}.dat".format(i)
@@ -90,7 +89,6 @@ def test_voltages():
         write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, run_hoc_filename, syn_hoc)
 
         subprocess.call(["sh", "run_py.sh"])
-        subprocess.call(["python", "old_run.py"])
         subprocess.call(["sh", "./run_hoc.sh"])
 
     for idx in range(3):
@@ -100,18 +98,12 @@ def test_voltages():
         py_path = os.path.join(
             example_dir, "python_recordings", "soma_voltage_step%d.dat" % (idx + 1)
         )
-        old_py_path = os.path.join(
-            example_dir, "old_python_recordings", "soma_voltage_step%d.dat" % (idx + 1)
-        )
 
         hoc_voltage = np.loadtxt(hoc_path)
         py_voltage = np.loadtxt(py_path)
-        old_py_voltage = np.loadtxt(old_py_path)
 
         rms = np.sqrt(np.mean((hoc_voltage[:, 1] - py_voltage[:, 1]) ** 2))
-        rms_py_recs = np.sqrt(np.mean((old_py_voltage[:, 1] - py_voltage[:, 1]) ** 2))
         assert rms < threshold
-        assert rms_py_recs < threshold_py_recs
 
 
 def test_synapses(configfile="config_synapses.ini"):
@@ -157,7 +149,6 @@ def test_synapses_hoc_vs_py_script(configfile="config_synapses.ini"):
         configfile : name of config file in /config to use when running script / creating hoc
     """
     threshold = 0.1
-    threshold_py_recs = 0.1
 
     # rewrite hocs and run cells
     run_hoc_filename = "run.hoc"
@@ -176,24 +167,17 @@ def test_synapses_hoc_vs_py_script(configfile="config_synapses.ini"):
 
         subprocess.call(["sh", "./run_hoc.sh"])
         subprocess.call(["sh", "run_py.sh", configfile])
-        subprocess.call(["python", "old_run.py", "--c", configfile])
 
     # load output
     hoc_path = os.path.join(example_dir, "hoc_recordings", "soma_voltage_vecstim.dat")
     py_path = os.path.join(example_dir, "python_recordings", "soma_voltage_vecstim.dat")
-    old_py_path = os.path.join(
-        example_dir, "old_python_recordings", "soma_voltage_vecstim.dat"
-    )
 
     hoc_voltage = np.loadtxt(hoc_path)
     py_voltage = np.loadtxt(py_path)
-    old_py_voltage = np.loadtxt(old_py_path)
 
     # check rms
     rms = np.sqrt(np.mean((hoc_voltage[:, 1] - py_voltage[:, 1]) ** 2))
-    rms_py_recs = np.sqrt(np.mean((old_py_voltage[:, 1] - py_voltage[:, 1]) ** 2))
     assert rms < threshold
-    assert rms_py_recs < threshold_py_recs
 
 
 def test_metype_factsheet_exists():
