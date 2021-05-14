@@ -149,12 +149,12 @@ def test_synapses_hoc_vs_py_script(configfile="config_synapses.ini"):
 
 def test_metype_factsheet_exists():
     """Check that the me-type factsheet json file has been created."""
-
-    config = load_config(filename=None)
-
+    configfile = "config_singlestep.ini"
     output_dir = "factsheets"
+
     with cwd(example_dir):
-        subprocess.call(["sh", "run_py.sh", "config_singlestep.ini"])
+        config = load_config(filename=configfile)
+        subprocess.call(["sh", "run_py.sh", configfile])
         write_metype_json_from_config(config, output_dir)
         write_etype_json_from_config(config, output_dir)
         write_morph_json_from_config(config, output_dir)
@@ -456,9 +456,8 @@ def check_physiology(config):
 
 def test_factsheets_fcts():
     """Test dictionary output from functions used for factsheets."""
-    config = load_config()
-
     with cwd(example_dir):
+        config = load_config(filename="config_singlestep.ini")
         check_features(config)
         check_morph_name(config)
         check_mechanisms(config)
