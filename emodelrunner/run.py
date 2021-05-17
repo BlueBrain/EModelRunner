@@ -11,7 +11,7 @@ from emodelrunner.load import (
     get_step_prot_args,
     get_syn_prot_args,
 )
-from emodelrunner.protocols import define_sscx_protocols
+from emodelrunner.protocols import SSCXProtocols
 from emodelrunner.create_cells import create_cell_using_config
 
 
@@ -24,6 +24,13 @@ def write_responses(responses, output_dir, output_file):
         soma_voltage = np.array(resp["voltage"])
 
         np.savetxt(output_path, np.transpose(np.vstack((time, soma_voltage))))
+
+
+def write_current(currents, output_dir):
+    """Write currents into separate files."""
+    for idx, (time, current) in enumerate(currents):
+        output_path = os.path.join(output_dir, "current_step" + str(idx + 1) + ".dat")
+        np.savetxt(output_path, np.transpose(np.vstack((time, current))))
 
 
 def main(config_file):
@@ -52,19 +59,24 @@ def main(config_file):
         config.get("Paths", "protocol_amplitudes_file"),
     )
 
-    protocols = define_sscx_protocols(
+    sscx_protocols = SSCXProtocols(
         step_args, syn_args, step_stim, add_synapses, amps_path, cvode_active, cell
     )
+    ephys_protocols = sscx_protocols.get_ephys_protocols()
+    currents = sscx_protocols.get_stim_currents()
 
     # run
     print("Python Recordings Running...")
 
-    responses = protocols.run(cell_model=cell, param_values=release_params, sim=sim)
+    responses = ephys_protocols.run(
+        cell_model=cell, param_values=release_params, sim=sim
+    )
 
     # write responses
     output_dir = config.get("Paths", "output_dir")
     output_file = config.get("Paths", "output_file")
     write_responses(responses, output_dir, output_file)
+    write_current(currents, output_dir)
 
     print("Python Recordings Done")
 

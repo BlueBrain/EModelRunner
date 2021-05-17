@@ -4,6 +4,7 @@ import logging
 import sys
 import traceback
 
+import numpy as np
 import bluepyopt.ephys as ephys
 
 from emodelrunner.load import load_amps
@@ -150,50 +151,102 @@ def step_stimuli(
     return step_protocols
 
 
-def define_sscx_protocols(
-    step_args, syn_args, step_stim, add_synapses, amps_path, cvode_active, cell=None
-):
-    """Define Protocols."""
-    # synapses location and stimuli
-    if add_synapses and syn_args["syn_stim_mode"] in ["vecstim", "netstim"]:
-        if cell is not None:
-            # locations
-            syn_locs = get_syn_locs(cell)
-            # get synpase stimuli
-            syn_stim = get_syn_stim(syn_locs, syn_args)
+class SSCXProtocols:
+    """Class representing the protocols applied in SSCX."""
+
+    def __init__(
+        self,
+        step_args,
+        syn_args,
+        step_stim,
+        add_synapses,
+        amps_path,
+        cvode_active,
+        cell=None,
+    ):
+        """Define Protocols."""
+        self.step_args = step_args
+        self.amplitudes, self.hypamp = load_amps(amps_path)
+        self.protocols = None
+
+        # synapses location and stimuli
+        if add_synapses and syn_args["syn_stim_mode"] in ["vecstim", "netstim"]:
+            if cell is not None:
+                # locations
+                syn_locs = get_syn_locs(cell)
+                # get synpase stimuli
+                syn_stim = get_syn_stim(syn_locs, syn_args)
+            else:
+                raise Exception("The cell is missing in the define_protocol function.")
         else:
-            raise Exception("The cell is  missing in the define_protocol function.")
-    else:
-        syn_stim = None
+            syn_stim = None
 
-    # recording location
-    soma_loc = ephys.locations.NrnSeclistCompLocation(
-        name="soma", seclist_name="somatic", sec_index=0, comp_x=0.5
-    )
-
-    # get step stimuli and make protocol(s)
-    if step_stim:
-        # get step protocols
-        protocols = step_stimuli(amps_path, step_args, soma_loc, cvode_active, syn_stim)
-    elif syn_stim:
-        protocol_name = syn_args["syn_stim_mode"]
-        # use RecordingCustom to sample time, voltage every 0.1 ms.
-        rec = RecordingCustom(name=protocol_name, location=soma_loc, variable="v")
-
-        stims = [syn_stim]
-        protocol = ephys.protocols.SweepProtocol(
-            protocol_name, stims, [rec], cvode_active
+        # recording location
+        soma_loc = ephys.locations.NrnSeclistCompLocation(
+            name="soma", seclist_name="somatic", sec_index=0, comp_x=0.5
         )
-        protocols = [protocol]
-    else:
-        raise Exception(
-            "No valid protocol was found. step_stimulus is {}".format(step_stim)
-            + " and syn_stim_mode ({}) not in ['vecstim', 'netstim'].".format(
-                syn_args["syn_stim_mode"]
+        # get step stimuli and make protocol(s)
+        if step_stim:
+            # get step protocols
+            protocols = step_stimuli(
+                amps_path, self.step_args, soma_loc, cvode_active, syn_stim
             )
+        elif syn_stim:
+            protocol_name = syn_args["syn_stim_mode"]
+            # use RecordingCustom to sample time, voltage every 0.1 ms.
+            rec = RecordingCustom(name=protocol_name, location=soma_loc, variable="v")
+
+            protocol = ephys.protocols.SweepProtocol(
+                protocol_name, [syn_stim], [rec], cvode_active
+            )
+            protocols = [protocol]
+        else:
+            raise Exception(
+                "No valid protocol was found. step_stimulus is {}".format(step_stim)
+                + " and syn_stim_mode ({}) not in ['vecstim', 'netstim'].".format(
+                    syn_args["syn_stim_mode"]
+                )
+            )
+
+        self.protocols = ephys.protocols.SequenceProtocol(
+            "twostep", protocols=protocols
         )
 
-    return ephys.protocols.SequenceProtocol("twostep", protocols=protocols)
+    def get_ephys_protocols(self):
+        """Returns the list of ephys protocol objects."""
+        return self.protocols
+
+    def get_stim_currents(self):
+        """Generates the currents injected by protocols."""
+        stim_start = self.step_args["step_delay"]
+        step_duration = self.step_args["step_duration"]
+        stim_end = stim_start + step_duration
+        total_duration = self.step_args["total_duration"]
+        holding_current = self.hypamp
+
+        currents = []
+        for amplitude in self.amplitudes:
+            current = generate_current(
+                total_duration, holding_current, stim_start, stim_end, amplitude
+            )
+            currents.append(current)
+
+        return currents
+
+
+def generate_current(
+    total_duration, holding_current, stim_start, stim_end, amplitude, dt=0.1
+):
+    """Return current time series."""
+    t = np.arange(0.0, total_duration, dt)
+    current = np.full(t.shape, holding_current, dtype="float64")
+
+    ton_idx = int(stim_start / dt)
+    toff_idx = int(stim_end / dt)
+
+    current[ton_idx:toff_idx] += amplitude
+
+    return t, current
 
 
 def define_glusynapse_protocols(
