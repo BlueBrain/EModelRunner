@@ -159,3 +159,51 @@ class NrnVecStimStimulusCustom(ephys.stimuli.Stimulus):
             if self.locations is not None
             else "Vecstim"
         )
+
+
+class NetConSpikeDetector(ephys.stimuli.Stimulus):
+    """Netcon linking output from pre-cell to post-cell's synapses."""
+
+    def __init__(self, total_duration=None, locations=None):
+        """Constructor.
+
+        Args:
+            total_duration: end of connection
+            locations: synapse point process location to connect to
+        """
+        self.total_duration = total_duration
+        self.locations = locations
+
+        self.connections = {}
+
+    def instantiate(self, sim, icell):
+        """Instantiate."""
+        if self.connections is None:
+            self.connections = {}
+
+        for location in self.locations:
+            self.connections[location.name] = []
+            for synapse in location.instantiate(sim=sim, icell=icell):
+                # taken from bglibpy.cell.create_netcon_spikedetector
+                # M. Hines magic to return a variable by reference to a python function
+                netcon = sim.neuron.h.ref(None)
+                icell.getCell().connect2target(synapse.hsynapse, netcon)
+                netcon = netcon[0]
+                netcon.weight[0] = synapse.weight
+                netcon.delay = synapse.delay
+
+                self.connections[location.name].append(netcon)
+
+    def destroy(self, sim=None):
+        """Destroy stimulus."""
+        # pylint: disable=unused-argument
+        self.connections = None
+
+    def __str__(self):
+        """String representation."""
+        return (
+            "NetconSpikeDetector at %s"
+            % ",".join(location for location in self.locations)
+            if self.locations is not None
+            else "NetconSpikeDetector"
+        )

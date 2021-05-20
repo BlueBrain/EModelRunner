@@ -2,35 +2,18 @@
 
 import argparse
 import os
-import numpy as np
 
 import bluepyopt.ephys as ephys
 
+from emodelrunner.create_cells import create_cell_using_config
+from emodelrunner.create_protocols import SSCXProtocols
 from emodelrunner.load import (
     load_config,
     get_step_prot_args,
     get_syn_prot_args,
 )
-from emodelrunner.protocols import SSCXProtocols
-from emodelrunner.create_cells import create_cell_using_config
-
-
-def write_responses(responses, output_dir, output_file):
-    """Write each response in a file."""
-    for key, resp in responses.items():
-        output_path = os.path.join(output_dir, output_file + key + ".dat")
-
-        time = np.array(resp["time"])
-        soma_voltage = np.array(resp["voltage"])
-
-        np.savetxt(output_path, np.transpose(np.vstack((time, soma_voltage))))
-
-
-def write_current(currents, output_dir):
-    """Write currents into separate files."""
-    for idx, (time, current) in enumerate(currents):
-        output_path = os.path.join(output_dir, "current_step" + str(idx + 1) + ".dat")
-        np.savetxt(output_path, np.transpose(np.vstack((time, current))))
+from emodelrunner.output import write_current
+from emodelrunner.output import write_responses
 
 
 def main(config_file):

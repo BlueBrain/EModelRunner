@@ -1,288 +1,27 @@
-"""Protocol creation functions."""
-
+"""Protocol creation functions & custom protocol classes."""
+import collections
 import logging
 import sys
 import traceback
 
-import numpy as np
 import bluepyopt.ephys as ephys
-
-from emodelrunner.load import load_amps
-from emodelrunner.load import load_pulses
-from emodelrunner.recordings import RecordingCustom
-from emodelrunner.recordings import SynapseRecordingCustom
-from emodelrunner.synapses.stimuli import (
-    NrnNetStimStimulusCustom,
-    NrnVecStimStimulusCustom,
-)
 
 logger = logging.getLogger(__name__)
 
 
-def get_syn_locs(cell):
-    """Load synapse point process location."""
-    syn_locs = []
-    for mech in cell.mechanisms:
+def fastforward_synapses(cell_model):
+    """Enable synapse fast-forwarding."""
+    for mech in cell_model.mechanisms:
         if hasattr(mech, "pprocesses"):
-            syn_locs.append(
-                ephys.locations.NrnPointProcessLocation("synapse_locs", mech)
-            )
-
-    if not syn_locs:
-        syn_locs = None
-
-    return syn_locs
-
-
-def get_syn_stim(syn_locs, syn_args):
-    """Get synapse stimulus depending on mode."""
-    if syn_args["syn_stim_mode"] == "vecstim" and syn_args["vecstim_random"] not in [
-        "python",
-        "neuron",
-    ]:
-        logger.warning(
-            "vecstim random not set to 'python' nor to 'neuron' in config file."
-        )
-        logger.warning("vecstim random will be re-set to 'python'.")
-        syn_args["vecstim_random"] = "python"
-
-    if syn_args["syn_stim_mode"] == "netstim":
-        return NrnNetStimStimulusCustom(
-            syn_locs,
-            syn_args["netstim_total_duration"],
-            syn_args["syn_nmb_of_spikes"],
-            syn_args["syn_interval"],
-            syn_args["syn_start"],
-            syn_args["syn_noise"],
-        )
-    if syn_args["syn_stim_mode"] == "vecstim":
-        return NrnVecStimStimulusCustom(
-            syn_locs,
-            syn_args["syn_start"],
-            syn_args["syn_stop"],
-            syn_args["syn_stim_seed"],
-            syn_args["vecstim_random"],
-        )
-    else:
-        return 0
-
-
-def get_step_numbers(run_all_steps, run_step_number, step_number=3):
-    """Return the first and last step +1 to be run."""
-    if run_all_steps:
-        return 0, step_number
-    elif run_step_number in range(1, step_number + 1):
-        return run_step_number - 1, run_step_number
-    else:
-        logger.warning(
-            " ".join(
-                (
-                    "Bad run_step_number parameter.",
-                    "Should be between 1 and {}.".format(step_number),
-                    "Only first step will be run.",
-                )
-            )
-        )
-        return 0, 1
-
-
-def get_step_stimulus(step_args, amplitude, hypamp, soma_loc, syn_stim):
-    """Return step, holding (and synapse) stimuli for one step amplitude."""
-    # create step stimulus
-    stim = ephys.stimuli.NrnSquarePulse(
-        step_amplitude=amplitude,
-        step_delay=step_args["step_delay"],
-        step_duration=step_args["step_duration"],
-        location=soma_loc,
-        total_duration=step_args["total_duration"],
-    )
-
-    # create holding stimulus
-    hold_stim = ephys.stimuli.NrnSquarePulse(
-        step_amplitude=hypamp,
-        step_delay=step_args["hold_step_delay"],
-        step_duration=step_args["hold_step_duration"],
-        location=soma_loc,
-        total_duration=step_args["total_duration"],
-    )
-
-    # return stims
-    stims = [stim, hold_stim]
-    if syn_stim is not None:
-        stims.append(syn_stim)
-    return stims
-
-
-def step_stimuli(
-    amps_path,
-    step_args,
-    soma_loc,
-    cvode_active=False,
-    syn_stim=None,
-):
-    """Create Step Stimuli and return the Protocols for all stimuli."""
-    # pylint: disable=too-many-locals
-    # get current amplitude data
-    amplitudes, hypamp = load_amps(amps_path)
-
-    # get step numbers to run
-    from_step, up_to = get_step_numbers(
-        step_args["run_all_steps"], step_args["run_step_number"]
-    )
-
-    # protocol names
-    protocol_names = ["step{}".format(x) for x in range(1, 4)]
-
-    step_protocols = []
-    for protocol_name, amplitude in zip(
-        protocol_names[from_step:up_to], amplitudes[from_step:up_to]
-    ):
-        # use RecordingCustom to sample time, voltage every 0.1 ms.
-        rec = RecordingCustom(name=protocol_name, location=soma_loc, variable="v")
-
-        stims = get_step_stimulus(step_args, amplitude, hypamp, soma_loc, syn_stim)
-
-        protocol = ephys.protocols.SweepProtocol(
-            protocol_name, stims, [rec], cvode_active
-        )
-
-        step_protocols.append(protocol)
-
-    return step_protocols
-
-
-class SSCXProtocols:
-    """Class representing the protocols applied in SSCX."""
-
-    def __init__(
-        self,
-        step_args,
-        syn_args,
-        step_stim,
-        add_synapses,
-        amps_path,
-        cvode_active,
-        cell=None,
-    ):
-        """Define Protocols."""
-        self.step_args = step_args
-        self.amplitudes, self.hypamp = load_amps(amps_path)
-        self.protocols = None
-
-        # synapses location and stimuli
-        if add_synapses and syn_args["syn_stim_mode"] in ["vecstim", "netstim"]:
-            if cell is not None:
-                # locations
-                syn_locs = get_syn_locs(cell)
-                # get synpase stimuli
-                syn_stim = get_syn_stim(syn_locs, syn_args)
-            else:
-                raise Exception("The cell is missing in the define_protocol function.")
-        else:
-            syn_stim = None
-
-        # recording location
-        soma_loc = ephys.locations.NrnSeclistCompLocation(
-            name="soma", seclist_name="somatic", sec_index=0, comp_x=0.5
-        )
-        # get step stimuli and make protocol(s)
-        if step_stim:
-            # get step protocols
-            protocols = step_stimuli(
-                amps_path, self.step_args, soma_loc, cvode_active, syn_stim
-            )
-        elif syn_stim:
-            protocol_name = syn_args["syn_stim_mode"]
-            # use RecordingCustom to sample time, voltage every 0.1 ms.
-            rec = RecordingCustom(name=protocol_name, location=soma_loc, variable="v")
-
-            protocol = ephys.protocols.SweepProtocol(
-                protocol_name, [syn_stim], [rec], cvode_active
-            )
-            protocols = [protocol]
-        else:
-            raise Exception(
-                "No valid protocol was found. step_stimulus is {}".format(step_stim)
-                + " and syn_stim_mode ({}) not in ['vecstim', 'netstim'].".format(
-                    syn_args["syn_stim_mode"]
-                )
-            )
-
-        self.protocols = ephys.protocols.SequenceProtocol(
-            "twostep", protocols=protocols
-        )
-
-    def get_ephys_protocols(self):
-        """Returns the list of ephys protocol objects."""
-        return self.protocols
-
-    def get_stim_currents(self):
-        """Generates the currents injected by protocols."""
-        stim_start = self.step_args["step_delay"]
-        step_duration = self.step_args["step_duration"]
-        stim_end = stim_start + step_duration
-        total_duration = self.step_args["total_duration"]
-        holding_current = self.hypamp
-
-        currents = []
-        for amplitude in self.amplitudes:
-            current = generate_current(
-                total_duration, holding_current, stim_start, stim_end, amplitude
-            )
-            currents.append(current)
-
-        return currents
-
-
-def generate_current(
-    total_duration, holding_current, stim_start, stim_end, amplitude, dt=0.1
-):
-    """Return current time series."""
-    t = np.arange(0.0, total_duration, dt)
-    current = np.full(t.shape, holding_current, dtype="float64")
-
-    ton_idx = int(stim_start / dt)
-    toff_idx = int(stim_end / dt)
-
-    current[ton_idx:toff_idx] += amplitude
-
-    return t, current
-
-
-def define_glusynapse_protocols(
-    cell, pre_spike_train, protocol_name, cvode_active, synrecs, tstop, fastforward
-):
-    """Create stimuli and protocols to run glusynapse cell."""
-    syn_locs = get_syn_locs(cell)
-    syn_stim = NrnVecStimStimulusCustom(
-        syn_locs,
-        stop=tstop,
-        pre_spike_train=pre_spike_train,
-    )
-
-    # recording location
-    soma_loc = ephys.locations.NrnSeclistCompLocation(
-        name="soma", seclist_name="somatic", sec_index=0, comp_x=0.5
-    )
-    # recording
-    rec = ephys.recordings.CompRecording(
-        name=protocol_name, location=soma_loc, variable="v"
-    )
-    recs = [rec]
-
-    for syn_loc in syn_locs:
-        for synrec in synrecs:
-            recs.append(
-                SynapseRecordingCustom(name=synrec, location=syn_loc, variable=synrec)
-            )
-
-    # pulses
-    stims = load_pulses(soma_loc)
-
-    stims.append(syn_stim)
-
-    # create protocol
-    return SweepProtocolCustom(protocol_name, stims, recs, cvode_active, fastforward)
+            for synapse in mech.pprocesses:
+                if synapse.hsynapse.rho_GB >= 0.5:
+                    synapse.hsynapse.rho_GB = 1.0
+                    synapse.hsynapse.Use_TM = synapse.hsynapse.Use_p_TM
+                    synapse.hsynapse.gmax_AMPA = synapse.hsynapse.gmax_p_AMPA
+                else:
+                    synapse.hsynapse.rho_GB = 0.0
+                    synapse.hsynapse.Use_TM = synapse.hsynapse.Use_d_TM
+                    synapse.hsynapse.gmax_AMPA = synapse.hsynapse.gmax_d_AMPA
 
 
 class SweepProtocolCustom(ephys.protocols.SweepProtocol):
@@ -304,21 +43,6 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
 
         self.fastforward = fastforward
 
-    @staticmethod
-    def fastforward_synapses(cell_model):
-        """Enable synapse fast-forwarding."""
-        for mech in cell_model.mechanisms:
-            if hasattr(mech, "pprocesses"):
-                for synapse in mech.pprocesses:
-                    if synapse.hsynapse.rho_GB >= 0.5:
-                        synapse.hsynapse.rho_GB = 1.0
-                        synapse.hsynapse.Use_TM = synapse.hsynapse.Use_p_TM
-                        synapse.hsynapse.gmax_AMPA = synapse.hsynapse.gmax_p_AMPA
-                    else:
-                        synapse.hsynapse.rho_GB = 0.0
-                        synapse.hsynapse.Use_TM = synapse.hsynapse.Use_d_TM
-                        synapse.hsynapse.gmax_AMPA = synapse.hsynapse.gmax_d_AMPA
-
     def _run_func(self, cell_model, param_values, sim=None):
         """Run protocols."""
         # pylint: disable=raise-missing-from
@@ -331,7 +55,7 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
             try:
                 if self.fastforward is not None:
                     sim.run(self.fastforward, cvode_active=self.cvode_active)
-                    self.fastforward_synapses(cell_model)
+                    fastforward_synapses(cell_model)
                     sim.neuron.h.cvode_active(1)
                     sim.neuron.h.continuerun(self.total_duration)
                 else:
@@ -357,3 +81,240 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
             return responses
         except BaseException:
             raise Exception("".join(traceback.format_exception(*sys.exc_info())))
+
+
+class SweepProtocolPairSim(ephys.protocols.Protocol):
+    """Sweep protocol for pair simulation with fastforwarding."""
+
+    def __init__(
+        self,
+        name=None,
+        stimuli=None,
+        recordings=None,
+        cvode_active=None,
+        fastforward=None,
+    ):
+        """Constructor.
+
+        Args:
+            name (str): name of this object.
+            stimuli (list of 2 lists of Stimuli): Stimulus objects used in the protocol
+                The list must be of size 2 and
+                contain first the list for the presynaptic stimuli
+                and then the list for the postsynaptic stimuli.
+            recordings (list of 2 lists of Recordings): Recording objects used in the
+                protocol. The list must be of size 2 and
+                contain first the list for the presynaptic recording
+                and then the list for the postsynaptic recording.
+            cvode_active (bool): whether to use variable time step
+            fastforward (float): Time after which the synapses are fasforwarded.
+                Leave None for no fastforward.
+        """
+        # pylint: disable=super-with-arguments
+        super(SweepProtocolPairSim, self).__init__(name)
+        if stimuli is not None and len(stimuli) != 2:
+            raise Exception(
+                "Stimuli should be of size 2 and contain"
+                "[presynaptic_stimuli, postsynaptic_stimuli]"
+            )
+        self.stimuli = stimuli
+        if recordings is not None and len(stimuli) != 2:
+            raise Exception(
+                "Recordings should be of size 2 and contain"
+                "[presynaptic_recordings, postsynaptic_recordings]"
+            )
+        self.recordings = recordings
+        self.cvode_active = cvode_active
+        self.fastforward = fastforward
+
+    @property
+    def total_duration(self):
+        """Total duration."""
+        return max(
+            [
+                stimulus.total_duration
+                for stimulus_sublist in self.stimuli
+                for stimulus in stimulus_sublist
+            ]
+        )
+
+    def subprotocols(self):
+        """Return subprotocols."""
+        return collections.OrderedDict({self.name: self})
+
+    def _run_func(
+        self,
+        precell_model,
+        postcell_model,
+        pre_param_values,
+        post_param_values,
+        sim=None,
+    ):
+        """Run protocols."""
+        try:
+            precell_model.freeze(pre_param_values)
+            precell_model.instantiate(sim=sim)
+
+            postcell_model.freeze(post_param_values)
+            postcell_model.instantiate(sim=sim)
+
+            self.instantiate(
+                sim=sim, pre_icell=precell_model.icell, post_icell=postcell_model.icell
+            )
+
+            try:
+                if self.fastforward is not None:
+                    sim.run(self.fastforward, cvode_active=self.cvode_active)
+                    fastforward_synapses(precell_model)
+                    fastforward_synapses(postcell_model)
+                    sim.neuron.h.cvode_active(1)
+                    sim.neuron.h.continuerun(self.total_duration)
+                else:
+                    sim.run(self.total_duration, cvode_active=self.cvode_active)
+            except (RuntimeError, ephys.simulators.NrnSimulatorException):
+                logger.debug(
+                    "SweepProtocol: Running of parameter sets {%s} and {%s} generated "
+                    "an exception, returning None in responses",
+                    str(pre_param_values),
+                    str(post_param_values),
+                )
+                responses = [
+                    {recording.name: None for recording in recordings}
+                    for recordings in self.recordings
+                ]
+            else:
+                responses = [
+                    {recording.name: recording.response for recording in recordings}
+                    for recordings in self.recordings
+                ]
+
+            self.destroy(sim=sim)
+
+            precell_model.destroy(sim=sim)
+            postcell_model.destroy(sim=sim)
+
+            precell_model.unfreeze(pre_param_values.keys())
+            postcell_model.unfreeze(post_param_values.keys())
+
+            return responses
+        except BaseException as error:
+            raise Exception(
+                "".join(traceback.format_exception(*sys.exc_info()))
+            ) from error
+
+    def run(
+        self,
+        precell_model,
+        postcell_model,
+        pre_param_values,
+        post_param_values,
+        sim=None,
+        isolate=None,
+        timeout=None,
+    ):
+        """Instantiate protocol."""
+        # pylint:disable=too-many-locals, import-outside-toplevel
+        if isolate is None:
+            isolate = True
+
+        if isolate:
+
+            def _reduce_method(meth):
+                """Overwrite reduce."""
+                return (getattr, (meth.__self__, meth.__func__.__name__))
+
+            import copyreg
+            import types
+
+            copyreg.pickle(types.MethodType, _reduce_method)
+            import pebble
+            from concurrent.futures import TimeoutError as FuturesTimeoutError
+
+            if timeout is not None:
+                if timeout < 0:
+                    raise ValueError("timeout should be > 0")
+
+            with pebble.ProcessPool(max_workers=1, max_tasks=1) as pool:
+                tasks = pool.schedule(
+                    self._run_func,
+                    kwargs={
+                        "precell_model": precell_model,
+                        "postcell_model": postcell_model,
+                        "pre_param_values": pre_param_values,
+                        "post_param_values": post_param_values,
+                        "sim": sim,
+                    },
+                    timeout=timeout,
+                )
+                try:
+                    responses = tasks.result()
+                except FuturesTimeoutError:
+                    logger.debug(
+                        "SweepProtocol: task took longer than "
+                        "timeout, will return empty response "
+                        "for this recording"
+                    )
+                    responses = [
+                        {recording.name: None for recording in recordings}
+                        for recordings in self.recordings
+                    ]
+        else:
+            responses = self._run_func(
+                precell_model=precell_model,
+                postcell_model=postcell_model,
+                pre_param_values=pre_param_values,
+                post_param_values=post_param_values,
+                sim=sim,
+            )
+        return responses
+
+    def instantiate(self, sim=None, pre_icell=None, post_icell=None):
+        """Instantiate."""
+        icells = [pre_icell, post_icell]
+
+        for i, _ in enumerate(icells):
+
+            for stimulus in self.stimuli[i]:
+                stimulus.instantiate(sim=sim, icell=icells[i])
+
+            for recording in self.recordings[i]:
+                try:
+                    recording.instantiate(sim=sim, icell=icells[i])
+                except ephys.locations.EPhysLocInstantiateException:
+                    logger.debug(
+                        "SweepProtocol: Instantiating recording generated "
+                        "location exception, will return empty response for "
+                        "this recording"
+                    )
+
+    def destroy(self, sim=None):
+        """Destroy protocol."""
+        for stimulus_list in self.stimuli:
+            for stimulus in stimulus_list:
+                stimulus.destroy(sim=sim)
+
+        for recording_list in self.recordings:
+            for recording in recording_list:
+                recording.destroy(sim=sim)
+
+    def __str__(self):
+        """String representation."""
+        content = "%s:\n" % self.name
+
+        content += "  pre-synaptic stimuli:\n"
+        for stimulus in self.stimuli[0]:
+            content += "    %s\n" % str(stimulus)
+
+        content += "  post-synaptic stimuli:\n"
+        for stimulus in self.stimuli[1]:
+            content += "    %s\n" % str(stimulus)
+
+        content += "  pre-synaptic recordings:\n"
+        for recording in self.recordings[0]:
+            content += "    %s\n" % str(recording)
+
+        content += "  post-synaptic recordings:\n"
+        for recording in self.recordings[1]:
+            content += "    %s\n" % str(recording)
+
+        return content

@@ -20,7 +20,7 @@ from emodelrunner.load import (
     get_release_params,
 )
 from emodelrunner.morphology import NrnFileMorphologyCustom, get_axon_hoc
-from emodelrunner.protocols import get_syn_locs
+from emodelrunner.synapses.create_locations import get_syn_locs
 
 
 def section_coordinate_3d(sec, seg_pos):

@@ -127,6 +127,86 @@ class CellModelCustom(ephys.models.CellModel):
 
         return ret
 
+    @staticmethod
+    def connectable_empty_cell_template(
+        template_name,
+        seclist_names=None,
+        secarray_names=None,
+    ):
+        """Create an empty cell with an additional connection function."""
+        objref_str = "objref this, CellRef"
+        newseclist_str = ""
+
+        if seclist_names:
+            for seclist_name in seclist_names:
+                objref_str += ", %s" % seclist_name
+                newseclist_str += "             %s = new SectionList()\n" % seclist_name
+
+        secarrays_str = ""
+        if secarray_names:
+            secarrays_str = "create "
+            secarrays_str += ", ".join(
+                "%s[1]" % secarray_name for secarray_name in secarray_names
+            )
+            secarrays_str += "\n"
+
+        template = """\
+        begintemplate %(template_name)s
+          %(objref_str)s
+          public init, getCell, getCCell, connect2target
+          public soma, dend, apic, axon, myelin
+          %(secarrays_str)s
+
+          obfunc getCell(){
+            return this
+          }
+          obfunc getCCell(){
+            return CellRef
+          }
+
+          /*!
+          * @param $o1 NetCon source (can be nil)
+          * @param $o2 Variable where generated NetCon will be placed
+          */
+          proc connect2target() { //$o1 target point process, $o2 returned NetCon
+            soma $o2 = new NetCon(&v(1), $o1)
+            $o2.threshold = -30
+          }
+
+          proc init() {\n%(newseclist_str)s
+            forall delete_section()
+            CellRef = this
+          }
+
+          gid = 0
+
+          proc destroy() {localobj nil
+            CellRef = nil
+          }
+
+
+        endtemplate %(template_name)s
+               """ % dict(
+            template_name=template_name,
+            objref_str=objref_str,
+            newseclist_str=newseclist_str,
+            secarrays_str=secarrays_str,
+        )
+        return template
+
+    def create_empty_cell(self, name, sim, seclist_names=None, secarray_names=None):
+        """Create an empty cell in Neuron."""
+        # TODO minize hardcoded definition
+        # E.g. sectionlist can be procedurally generated
+        hoc_template = self.connectable_empty_cell_template(
+            name, seclist_names, secarray_names
+        )
+        sim.neuron.h(hoc_template)
+
+        template_function = getattr(sim.neuron.h, name)
+
+        return template_function()
+
     def instantiate(self, sim=None):
         """Instantiate model in simulator."""
         # pylint: disable=unnecessary-comprehension

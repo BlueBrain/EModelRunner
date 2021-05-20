@@ -4,6 +4,7 @@ import os
 
 from emodelrunner.cell import CellModelCustom
 from emodelrunner.load import (
+    load_config,
     find_param_file,
     load_mechanisms,
     load_syn_mechs,
@@ -20,9 +21,9 @@ def create_cell(
     recipes_path,
     emodel,
     add_synapses,
-    syn_mech_args,
     morph_args,
     gid,
+    syn_mech_args=None,
     use_glu_synapse=False,
     fixhp=False,
     syn_setup_params=None,
@@ -100,9 +101,79 @@ def create_cell_using_config(config):
         recipes_path,
         emodel,
         add_synapses,
-        syn_mech_args,
         morph_args,
         gid,
+        syn_mech_args,
     )
 
     return cell, release_params, dt_tmp
+
+
+def get_postcell(
+    emodel,
+    morph_fname,
+    morph_dir,
+    gid,
+    fixhp=False,
+    syn_setup_params=None,
+    base_seed=0,
+    v_init=-65,
+):
+    """Return the postcell for synapse plasticity run."""
+    config = load_config()
+
+    recipes_path = "/".join(
+        (config.get("Paths", "recipes_dir"), config.get("Paths", "recipes_file"))
+    )
+
+    syn_mech_args = get_syn_mech_args(config)
+    # rewrite seed and rng setting mode over basic emodelrunner config defaults
+    syn_mech_args["seed"] = base_seed
+    syn_mech_args["rng_settings_mode"] = "Compatibility"
+
+    morph_args = get_morph_args(config, morph_fname, morph_dir)
+
+    add_synapses = True
+
+    cell = create_cell(
+        recipes_path,
+        emodel,
+        add_synapses,
+        morph_args,
+        gid,
+        syn_mech_args,
+        use_glu_synapse=True,
+        fixhp=fixhp,
+        syn_setup_params=syn_setup_params,
+        v_init=v_init,
+    )
+    return cell
+
+
+def get_precell(
+    emodel,
+    morph_fname,
+    morph_dir,
+    gid,
+    v_init=-65,
+):
+    """Return the precell for synapse plasticity pair simulation run."""
+    config = load_config()
+
+    recipes_path = "/".join(
+        (config.get("Paths", "recipes_dir"), config.get("Paths", "recipes_file"))
+    )
+
+    morph_args = get_morph_args(config, morph_fname, morph_dir)
+
+    add_synapses = False
+
+    cell = create_cell(
+        recipes_path,
+        emodel,
+        add_synapses,
+        morph_args,
+        gid,
+        v_init=v_init,
+    )
+    return cell

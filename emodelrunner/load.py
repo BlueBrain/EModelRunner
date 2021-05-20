@@ -14,7 +14,6 @@ import bluepyopt.ephys as ephys
 from emodelrunner.json_loader import json_load
 from emodelrunner.synapses.mechanism import NrnMODPointProcessMechanismCustom
 from emodelrunner.locations import multi_locations
-from emodelrunner.stimuli import add_pulse
 
 
 def load_config(config_dir="config", filename=None):
@@ -166,6 +165,20 @@ def get_morph_args(config, morph_fname, morph_dir):
     }
 
 
+def get_presyn_stim_args(config, pre_spike_train):
+    """Get the dict containing pre-synaptic stimulus config."""
+    # spikedelay is the time between the start of the stimulus
+    # and the precell spike time
+    spike_delay = config.getfloat("Protocol", "precell_spikedelay")
+
+    # stim train is the times at which to stimulate the precell
+    return {
+        "stim_train": pre_spike_train - spike_delay,
+        "amp": config.getfloat("Protocol", "precell_amplitude"),
+        "width": config.getint("Protocol", "precell_width"),
+    }
+
+
 def load_amps(amps_path):
     """Load stimuli amplitudes from file."""
     with open(amps_path, "r") as f:
@@ -233,23 +246,6 @@ def get_release_params(emodel):
     release_params = load_params(params_path=params_path, emodel=emodel)
 
     return release_params
-
-
-def load_pulses(soma_loc, stim_dir="protocols", stim_fname="stimuli.json"):
-    """Return a list of pulse stimuli."""
-    pulse_stims = []
-    stim_path = os.path.join(stim_dir, stim_fname)
-    with open(stim_path, "r") as f:
-        stimuli = json.load(f)
-
-    for _, stim in stimuli.items():
-        if stim["Pattern"] == "Pulse":
-            pulse_stims.append(add_pulse(stim, soma_loc))
-        else:
-            ValueError(
-                "Stimulus other than Pulse in stimuli file. Not implemented yet."
-            )
-    return pulse_stims
 
 
 def load_mechanisms(mechs_filepath):
