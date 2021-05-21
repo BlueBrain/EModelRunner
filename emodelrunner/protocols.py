@@ -151,6 +151,7 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
         sim=None,
     ):
         """Run protocols."""
+        # pylint: disable=raise-missing-from
         try:
             precell_model.freeze(pre_param_values)
             precell_model.instantiate(sim=sim)
@@ -197,10 +198,8 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
             postcell_model.unfreeze(post_param_values.keys())
 
             return responses
-        except BaseException as error:
-            raise Exception(
-                "".join(traceback.format_exception(*sys.exc_info()))
-            ) from error
+        except BaseException:
+            raise Exception("".join(traceback.format_exception(*sys.exc_info())))
 
     def run(
         self,
