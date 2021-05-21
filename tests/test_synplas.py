@@ -20,28 +20,18 @@ def remove_all_outputs():
 
 def check_output(threshold_v=0.1, threshold_other=0.5):
     """Checks output with respect to the original run."""
-    original_path = os.path.join(data_dir, "simulation.h5")
+    original_path = os.path.join(data_dir, "original.h5")
     new_path = os.path.join(example_dir, "output.h5")
 
     with h5py.File(original_path, "r") as original:
         with h5py.File(new_path, "r") as new:
             original_t = original["t"][()]
+            original_v = original["v"][()]
             new_t = new["t"][()]
-            for key, data in original.items():
-                if key == "prespikes":
-                    assert np.all(data[()] == new[key][()])
-                elif key == "v":
-                    new_v = np.interp(original_t, new_t, new[key][()])
-                    rms = np.sqrt(np.mean((data[()] - new_v) ** 2))
-                    assert rms < threshold_v
-                elif key != "t":
-                    for i in range(len(data[()][0])):
-                        new_data = np.interp(original_t, new_t, new[key][()][:, i])
-                        rms = np.sqrt(np.mean((data[()][:, i] - new_data) ** 2))
-                        assert rms < threshold_other
 
-            for key, elem in original.attrs.items():
-                assert np.all(elem[()] == new.attrs[key][()])
+            new_v = np.interp(original_t, new_t, new["v"][()])
+            rms = np.sqrt(np.mean((original_v - new_v) ** 2))
+            assert rms < threshold_v
 
 
 def test_voltages():
