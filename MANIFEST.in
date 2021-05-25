@@ -1,4 +1,4 @@
-graft tests
+prune tests
 
 global-exclude *.py[co] .DS_Store
 include emodelrunner/config/recipes/recipes.json
