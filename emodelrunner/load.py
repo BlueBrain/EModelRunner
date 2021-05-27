@@ -73,6 +73,9 @@ def load_config(config_dir="config", filename=None):
     config = configparser.ConfigParser(defaults=defaults)
     if filename is not None:
         config_path = os.path.join(config_dir, filename)
+        if not os.path.exists(config_path):
+            raise FileNotFoundError("The file at {} does not exist".format(config_path))
+
         config.read(config_path)
 
     # make sure that config has all sections

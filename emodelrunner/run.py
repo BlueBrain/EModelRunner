@@ -69,7 +69,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--c",
         default=None,
-        help="the name of the config file",
+        help="the name of the config file to be looked under ./config directory",
     )
     args = parser.parse_args()
     main(args.c)
