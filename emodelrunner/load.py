@@ -15,6 +15,12 @@ from emodelrunner.json_loader import json_load
 from emodelrunner.synapses.mechanism import NrnMODPointProcessMechanismCustom
 from emodelrunner.locations import multi_locations
 
+# FileNotFoundError does not exist in python2.7
+try:
+    FileNotFoundError
+except NameError:
+    FileNotFoundError = IOError  # pylint: disable=redefined-builtin
+
 
 def load_config(config_dir="config", filename=None):
     """Set config from config file and set default value."""
@@ -36,6 +42,7 @@ def load_config(config_dir="config", filename=None):
         "syn_noise": "0",
         "syn_stim_seed": "1",
         "vecstim_random": "python",  # can be "python" or "neuron"
+        "precell_amplitude": "1.0",
         # morphology
         "do_replace_axon": "True",
         # sim

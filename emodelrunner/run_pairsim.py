@@ -61,6 +61,7 @@ def run(
         morph_fname=constants_precell["morph_fname"],
         morph_dir="morphology",
         gid=constants_precell["gid"],
+        fixhp=fixhp,
         v_init=constants_precell["v_init"],
     )
 

@@ -155,6 +155,7 @@ def get_precell(
     morph_fname,
     morph_dir,
     gid,
+    fixhp=False,
     v_init=-65,
 ):
     """Return the precell for synapse plasticity pair simulation run."""
@@ -174,6 +175,7 @@ def get_precell(
         add_synapses,
         morph_args,
         gid,
+        fixhp=fixhp,
         v_init=v_init,
     )
     return cell
