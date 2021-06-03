@@ -17,7 +17,6 @@ class Pulse(Stimulus):
             frequency (float): frequency of the pulse stimuli
             width (float): width of the step stimuli
         """
-        # pylint: disable=super-with-arguments
         self.delay = delay
         self.duration = duration
         self.amp = amp
@@ -124,7 +123,6 @@ class MultipleSteps(Stimulus):
             amp (float): amplitude of the stimuli
             width (float): width of the step stimuli
         """
-        # pylint: disable=super-with-arguments
         self.starts = starts
         self.amp = amp
         self.width = width

@@ -1,5 +1,4 @@
 """Synapse Stimuli."""
-# pylint: disable=super-with-arguments
 import random
 import bluepyopt.ephys as ephys
 

@@ -1,5 +1,4 @@
 """Synapse Point Process Mechanisms."""
-# pylint: disable=super-with-arguments
 import bluepyopt.ephys as ephys
 
 from emodelrunner.synapses.glusynapse import GluSynapseCustom

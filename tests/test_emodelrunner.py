@@ -7,30 +7,31 @@ import numpy as np
 import subprocess
 
 from emodelrunner.create_hoc import get_hoc, write_hocs
-from emodelrunner.json_loader import json_load
+from emodelrunner.json_utilities import load_package_json
 from emodelrunner.load import (
     load_config,
     get_hoc_paths_args,
-    load_params,
+    load_emodel_params,
     find_param_file,
     load_amps,
 )
-from emodelrunner.write_factsheets import (
-    get_morph_data,
-    get_morph_path,
-    get_physiology_data,
-    get_morph_name_dict,
-    get_emodel,
-    get_recipe,
-    get_prefix,
+from emodelrunner.factsheets.morphology_features import MorphologyFactsheetBuilder
+from emodelrunner.factsheets.physiology_features import physiology_factsheet_info
+from emodelrunner.factsheets.experimental_features import (
     get_exp_features_data,
-    get_mechanisms_data,
+    load_emodel_recipe_dict,
+    get_morphology_prefix_from_recipe,
     load_raw_exp_features,
     load_feature_units,
-    load_fitness,
+    load_emodel_fitness,
+)
+from emodelrunner.write_factsheets import (
+    get_morph_path,
+    get_morph_name_dict,
+    get_emodel,
+    get_mechanisms_data,
     write_metype_json_from_config,
     write_etype_json_from_config,
-    write_morph_json_from_config,
 )
 from tests.utils import cwd
 
@@ -157,18 +158,12 @@ def test_metype_factsheet_exists():
         subprocess.call(["sh", "run_py.sh", configfile])
         write_metype_json_from_config(config, output_dir)
         write_etype_json_from_config(config, output_dir)
-        write_morph_json_from_config(config, output_dir)
 
-    metype_factsheet = os.path.join(
-        example_dir, "factsheets", "me_type_factsheeet.json"
-    )
-    etype_factsheet = os.path.join(example_dir, "factsheets", "e_type_factsheeet.json")
-    mtype_factsheet = os.path.join(
-        example_dir, "factsheets", "morphology_factsheeet.json"
-    )
+    metype_factsheet = os.path.join(example_dir, "factsheets", "me_type_factsheet.json")
+    etype_factsheet = os.path.join(example_dir, "factsheets", "e_type_factsheet.json")
+
     assert os.path.isfile(metype_factsheet)
     assert os.path.isfile(etype_factsheet)
-    assert os.path.isfile(mtype_factsheet)
 
 
 def check_feature_mean_std(source, feat):
@@ -207,11 +202,11 @@ def check_features(config):
     )
 
     emodel = get_emodel(constants_path)
-    recipe = get_recipe(recipes_path, emodel)
+    recipe = load_emodel_recipe_dict(recipes_path, emodel)
     original_feat = load_raw_exp_features(recipe)
     units = load_feature_units()
-    fitness = load_fitness(params_path, emodel)
-    prefix = get_prefix(recipe)
+    fitness = load_emodel_fitness(params_path, emodel)
+    prefix = get_morphology_prefix_from_recipe(recipe)
     # tested func
     feat_dict = get_exp_features_data(emodel, recipes_path, params_path)
 
@@ -300,9 +295,9 @@ def check_mechanisms(config):
         (config.get("Paths", "params_dir"), config.get("Paths", "params_file"))
     )
 
-    release_params = load_params(params_path=params_path, emodel=emodel)
+    release_params = load_emodel_params(params_path=params_path, emodel=emodel)
 
-    definitions = json_load(params_filepath)
+    definitions = load_package_json(params_filepath)
 
     parameters = definitions["parameters"]
 
@@ -365,7 +360,12 @@ def check_anatomy(config):
     Checks that there is no anatomy field missing.
     """
     morph_dir, morph_fname = get_morph_path(config)
-    ana_dict = get_morph_data(os.path.join(morph_dir, morph_fname))
+
+    morph_factsheet_builder = MorphologyFactsheetBuilder(
+        os.path.join(morph_dir, morph_fname)
+    )
+    ana_dict = morph_factsheet_builder.get_all_feature_values()
+    ana_dict = {"values": ana_dict, "name": "Anatomy"}
     left_to_check_1 = [
         "total axon length",
         "total axon volume",
@@ -431,7 +431,7 @@ def check_physiology(config):
     fpath = os.path.join("python_recordings", fname)
     data = np.loadtxt(fpath)
 
-    phys_dict = get_physiology_data(
+    phys_dict = physiology_factsheet_info(
         time=data[:, 0],
         voltage=data[:, 1],
         current_amplitude=current_amplitude,

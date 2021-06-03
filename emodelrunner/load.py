@@ -11,7 +11,7 @@ import os
 
 import bluepyopt.ephys as ephys
 
-from emodelrunner.json_loader import json_load
+from emodelrunner.json_utilities import load_package_json
 from emodelrunner.synapses.mechanism import NrnMODPointProcessMechanismCustom
 from emodelrunner.locations import multi_locations
 
@@ -199,7 +199,7 @@ def load_amps(amps_path):
 
 def find_param_file(recipes_path, emodel):
     """Find the parameter file for unfrozen params."""
-    recipes = json_load(recipes_path)
+    recipes = load_package_json(recipes_path)
     recipe = recipes[emodel]
 
     return recipe["params"]
@@ -219,9 +219,9 @@ def load_constants(constants_path):
     return emodel, morph_dir, morph_fname, dt, gid
 
 
-def load_params(emodel, params_path):
+def load_emodel_params(emodel, params_path):
     """Get optimised parameters."""
-    params_file = json_load(params_path)
+    params_file = load_package_json(params_path)
     data = params_file[emodel]
 
     param_dict = data["params"]
@@ -253,14 +253,14 @@ def get_release_params(emodel):
     params_path = "/".join(
         (config.get("Paths", "params_dir"), config.get("Paths", "params_file"))
     )
-    release_params = load_params(params_path=params_path, emodel=emodel)
+    release_params = load_emodel_params(params_path=params_path, emodel=emodel)
 
     return release_params
 
 
 def load_mechanisms(mechs_filepath):
     """Define mechanisms."""
-    mech_definitions = json_load(mechs_filepath)["mechanisms"]
+    mech_definitions = load_package_json(mechs_filepath)["mechanisms"]
 
     mechanisms_list = []
     for sectionlist, channels in mech_definitions.items():
@@ -286,7 +286,7 @@ def define_parameters(params_filepath, v_init=None):
     # pylint: disable=too-many-locals, too-many-branches, too-many-statements
     parameters = []
 
-    definitions = json_load(params_filepath)
+    definitions = load_package_json(params_filepath)
 
     # set distributions
     distributions = collections.OrderedDict()

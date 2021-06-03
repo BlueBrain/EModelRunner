@@ -1,6 +1,5 @@
 """Custom Cell class."""
 
-# pylint: disable=super-with-arguments
 import logging
 import os
 import bluepyopt.ephys as ephys

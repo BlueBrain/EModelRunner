@@ -36,7 +36,6 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
         fastforward=None,
     ):
         """Constructor."""
-        # pylint: disable=super-with-arguments
         super(SweepProtocolCustom, self).__init__(
             name, stimuli, recordings, cvode_active
         )
@@ -110,7 +109,6 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
             fastforward (float): Time after which the synapses are fasforwarded.
                 Leave None for no fastforward.
         """
-        # pylint: disable=super-with-arguments
         super(SweepProtocolPairSim, self).__init__(name)
         if stimuli is not None and len(stimuli) != 2:
             raise Exception(

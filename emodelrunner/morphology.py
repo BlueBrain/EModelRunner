@@ -1,6 +1,6 @@
 """Custom Morphology class."""
 
-# pylint: disable=super-with-arguments, unnecessary-comprehension
+# pylint: disable=unnecessary-comprehension
 import logging
 import math
 import numpy
