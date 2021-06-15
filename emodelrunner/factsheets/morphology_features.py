@@ -43,7 +43,7 @@ class TotalLength(MorphologyFeature):
         self.unit = "\u00b5m"
         feature_values = nm.get("total_length", morphology, neurite_type=neurite_type)
         feature_values = self.replace_empty_value(feature_values)
-        self.value = feature_values[0]
+        self.value = sum(feature_values)
 
 
 class NeuriteVolumes(MorphologyFeature):
@@ -64,7 +64,7 @@ class NeuriteVolumes(MorphologyFeature):
             "neurite_volumes", morphology, neurite_type=neurite_type
         )
         feature_values = self.replace_empty_value(feature_values)
-        self.value = feature_values[0]
+        self.value = sum(feature_values) / len(feature_values)
 
 
 class MaxBranchOrder(MorphologyFeature):
