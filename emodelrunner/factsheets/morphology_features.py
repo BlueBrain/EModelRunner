@@ -58,7 +58,7 @@ class NeuriteVolumes(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super(NeuriteVolumes, self).__init__()
-        self.name = "total {} volume".format(neurite_name)
+        self.name = "mean {} volume".format(neurite_name)
         self.unit = "\u00b5m\u00b3"
         feature_values = nm.get(
             "neurite_volumes", morphology, neurite_type=neurite_type
