@@ -6,7 +6,7 @@ import re
 
 import numpy as np
 
-import bluepyopt.ephys as ephys
+from bluepyopt import ephys
 from emodelrunner.create_cells import get_postcell
 from emodelrunner.create_protocols import define_synapse_plasticity_protocols
 from emodelrunner.load import get_release_params

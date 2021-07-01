@@ -1,6 +1,6 @@
 """Functions to create recordings."""
 
-import bluepyopt.ephys as ephys
+from bluepyopt import ephys
 
 from emodelrunner.recordings import SynapseRecordingCustom
 

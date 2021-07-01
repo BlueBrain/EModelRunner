@@ -4,7 +4,7 @@ import logging
 import sys
 import traceback
 
-import bluepyopt.ephys as ephys
+from bluepyopt import ephys
 
 logger = logging.getLogger(__name__)
 

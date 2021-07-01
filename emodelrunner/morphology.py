@@ -5,7 +5,7 @@ import logging
 import math
 import numpy
 
-import bluepyopt.ephys as ephys
+from bluepyopt import ephys
 
 logger = logging.getLogger(__name__)
 

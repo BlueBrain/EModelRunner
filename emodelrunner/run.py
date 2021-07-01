@@ -3,7 +3,7 @@
 import argparse
 import os
 
-import bluepyopt.ephys as ephys
+from bluepyopt import ephys
 
 from emodelrunner.create_cells import create_cell_using_config
 from emodelrunner.create_protocols import SSCXProtocols

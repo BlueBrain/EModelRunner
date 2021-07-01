@@ -1,7 +1,7 @@
 """Protocol creation functions & custom protocol classes."""
 import logging
 
-import bluepyopt.ephys as ephys
+from bluepyopt import ephys
 
 from emodelrunner.create_recordings import get_pairsim_recordings
 from emodelrunner.create_stimuli import load_pulses

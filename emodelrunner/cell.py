@@ -2,7 +2,7 @@
 
 import logging
 import os
-import bluepyopt.ephys as ephys
+from bluepyopt import ephys
 
 from emodelrunner.create_hoc_tools import create_hoc
 

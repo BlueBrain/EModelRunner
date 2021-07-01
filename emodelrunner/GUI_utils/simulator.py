@@ -4,7 +4,7 @@ import json
 import os
 import numpy as np
 
-import bluepyopt.ephys as ephys
+from bluepyopt import ephys
 
 from emodelrunner.recordings import RecordingCustom
 from emodelrunner.cell import CellModelCustom

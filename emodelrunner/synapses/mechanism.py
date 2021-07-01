@@ -1,5 +1,5 @@
 """Synapse Point Process Mechanisms."""
-import bluepyopt.ephys as ephys
+from bluepyopt import ephys
 
 from emodelrunner.synapses.glusynapse import GluSynapseCustom
 from emodelrunner.synapses.synapse import SynapseCustom

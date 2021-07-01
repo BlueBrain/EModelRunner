@@ -59,12 +59,10 @@ def write_etype_json(
     """Write the e-type factsheet json file."""
     exp_features = get_exp_features_data(emodel, recipes_path, params_path)
     channel_mechanisms = get_mechanisms_data(emodel, params_path, params_filepath)
-    # TODO exp_traces = get_exp_traces_data(config)
 
     output = [
         exp_features,
         channel_mechanisms,
-        # TODO exp_traces,
     ]
 
     output_fname = "e_type_factsheet.json"

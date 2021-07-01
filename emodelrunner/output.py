@@ -52,13 +52,13 @@ def write_synplas_output(
     # Store results
     output_path = os.path.join(output_dir, output_file)
     h5file = h5py.File(output_path, "w")
-    for key in results:
+    for key, result in results.items():
         if key == "synprop":
             h5file.attrs.update(results["synprop"])
         else:
             h5file.create_dataset(
                 key,
-                data=results[key],
+                data=result,
                 chunks=True,
                 compression="gzip",
                 compression_opts=9,
@@ -82,10 +82,10 @@ def write_synplas_precell_output(
     # Store results
     output_path = os.path.join(output_dir, output_file)
     h5file = h5py.File(output_path, "w")
-    for key in results:
+    for key, result in results.items():
         h5file.create_dataset(
             key,
-            data=results[key],
+            data=result,
             chunks=True,
             compression="gzip",
             compression_opts=9,

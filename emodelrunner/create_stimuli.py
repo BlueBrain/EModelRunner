@@ -4,7 +4,7 @@ import os
 import json
 import numpy as np
 
-import bluepyopt.ephys as ephys
+from bluepyopt import ephys
 from emodelrunner.stimuli import Pulse
 
 

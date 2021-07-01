@@ -2,7 +2,7 @@
 
 import logging
 
-import bluepyopt.ephys as ephys
+from bluepyopt import ephys
 
 logger = logging.getLogger(__name__)
 

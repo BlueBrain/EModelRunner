@@ -1,6 +1,6 @@
 """Locations related functions."""
 
-import bluepyopt.ephys as ephys
+from bluepyopt import ephys
 
 
 def multi_locations(sectionlist):

@@ -1,5 +1,5 @@
 """Spontaneous Minis."""
-import bluepyopt.ephys as ephys
+from bluepyopt import ephys
 
 
 # adapted from bglibpy.cell.add_replay_minis
@@ -88,7 +88,7 @@ class Minis(ephys.stimuli.Stimulus):
                     )
                     # set netcon type
                     nc_param_name = "nc_type_param_{}".format(synapse.hsynapse).split(
-                        "["
+                        "[", maxsplit=1
                     )[0]
                     if hasattr(sim.neuron.h, nc_param_name):
                         nc_type_param = int(getattr(sim.neuron.h, nc_param_name))

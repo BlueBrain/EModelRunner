@@ -1,6 +1,6 @@
 """Synapse Stimuli."""
 import random
-import bluepyopt.ephys as ephys
+from bluepyopt import ephys
 
 
 class NrnNetStimStimulusCustom(ephys.stimuli.Stimulus):

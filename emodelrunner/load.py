@@ -9,7 +9,7 @@ except ImportError:
 import json
 import os
 
-import bluepyopt.ephys as ephys
+from bluepyopt import ephys
 
 from emodelrunner.json_utilities import load_package_json
 from emodelrunner.synapses.mechanism import NrnMODPointProcessMechanismCustom
