@@ -31,7 +31,7 @@ from emodelrunner.write_factsheets import (
     get_emodel,
     get_mechanisms_data,
     write_metype_json_from_config,
-    write_etype_json_from_config,
+    write_emodel_json_from_config,
 )
 from tests.utils import cwd
 
@@ -157,13 +157,13 @@ def test_metype_factsheet_exists():
         config = load_config(filename=configfile)
         subprocess.call(["sh", "run_py.sh", configfile])
         write_metype_json_from_config(config, output_dir)
-        write_etype_json_from_config(config, output_dir)
+        write_emodel_json_from_config(config, output_dir)
 
     metype_factsheet = os.path.join(example_dir, "factsheets", "me_type_factsheet.json")
-    etype_factsheet = os.path.join(example_dir, "factsheets", "e_type_factsheet.json")
+    emodel_factsheet = os.path.join(example_dir, "factsheets", "e_model_factsheet.json")
 
     assert os.path.isfile(metype_factsheet)
-    assert os.path.isfile(etype_factsheet)
+    assert os.path.isfile(emodel_factsheet)
 
 
 def check_feature_mean_std(source, feat):

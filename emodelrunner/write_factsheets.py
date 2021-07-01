@@ -1,4 +1,4 @@
-"""Produce a me-type data json file."""
+"""Writes the factsheets to the disk."""
 
 import argparse
 import json
@@ -53,10 +53,10 @@ def get_morph_name_dict(morph_fname):
     return {"name": "Morphology name", "value": morph_name}
 
 
-def write_etype_json(
+def write_emodel_json(
     emodel, recipes_path, params_filepath, params_path, output_dir="."
 ):
-    """Write the e-type factsheet json file."""
+    """Write the e-model factsheet json file."""
     exp_features = get_exp_features_data(emodel, recipes_path, params_path)
     channel_mechanisms = get_mechanisms_data(emodel, params_path, params_filepath)
 
@@ -65,16 +65,16 @@ def write_etype_json(
         channel_mechanisms,
     ]
 
-    output_fname = "e_type_factsheet.json"
+    output_fname = "e_model_factsheet.json"
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
     with open(os.path.join(output_dir, output_fname), "w") as out_file:
         json.dump(output, out_file, indent=4, cls=NpEncoder)
-    print("e-type json file written.")
+    print("e-model json file is written.")
 
 
-def write_etype_json_from_config(config, output_dir="."):
-    """Write the e-type factsheet json file."""
+def write_emodel_json_from_config(config, output_dir="."):
+    """Write the e-model factsheet json file."""
     # get parameters data
     # get emodel
     constants_path = os.path.join(
@@ -91,7 +91,7 @@ def write_etype_json_from_config(config, output_dir="."):
         (config.get("Paths", "params_dir"), config.get("Paths", "params_file"))
     )
 
-    write_etype_json(emodel, recipes_path, params_filepath, params_path, output_dir)
+    write_emodel_json(emodel, recipes_path, params_filepath, params_path, output_dir)
 
 
 def write_metype_json(
@@ -179,4 +179,4 @@ if __name__ == "__main__":
 
     output_dir_ = "factsheets"
     write_metype_json_from_config(config_, output_dir_)
-    write_etype_json_from_config(config_, output_dir_)
+    write_emodel_json_from_config(config_, output_dir_)
