@@ -39,6 +39,7 @@ setup(
         "bluepyopt",
         "neurom",
         "h5py",
+        "matplotlib",
     ],
     packages=find_packages(),
     python_requires=">=2.7",

@@ -36,7 +36,7 @@ from emodelrunner.write_factsheets import (
 from tests.utils import cwd
 
 data_dir = os.path.join("tests", "data")
-example_dir = os.path.join("tests", "sample_dir")
+example_dir = os.path.join("examples", "sscx_sample_dir")
 
 
 def test_voltages():

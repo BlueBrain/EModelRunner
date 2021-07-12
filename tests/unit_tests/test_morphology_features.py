@@ -6,7 +6,7 @@ from neurom.core.types import NeuriteType
 from emodelrunner.factsheets import morphology_features
 
 
-test_morph_dir = "tests/sample_dir/morphology"
+test_morph_dir = "examples/sscx_sample_dir/morphology"
 test_morph = os.path.join(
     test_morph_dir, "dend-C270999B-P3_axon-C060110A3_-_Scale_x1.000_y0.950_z1.000.asc"
 )

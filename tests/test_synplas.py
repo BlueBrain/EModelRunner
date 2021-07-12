@@ -8,7 +8,7 @@ import numpy as np
 from tests.utils import cwd
 
 data_dir = os.path.join("tests", "data")
-example_dir = os.path.join("tests", "synplas_sample_dir")
+example_dir = os.path.join("examples", "synplas_sample_dir")
 
 
 def remove_all_outputs():
