@@ -1,4 +1,5 @@
 """Run pair simulation for synapse plasticity simulation."""
+import argparse
 import json
 import logging
 import os
@@ -30,46 +31,35 @@ def run(
     # pylint:disable=too-many-locals
     config = load_config(filename=config_file)
 
-    constants_postcell_path = os.path.join("config", "constants.json")
-    with open(constants_postcell_path, "r") as f:
-        constants_postcell = json.load(f)
-
-    constants_precell_path = os.path.join("config", "constants_precell.json")
-    with open(constants_precell_path, "r") as f:
-        constants_precell = json.load(f)
-
     # load extra_params
     syn_setup_params = get_syn_setup_params(
-        "synapses", "syn_extra_params.json", "cpre_cpost.json", constants_postcell
+        "synapses",
+        "syn_extra_params.json",
+        "cpre_cpost.json",
+        config.get("Paths", "synplas_fit_params_dir"),
+        config.get("Paths", "synplas_fit_params_file"),
+        config.getint("Cell", "gid"),
+        config.getboolean("SynapsePlasticity", "invivo"),
     )
 
     # load cell
     postcell = get_postcell(
-        emodel=constants_postcell["emodel"],
-        morph_fname=constants_postcell["morph_fname"],
-        morph_dir="morphology",
-        gid=constants_postcell["gid"],
+        config,
         fixhp=fixhp,
         syn_setup_params=syn_setup_params,
-        base_seed=constants_postcell["base_seed"],
-        v_init=constants_postcell["v_init"],
     )
 
     # load cell
     precell = get_precell(
-        emodel=constants_precell["emodel"],
-        morph_fname=constants_precell["morph_fname"],
-        morph_dir="morphology",
-        gid=constants_precell["gid"],
+        config,
         fixhp=fixhp,
-        v_init=constants_precell["v_init"],
     )
 
     sim = ephys.simulators.NrnSimulator(
-        dt=constants_postcell["dt"], cvode_active=cvode_active
+        dt=config.getfloat("Sim", "dt"), cvode_active=cvode_active
     )
-    pre_release_params = get_release_params(constants_precell["emodel"])
-    post_release_params = get_release_params(constants_postcell["emodel"])
+    pre_release_params = get_release_params(config.get("Cell", "precell_emodel"))
+    post_release_params = get_release_params(config.get("Cell", "emodel"))
 
     # set dynamic timestep tolerance
     sim.neuron.h.cvode.atolscale("v", 0.1)  # 0.01 for more precision
@@ -82,11 +72,11 @@ def run(
     presyn_stim_args = get_presyn_stim_args(config, pre_spike_train)
 
     # Set fitted model parameters
-    if constants_postcell["fit_params"] is not None:
-        _set_global_params(constants_postcell["fit_params"], sim)
+    if syn_setup_params["fit_params"]:
+        _set_global_params(syn_setup_params["fit_params"], sim)
 
     # Enable in vivo mode (global)
-    if constants_postcell["invivo"]:
+    if config.getboolean("SynapsePlasticity", "invivo"):
         sim.neuron.h.cao_CR_GluSynapse = 1.2  # mM
 
     # protocols
@@ -95,9 +85,9 @@ def run(
         presyn_protocol_name,
         postsyn_protocol_name,
         cvode_active,
-        constants_postcell["synrec"],
-        constants_postcell["tstop"],
-        constants_postcell["fastforward"],
+        json.loads(config.get("SynapsePlasticity", "synrec")),
+        config.getfloat("Protocol", "tstop"),
+        config.getfloat("SynapsePlasticity", "fastforward"),
         presyn_stim_args,
     )
 
@@ -120,4 +110,16 @@ def run(
 
 
 if __name__ == "__main__":
-    run()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--c",
+        default=None,
+        help="the name of the config file",
+    )
+    args = parser.parse_args()
+
+    _config_file = args.c
+    if _config_file is None:
+        run()
+    else:
+        run(config_file=_config_file)

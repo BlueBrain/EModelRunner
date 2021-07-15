@@ -13,7 +13,6 @@ from emodelrunner.load import (
     get_hoc_paths_args,
     load_emodel_params,
     find_param_file,
-    load_amps,
 )
 from emodelrunner.factsheets.morphology_features import MorphologyFactsheetBuilder
 from emodelrunner.factsheets.physiology_features import physiology_factsheet_info
@@ -26,9 +25,7 @@ from emodelrunner.factsheets.experimental_features import (
     load_emodel_fitness,
 )
 from emodelrunner.write_factsheets import (
-    get_morph_path,
     get_morph_name_dict,
-    get_emodel,
     get_mechanisms_data,
     write_metype_json_from_config,
     write_emodel_json_from_config,
@@ -191,9 +188,6 @@ def check_features(config):
     Checks that units correspond to the ones in unit file.
     Checks that model fitnesses correspond to the ones in fitness file."""
     # original files data
-    constants_path = os.path.join(
-        config.get("Paths", "constants_dir"), config.get("Paths", "constants_file")
-    )
     recipes_path = "/".join(
         (config.get("Paths", "recipes_dir"), config.get("Paths", "recipes_file"))
     )
@@ -201,7 +195,7 @@ def check_features(config):
         (config.get("Paths", "params_dir"), config.get("Paths", "params_file"))
     )
 
-    emodel = get_emodel(constants_path)
+    emodel = config.get("Cell", "emodel")
     recipe = load_emodel_recipe_dict(recipes_path, emodel)
     original_feat = load_raw_exp_features(recipe)
     units = load_feature_units()
@@ -227,7 +221,7 @@ def check_features(config):
 
 def check_morph_name(config):
     """Checks that factsheet morph name corresponds to package morph file."""
-    _, morph_fname = get_morph_path(config)
+    morph_fname = config.get("Paths", "morph_file")
     morph_name_dict = get_morph_name_dict(morph_fname)
     assert os.path.isfile(os.path.join("morphology", morph_name_dict["value"] + ".asc"))
 
@@ -283,10 +277,7 @@ def check_mechanisms(config):
     Checks that all values are identical to files.
     """
     # original data
-    constants_path = os.path.join(
-        config.get("Paths", "constants_dir"), config.get("Paths", "constants_file")
-    )
-    emodel = get_emodel(constants_path)
+    emodel = config.get("Cell", "emodel")
     recipes_path = "/".join(
         (config.get("Paths", "recipes_dir"), config.get("Paths", "recipes_file"))
     )
@@ -359,7 +350,8 @@ def check_anatomy(config):
     Checks that data exists and is a float/int and is positive.
     Checks that there is no anatomy field missing.
     """
-    morph_dir, morph_fname = get_morph_path(config)
+    morph_dir = config.get("Paths", "morph_dir")
+    morph_fname = config.get("Paths", "morph_file")
 
     morph_factsheet_builder = MorphologyFactsheetBuilder(
         os.path.join(morph_dir, morph_fname)
@@ -414,13 +406,9 @@ def check_physiology(config):
     Checks that there is no physiology field missing.
     """
     # get current amplitude
-    amps_path = os.path.join(
-        config.get("Paths", "protocol_amplitudes_dir"),
-        config.get("Paths", "protocol_amplitudes_file"),
-    )
     step_number = config.getint("Protocol", "run_step_number")
-    amps, _ = load_amps(amps_path)
-    current_amplitude = amps[step_number - 1]
+    stim_name = "stimulus_amp" + str(step_number)
+    current_amplitude = config.getfloat("Protocol", stim_name)
 
     # get parameters from config
     stim_start = config.getint("Protocol", "stimulus_delay")

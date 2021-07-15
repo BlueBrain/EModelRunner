@@ -4,6 +4,7 @@ import os
 
 from emodelrunner.load import (
     load_config,
+    get_release_params,
     get_syn_mech_args,
     get_syn_prot_args,
     get_hoc_paths_args,
@@ -53,20 +54,20 @@ def get_hoc(config, syn_temp_name="hoc_synapses"):
     syn_hoc_filename = config.get("Paths", "syn_hoc_file")
     syn_dir = config.get("Paths", "syn_dir_for_hoc")
     step_stimulus = config.getboolean("Protocol", "step_stimulus")
-    amps_path = os.path.join(
-        config.get("Paths", "protocol_amplitudes_dir"),
-        config.get("Paths", "protocol_amplitudes_file"),
-    )
-    constants_path = os.path.join(
-        config.get("Paths", "constants_dir"), config.get("Paths", "constants_file")
-    )
-    if config.has_section("Sim") and config.has_option("Sim", "dt"):
-        dt = config.getfloat("Sim", "dt")
-    else:
-        dt = None
+
+    constants_args = {
+        "emodel": config.get("Cell", "emodel"),
+        "morph_dir": config.get("Paths", "morph_dir"),
+        "morph_file": config.get("Paths", "morph_file"),
+        "gid": config.getint("Cell", "gid"),
+        "dt": config.getfloat("Sim", "dt"),
+        "celsius": config.getint("Cell", "celsius"),
+        "v_init": config.getint("Cell", "v_init"),
+    }
 
     # get cell
-    cell, release_params, _ = create_cell_using_config(config)
+    cell = create_cell_using_config(config)
+    release_params = get_release_params(config.get("Cell", "emodel"))
 
     # get cell hoc
     cell_hoc = cell.create_custom_hoc(
@@ -85,10 +86,8 @@ def get_hoc(config, syn_temp_name="hoc_synapses"):
         add_synapses=add_synapses,
         syn_stim_mode=syn_stim_mode,
         hoc_paths=hoc_paths,
-        amps_path=amps_path,
-        constants_path=constants_path,
+        constants_args=constants_args,
         step_stimulus=step_stimulus,
-        dt=dt,
     )
 
     run_hoc = create_run_hoc(

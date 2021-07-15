@@ -4,15 +4,12 @@ import os
 
 from emodelrunner.cell import CellModelCustom
 from emodelrunner.load import (
-    load_config,
     find_param_file,
     load_mechanisms,
     load_syn_mechs,
     define_parameters,
-    load_constants,
     get_morph_args,
     get_syn_mech_args,
-    get_release_params,
 )
 from emodelrunner.morphology import NrnFileMorphologyCustom, get_axon_hoc
 
@@ -75,12 +72,6 @@ def create_cell(
 
 def create_cell_using_config(config):
     """Create a cell given configuration. Return cell, release params and time step."""
-    # load constants
-    constants_path = os.path.join(
-        config.get("Paths", "constants_dir"), config.get("Paths", "constants_file")
-    )
-    emodel, morph_dir, morph_fname, dt_tmp, gid = load_constants(constants_path)
-
     # get recipes path
     recipes_path = "/".join(
         (config.get("Paths", "recipes_dir"), config.get("Paths", "recipes_file"))
@@ -91,36 +82,31 @@ def create_cell_using_config(config):
     syn_mech_args = get_syn_mech_args(config)
 
     # get morphology config data
-    morph_args = get_morph_args(config, morph_fname, morph_dir)
-
-    # load release params
-    release_params = get_release_params(emodel)
+    morph_args = get_morph_args(config)
 
     # create cell
     cell = create_cell(
         recipes_path,
-        emodel,
+        config.get("Cell", "emodel"),
         add_synapses,
         morph_args,
-        gid,
+        config.getint("Cell", "gid"),
         syn_mech_args,
     )
 
-    return cell, release_params, dt_tmp
+    return cell
 
 
 def get_postcell(
-    emodel,
-    morph_fname,
-    morph_dir,
-    gid,
+    config,
     fixhp=False,
     syn_setup_params=None,
-    base_seed=0,
-    v_init=-65,
 ):
     """Return the postcell for synapse plasticity run."""
-    config = load_config()
+    emodel = config.get("Cell", "emodel")
+    gid = config.getint("Cell", "gid")
+    base_seed = config.getint("SynapsePlasticity", "base_seed")
+    v_init = config.getint("Cell", "v_init")
 
     recipes_path = "/".join(
         (config.get("Paths", "recipes_dir"), config.get("Paths", "recipes_file"))
@@ -131,7 +117,7 @@ def get_postcell(
     syn_mech_args["seed"] = base_seed
     syn_mech_args["rng_settings_mode"] = "Compatibility"
 
-    morph_args = get_morph_args(config, morph_fname, morph_dir)
+    morph_args = get_morph_args(config)
 
     add_synapses = True
 
@@ -151,21 +137,19 @@ def get_postcell(
 
 
 def get_precell(
-    emodel,
-    morph_fname,
-    morph_dir,
-    gid,
+    config,
     fixhp=False,
-    v_init=-65,
 ):
     """Return the precell for synapse plasticity pair simulation run."""
-    config = load_config()
+    emodel = config.get("Cell", "emodel")
+    gid = config.getint("Cell", "gid")
+    v_init = config.getint("Cell", "v_init")
 
     recipes_path = "/".join(
         (config.get("Paths", "recipes_dir"), config.get("Paths", "recipes_file"))
     )
 
-    morph_args = get_morph_args(config, morph_fname, morph_dir)
+    morph_args = get_morph_args(config, precell=True)
 
     add_synapses = False
 

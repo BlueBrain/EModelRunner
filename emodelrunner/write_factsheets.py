@@ -6,7 +6,7 @@ import logging
 import os
 import numpy as np
 
-from emodelrunner.load import find_param_file, load_config, load_amps
+from emodelrunner.load import find_param_file, load_config
 from emodelrunner.json_utilities import NpEncoder
 from emodelrunner.factsheets.morphology_features import MorphologyFactsheetBuilder
 from emodelrunner.factsheets.physiology_features import physiology_factsheet_info
@@ -14,36 +14,6 @@ from emodelrunner.factsheets.experimental_features import get_exp_features_data
 from emodelrunner.factsheets.ion_channel_mechanisms import get_mechanisms_data
 
 logger = logging.getLogger(__name__)
-
-
-def get_emodel(constants_path):
-    """Returns emodel as a string."""
-    with open(constants_path, "r") as f:
-        data = json.load(f)
-
-    return data["template_name"]
-
-
-def get_morph_path(config):
-    """Return path to morphology file."""
-    # get morphology path from constants
-    constants_path = os.path.join(
-        config.get("Paths", "constants_dir"), config.get("Paths", "constants_file")
-    )
-    with open(constants_path, "r") as f:
-        data = json.load(f)
-    morph_fname = data["morph_fname"]
-    morph_dir = data["morph_dir"]
-
-    # change it if it is specified in config file
-    if config.has_option("Paths", "morph_dir"):
-        morph_dir = config.get("Paths", "morph_dir")
-    else:
-        morph_dir = os.path.join(config.get("Paths", "memodel_dir"), morph_dir)
-    if config.has_option("Paths", "morph_file"):
-        morph_fname = config.get("Paths", "morph_file")
-
-    return morph_dir, morph_fname
 
 
 def get_morph_name_dict(morph_fname):
@@ -75,12 +45,7 @@ def write_emodel_json(
 
 def write_emodel_json_from_config(config, output_dir="."):
     """Write the e-model factsheet json file."""
-    # get parameters data
-    # get emodel
-    constants_path = os.path.join(
-        config.get("Paths", "constants_dir"), config.get("Paths", "constants_file")
-    )
-    emodel = get_emodel(constants_path)
+    emodel = config.get("Cell", "emodel")
 
     recipes_path = "/".join(
         (config.get("Paths", "recipes_dir"), config.get("Paths", "recipes_file"))
@@ -135,13 +100,9 @@ def write_metype_json(
 def write_metype_json_from_config(config, output_dir="."):
     """Write the me-type factsheet json file."""
     # get current amplitude
-    amps_path = os.path.join(
-        config.get("Paths", "protocol_amplitudes_dir"),
-        config.get("Paths", "protocol_amplitudes_file"),
-    )
     step_number = config.getint("Protocol", "run_step_number")
-    amps, _ = load_amps(amps_path)
-    current_amplitude = amps[step_number - 1]
+    stim_name = "stimulus_amp" + str(step_number)
+    current_amplitude = config.getfloat("Protocol", stim_name)
 
     # get parameters from config
     stim_start = config.getint("Protocol", "stimulus_delay")
@@ -152,7 +113,8 @@ def write_metype_json_from_config(config, output_dir="."):
     fpath = os.path.join("python_recordings", fname)
 
     # get morph path
-    morph_dir, morph_fname = get_morph_path(config)
+    morph_dir = config.get("Paths", "morph_dir")
+    morph_fname = config.get("Paths", "morph_file")
 
     write_metype_json(
         fpath,

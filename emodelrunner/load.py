@@ -25,6 +25,10 @@ except NameError:
 def load_config(config_dir="config", filename=None):
     """Set config from config file and set default value."""
     defaults = {
+        # cell
+        "celsius": "34",
+        "v_init": "-80",
+        "gid": "0",
         # protocol
         "step_stimulus": "True",
         "run_all_steps": "True",
@@ -32,6 +36,10 @@ def load_config(config_dir="config", filename=None):
         "total_duration": "3000",
         "stimulus_delay": "700",
         "stimulus_duration": "2000",
+        "stimulus_amp1": "0",
+        "stimulus_amp2": "0",
+        "stimulus_amp3": "0",
+        "hold_amp": "0",
         "hold_stimulus_delay": "0",
         "hold_stimulus_duration": "3000",
         "syn_stim_mode": "vecstim",
@@ -47,6 +55,7 @@ def load_config(config_dir="config", filename=None):
         "do_replace_axon": "True",
         # sim
         "cvode_active": "False",
+        "dt": "0.025",
         # synapse
         "add_synapses": "False",
         "seed": "846515",
@@ -55,14 +64,10 @@ def load_config(config_dir="config", filename=None):
         "memodel_dir": ".",
         "output_dir": "%(memodel_dir)s/python_recordings",
         "output_file": "soma_voltage_",
-        "constants_dir": "config",
-        "constants_file": "constants.json",
         "recipes_dir": "config/recipes",
         "recipes_file": "recipes.json",
         "params_dir": "config/params",
         "params_file": "final.json",
-        "protocol_amplitudes_dir": "config",
-        "protocol_amplitudes_file": "current_amps.json",
         "templates_dir": "templates",
         "hoc_file": "cell.hoc",
         "create_hoc_template_file": "cell_template_neurodamus.jinja2",
@@ -75,6 +80,9 @@ def load_config(config_dir="config", filename=None):
         "syn_hoc_file": "synapses.hoc",
         "syn_mtype_map": "mtype_map.tsv",
         "simul_hoc_file": "createsimulation.hoc",
+        "synplas_fit_params_dir": "config",
+        "synplas_fit_params_file": "fit_params.json",
+        "morph_dir": "morphology",
     }
 
     config = configparser.ConfigParser(defaults=defaults)
@@ -86,7 +94,15 @@ def load_config(config_dir="config", filename=None):
         config.read(config_path)
 
     # make sure that config has all sections
-    secs = ["Cell", "Protocol", "Morphology", "Sim", "Synapses", "Paths"]
+    secs = [
+        "Cell",
+        "Protocol",
+        "Morphology",
+        "Sim",
+        "Synapses",
+        "Paths",
+        "SynapsePlasticity",
+    ]
     for sec in secs:
         if not config.has_section(sec):
             config.add_section(sec)
@@ -116,6 +132,10 @@ def get_step_prot_args(config):
         "hold_step_duration": config.getint("Protocol", "hold_stimulus_duration"),
         "run_all_steps": config.getboolean("Protocol", "run_all_steps"),
         "run_step_number": config.getint("Protocol", "run_step_number"),
+        "hold_amp": config.getfloat("Protocol", "hold_amp"),
+        "stimulus_amp1": config.getfloat("Protocol", "stimulus_amp1"),
+        "stimulus_amp2": config.getfloat("Protocol", "stimulus_amp2"),
+        "stimulus_amp3": config.getfloat("Protocol", "stimulus_amp3"),
     }
 
 
@@ -145,22 +165,19 @@ def get_syn_mech_args(config):
     }
 
 
-def get_morph_args(config, morph_fname, morph_dir):
+def get_morph_args(config, precell=False):
     """Get the dict containing morphology configuration data.
 
     Args:
         config (dict): data from config file.
-        morph_fname (str): morphology file name according to constants file.
-        morph_dir (str): path to repo containing the morphology according to constants.
+        precell (bool): True to load precell morph. False to load usual morph.
     """
     # load morphology path
-    if config.has_option("Paths", "morph_dir"):
-        morph_dir = config.get("Paths", "morph_dir")
+    morph_dir = config.get("Paths", "morph_dir")
+    if precell:
+        morph_fname = config.get("Paths", "precell_morph_file")
     else:
-        morph_dir = os.path.join(config.get("Paths", "memodel_dir"), morph_dir)
-    if config.has_option("Paths", "morph_file"):
         morph_fname = config.get("Paths", "morph_file")
-
     morph_path = os.path.join(morph_dir, morph_fname)
 
     # load axon hoc path
@@ -189,34 +206,12 @@ def get_presyn_stim_args(config, pre_spike_train):
     }
 
 
-def load_amps(amps_path):
-    """Load stimuli amplitudes from file."""
-    with open(amps_path, "r") as f:
-        data = json.load(f)
-
-    return data["amps"], data["holding"]
-
-
 def find_param_file(recipes_path, emodel):
     """Find the parameter file for unfrozen params."""
     recipes = load_package_json(recipes_path)
     recipe = recipes[emodel]
 
     return recipe["params"]
-
-
-def load_constants(constants_path):
-    """Get etype, morphology, timestep and gid."""
-    with open(constants_path, "r") as f:
-        data = json.load(f)
-
-    emodel = data["template_name"]
-    morph_dir = data["morph_dir"]
-    morph_fname = data["morph_fname"]
-    dt = data["dt"]
-    gid = data["gid"]
-
-    return emodel, morph_dir, morph_fname, dt, gid
 
 
 def load_emodel_params(emodel, params_path):
@@ -229,20 +224,30 @@ def load_emodel_params(emodel, params_path):
     return param_dict
 
 
-def get_syn_setup_params(syn_dir, syn_extra_params_fname, cpre_cpost_fname, constants):
+def get_syn_setup_params(
+    syn_dir,
+    syn_extra_params_fname,
+    cpre_cpost_fname,
+    fit_params_dir,
+    fit_params_fname,
+    gid,
+    invivo,
+):
     """Load json files and return syn_setup_params dict."""
     with open(os.path.join(syn_dir, syn_extra_params_fname), "r") as f:
         syn_extra_params = json.load(f)
     with open(os.path.join(syn_dir, cpre_cpost_fname), "r") as f:
         cpre_cpost = json.load(f)
+    with open(os.path.join(fit_params_dir, fit_params_fname), "r") as f:
+        fit_params = json.load(f)
 
     return {
         "syn_extra_params": syn_extra_params,
         "c_pre": cpre_cpost["c_pre"],
         "c_post": cpre_cpost["c_post"],
-        "fit_params": constants["fit_params"],
-        "postgid": constants["gid"],
-        "invivo": constants["invivo"],
+        "fit_params": fit_params,
+        "postgid": gid,
+        "invivo": invivo,
     }
 
 

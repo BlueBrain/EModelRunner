@@ -1,4 +1,5 @@
 """Run function to for synapse plasticity simulation."""
+import argparse
 import json
 import logging
 import os
@@ -11,6 +12,7 @@ from emodelrunner.create_cells import get_postcell
 from emodelrunner.create_protocols import define_synapse_plasticity_protocols
 from emodelrunner.load import get_release_params
 from emodelrunner.load import get_syn_setup_params
+from emodelrunner.load import load_config
 from emodelrunner.output import write_synplas_output
 
 # Configure logger
@@ -31,31 +33,33 @@ def run(
     cvode_active=True,
     protocol_name="pulse",
     fixhp=True,
+    config_file="config_pairsim.ini",
 ):
     """Run cell with pulse stimuli and pre-cell spike train."""
-    constants_path = os.path.join("config", "constants.json")
-    with open(constants_path, "r") as f:
-        constants = json.load(f)
+    config = load_config(filename=config_file)
 
     # load extra_params
     syn_setup_params = get_syn_setup_params(
-        "synapses", "syn_extra_params.json", "cpre_cpost.json", constants
+        "synapses",
+        "syn_extra_params.json",
+        "cpre_cpost.json",
+        config.get("Paths", "synplas_fit_params_dir"),
+        config.get("Paths", "synplas_fit_params_file"),
+        config.getint("Cell", "gid"),
+        config.getboolean("SynapsePlasticity", "invivo"),
     )
 
     # load cell
     cell = get_postcell(
-        emodel=constants["emodel"],
-        morph_fname=constants["morph_fname"],
-        morph_dir="morphology",
-        gid=constants["gid"],
+        config=config,
         fixhp=fixhp,
         syn_setup_params=syn_setup_params,
-        base_seed=constants["base_seed"],
-        v_init=constants["v_init"],
     )
 
-    sim = ephys.simulators.NrnSimulator(dt=constants["dt"], cvode_active=cvode_active)
-    release_params = get_release_params(constants["emodel"])
+    sim = ephys.simulators.NrnSimulator(
+        dt=config.getfloat("Sim", "dt"), cvode_active=cvode_active
+    )
+    release_params = get_release_params(config.get("Cell", "emodel"))
 
     # set dynamic timestep tolerance
     sim.neuron.h.cvode.atolscale("v", 0.1)  # 0.01 for more precision
@@ -65,11 +69,11 @@ def run(
     pre_spike_train = np.unique(np.loadtxt(spike_train_path, skiprows=1)[:, 0])
 
     # Set fitted model parameters
-    if constants["fit_params"] is not None:
-        _set_global_params(constants["fit_params"], sim)
+    if syn_setup_params["fit_params"]:
+        _set_global_params(syn_setup_params["fit_params"], sim)
 
     # Enable in vivo mode (global)
-    if constants["invivo"]:
+    if config.getboolean("SynapsePlasticity", "invivo"):
         sim.neuron.h.cao_CR_GluSynapse = 1.2  # mM
 
     # protocols
@@ -78,9 +82,9 @@ def run(
         pre_spike_train,
         protocol_name,
         cvode_active,
-        constants["synrec"],
-        constants["tstop"],
-        constants["fastforward"],
+        json.loads(config.get("SynapsePlasticity", "synrec")),
+        config.getfloat("Protocol", "tstop"),
+        config.getfloat("SynapsePlasticity", "fastforward"),
     )
 
     # run
@@ -95,4 +99,16 @@ def run(
 
 
 if __name__ == "__main__":
-    run()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--c",
+        default=None,
+        help="the name of the config file",
+    )
+    args = parser.parse_args()
+
+    _config_file = args.c
+    if _config_file is None:
+        run()
+    else:
+        run(config_file=_config_file)

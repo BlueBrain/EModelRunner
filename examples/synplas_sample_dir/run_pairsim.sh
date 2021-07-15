@@ -5,4 +5,4 @@ if [ ! -f "x86_64/special" ]; then
     nrnivmodl mechanisms
 fi
 
-python -m emodelrunner.run_pairsim
+python -m emodelrunner.run_pairsim --c "config_pairsim.ini"

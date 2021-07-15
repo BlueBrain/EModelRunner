@@ -1,7 +1,6 @@
 """Creates .hoc from cell."""
 
 # pylint: disable=too-many-arguments
-import json
 import os
 from datetime import datetime
 
@@ -13,7 +12,6 @@ from bluepyopt.ephys.create_hoc import (
     _generate_channels_by_location,
     _generate_reinitrng,
 )
-from emodelrunner.load import load_amps
 
 
 def create_run_hoc(template_dir, template_filename, step_stimulus):
@@ -158,10 +156,8 @@ def create_simul_hoc(
     add_synapses,
     syn_stim_mode,
     hoc_paths,
-    amps_path,
-    constants_path,
+    constants_args,
     step_stimulus,
-    dt=None,
 ):
     """Create createsimulation.hoc file."""
     # pylint: disable=too-many-locals
@@ -177,20 +173,11 @@ def create_simul_hoc(
     syn_hoc_file = hoc_paths["syn_hoc_filename"]
     hoc_file = hoc_paths["hoc_filename"]
 
-    # load data from constants.json
-    with open(constants_path, "r") as f:
-        data = json.load(f)
-    hoc_name = data["template_name"]
-    morph_dir = data["morph_dir"]
-    morph_fname = data["morph_fname"]
-    gid = data["gid"]
-    if dt is None:
-        dt = data["dt"]
-    celsius = data["celsius"]
-    v_init = data["v_init"]
-
     # load data from current_amps
-    (amp1, amp2, amp3), holding = load_amps(amps_path)
+    holding = step_args["hold_amp"]
+    amp1 = step_args["stimulus_amp1"]
+    amp2 = step_args["stimulus_amp2"]
+    amp3 = step_args["stimulus_amp3"]
 
     # load template
     template_path = os.path.join(template_dir, template_filename)
@@ -211,15 +198,15 @@ def create_simul_hoc(
         syn_dir=syn_dir,
         syn_hoc_file=syn_hoc_file,
         hoc_file=hoc_file,
-        template_name=hoc_name,
-        morph_dir=morph_dir,
-        morph_fname=morph_fname,
-        gid=gid,
+        template_name=constants_args["emodel"],
+        morph_dir=constants_args["morph_dir"],
+        morph_fname=constants_args["morph_file"],
+        gid=constants_args["gid"],
         amp1=amp1,
         amp2=amp2,
         amp3=amp3,
         holding=holding,
-        dt=dt,
-        celsius=celsius,
-        v_init=v_init,
+        dt=constants_args["dt"],
+        celsius=constants_args["celsius"],
+        v_init=constants_args["v_init"],
     )

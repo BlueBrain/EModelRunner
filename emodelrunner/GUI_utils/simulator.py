@@ -1,6 +1,5 @@
 """Class containing simulation for the GUI."""
 
-import json
 import os
 import numpy as np
 
@@ -15,7 +14,6 @@ from emodelrunner.load import (
     define_parameters,
     load_mechanisms,
     find_param_file,
-    load_constants,
     get_morph_args,
     get_release_params,
 )
@@ -189,15 +187,12 @@ class NeuronSimulation:
 
     def load_default_step_stim(self):
         """Load the default step & holding stimuli."""
-        amp_filename = os.path.join(
-            self.config.get("Paths", "protocol_amplitudes_dir"),
-            self.config.get("Paths", "protocol_amplitudes_file"),
-        )
-
-        with open(amp_filename, "r") as f:
-            data = json.load(f)
-        amplitudes = data["amps"]
-        hypamp = data["holding"]
+        amplitudes = [
+            self.config.get("Protocol", "stimulus_amp1"),
+            self.config.get("Protocol", "stimulus_amp2"),
+            self.config.get("Protocol", "stimulus_amp3"),
+        ]
+        hypamp = self.config.get("Protocol", "hold_amp")
 
         return amplitudes, hypamp
 
@@ -249,12 +244,8 @@ class NeuronSimulation:
     def create_cell_custom(self):
         """Create a cell. Returns cell, release params and time step."""
         # pylint: disable=too-many-locals
-        # load constants
-        constants_path = os.path.join(
-            self.config.get("Paths", "constants_dir"),
-            self.config.get("Paths", "constants_file"),
-        )
-        emodel, morph_dir, morph_fname, dt_tmp, gid = load_constants(constants_path)
+        emodel = self.config.get("Cell", "emodel")
+        gid = self.config.getint("Cell", "gid")
 
         # load mechanisms
         recipes_path = "/".join(
@@ -291,11 +282,10 @@ class NeuronSimulation:
         ]
 
         # load parameters
-        release_params = get_release_params(emodel)
         params = define_parameters(params_filepath)
 
         # load morphology
-        morph_config = get_morph_args(self.config, morph_fname, morph_dir)
+        morph_config = get_morph_args(self.config)
         replace_axon_hoc = get_axon_hoc(morph_config["axon_hoc_path"])
         morph = NrnFileMorphologyCustom(
             morph_config["morph_path"],
@@ -312,17 +302,15 @@ class NeuronSimulation:
             gid=gid,
         )
 
-        return cell, release_params, dt_tmp
+        return cell
 
     def load_cell_sim(self):
         """Load BPO cell & simulation."""
-        self.cell, self.release_params, dt_tmp = self.create_cell_custom()
-
-        if self.config.has_section("Sim") and self.config.has_option("Sim", "dt"):
-            dt = self.config.getfloat("Sim", "dt")
-        else:
-            dt = dt_tmp
-        self.sim = ephys.simulators.NrnSimulator(dt=dt, cvode_active=False)
+        self.cell = self.create_cell_custom()
+        self.release_params = get_release_params(self.config.get("Cell", "emodel"))
+        self.sim = ephys.simulators.NrnSimulator(
+            dt=self.config.getfloat("Sim", "dt"), cvode_active=False
+        )
 
     def load_synapse_display_data(self):
         """Load dict containing x,y,z of each synapse & inhib/excit."""

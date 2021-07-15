@@ -7,7 +7,6 @@ from emodelrunner.create_recordings import get_pairsim_recordings
 from emodelrunner.create_stimuli import load_pulses
 from emodelrunner.create_stimuli import generate_current
 from emodelrunner.create_stimuli import get_step_stimulus
-from emodelrunner.load import load_amps
 from emodelrunner.protocols import SweepProtocolCustom
 from emodelrunner.protocols import SweepProtocolPairSim
 from emodelrunner.recordings import RecordingCustom
@@ -43,7 +42,6 @@ def get_step_numbers(run_all_steps, run_step_number, step_number=3):
 
 
 def get_step_protocol(
-    amps_path,
     step_args,
     soma_loc,
     cvode_active=False,
@@ -52,7 +50,12 @@ def get_step_protocol(
     """Create Step Stimuli and return the Protocols for all stimuli."""
     # pylint: disable=too-many-locals
     # get current amplitude data
-    amplitudes, hypamp = load_amps(amps_path)
+    amplitudes = [
+        step_args["stimulus_amp1"],
+        step_args["stimulus_amp2"],
+        step_args["stimulus_amp3"],
+    ]
+    hypamp = step_args["hold_amp"]
 
     # get step numbers to run
     from_step, up_to = get_step_numbers(
@@ -89,13 +92,11 @@ class SSCXProtocols:
         syn_args,
         step_stim,
         add_synapses,
-        amps_path,
         cvode_active,
         cell=None,
     ):
         """Define Protocols."""
         self.step_args = step_args
-        self.amplitudes, self.hypamp = load_amps(amps_path)
         self.protocols = None
 
         # synapses location and stimuli
@@ -118,7 +119,7 @@ class SSCXProtocols:
         if step_stim:
             # get step protocols
             protocols = get_step_protocol(
-                amps_path, self.step_args, soma_loc, cvode_active, syn_stim
+                self.step_args, soma_loc, cvode_active, syn_stim
             )
         elif syn_stim:
             protocol_name = syn_args["syn_stim_mode"]
@@ -151,10 +152,15 @@ class SSCXProtocols:
         step_duration = self.step_args["step_duration"]
         stim_end = stim_start + step_duration
         total_duration = self.step_args["total_duration"]
-        holding_current = self.hypamp
+        holding_current = self.step_args["hold_amp"]
+        amplitudes = [
+            self.step_args["stimulus_amp1"],
+            self.step_args["stimulus_amp2"],
+            self.step_args["stimulus_amp3"],
+        ]
 
         currents = []
-        for amplitude in self.amplitudes:
+        for amplitude in amplitudes:
             current = generate_current(
                 total_duration, holding_current, stim_start, stim_end, amplitude
             )

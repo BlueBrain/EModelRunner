@@ -1,7 +1,6 @@
 """Create python recordings."""
 
 import argparse
-import os
 
 from bluepyopt import ephys
 
@@ -9,6 +8,7 @@ from emodelrunner.create_cells import create_cell_using_config
 from emodelrunner.create_protocols import SSCXProtocols
 from emodelrunner.load import (
     load_config,
+    get_release_params,
     get_step_prot_args,
     get_syn_prot_args,
 )
@@ -21,15 +21,13 @@ def main(config_file):
     # pylint: disable=too-many-locals
     config = load_config(filename=config_file)
 
-    cell, release_params, dt_tmp = create_cell_using_config(config)
+    cell = create_cell_using_config(config)
+    release_params = get_release_params(config.get("Cell", "emodel"))
 
     cvode_active = config.getboolean("Sim", "cvode_active")
 
     # simulator
-    if config.has_section("Sim") and config.has_option("Sim", "dt"):
-        dt = config.getfloat("Sim", "dt")
-    else:
-        dt = dt_tmp
+    dt = config.getfloat("Sim", "dt")
     sim = ephys.simulators.NrnSimulator(dt=dt, cvode_active=cvode_active)
 
     # create protocols
@@ -37,13 +35,9 @@ def main(config_file):
     add_synapses = config.getboolean("Synapses", "add_synapses")
     step_args = get_step_prot_args(config)
     syn_args = get_syn_prot_args(config)
-    amps_path = os.path.join(
-        config.get("Paths", "protocol_amplitudes_dir"),
-        config.get("Paths", "protocol_amplitudes_file"),
-    )
 
     sscx_protocols = SSCXProtocols(
-        step_args, syn_args, step_stim, add_synapses, amps_path, cvode_active, cell
+        step_args, syn_args, step_stim, add_synapses, cvode_active, cell
     )
     ephys_protocols = sscx_protocols.get_ephys_protocols()
     currents = sscx_protocols.get_stim_currents()

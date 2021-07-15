@@ -18,7 +18,7 @@ def remove_all_outputs():
             os.remove(filepath)
 
 
-def check_output(threshold_v=0.1, threshold_other=0.5):
+def check_output(threshold_v=0.1):
     """Checks output with respect to the original run."""
     original_path = os.path.join(data_dir, "original.h5")
     new_path = os.path.join(example_dir, "output.h5")
@@ -45,7 +45,7 @@ def test_voltages():
     with cwd(example_dir):
         subprocess.call(["sh", "run.sh"])
 
-    check_output(threshold_v=0.1, threshold_other=1.0)
+    check_output(threshold_v=0.1)
 
 
 def test_pairsim_voltages():
@@ -59,4 +59,4 @@ def test_pairsim_voltages():
     with cwd(example_dir):
         subprocess.call(["sh", "run_pairsim.sh"])
 
-    check_output(threshold_v=1.0, threshold_other=10.0)
+    check_output(threshold_v=1.0)
