@@ -119,7 +119,7 @@ class NeuronSimulation:
             type=0 if inhib, type=1 if excit
     """
 
-    def __init__(self, config_file=None):
+    def __init__(self, config_file="config_allsteps.ini"):
         """Constructor. Load default params from config file."""
         # load config file
         self.config = load_config(filename=config_file)
@@ -188,11 +188,11 @@ class NeuronSimulation:
     def load_default_step_stim(self):
         """Load the default step & holding stimuli."""
         amplitudes = [
-            self.config.get("Protocol", "stimulus_amp1"),
-            self.config.get("Protocol", "stimulus_amp2"),
-            self.config.get("Protocol", "stimulus_amp3"),
+            self.config.getfloat("Protocol", "stimulus_amp1"),
+            self.config.getfloat("Protocol", "stimulus_amp2"),
+            self.config.getfloat("Protocol", "stimulus_amp3"),
         ]
-        hypamp = self.config.get("Protocol", "hold_amp")
+        hypamp = self.config.getfloat("Protocol", "hold_amp")
 
         return amplitudes, hypamp
 

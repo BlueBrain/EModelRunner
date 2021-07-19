@@ -26,14 +26,15 @@ class GUI:
         reload (bool): if True, the simulation has to be reloaded
     """
 
-    def __init__(self, fps=15):
+    def __init__(self, fps=15, config_file="config_allsteps.ini"):
         """Constructor.
 
         Args:
             fps (int): frames per second for the figure display
+            config_file (str): name of the config file used by NeuronSimulation
         """
         # init simulation
-        self.simulation = NeuronSimulation()
+        self.simulation = NeuronSimulation(config_file=config_file)
 
         # load cell, simulation, and protocol(s)
         self.simulation.load_cell_sim()
