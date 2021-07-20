@@ -1,0 +1,15 @@
+include:
+   - project: nse/ci
+     file:
+        - /ci/lib/tox-docker.yml
+        - /ci/jobs/check-version.yml
+        - /ci/jobs/check-packaging.yml
+        - /ci/jobs/lint.yml
+        - /ci/jobs/py36.yml
+        - /ci/jobs/py37.yml
+        - /ci/jobs/py38.yml
+        - /ci/jobs/docs.yml
+        - /ci/jobs/build-package.yml
+        - /ci/jobs/publish-package.yml
+        - /ci/jobs/publish-docs.yml
+        - /ci/jobs/tag.yml
