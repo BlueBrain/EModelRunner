@@ -11,9 +11,12 @@ dist
 .eggs
 .idea
 .vscode
-tests/sample_dir/x86_64
-tests/glusyn_sample_dir/x86_64
-tests/sample_dir/hoc_recordings
-tests/sample_dir/python_recordings
 .notebook
 x86_64
+examples/sscx_sample_dir/factsheets
+examples/sscx_sample_dir/hoc_recordings
+examples/sscx_sample_dir/python_recordings
+examples/sscx_sample_dir/cell.hoc
+examples/sscx_sample_dir/run.hoc
+examples/sscx_sample_dir/createsimulation.hoc
+examples/sscx_sample_dir/synapses/synapses.hoc
