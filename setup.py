@@ -30,8 +30,8 @@ setup(
     long_description_content_type="text/x-rst",
     url="https://bbpteam.epfl.ch/documentation/projects/EModelRunner",
     project_urls={
-        "Tracker": "https://bbpteam.epfl.ch/project/issues/projects/NSETM/issues",
-        "Source": "ssh://bbpcode.epfl.ch/cells/EModelRunner",
+        "Tracker": "https://bbpteam.epfl.ch/project/issues/projects/CELLS/issues",
+        "Source": "https://bbpgitlab.epfl.ch/cells/emodelrunner",
     },
     license="BBP-internal-confidential",
     install_requires=[
