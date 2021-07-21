@@ -2,11 +2,6 @@
 import pytest
 from emodelrunner.load import load_config
 
-try:
-    FileNotFoundError
-except NameError:
-    FileNotFoundError = IOError  # python2.7 case
-
 
 def test_load_config():
     """Test the config loader."""
