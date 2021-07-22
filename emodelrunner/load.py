@@ -2,10 +2,7 @@
 
 import collections
 
-try:
-    import ConfigParser as configparser  # for python2
-except ImportError:
-    import configparser  # for python3
+import configparser
 import json
 import os
 
@@ -14,12 +11,6 @@ from bluepyopt import ephys
 from emodelrunner.json_utilities import load_package_json
 from emodelrunner.synapses.mechanism import NrnMODPointProcessMechanismCustom
 from emodelrunner.locations import multi_locations
-
-# FileNotFoundError does not exist in python2.7
-try:
-    FileNotFoundError
-except NameError:
-    FileNotFoundError = IOError  # pylint: disable=redefined-builtin
 
 
 def load_config(config_dir="config", filename=None):
