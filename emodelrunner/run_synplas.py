@@ -59,7 +59,7 @@ def run(
     sim = ephys.simulators.NrnSimulator(
         dt=config.getfloat("Sim", "dt"), cvode_active=cvode_active
     )
-    release_params = get_release_params(config.get("Cell", "emodel"))
+    release_params = get_release_params(config)
 
     # set dynamic timestep tolerance
     sim.neuron.h.cvode.atolscale("v", 0.1)  # 0.01 for more precision
@@ -102,13 +102,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--c",
-        default=None,
+        default="config_pairsim.ini",
         help="the name of the config file",
     )
     args = parser.parse_args()
 
     _config_file = args.c
-    if _config_file is None:
-        run()
-    else:
-        run(config_file=_config_file)
+    run(config_file=_config_file)

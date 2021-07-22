@@ -11,7 +11,7 @@ from emodelrunner.synapses.stimuli import NrnNetStimStimulusCustom
 from emodelrunner.load import (
     load_config,
     load_syn_mechs,
-    define_parameters,
+    load_unoptimized_parameters,
     load_mechanisms,
     find_param_file,
     get_morph_args,
@@ -282,7 +282,11 @@ class NeuronSimulation:
         ]
 
         # load parameters
-        params = define_parameters(params_filepath)
+        params = load_unoptimized_parameters(
+            params_filepath,
+            v_init=self.config.getint("Cell", "v_init"),
+            celsius=self.config.getint("Cell", "celsius"),
+        )
 
         # load morphology
         morph_config = get_morph_args(self.config)
@@ -307,7 +311,7 @@ class NeuronSimulation:
     def load_cell_sim(self):
         """Load BPO cell & simulation."""
         self.cell = self.create_cell_custom()
-        self.release_params = get_release_params(self.config.get("Cell", "emodel"))
+        self.release_params = get_release_params(self.config)
         self.sim = ephys.simulators.NrnSimulator(
             dt=self.config.getfloat("Sim", "dt"), cvode_active=False
         )

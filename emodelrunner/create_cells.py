@@ -7,7 +7,7 @@ from emodelrunner.load import (
     find_param_file,
     load_mechanisms,
     load_syn_mechs,
-    define_parameters,
+    load_unoptimized_parameters,
     get_morph_args,
     get_syn_mech_args,
 )
@@ -24,7 +24,8 @@ def create_cell(
     use_glu_synapse=False,
     fixhp=False,
     syn_setup_params=None,
-    v_init=None,
+    v_init=-80,
+    celsius=34,
 ):
     """Create a cell."""
     # pylint: disable=too-many-arguments, too-many-locals
@@ -46,7 +47,7 @@ def create_cell(
         ]
 
     # load parameters
-    params = define_parameters(params_filepath, v_init)
+    params = load_unoptimized_parameters(params_filepath, v_init, celsius)
 
     # load morphology
     replace_axon_hoc = get_axon_hoc(morph_args["axon_hoc_path"])
@@ -92,6 +93,8 @@ def create_cell_using_config(config):
         morph_args,
         config.getint("Cell", "gid"),
         syn_mech_args,
+        v_init=config.getint("Cell", "v_init"),
+        celsius=config.getint("Cell", "celsius"),
     )
 
     return cell
@@ -107,6 +110,7 @@ def get_postcell(
     gid = config.getint("Cell", "gid")
     base_seed = config.getint("SynapsePlasticity", "base_seed")
     v_init = config.getint("Cell", "v_init")
+    celsius = config.getint("Cell", "celsius")
 
     recipes_path = "/".join(
         (config.get("Paths", "recipes_dir"), config.get("Paths", "recipes_file"))
@@ -132,6 +136,7 @@ def get_postcell(
         fixhp=fixhp,
         syn_setup_params=syn_setup_params,
         v_init=v_init,
+        celsius=celsius,
     )
     return cell
 
@@ -144,6 +149,7 @@ def get_precell(
     emodel = config.get("Cell", "emodel")
     gid = config.getint("Cell", "gid")
     v_init = config.getint("Cell", "v_init")
+    celsius = config.getint("Cell", "celsius")
 
     recipes_path = "/".join(
         (config.get("Paths", "recipes_dir"), config.get("Paths", "recipes_file"))
@@ -161,5 +167,6 @@ def get_precell(
         gid,
         fixhp=fixhp,
         v_init=v_init,
+        celsius=celsius,
     )
     return cell

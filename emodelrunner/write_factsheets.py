@@ -131,7 +131,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--c",
-        default=None,
+        default="config_singlestep.ini",
         help="the name of the config file",
     )
     args = parser.parse_args()

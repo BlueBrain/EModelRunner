@@ -13,7 +13,7 @@ from emodelrunner.synapses.mechanism import NrnMODPointProcessMechanismCustom
 from emodelrunner.locations import multi_locations
 
 
-def load_config(config_dir="config", filename=None):
+def load_config(filename, config_dir="config"):
     """Set config from config file and set default value."""
     defaults = {
         # cell
@@ -242,13 +242,16 @@ def get_syn_setup_params(
     }
 
 
-def get_release_params(emodel):
+def get_release_params(config, precell=False):
     """Return the final parameters."""
-    config = load_config()
-
+    if precell:
+        emodel = config.get("Cell", "precell_emodel")
+    else:
+        emodel = config.get("Cell", "emodel")
     params_path = "/".join(
         (config.get("Paths", "params_dir"), config.get("Paths", "params_file"))
     )
+
     release_params = load_emodel_params(params_path=params_path, emodel=emodel)
 
     return release_params
@@ -277,8 +280,16 @@ def load_mechanisms(mechs_filepath):
     return mechanisms_list
 
 
-def define_parameters(params_filepath, v_init=None):
-    """Define parameters."""
+def load_unoptimized_parameters(params_filepath, v_init, celsius):
+    """Load unoptimized parameters as BluePyOpt parameters.
+
+    Args:
+        params_filepath (str): path to the json file containing
+            the non-optimised parameters
+        v_init (int): initial voltage. Will override v_init value from parameter file
+        celsius (int): cell temperature in celsius.
+            Will override celsius value from parameter file
+    """
     # pylint: disable=too-many-locals, too-many-branches, too-many-statements
     parameters = []
 
@@ -341,8 +352,10 @@ def define_parameters(params_filepath, v_init=None):
 
             if is_global:
                 # force v_init to the given value
-                if param_name == "v_init" and v_init is not None:
+                if param_name == "v_init":
                     value = v_init
+                elif param_name == "celsius":
+                    value = celsius
                 parameters.append(
                     ephys.parameters.NrnGlobalParameter(
                         name=param_name,

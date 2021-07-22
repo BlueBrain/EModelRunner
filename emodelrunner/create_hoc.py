@@ -67,7 +67,7 @@ def get_hoc(config, syn_temp_name="hoc_synapses"):
 
     # get cell
     cell = create_cell_using_config(config)
-    release_params = get_release_params(config.get("Cell", "emodel"))
+    release_params = get_release_params(config)
 
     # get cell hoc
     cell_hoc = cell.create_custom_hoc(
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--c",
-        default=None,
+        default="config_multistep.ini",
         help="the name of the config file",
     )
     args = parser.parse_args()

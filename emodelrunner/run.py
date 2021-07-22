@@ -22,7 +22,7 @@ def main(config_file):
     config = load_config(filename=config_file)
 
     cell = create_cell_using_config(config)
-    release_params = get_release_params(config.get("Cell", "emodel"))
+    release_params = get_release_params(config)
 
     cvode_active = config.getboolean("Sim", "cvode_active")
 
