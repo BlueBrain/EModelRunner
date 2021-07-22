@@ -68,16 +68,10 @@ class FrameSetIntFromEntry(ttk.Frame):
         # string variable to be binded to entry
         self.sv = tk.StringVar()
         self.sv.set(str(getattr(gui.simulation, attr_name)))  # default value
-        try:  # python3
-            self.sv.trace_add(
-                "write",
-                lambda name, index, mode, sv=self.sv: self.get_value(gui, attr_name),
-            )
-        except AttributeError:  # python2
-            self.sv.trace_variable(
-                "w",
-                lambda name, index, mode, sv=self.sv: self.get_value(gui, attr_name),
-            )
+        self.sv.trace_add(
+            "write",
+            lambda name, index, mode, sv=self.sv: self.get_value(gui, attr_name),
+        )
 
         # entry
         self.entry = ttk.Entry(
@@ -174,16 +168,10 @@ class FrameStepStimulus(ttk.Frame):
         # string variable to be binded to entry
         self.sv = tk.StringVar()
         self.sv.set("0.0")  # default value
-        try:  # python3
-            self.sv.trace_add(
-                "write",
-                lambda name, index, mode, sv=self.sv: self.get_custom_step_stim(gui),
-            )
-        except AttributeError:  # python2
-            self.sv.trace_variable(
-                "w",
-                lambda name, index, mode, sv=self.sv: self.get_custom_step_stim(gui),
-            )
+        self.sv.trace_add(
+            "write",
+            lambda name, index, mode, sv=self.sv: self.get_custom_step_stim(gui),
+        )
 
         # entry
         self.custom_entry = ttk.Entry(
@@ -274,16 +262,10 @@ class FrameHoldStimulus(ttk.Frame):
         # string variable to be binded to entry
         self.sv = tk.StringVar()
         self.sv.set("0.0")  # default value
-        try:  # python3
-            self.sv.trace_add(
-                "write",
-                lambda name, index, mode, sv=self.sv: self.get_custom_hold_stim(gui),
-            )
-        except AttributeError:  # python3
-            self.sv.trace_variable(
-                "w",
-                lambda name, index, mode, sv=self.sv: self.get_custom_hold_stim(gui),
-            )
+        self.sv.trace_add(
+            "write",
+            lambda name, index, mode, sv=self.sv: self.get_custom_hold_stim(gui),
+        )
 
         # entry
         self.custom_entry = ttk.Entry(
@@ -988,22 +970,12 @@ class FrameSynapses(ttk.LabelFrame):
         ]
         for j, var in enumerate(default_var):
             self.svs[4 * i + j].set(str(var))
-            # python3
-            try:
-                self.svs[4 * i + j].trace_add(
-                    "write",
-                    lambda name, index, mode, sv=self.svs[
-                        4 * i + j
-                    ]: self.load_current_mtype_list(gui),
-                )
-            # python2
-            except AttributeError:
-                self.svs[4 * i + j].trace_variable(
-                    "w",
-                    lambda name, index, mode, sv=self.svs[
-                        4 * i + j
-                    ]: self.load_current_mtype_list(gui),
-                )
+            self.svs[4 * i + j].trace_add(
+                "write",
+                lambda name, index, mode, sv=self.svs[
+                    4 * i + j
+                ]: self.load_current_mtype_list(gui),
+            )
 
     @staticmethod
     def check_variable(x):
