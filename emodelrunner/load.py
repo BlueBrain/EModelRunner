@@ -412,7 +412,7 @@ def load_syn_mechs(
 ):
     """Load synapse mechanisms."""
     # load synapse file data
-    synapses_data = load_tsv_data(syn_data_path)
+    synapses_data = load_synapses_tsv_data(syn_data_path)
 
     # load synapse configuration
     synconf_dict = load_synapse_configuration_data(syn_conf_path)
@@ -430,7 +430,7 @@ def load_syn_mechs(
     )
 
 
-def load_tsv_data(tsv_path):
+def load_synapses_tsv_data(tsv_path):
     """Load synapse data from tsv."""
     synapses = []
     with open(tsv_path, "r") as f:
