@@ -16,87 +16,83 @@ from emodelrunner.locations import multi_locations
 def load_config(filename, config_dir="config"):
     """Set config from config file and set default value."""
     defaults = {
-        # cell
-        "celsius": "34",
-        "v_init": "-80",
-        "gid": "0",
-        # protocol
-        "step_stimulus": "True",
-        "run_all_steps": "True",
-        "run_step_number": "1",
-        "total_duration": "3000",
-        "stimulus_delay": "700",
-        "stimulus_duration": "2000",
-        "stimulus_amp1": "0",
-        "stimulus_amp2": "0",
-        "stimulus_amp3": "0",
-        "hold_amp": "0",
-        "hold_stimulus_delay": "0",
-        "hold_stimulus_duration": "3000",
-        "syn_stim_mode": "vecstim",
-        "syn_stop": "%(total_duration)s",
-        "syn_interval": "100",
-        "syn_nmb_of_spikes": "5",
-        "syn_start": "50",
-        "syn_noise": "0",
-        "syn_stim_seed": "1",
-        "vecstim_random": "python",  # can be "python" or "neuron"
-        "precell_amplitude": "1.0",
-        # morphology
-        "do_replace_axon": "True",
-        # sim
-        "cvode_active": "False",
-        "dt": "0.025",
-        # synapse
-        "add_synapses": "False",
-        "seed": "846515",
-        "rng_settings_mode": "Random123",  # can be "Random123" or "Compatibility"
-        # paths
-        "memodel_dir": ".",
-        "output_dir": "%(memodel_dir)s/python_recordings",
-        "output_file": "soma_voltage_",
-        "recipes_dir": "config/recipes",
-        "recipes_file": "recipes.json",
-        "params_dir": "config/params",
-        "params_file": "final.json",
-        "templates_dir": "templates",
-        "hoc_file": "cell.hoc",
-        "create_hoc_template_file": "cell_template_neurodamus.jinja2",
-        "replace_axon_hoc_dir": "%(templates_dir)s",
-        "replace_axon_hoc_file": "replace_axon_hoc.hoc",
-        "syn_dir_for_hoc": "synapses",
-        "syn_dir": "%(memodel_dir)s/%(syn_dir_for_hoc)s",
-        "syn_data_file": "synapses.tsv",
-        "syn_conf_file": "synconf.txt",
-        "syn_hoc_file": "synapses.hoc",
-        "syn_mtype_map": "mtype_map.tsv",
-        "simul_hoc_file": "createsimulation.hoc",
-        "synplas_fit_params_dir": "config",
-        "synplas_fit_params_file": "fit_params.json",
-        "morph_dir": "morphology",
+        "Cell": {
+            "celsius": "34",
+            "v_init": "-80",
+            "gid": "0",
+        },
+        "Protocol": {
+            "step_stimulus": "True",
+            "run_all_steps": "True",
+            "run_step_number": "1",
+            "total_duration": "3000",
+            "stimulus_delay": "700",
+            "stimulus_duration": "2000",
+            "stimulus_amp1": "0",
+            "stimulus_amp2": "0",
+            "stimulus_amp3": "0",
+            "hold_amp": "0",
+            "hold_stimulus_delay": "0",
+            "hold_stimulus_duration": "3000",
+            "syn_stim_mode": "vecstim",
+            "syn_stop": "%(total_duration)s",
+            "syn_interval": "100",
+            "syn_nmb_of_spikes": "5",
+            "syn_start": "50",
+            "syn_noise": "0",
+            "syn_stim_seed": "1",
+            "vecstim_random": "python",  # can be "python" or "neuron"
+            "precell_amplitude": "1.0",
+        },
+        "Morphology": {
+            "do_replace_axon": "True",
+        },
+        "Sim": {
+            "cvode_active": "False",
+            "dt": "0.025",
+        },
+        "Synapses": {
+            "add_synapses": "False",
+            "seed": "846515",
+            "rng_settings_mode": "Random123",  # can be "Random123" or "Compatibility"
+        },
+        "Paths": {
+            "memodel_dir": ".",
+            "output_dir": "%(memodel_dir)s/python_recordings",
+            "output_file": "soma_voltage_",
+            "recipes_dir": "config/recipes",
+            "recipes_file": "recipes.json",
+            "params_dir": "config/params",
+            "params_file": "final.json",
+            "templates_dir": "templates",
+            "hoc_file": "cell.hoc",
+            "create_hoc_template_file": "cell_template_neurodamus.jinja2",
+            "replace_axon_hoc_dir": "%(templates_dir)s",
+            "replace_axon_hoc_file": "replace_axon_hoc.hoc",
+            "syn_dir_for_hoc": "synapses",
+            "syn_dir": "%(memodel_dir)s/%(syn_dir_for_hoc)s",
+            "syn_data_file": "synapses.tsv",
+            "syn_conf_file": "synconf.txt",
+            "syn_hoc_file": "synapses.hoc",
+            "syn_mtype_map": "mtype_map.tsv",
+            "simul_hoc_file": "createsimulation.hoc",
+            "synplas_fit_params_dir": "config",
+            "synplas_fit_params_file": "fit_params.json",
+            "morph_dir": "morphology",
+        },
+        "SynapsePlasticity": {},
     }
 
-    config = configparser.ConfigParser(defaults=defaults)
-    if filename is not None:
-        config_path = os.path.join(config_dir, filename)
-        if not os.path.exists(config_path):
-            raise FileNotFoundError("The file at {} does not exist".format(config_path))
+    config = configparser.ConfigParser()
 
-        config.read(config_path)
+    # set defaults
+    config.read_dict(defaults)
 
-    # make sure that config has all sections
-    secs = [
-        "Cell",
-        "Protocol",
-        "Morphology",
-        "Sim",
-        "Synapses",
-        "Paths",
-        "SynapsePlasticity",
-    ]
-    for sec in secs:
-        if not config.has_section(sec):
-            config.add_section(sec)
+    # read config file
+    config_path = os.path.join(config_dir, filename)
+    if not os.path.exists(config_path):
+        raise FileNotFoundError("The file at {} does not exist".format(config_path))
+    config.read(config_path)
 
     return config
 
