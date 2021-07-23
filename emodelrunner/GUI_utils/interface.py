@@ -203,7 +203,9 @@ class GUI:
 
         # reload figure frame
         self.frames["FrameMain"] = FrameMain(self.root, self)
-        self.frames["FrameMain"].grid(row=0, column=1)
+        self.frames["FrameMain"].grid(
+            row=0, column=1, sticky=(tk.W, tk.E, tk.N, tk.S), pady=2
+        )
         self.frames["FrameMain"].update_syn_display(self.root, self.simulation)
 
         self.root.update()

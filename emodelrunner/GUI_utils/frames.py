@@ -826,7 +826,7 @@ class FrameMain(ttk.Frame):
         )
 
         self.frame_buttons.grid(row=0, column=0)
-        self.frame_figures.grid(row=1, column=0)
+        self.frame_figures.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
 
     def display(self, root, simulation):
         """Update figures display."""
