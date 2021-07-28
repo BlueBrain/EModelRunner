@@ -3,33 +3,21 @@
 # pylint: disable=wrong-import-order
 # pylint: disable=import-error
 import os
+from pathlib import Path
+import json
 import numpy as np
 import subprocess
 
 from emodelrunner.create_hoc import get_hoc, write_hocs
-from emodelrunner.json_utilities import load_package_json
 from emodelrunner.load import (
     load_config,
     get_hoc_paths_args,
-    load_emodel_params,
-    find_param_file,
 )
-from emodelrunner.factsheets.morphology_features import MorphologyFactsheetBuilder
-from emodelrunner.factsheets.physiology_features import physiology_factsheet_info
 from emodelrunner.factsheets.experimental_features import (
     get_exp_features_data,
-    load_emodel_recipe_dict,
     get_morphology_prefix_from_recipe,
-    load_raw_exp_features,
-    load_feature_units,
-    load_emodel_fitness,
 )
-from emodelrunner.write_factsheets import (
-    get_morph_name_dict,
-    get_mechanisms_data,
-    write_metype_json_from_config,
-    write_emodel_json_from_config,
-)
+from emodelrunner.factsheets.ion_channel_mechanisms import get_mechanisms_data
 from tests.utils import cwd
 
 data_dir = os.path.join("tests", "data")
@@ -145,24 +133,6 @@ def test_synapses_hoc_vs_py_script(configfile="config_synapses.ini"):
     assert rms < threshold
 
 
-def test_metype_factsheet_exists():
-    """Check that the me-type factsheet json file has been created."""
-    configfile = "config_singlestep.ini"
-    output_dir = "factsheets"
-
-    with cwd(example_dir):
-        config = load_config(filename=configfile)
-        subprocess.call(["sh", "run_py.sh", configfile])
-        write_metype_json_from_config(config, output_dir)
-        write_emodel_json_from_config(config, output_dir)
-
-    metype_factsheet = os.path.join(example_dir, "factsheets", "me_type_factsheet.json")
-    emodel_factsheet = os.path.join(example_dir, "factsheets", "e_model_factsheet.json")
-
-    assert os.path.isfile(metype_factsheet)
-    assert os.path.isfile(emodel_factsheet)
-
-
 def check_feature_mean_std(source, feat):
     """Checks that feature mean and std are equal to the original ones.
 
@@ -188,21 +158,30 @@ def check_features(config):
     Checks that units correspond to the ones in unit file.
     Checks that model fitnesses correspond to the ones in fitness file."""
     # original files data
-    recipes_path = "/".join(
-        (config.get("Paths", "recipes_dir"), config.get("Paths", "recipes_file"))
-    )
-    params_path = "/".join(
-        (config.get("Paths", "params_dir"), config.get("Paths", "params_file"))
-    )
+    recipes_path = Path(".") / "emodel_parameters" / "recipe.json"
+
+    with open(recipes_path) as json_file:
+        recipes_dict = json.load(json_file)
+
+    optimized_params_path = Path(".") / "emodel_parameters" / "params" / "final.json"
+    with open(optimized_params_path) as json_file:
+        optimized_params_dict = json.load(json_file)
 
     emodel = config.get("Cell", "emodel")
-    recipe = load_emodel_recipe_dict(recipes_path, emodel)
-    original_feat = load_raw_exp_features(recipe)
-    units = load_feature_units()
-    fitness = load_emodel_fitness(params_path, emodel)
-    prefix = get_morphology_prefix_from_recipe(recipe)
+    features_path = Path(".") / "emodel_parameters" / "features" / "cADpyr_L5PC.json"
+    with open(features_path) as json_file:
+        original_feat = json.load(json_file)
+
+    feature_units_path = Path("emodel_parameters") / "features" / "units.json"
+    with open(feature_units_path) as json_file:
+        feature_units_dict = json.load(json_file)
+    fitness = optimized_params_dict[emodel]["fitness"]
+    prefix = get_morphology_prefix_from_recipe(emodel=emodel, recipe=recipes_dict)
+
     # tested func
-    feat_dict = get_exp_features_data(emodel, recipes_path, params_path)
+    feat_dict = get_exp_features_data(
+        emodel, recipes_dict, original_feat, feature_units_dict, optimized_params_dict
+    )
 
     for items in feat_dict["values"]:
         assert items.items()
@@ -215,15 +194,8 @@ def check_features(config):
                     key_fitness = ".".join((prefix, stim_name, loc_name, feat["name"]))
 
                     assert check_feature_mean_std(original, feat)
-                    assert feat["unit"] == units[feat["name"]]
+                    assert feat["unit"] == feature_units_dict[feat["name"]]
                     assert feat["model fitness"] == fitness[key_fitness]
-
-
-def check_morph_name(config):
-    """Checks that factsheet morph name corresponds to package morph file."""
-    morph_fname = config.get("Paths", "morph_file")
-    morph_name_dict = get_morph_name_dict(morph_fname)
-    assert os.path.isfile(os.path.join("morphology", morph_name_dict["value"] + ".asc"))
 
 
 def get_locs_list(loc_name):
@@ -278,22 +250,21 @@ def check_mechanisms(config):
     """
     # original data
     emodel = config.get("Cell", "emodel")
-    recipes_path = "/".join(
-        (config.get("Paths", "recipes_dir"), config.get("Paths", "recipes_file"))
-    )
-    params_filepath = find_param_file(recipes_path, emodel)
-    params_path = "/".join(
-        (config.get("Paths", "params_dir"), config.get("Paths", "params_file"))
-    )
+    optimized_params_path = Path(".") / "emodel_parameters" / "params" / "final.json"
+    with open(optimized_params_path) as json_file:
+        optimized_params_dict = json.load(json_file)
 
-    release_params = load_emodel_params(params_path=params_path, emodel=emodel)
+    release_params = optimized_params_dict[emodel]["params"]
 
-    definitions = load_package_json(params_filepath)
+    unoptimized_params_path = Path(".") / "emodel_parameters" / "params" / "pyr.json"
+    with open(unoptimized_params_path) as json_file:
+        unoptimized_params_dict = json.load(json_file)
 
-    parameters = definitions["parameters"]
-
+    unoptimized_params = unoptimized_params_dict["parameters"]
     # output to check
-    mech_dict = get_mechanisms_data(emodel, params_path, params_filepath)
+    mech_dict = get_mechanisms_data(
+        emodel, optimized_params_dict, unoptimized_params_dict
+    )
 
     assert mech_dict["values"][0]["location_map"]
     for loc_name, loc in mech_dict["values"][0]["location_map"].items():
@@ -303,14 +274,14 @@ def check_mechanisms(config):
             for mech_name, mech in channel["equations"].items():
                 mech_name_for_params = "_".join((mech_name, channel_name))
                 new_loc_name, idx = get_loc_from_params(
-                    loc_name, mech_name_for_params, parameters
+                    loc_name, mech_name_for_params, unoptimized_params
                 )
                 mech_name_for_final_params = ".".join(
                     (mech_name_for_params, new_loc_name)
                 )
                 if mech["type"] == "exponential":
-                    assert "dist" in parameters[new_loc_name][idx]
-                    assert parameters[new_loc_name][idx]["dist"] == "exp"
+                    assert "dist" in unoptimized_params[new_loc_name][idx]
+                    assert unoptimized_params[new_loc_name][idx]["dist"] == "exp"
                     assert (
                         str(release_params[mech_name_for_final_params]) in mech["plot"]
                     )
@@ -318,8 +289,8 @@ def check_mechanisms(config):
                         str(release_params[mech_name_for_final_params]) in mech["latex"]
                     )
                 elif mech["type"] == "decay":
-                    assert "dist" in parameters[new_loc_name][idx]
-                    assert parameters[new_loc_name][idx]["dist"] == "decay"
+                    assert "dist" in unoptimized_params[new_loc_name][idx]
+                    assert unoptimized_params[new_loc_name][idx]["dist"] == "decay"
                     assert (
                         str(release_params[mech_name_for_final_params]) in mech["plot"]
                     )
@@ -340,114 +311,9 @@ def check_mechanisms(config):
                     assert release_params[mech_name_for_final_params] == mech["plot"]
 
 
-def check_anatomy(config):
-    """Checks that all anatomy data is positive and exists.
-
-    Fields include axon and soma.
-    Fields can either include basal and apical, or just dendrite.
-
-    Checks that there is no empty list or dict.
-    Checks that data exists and is a float/int and is positive.
-    Checks that there is no anatomy field missing.
-    """
-    morph_dir = config.get("Paths", "morph_dir")
-    morph_fname = config.get("Paths", "morph_file")
-
-    morph_factsheet_builder = MorphologyFactsheetBuilder(
-        os.path.join(morph_dir, morph_fname)
-    )
-    ana_dict = morph_factsheet_builder.get_all_feature_values()
-    ana_dict = {"values": ana_dict, "name": "Anatomy"}
-    left_to_check_1 = [
-        "total axon length",
-        "mean axon volume",
-        "axon maximum branch order",
-        "axon maximum section length",
-        "total apical length",
-        "mean apical volume",
-        "apical maximum branch order",
-        "apical maximum section length",
-        "total basal length",
-        "mean basal volume",
-        "basal maximum branch order",
-        "basal maximum section length",
-        "soma diameter",
-    ]
-    left_to_check_2 = [
-        "total axon length",
-        "mean axon volume",
-        "axon maximum branch order",
-        "axon maximum section length",
-        "total dendrite length",
-        "mean dendrite volume",
-        "dendrite maximum branch order",
-        "dendrite maximum section length",
-        "soma diameter",
-    ]
-    lists_to_check = [left_to_check_1, left_to_check_2]
-
-    assert ana_dict["values"]
-    for item in ana_dict["values"]:
-        assert isinstance(item["value"], (float, int, np.floating, np.integer))
-        assert item["value"] > 0
-
-        for l in lists_to_check:
-            if item["name"] in l:
-                l.remove(item["name"])
-
-    assert len(lists_to_check[0]) == 0 or len(lists_to_check[1]) == 0
-
-
-def check_physiology(config):
-    """Checks that all physiology values exist.
-
-    Checks that there is no empty list or dict.
-    Checks that data exists and is a float and is positive (except for membrane pot.).
-    Checks that there is no physiology field missing.
-    """
-    # get current amplitude
-    step_number = config.getint("Protocol", "run_step_number")
-    stim_name = "stimulus_amp" + str(step_number)
-    current_amplitude = config.getfloat("Protocol", stim_name)
-
-    # get parameters from config
-    stim_start = config.getint("Protocol", "stimulus_delay")
-    stim_duration = config.getint("Protocol", "stimulus_duration")
-
-    # get data path from run.py output
-    fname = "soma_voltage_step{}.dat".format(step_number)
-    fpath = os.path.join("python_recordings", fname)
-    data = np.loadtxt(fpath)
-
-    phys_dict = physiology_factsheet_info(
-        time=data[:, 0],
-        voltage=data[:, 1],
-        current_amplitude=current_amplitude,
-        stim_start=stim_start,
-        stim_duration=stim_duration,
-    )
-    left_to_check = [
-        "input resistance",
-        "membrane time constant",
-        "resting membrane potential",
-    ]
-
-    assert phys_dict["values"]
-    for item in phys_dict["values"]:
-        assert isinstance(item["value"], float)
-        if item["name"] in ["input resistance", "membrane time constant"]:
-            assert item["value"] >= 0
-        left_to_check.remove(item["name"])
-
-    assert len(left_to_check) == 0
-
-
 def test_factsheets_fcts():
     """Test dictionary output from functions used for factsheets."""
     with cwd(example_dir):
         config = load_config(filename="config_singlestep.ini")
         check_features(config)
-        check_morph_name(config)
         check_mechanisms(config)
-        check_physiology(config)
-        check_anatomy(config)

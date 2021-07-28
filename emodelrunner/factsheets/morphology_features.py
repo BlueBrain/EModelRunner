@@ -133,7 +133,7 @@ class MorphologyFactsheetBuilder:
         """Load the morphology.
 
         Args:
-            morph_path (str): Path to the morphology file.
+            morph_path (str or Path): Path to the morphology file.
         """
         self.morphology = nm.load_neuron(morph_path)
         self.neurite_names, self.neurite_types = self.get_neurites()

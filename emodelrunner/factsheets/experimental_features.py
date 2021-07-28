@@ -24,32 +24,17 @@ def load_raw_exp_features(recipe):
     return features
 
 
-def load_feature_units():
-    """Load dict with 'feature_name': 'unit' for all features."""
-    unit_json_path = "/".join(("config", "features", "units.json"))
-
-    return load_package_json(unit_json_path)
-
-
-def load_emodel_fitness(params_path, emodel):
-    """Load dict containing model fitness value for each feature."""
-    params_file = load_package_json(params_path)
-    emodel_params = params_file[emodel]
-    return emodel_params["fitness"]
-
-
-def load_morphology_used_in_fitting(params_path, emodel):
-    """Loads the morphology from the finals.json used in model fitting."""
-    params_file = load_package_json(params_path)
-    emodel_params = params_file[emodel]
+def morphology_used_in_fitting(optimized_params_dict, emodel):
+    """Returns the morphology name from finals.json used in model fitting."""
+    emodel_params = optimized_params_dict[emodel]
     morph_path = emodel_params["morph_path"]
     morph_name = morph_path.split("/")[-1]
     return morph_name
 
 
-def get_morphology_prefix_from_recipe(recipe):
+def get_morphology_prefix_from_recipe(emodel, recipe):
     """Get the morphology prefix from an emodel recipe (e.g. '_' or 'L5TPCa')."""
-    return recipe["morphology"][0][0]
+    return recipe[emodel]["morphology"][0][0]
 
 
 def get_feature_dict(feature, units, morphology_prefix, stimulus, location, fitness):
@@ -84,17 +69,15 @@ def get_feature_dict(feature, units, morphology_prefix, stimulus, location, fitn
     }
 
 
-def get_exp_features_data(emodel, recipes_path, params_path):
+def get_exp_features_data(
+    emodel, recipe_dict, features_dict, units, optimized_params_dict
+):
     """Returns a dict containing mean and std of experimental features and model fitness."""
     # pylint: disable=too-many-locals
     # it is hard to reduce number of locals without reducing readibility
-    recipe = load_emodel_recipe_dict(recipes_path, emodel)
+    fitness = optimized_params_dict[emodel]["fitness"]
 
-    features_dict = load_raw_exp_features(recipe)
-    units = load_feature_units()
-    fitness = load_emodel_fitness(params_path, emodel)
-
-    morphology_prefix = get_morphology_prefix_from_recipe(recipe)
+    morphology_prefix = get_morphology_prefix_from_recipe(emodel, recipe_dict)
 
     values_dict = {}
     for stimulus, stim_data in features_dict.items():
@@ -112,7 +95,7 @@ def get_exp_features_data(emodel, recipes_path, params_path):
         values_dict[stimulus] = stim_dict
     values = [values_dict]
 
-    fitted_morphology_name = load_morphology_used_in_fitting(params_path, emodel)
+    fitted_morphology_name = morphology_used_in_fitting(optimized_params_dict, emodel)
 
     return {
         "name": "Experimental features",

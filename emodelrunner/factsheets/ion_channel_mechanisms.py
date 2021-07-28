@@ -3,9 +3,6 @@
 import logging
 import re
 
-from emodelrunner.load import load_emodel_params
-from emodelrunner.json_utilities import load_package_json
-
 
 logger = logging.getLogger(__name__)
 
@@ -187,19 +184,17 @@ def clean_location_map(location_map):
             location_map.pop(key)
 
 
-def get_mechanisms_data(emodel, release_params_path, params_path):
+def get_mechanisms_data(emodel, optimized_params_dict, unoptimized_params_dict):
     """Return a dictionary containing channel mechanisms for each section."""
     # pylint: disable=too-many-locals
-    release_params = load_emodel_params(params_path=release_params_path, emodel=emodel)
-
-    params = load_package_json(params_path)
+    release_params = optimized_params_dict[emodel]["params"]
 
     decay_func = None
-    if "decay" in params["distributions"].keys():
-        decay_func = params["distributions"]["decay"]["fun"]
+    if "decay" in unoptimized_params_dict["distributions"].keys():
+        decay_func = unoptimized_params_dict["distributions"]["decay"]["fun"]
 
-    parameters = params["parameters"]
-    exp_fun = params["distributions"]["exp"]["fun"]
+    parameters = unoptimized_params_dict["parameters"]
+    exp_fun = unoptimized_params_dict["distributions"]["exp"]["fun"]
 
     location_map = {
         "all dendrites": {"channels": {}},
@@ -209,10 +204,10 @@ def get_mechanisms_data(emodel, release_params_path, params_path):
         "axonal": {"channels": {}},
     }
 
-    for section, params in parameters.items():
+    for section, unoptimized_params_list in parameters.items():
         # do not take into account "comment"
-        if isinstance(params, list):
-            for param_config in params:
+        if isinstance(unoptimized_params_list, list):
+            for param_config in unoptimized_params_list:
                 name = param_config["name"]
                 full_name = ".".join((name, section))
 
