@@ -1,0 +1,414 @@
+{
+    "mechanisms": {
+        "all": {
+            "mech": [
+                "pas"
+            ]
+        },
+        "allact": {
+            "mech": [
+                "CaDynamics_DC0",
+                "Ca_HVA2",
+                "Ca_LVAst"
+            ]
+        },
+        "somaxon": {
+            "mech": [
+                "SKv3_1",
+                "SK_E2",
+                "K_Pst",
+                "K_Tst"
+            ]
+        },
+        "axonal": {
+            "mech": [
+                "NaTg",
+                "Nap_Et2"
+            ]
+        },
+        "somatic": {
+            "mech": [
+                "NaTg"
+            ]
+        },
+        "apical": {
+            "mech": [
+                "NaTg",
+                "SKv3_1"
+            ]
+        },
+        "somadend": {
+            "mech": [
+                "Ih"
+            ]
+        }
+    },
+    "distributions": {
+        "exp": {
+            "fun": "(-0.8696 + 2.087*math.exp(({distance})*0.0031))*{value}",
+            "__comment": "distribution based on Kole et al. 2006"
+        },
+        "decay": {
+            "fun": "math.exp({distance}*{constant})*{value}",
+            "parameters": [
+                "constant"
+            ]
+        }
+    },
+    "parameters": {
+        "__comment": "define constants as single values and params to optimize as tuples of bounds: [lower, upper]",
+        "global": [
+            {
+                "name": "v_init",
+                "val": -80
+            },
+            {
+                "name": "celsius",
+                "val": 34
+            }
+        ],
+        "distribution_decay": [
+            {
+                "name": "constant",
+                "val": [
+                    -0.1,
+                    0.0
+                ],
+                "test": -0.0054993896903911335
+            }
+        ],
+        "myelinated": [
+            {
+                "name": "cm",
+                "val": 0.02
+            }
+        ],
+        "all": [
+            {
+                "name": "Ra",
+                "val": 100
+            },
+            {
+                "name": "g_pas",
+                "val": [
+                    1e-5,
+                    6e-5
+                ],
+                "test": 5.3926647384073322e-05
+            },
+            {
+                "name": "e_pas",
+                "val": [
+                    -95,
+                    -60
+                ],
+                "test": -75.862421167964129
+            }
+        ],
+        "somadend": [
+            {
+                "name": "gIhbar_Ih",
+                "val": [
+                    0,
+                    2e-4
+                ],
+                "test": 4.9710877962221885e-06,
+                "dist": "exp",
+                "__comment": "distribution starts in soma (uniform) and spreads exponentially to dendrites"
+            }
+        ],
+        "axonal": [
+            {
+                "name": "cm",
+                "val": 1
+            },
+            {
+                "name": "ena",
+                "val": 50
+            },
+            {
+                "name": "ek",
+                "val": -90
+            },
+            {
+                "name": "vshifth_NaTg",
+                "val": 10
+            },
+            {
+                "name": "slopem_NaTg",
+                "val": 9
+            },
+            {
+                "name": "gNaTgbar_NaTg",
+                "val": [
+                    0,
+                    1.5
+                ],
+                "test": 0.45001599746214271
+            },
+            {
+                "name": "gNap_Et2bar_Nap_Et2",
+                "val": [
+                    0,
+                    0.02
+                ],
+                "test": 0.0074930910112714971
+            },
+            {
+                "name": "gK_Pstbar_K_Pst",
+                "val": [
+                    0,
+                    1
+                ],
+                "test": 0.41317541509924871
+            },
+            {
+                "name": "gK_Tstbar_K_Tst",
+                "val": [
+                    0,
+                    0.2
+                ],
+                "test": 0.18323702633195063
+            },
+            {
+                "name": "gSKv3_1bar_SKv3_1",
+                "val": [
+                    0,
+                    1
+                ],
+                "test": 0.59766537780998541
+            },
+            {
+                "name": "gCa_HVAbar_Ca_HVA2",
+                "val": [
+                    0,
+                    0.001
+                ],
+                "test": 0.00065484400421279019
+            },
+            {
+                "name": "gCa_LVAstbar_Ca_LVAst",
+                "val": [
+                    0,
+                    0.01
+                ],
+                "test": 0.0006624110987988748
+            },
+            {
+                "name": "gSK_E2bar_SK_E2",
+                "val": [
+                    0,
+                    0.1
+                ],
+                "test": 0.0055436826094973947
+            },
+            {
+                "name": "decay_CaDynamics_DC0",
+                "val": [
+                    20,
+                    300
+                ],
+                "test": 187.93939189992398
+            },
+            {
+                "name": "gamma_CaDynamics_DC0",
+                "val": [
+                    0.005,
+                    0.05
+                ],
+                "test": 0.018262044595632514
+            }
+        ],
+        "somatic": [
+            {
+                "name": "cm",
+                "val": 1
+            },
+            {
+                "name": "ena",
+                "val": 50
+            },
+            {
+                "name": "ek",
+                "val": -90
+            },
+            {
+                "name": "vshiftm_NaTg",
+                "val": 13
+            },
+            {
+                "name": "vshifth_NaTg",
+                "val": 15
+            },
+            {
+                "name": "slopem_NaTg",
+                "val": 7
+            },
+            {
+                "name": "gNaTgbar_NaTg",
+                "val": [
+                    0,
+                    0.3
+                ],
+                "test": 0.22533600162118178
+            },
+            {
+                "name": "gK_Pstbar_K_Pst",
+                "val": [
+                    0,
+                    0.2
+                ],
+                "test": 0.15029253289238459
+            },
+            {
+                "name": "gK_Tstbar_K_Tst",
+                "val": [
+                    0,
+                    0.1
+                ],
+                "test": 0.0048028568033722466
+            },
+            {
+                "name": "gSKv3_1bar_SKv3_1",
+                "val": [
+                    0,
+                    1
+                ],
+                "test": 0.17097147644202285
+            },
+            {
+                "name": "gCa_HVAbar_Ca_HVA2",
+                "val": [
+                    0,
+                    0.001
+                ],
+                "test": 0.00056391253652122346
+            },
+            {
+                "name": "gCa_LVAstbar_Ca_LVAst",
+                "val": [
+                    0,
+                    0.01
+                ],
+                "test": 0.0010207881257459726
+            },
+            {
+                "name": "gSK_E2bar_SK_E2",
+                "val": [
+                    0,
+                    0.1
+                ],
+                "test": 0.079708174678391613
+            },
+            {
+                "name": "decay_CaDynamics_DC0",
+                "val": [
+                    20,
+                    300
+                ],
+                "test": 104.85544592336207
+            },
+            {
+                "name": "gamma_CaDynamics_DC0",
+                "val": [
+                    0.005,
+                    0.05
+                ],
+                "test": 0.02349598838420491
+            }
+        ],
+        "apical": [
+            {
+                "name": "cm",
+                "val": 2
+            },
+            {
+                "name": "ena",
+                "val": 50
+            },
+            {
+                "name": "ek",
+                "val": -90
+            },
+            {
+                "name": "gamma_CaDynamics_DC0",
+                "val": [
+                    0.005,
+                    0.05
+                ],
+                "test": 0.0066739787731804143
+            },
+            {
+                "name": "vshiftm_NaTg",
+                "val": 6
+            },
+            {
+                "name": "vshifth_NaTg",
+                "val": 6
+            },
+            {
+                "name": "gNaTgbar_NaTg",
+                "val": [
+                    0,
+                    0.1
+                ],
+                "test": 0.099937269709686416,
+                "dist": "decay"
+            },
+            {
+                "name": "gSKv3_1bar_SKv3_1",
+                "val": [
+                    0,
+                    0.003
+                ],
+                "test": 0.0014911639485230455
+            },
+            {
+                "name": "gCa_HVAbar_Ca_HVA2",
+                "val": [
+                    0,
+                    0.0001
+                ],
+                "test": 2.0449633205094153e-05
+            },
+            {
+                "name": "gCa_LVAstbar_Ca_LVAst",
+                "val": [
+                    0,
+                    0.001
+                ],
+                "test": 0.00011242611925684145
+            }
+        ],
+        "basal": [
+            {
+                "name": "cm",
+                "val": 2
+            },
+            {
+                "name": "gamma_CaDynamics_DC0",
+                "val": [
+                    0.005,
+                    0.05
+                ],
+                "test": 0.04066564973313349
+            },
+            {
+                "name": "gCa_HVAbar_Ca_HVA2",
+                "val": [
+                    0,
+                    0.0001
+                ],
+                "test": 8.087166736008117e-05
+            },
+            {
+                "name": "gCa_LVAstbar_Ca_LVAst",
+                "val": [
+                    0,
+                    0.001
+                ],
+                "test": 2.7582661164552104e-05
+            }
+        ]
+    }
+}

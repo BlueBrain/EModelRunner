@@ -248,12 +248,7 @@ class NeuronSimulation:
         gid = self.config.getint("Cell", "gid")
 
         # load mechanisms
-        recipes_path = "/".join(
-            (
-                self.config.get("Paths", "recipes_dir"),
-                self.config.get("Paths", "recipes_file"),
-            ),
-        )
+        recipes_path = self.config.get("Paths", "recipes_path")
         params_filepath = find_param_file(recipes_path, emodel)
         mechs = load_mechanisms(params_filepath)
 

@@ -1,14 +1,16 @@
 """Functionality to fetch the experimental features and parameters from the json files."""
 
 import logging
-from emodelrunner.json_utilities import load_package_json
+
+import json
 
 logger = logging.getLogger(__name__)
 
 
 def load_emodel_recipe_dict(recipes_path, emodel):
     """Get recipe dict."""
-    recipes = load_package_json(recipes_path)
+    with open(recipes_path, "r") as recipes_file:
+        recipes = json.load(recipes_file)
 
     return recipes[emodel]
 
@@ -16,8 +18,10 @@ def load_emodel_recipe_dict(recipes_path, emodel):
 def load_raw_exp_features(recipe):
     """Load experimental features from file."""
     features_path = recipe["features"]
+    with open(features_path, "r") as features_file:
+        features = json.load(features_file)
 
-    return load_package_json(features_path)
+    return features
 
 
 def load_feature_units():

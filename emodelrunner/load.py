@@ -8,7 +8,6 @@ import os
 
 from bluepyopt import ephys
 
-from emodelrunner.json_utilities import load_package_json
 from emodelrunner.synapses.mechanism import NrnMODPointProcessMechanismCustom
 from emodelrunner.locations import multi_locations
 
@@ -60,10 +59,8 @@ def load_config(filename, config_dir="config"):
             "memodel_dir": ".",
             "output_dir": "%(memodel_dir)s/python_recordings",
             "output_file": "soma_voltage_",
-            "recipes_dir": "config/recipes",
-            "recipes_file": "recipes.json",
-            "params_dir": "config/params",
-            "params_file": "final.json",
+            "recipes_path": "config/recipes/recipes.json",
+            "params_path": "config/params/final.json",
             "templates_dir": "templates",
             "hoc_file": "cell.hoc",
             "create_hoc_template_file": "cell_template_neurodamus.jinja2",
@@ -76,8 +73,7 @@ def load_config(filename, config_dir="config"):
             "syn_hoc_file": "synapses.hoc",
             "syn_mtype_map": "mtype_map.tsv",
             "simul_hoc_file": "createsimulation.hoc",
-            "synplas_fit_params_dir": "config",
-            "synplas_fit_params_file": "fit_params.json",
+            "synplas_fit_params_path": "config/fit_params.json",
             "morph_dir": "morphology",
         },
         "SynapsePlasticity": {},
@@ -195,7 +191,8 @@ def get_presyn_stim_args(config, pre_spike_train):
 
 def find_param_file(recipes_path, emodel):
     """Find the parameter file for unfrozen params."""
-    recipes = load_package_json(recipes_path)
+    with open(recipes_path, "r") as recipes_file:
+        recipes = json.load(recipes_file)
     recipe = recipes[emodel]
 
     return recipe["params"]
@@ -203,10 +200,10 @@ def find_param_file(recipes_path, emodel):
 
 def load_emodel_params(emodel, params_path):
     """Get optimised parameters."""
-    params_file = load_package_json(params_path)
-    data = params_file[emodel]
+    with open(params_path, "r") as params_file:
+        params = json.load(params_file)
 
-    param_dict = data["params"]
+    param_dict = params[emodel]["params"]
 
     return param_dict
 
@@ -215,8 +212,7 @@ def get_syn_setup_params(
     syn_dir,
     syn_extra_params_fname,
     cpre_cpost_fname,
-    fit_params_dir,
-    fit_params_fname,
+    fit_params_path,
     gid,
     invivo,
 ):
@@ -225,7 +221,7 @@ def get_syn_setup_params(
         syn_extra_params = json.load(f)
     with open(os.path.join(syn_dir, cpre_cpost_fname), "r") as f:
         cpre_cpost = json.load(f)
-    with open(os.path.join(fit_params_dir, fit_params_fname), "r") as f:
+    with open(fit_params_path, "r") as f:
         fit_params = json.load(f)
 
     return {
@@ -244,18 +240,18 @@ def get_release_params(config, precell=False):
         emodel = config.get("Cell", "precell_emodel")
     else:
         emodel = config.get("Cell", "emodel")
-    params_path = "/".join(
-        (config.get("Paths", "params_dir"), config.get("Paths", "params_file"))
-    )
+    params_path = config.get("Paths", "params_path")
 
     release_params = load_emodel_params(params_path=params_path, emodel=emodel)
 
     return release_params
 
 
-def load_mechanisms(mechs_filepath):
+def load_mechanisms(mechs_path):
     """Define mechanisms."""
-    mech_definitions = load_package_json(mechs_filepath)["mechanisms"]
+    with open(mechs_path, "r") as mechs_file:
+        mechs = json.load(mechs_file)
+    mech_definitions = mechs["mechanisms"]
 
     mechanisms_list = []
     for sectionlist, channels in mech_definitions.items():
@@ -276,11 +272,11 @@ def load_mechanisms(mechs_filepath):
     return mechanisms_list
 
 
-def load_unoptimized_parameters(params_filepath, v_init, celsius):
+def load_unoptimized_parameters(params_path, v_init, celsius):
     """Load unoptimized parameters as BluePyOpt parameters.
 
     Args:
-        params_filepath (str): path to the json file containing
+        params_path (str): path to the json file containing
             the non-optimised parameters
         v_init (int): initial voltage. Will override v_init value from parameter file
         celsius (int): cell temperature in celsius.
@@ -289,7 +285,8 @@ def load_unoptimized_parameters(params_filepath, v_init, celsius):
     # pylint: disable=too-many-locals, too-many-branches, too-many-statements
     parameters = []
 
-    definitions = load_package_json(params_filepath)
+    with open(params_path, "r") as params_file:
+        definitions = json.load(params_file)
 
     # set distributions
     distributions = collections.OrderedDict()

@@ -74,9 +74,7 @@ def create_cell(
 def create_cell_using_config(config):
     """Create a cell given configuration. Return cell, release params and time step."""
     # get recipes path
-    recipes_path = "/".join(
-        (config.get("Paths", "recipes_dir"), config.get("Paths", "recipes_file"))
-    )
+    recipes_path = config.get("Paths", "recipes_path")
 
     # get synapse config data
     add_synapses = config.getboolean("Synapses", "add_synapses")
@@ -112,9 +110,7 @@ def get_postcell(
     v_init = config.getint("Cell", "v_init")
     celsius = config.getint("Cell", "celsius")
 
-    recipes_path = "/".join(
-        (config.get("Paths", "recipes_dir"), config.get("Paths", "recipes_file"))
-    )
+    recipes_path = config.get("Paths", "recipes_path")
 
     syn_mech_args = get_syn_mech_args(config)
     # rewrite seed and rng setting mode over basic emodelrunner config defaults
@@ -151,9 +147,7 @@ def get_precell(
     v_init = config.getint("Cell", "v_init")
     celsius = config.getint("Cell", "celsius")
 
-    recipes_path = "/".join(
-        (config.get("Paths", "recipes_dir"), config.get("Paths", "recipes_file"))
-    )
+    recipes_path = config.get("Paths", "recipes_path")
 
     morph_args = get_morph_args(config, precell=True)
 

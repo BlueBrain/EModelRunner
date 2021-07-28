@@ -43,8 +43,7 @@ def run(
         "synapses",
         "syn_extra_params.json",
         "cpre_cpost.json",
-        config.get("Paths", "synplas_fit_params_dir"),
-        config.get("Paths", "synplas_fit_params_file"),
+        config.get("Paths", "synplas_fit_params_path"),
         config.getint("Cell", "gid"),
         config.getboolean("SynapsePlasticity", "invivo"),
     )

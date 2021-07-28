@@ -1,0 +1,1506 @@
+{
+    "bAP": {
+        "soma.v": [
+            {
+                "feature": "Spikecount",
+                "val": [
+                    1.0,
+                    0.01
+                ]
+            }
+        ],
+        "dend1.v": [
+            {
+                "feature": "maximum_voltage_from_voltagebase",
+                "val": [
+                    88.233959,
+                    7.428911
+                ],
+                "weight": 1,
+                "__comment": "Stuart and Sakmann 1994"
+            }
+        ],
+        "ca_prox_apic.cai": [
+            {
+                "feature": "maximum_voltage_from_voltagebase",
+                "val": [
+                    0.000262,
+                    9.01e-05
+                ],
+                "weight": 1,
+                "__comment": "Helmchen et al. 1996 (P12-14, wistar): [Ca]i (proximal apical dendrite) = 262nM (SEM:25nM, N=13) = 262e-6mM (STD:90.1mM) (STD = SEM * sqrt(N)"
+            }
+        ],
+        "ca_prox_basal.cai": [
+            {
+                "feature": "maximum_voltage_from_voltagebase",
+                "val": [
+                    0.000524,
+                    9.01e-05
+                ],
+                "weight": 1,
+                "__comment": "Schiller et al. 1995 (P13-17, wistar): [Ca]i (basal) = 2 * [Ca]i (proximal apical dendrite)"
+            }
+        ],
+        "ca_soma.cai": [
+            {
+                "feature": "maximum_voltage_from_voltagebase",
+                "val": [
+                    0.000131,
+                    9.01e-05
+                ],
+                "weight": 1,
+                "__comment": "Schiller et al. 1995 (P13-17, wistar): [Ca]i (soma and ais) = 0.5 * [Ca]i (proximal apical dendrite)"
+            }
+        ],
+        "ca_ais.cai": [
+            {
+                "feature": "maximum_voltage_from_voltagebase",
+                "val": [
+                    0.000131,
+                    9.01e-05
+                ],
+                "weight": 1,
+                "__comment": "Schiller et al. 1995 (P13-17, wistar): [Ca]i (soma and ais) = 0.5 * [Ca]i (proximal apical dendrite)"
+            }
+        ]
+    },
+    "Step_120": {
+        "soma.v": [
+            {
+                "feature": "voltage_base",
+                "val": [
+                    -84.8392,
+                    1.0663,
+                    -0.9883485088099715,
+                    0.00014460503569482103,
+                    3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 764,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "voltage_after_stim",
+                "val": [
+                    -84.6123,
+                    4.2085,
+                    -940336228.3003027,
+                    194134722.88097975,
+                    -3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 780,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "AP_amplitude",
+                "val": [
+                    71.3249,
+                    4.3649,
+                    127459.74419437125,
+                    21677.851418608218,
+                    3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 620,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "APlast_amp",
+                "val": [
+                    70.0017,
+                    5.0136,
+                    121066.22084625567,
+                    24188.439877071585,
+                    3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 652,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "AHP_depth",
+                "val": [
+                    22.8679,
+                    2.8888,
+                    4725.534210365669,
+                    1540.5878992866928,
+                    3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 684,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "mean_frequency",
+                "val": [
+                    5.0707,
+                    1.844,
+                    0.49448298962831805,
+                    0.007444837115405061,
+                    -1.95,
+                    0
+                ],
+                "n": 8,
+                "fid": 374,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_time_to_first_spike",
+                "val": [
+                    15.9599,
+                    13.7956,
+                    3.134980637676223,
+                    1.2065747006937177,
+                    0.1499999999999999,
+                    0
+                ],
+                "n": 8,
+                "fid": 502,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "time_to_last_spike",
+                "val": [
+                    1511.1516,
+                    573.5143,
+                    923291.1538716579,
+                    412741.0981860967,
+                    1.9500000000000002,
+                    0
+                ],
+                "n": 8,
+                "fid": 486,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_first_ISI",
+                "val": [
+                    5.0293,
+                    2.7334,
+                    5.368887187190254,
+                    2.9645826667306183,
+                    1.0499999999999998,
+                    0
+                ],
+                "n": 8,
+                "fid": 519,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_second_ISI",
+                "val": [
+                    4.2653,
+                    2.1895,
+                    5.427187834312003,
+                    2.9544386993962344,
+                    1.2000000000000002,
+                    0
+                ],
+                "n": 8,
+                "fid": 536,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_third_ISI",
+                "val": [
+                    3.9751,
+                    2.0864,
+                    4.208618368085973,
+                    2.2443300407794977,
+                    1.0499999999999998,
+                    0
+                ],
+                "n": 8,
+                "fid": 553,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_fourth_ISI",
+                "val": [
+                    3.8043,
+                    2.1283,
+                    3.4061502546164752,
+                    1.8396495282919552,
+                    0.8999999999999999,
+                    0
+                ],
+                "n": 8,
+                "fid": 570,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_fifth_ISI",
+                "val": [
+                    3.6033,
+                    2.0915,
+                    2.7656275846110896,
+                    1.4649713528503934,
+                    0.75,
+                    0
+                ],
+                "n": 8,
+                "fid": 587,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_last_ISI",
+                "val": [
+                    3.7262,
+                    2.0823,
+                    3.3411044978980815,
+                    1.7989034561769723,
+                    0.8999999999999999,
+                    0
+                ],
+                "n": 8,
+                "fid": 604,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            }
+        ]
+    },
+    "Step_160": {
+        "soma.v": [
+            {
+                "feature": "voltage_base",
+                "val": [
+                    -84.93,
+                    1.0756,
+                    -938490747.3319217,
+                    58202229.374358416,
+                    -3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 767,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "voltage_after_stim",
+                "val": [
+                    -86.5713,
+                    1.6419,
+                    -1033606922.5221467,
+                    95536308.69800614,
+                    -3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 783,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "AP_amplitude",
+                "val": [
+                    69.0237,
+                    4.7228,
+                    115993.3389432019,
+                    22498.018872344226,
+                    3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 623,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "APlast_amp",
+                "val": [
+                    67.6444,
+                    5.2534,
+                    34137.7569207005,
+                    6869.640988492401,
+                    2.7,
+                    0
+                ],
+                "n": 8,
+                "fid": 655,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "AHP_depth",
+                "val": [
+                    23.6935,
+                    2.775,
+                    5202.933393921949,
+                    1564.0787961978467,
+                    3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 687,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "mean_frequency",
+                "val": [
+                    7.5986,
+                    2.4029,
+                    2.11372009464502,
+                    0.27510363369906393,
+                    0.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 377,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_time_to_first_spike",
+                "val": [
+                    29.8404,
+                    19.3423,
+                    1.701698523022094,
+                    0.11211913383918919,
+                    -0.4500000000000002,
+                    0
+                ],
+                "n": 8,
+                "fid": 505,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "time_to_last_spike",
+                "val": [
+                    1902.0092,
+                    59.9044,
+                    2303939768.6675367,
+                    207543444.0324454,
+                    3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 489,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_first_ISI",
+                "val": [
+                    12.2943,
+                    3.1316,
+                    60.341888993991596,
+                    23.25668959370028,
+                    1.7999999999999998,
+                    0
+                ],
+                "n": 8,
+                "fid": 522,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_second_ISI",
+                "val": [
+                    8.6746,
+                    2.7466,
+                    2.2290658654109223,
+                    0.285577095804974,
+                    0.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 539,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_third_ISI",
+                "val": [
+                    7.8564,
+                    2.6198,
+                    2.5281626831471007,
+                    0.41388443377145606,
+                    0.1499999999999999,
+                    0
+                ],
+                "n": 8,
+                "fid": 556,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_fourth_ISI",
+                "val": [
+                    7.6438,
+                    2.6901,
+                    2.9672955010704642,
+                    0.599789157774638,
+                    0.2999999999999998,
+                    0
+                ],
+                "n": 8,
+                "fid": 573,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_fifth_ISI",
+                "val": [
+                    7.4425,
+                    2.8764,
+                    2.9097208951078772,
+                    0.6534480314813369,
+                    0.2999999999999998,
+                    0
+                ],
+                "n": 8,
+                "fid": 590,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_last_ISI",
+                "val": [
+                    6.5993,
+                    2.4927,
+                    2.3098303562599405,
+                    0.4392066769848636,
+                    0.1499999999999999,
+                    0
+                ],
+                "n": 8,
+                "fid": 607,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            }
+        ]
+    },
+    "Step_220": {
+        "soma.v": [
+            {
+                "feature": "voltage_base",
+                "val": [
+                    -85.3595,
+                    0.9843,
+                    -961928321.246859,
+                    54343672.81940556,
+                    -3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 770,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "voltage_after_stim",
+                "val": [
+                    -87.833,
+                    1.0147,
+                    -161606271.23017675,
+                    8383364.2420317335,
+                    -2.55,
+                    0
+                ],
+                "n": 8,
+                "fid": 786,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "AP_amplitude",
+                "val": [
+                    66.6517,
+                    4.5716,
+                    58426.36146506912,
+                    10960.194845968192,
+                    2.8499999999999996,
+                    0
+                ],
+                "n": 8,
+                "fid": 626,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "APlast_amp",
+                "val": [
+                    65.2993,
+                    5.0436,
+                    1.8849923026067537,
+                    0.011514404516267498,
+                    -0.4500000000000002,
+                    0
+                ],
+                "n": 8,
+                "fid": 658,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "AHP_depth",
+                "val": [
+                    25.1846,
+                    3.8866,
+                    41.20353551048629,
+                    7.447464720560417,
+                    1.2000000000000002,
+                    0
+                ],
+                "n": 8,
+                "fid": 690,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "mean_frequency",
+                "val": [
+                    10.8348,
+                    1.8185,
+                    0.3331077306820503,
+                    8.038802124774785e-05,
+                    -3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 380,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_time_to_first_spike",
+                "val": [
+                    45.2259,
+                    14.6746,
+                    1.8143620980933612,
+                    0.0540131340511857,
+                    -0.4500000000000002,
+                    0
+                ],
+                "n": 8,
+                "fid": 508,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "time_to_last_spike",
+                "val": [
+                    1911.2375,
+                    52.3162,
+                    2335946516.0177507,
+                    182488426.54921997,
+                    3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 492,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_first_ISI",
+                "val": [
+                    33.5512,
+                    12.4079,
+                    1.4555133912770826,
+                    0.04307121682330136,
+                    -0.6000000000000001,
+                    0
+                ],
+                "n": 8,
+                "fid": 525,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_second_ISI",
+                "val": [
+                    15.144,
+                    1.2045,
+                    0.7232575886230672,
+                    0.0017300502175483755,
+                    -1.35,
+                    0
+                ],
+                "n": 8,
+                "fid": 542,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_third_ISI",
+                "val": [
+                    13.032,
+                    1.3468,
+                    0.3332074213067244,
+                    2.6718139818916692e-05,
+                    -3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 559,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_fourth_ISI",
+                "val": [
+                    11.6119,
+                    1.543,
+                    0.6513904448616252,
+                    0.0026069935706073007,
+                    -1.5,
+                    0
+                ],
+                "n": 8,
+                "fid": 576,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_fifth_ISI",
+                "val": [
+                    10.9986,
+                    2.1974,
+                    0.9891750618775161,
+                    0.018821784870080804,
+                    -0.8999999999999999,
+                    0
+                ],
+                "n": 8,
+                "fid": 593,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_last_ISI",
+                "val": [
+                    9.3916,
+                    2.4422,
+                    1.2470697812691927,
+                    0.05664510003446516,
+                    -0.6000000000000001,
+                    0
+                ],
+                "n": 8,
+                "fid": 610,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            }
+        ]
+    },
+    "Step_280": {
+        "soma.v": [
+            {
+                "feature": "voltage_base",
+                "val": [
+                    -85.428,
+                    1.2408,
+                    -966485934.184525,
+                    68929827.20517862,
+                    -3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 774,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "voltage_after_stim",
+                "val": [
+                    -88.1119,
+                    1.0651,
+                    -0.9887765513500033,
+                    0.00013359793349429738,
+                    3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 790,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "AP_amplitude",
+                "val": [
+                    63.1707,
+                    6.058,
+                    1001.096213243292,
+                    167.80885781348354,
+                    1.7999999999999998,
+                    0
+                ],
+                "n": 8,
+                "fid": 630,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "APlast_amp",
+                "val": [
+                    61.0511,
+                    6.7304,
+                    18.143259170837,
+                    1.2923182405575202,
+                    0.5999999999999996,
+                    0
+                ],
+                "n": 8,
+                "fid": 662,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "AHP_depth",
+                "val": [
+                    26.3904,
+                    3.1749,
+                    14.61029709963034,
+                    1.3898626704610049,
+                    0.75,
+                    0
+                ],
+                "n": 8,
+                "fid": 694,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "mean_frequency",
+                "val": [
+                    13.9218,
+                    2.1354,
+                    11.53021503797213,
+                    1.6312020932211735,
+                    0.8999999999999999,
+                    0
+                ],
+                "n": 8,
+                "fid": 384,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_time_to_first_spike",
+                "val": [
+                    60.6639,
+                    18.9492,
+                    1.2692991750081377,
+                    0.013299175976291227,
+                    -0.75,
+                    0
+                ],
+                "n": 8,
+                "fid": 512,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "time_to_last_spike",
+                "val": [
+                    1954.2069,
+                    26.052,
+                    2492792849.921678,
+                    97104274.09606524,
+                    3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 496,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_first_ISI",
+                "val": [
+                    53.1257,
+                    19.5229,
+                    2.3019398809700466,
+                    0.1078769291319817,
+                    -0.30000000000000027,
+                    0
+                ],
+                "n": 8,
+                "fid": 529,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_second_ISI",
+                "val": [
+                    22.0599,
+                    2.3516,
+                    1.6790047728929096,
+                    0.024883641140925943,
+                    -0.4500000000000002,
+                    0
+                ],
+                "n": 8,
+                "fid": 546,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_third_ISI",
+                "val": [
+                    18.0765,
+                    1.5244,
+                    161.4817641353913,
+                    24.963411934473232,
+                    1.9500000000000002,
+                    0
+                ],
+                "n": 8,
+                "fid": 563,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_fourth_ISI",
+                "val": [
+                    16.7225,
+                    1.1942,
+                    25.426114383448777,
+                    2.1209917544504413,
+                    1.2000000000000002,
+                    0
+                ],
+                "n": 8,
+                "fid": 580,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_fifth_ISI",
+                "val": [
+                    15.6981,
+                    1.9088,
+                    1.897226431624048,
+                    0.049242656001417855,
+                    -0.30000000000000027,
+                    0
+                ],
+                "n": 8,
+                "fid": 597,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "inv_last_ISI",
+                "val": [
+                    11.7228,
+                    2.9513,
+                    5.9492963939123715,
+                    1.0748655097442517,
+                    0.5999999999999996,
+                    0
+                ],
+                "n": 8,
+                "fid": 614,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            }
+        ]
+    },
+    "APWaveform_300": {
+        "soma.v": [
+            {
+                "feature": "AP_amplitude",
+                "val": [
+                    68.5223,
+                    5.1604,
+                    8.558933186980642,
+                    0.2649401187145398,
+                    0.2999999999999998,
+                    0
+                ],
+                "n": 7,
+                "fid": 214,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "AP1_amp",
+                "val": [
+                    76.0772,
+                    4.3672,
+                    20.919206167850017,
+                    0.7684782507931662,
+                    0.5999999999999996,
+                    0
+                ],
+                "n": 7,
+                "fid": 193,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "AP2_amp",
+                "val": [
+                    59.8057,
+                    5.7597,
+                    908.5786881868179,
+                    153.0692837248796,
+                    1.7999999999999998,
+                    0
+                ],
+                "n": 7,
+                "fid": 203,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "AP_duration_half_width",
+                "val": [
+                    1.0676,
+                    0.256,
+                    2.7450487795415137,
+                    1.0259891204930005,
+                    3.0,
+                    0
+                ],
+                "n": 7,
+                "fid": 236,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "AHP_depth",
+                "val": [
+                    24.391,
+                    3.4903,
+                    2394.6406743068474,
+                    806.1094733653222,
+                    2.7,
+                    0
+                ],
+                "n": 7,
+                "fid": 64,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            }
+        ]
+    },
+    "Rin": {
+        "soma.v": [
+            {
+                "feature": "ohmic_input_resistance_vb_ssse",
+                "val": [
+                    239.8102,
+                    43.4979,
+                    2330314.3926596204,
+                    1008616.1379069773,
+                    2.8499999999999996,
+                    0
+                ],
+                "n": 8,
+                "fid": 252,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "voltage_base",
+                "val": [
+                    -83.454,
+                    1.1979,
+                    -860963365.343689,
+                    58314322.10532695,
+                    -3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 242,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            }
+        ]
+    },
+    "RMP": {
+        "soma.v": [
+            {
+                "feature": "voltage_base",
+                "val": [
+                    -80.5518,
+                    4.2419,
+                    -0.9877051261717338,
+                    0.0006296668746956628,
+                    3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 248,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "Spikecount",
+                "val": [
+                    0.0,
+                    0.001,
+                    0.0,
+                    0.001,
+                    -3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 273,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            }
+        ]
+    },
+    "IV_-100": {
+        "soma.v": [
+            {
+                "feature": "voltage_deflection",
+                "val": [
+                    -18.2278,
+                    2.5493,
+                    -14367.511257846423,
+                    5791.738932854269,
+                    -1.6500000000000001,
+                    0
+                ],
+                "n": 8,
+                "fid": 256,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "voltage_deflection_begin",
+                "val": [
+                    -18.1039,
+                    3.3929,
+                    -44.088909035560434,
+                    10.93996511117073,
+                    0.5999999999999996,
+                    0
+                ],
+                "n": 8,
+                "fid": 261,
+                "strict_stim": true,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            }
+        ]
+    },
+    "SpikeRec_all": {
+        "soma.v": [
+            {
+                "feature": "decay_time_constant_after_stim",
+                "val": [
+                    9.2817,
+                    2.3641,
+                    2.757230664019855,
+                    0.32940848382395743,
+                    0.1499999999999999,
+                    0
+                ],
+                "n": 8,
+                "fid": 276,
+                "strict_stim": false,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            },
+            {
+                "feature": "voltage_after_stim",
+                "val": [
+                    -71.0288,
+                    3.5764,
+                    -0.9860844404613176,
+                    0.0006502105802883079,
+                    3.0,
+                    0
+                ],
+                "n": 8,
+                "fid": 277,
+                "strict_stim": false,
+                "__comment": {
+                    "source": "cADpyr/L23PC",
+                    "meta": {
+                        "version": "3cb36db"
+                    }
+                }
+            }
+        ]
+    },
+    "RinHoldCurrent": {
+        "soma.v": [
+            {
+                "feature": "bpo_holding_current",
+                "val": [
+                    -0.0119,
+                    0.0206
+                ]
+            }
+        ]
+    },
+    "Threshold": {
+        "soma.v": [
+            {
+                "feature": "bpo_threshold_current",
+                "val": [
+                    0.0834,
+                    0.025
+                ]
+            }
+        ]
+    }
+}

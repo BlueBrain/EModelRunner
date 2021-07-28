@@ -1,0 +1,14 @@
+{
+    "cADpyr_L3TPC": {
+        "morph_path": "/gpfs/bbp.cscs.ch/project/proj38/cells/hybrid-output-2016-12-23/04_ZeroDiameterFix-ASC/",
+        "morphology": [
+            [
+                "_",
+                "mtC120800E_idB.asc"
+            ]
+        ],
+        "params": "config/params/pyr.json",
+        "protocol": "config/protocols/cADpyr_L23PC.json",
+        "features": "config/features/cADpyr_L23PC.json"
+    }
+}
