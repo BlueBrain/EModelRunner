@@ -61,6 +61,7 @@ def load_config(filename, config_dir="config"):
             "output_file": "soma_voltage_",
             "recipes_path": "config/recipes/recipes.json",
             "params_path": "config/params/final.json",
+            "units_path": "config/features/units.json",
             "templates_dir": "templates",
             "hoc_file": "cell.hoc",
             "create_hoc_template_file": "cell_template_neurodamus.jinja2",
