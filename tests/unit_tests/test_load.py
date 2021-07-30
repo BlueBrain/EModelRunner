@@ -5,6 +5,6 @@ from emodelrunner.load import load_config
 
 def test_load_config():
     """Test the config loader."""
-    config_file = "config_that_does_not_exist.ini"
+    config_path = "config/config_that_does_not_exist.ini"
     with pytest.raises(FileNotFoundError):
-        load_config(config_dir="config", filename=config_file)
+        load_config(config_path=config_path)

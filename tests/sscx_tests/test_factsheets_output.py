@@ -27,12 +27,13 @@ class TestMETypeFactsheet:
         """setup any state specific to the execution of the given class (which
         usually contains tests).
         """
-        configfile = example_dir / "config" / "config_singlestep.ini"
-        config = load_config(config_dir=configfile.parent, filename=configfile.name)
+        config_path_in_memodel_dir = Path("config") / "config_singlestep.ini"
+        config_path = example_dir / config_path_in_memodel_dir
+        config = load_config(config_path=config_path)
         cls.output_path = example_dir / "factsheets" / "me_type_factsheet.json"
 
         with cwd(example_dir):
-            run_emodel(config_file="config_singlestep.ini")
+            run_emodel(config_path=config_path_in_memodel_dir)
 
         voltage_path = (
             Path(example_dir) / "python_recordings" / "soma_voltage_step1.dat"
@@ -54,8 +55,8 @@ class TestMETypeFactsheet:
 
 def test_emodel_factsheet_output():
     """Tests if the emodel factsheet output file is created."""
-    configfile = example_dir / "config" / "config_singlestep.ini"
-    config = load_config(config_dir=configfile.parent, filename=configfile.name)
+    config_path = example_dir / "config" / "config_singlestep.ini"
+    config = load_config(config_path=config_path)
 
     output_path = example_dir / "factsheets" / "e_model_factsheet.json"
     emodel = config.get("Cell", "emodel")
@@ -171,8 +172,8 @@ def test_physiology_features():
     Checks that data exists and is a float and is positive (except for membrane pot.).
     Checks that there is no physiology field missing.
     """
-    configfile = example_dir / "config" / "config_singlestep.ini"
-    config = load_config(config_dir=configfile.parent, filename=configfile.name)
+    config_path = example_dir / "config" / "config_singlestep.ini"
+    config = load_config(config_path=config_path)
     # get current amplitude
     step_number = config.getint("Protocol", "run_step_number")
     stim_name = "stimulus_amp" + str(step_number)

@@ -5,7 +5,9 @@ import subprocess
 import h5py
 import numpy as np
 
-from tests.utils import cwd
+from emodelrunner.run_pairsim import run as run_pairsim
+from emodelrunner.run_synplas import run as run_synplas
+from tests.utils import compile_mechanisms, cwd
 
 data_dir = os.path.join("tests", "data")
 example_dir = os.path.join("examples", "synplas_sample_dir")
@@ -43,7 +45,8 @@ def test_voltages():
     remove_all_outputs()
 
     with cwd(example_dir):
-        subprocess.call(["sh", "run.sh"])
+        compile_mechanisms()
+        run_synplas(config_path="config/config_pairsim.ini")
 
     check_output(threshold_v=0.1)
 
@@ -57,6 +60,7 @@ def test_pairsim_voltages():
     remove_all_outputs()
 
     with cwd(example_dir):
-        subprocess.call(["sh", "run_pairsim.sh"])
+        compile_mechanisms()
+        run_pairsim(config_path="config/config_pairsim.ini")
 
     check_output(threshold_v=1.0)

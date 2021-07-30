@@ -5,18 +5,12 @@ import sys
 
 from setuptools import setup, find_packages
 
-if sys.version_info < (2, 7):
-    sys.exit("Sorry, Python < 2.7 is not supported")
+if sys.version_info < (3, 6):
+    sys.exit("Sorry, Python < 3.6 is not supported")
 
 # read the contents of the README file
-if sys.version_info < (3, 0):
-    import io
-
-    with io.open("README.rst", encoding="utf-8") as f:
-        README = f.read()
-else:
-    with open("README.rst", encoding="utf-8") as f:
-        README = f.read()
+with open("README.rst", encoding="utf-8") as f:
+    README = f.read()
 
 VERSION = imp.load_source("", "emodelrunner/version.py").__version__
 
@@ -42,7 +36,7 @@ setup(
         "matplotlib",
     ],
     packages=find_packages(),
-    python_requires=">=2.7",
+    python_requires=">=3.6",
     extras_require={"docs": ["sphinx", "sphinx-bluebrain-theme"]},
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",

@@ -18,7 +18,8 @@ from emodelrunner.factsheets.experimental_features import (
     get_morphology_prefix_from_recipe,
 )
 from emodelrunner.factsheets.ion_channel_mechanisms import get_mechanisms_data
-from tests.utils import cwd
+from emodelrunner.run import main as run_emodel
+from tests.utils import compile_mechanisms, cwd
 
 data_dir = os.path.join("tests", "data")
 example_dir = os.path.join("examples", "sscx_sample_dir")
@@ -34,19 +35,19 @@ def test_voltages():
 
     # rewrite hocs and run cells
     run_hoc_filename = "run.hoc"
-    configfile = "config_allsteps.ini"
+    config_path = "config/config_allsteps.ini"
 
     with cwd(example_dir):
         # write hocs
-        config = load_config(filename=configfile)
+        config = load_config(config_path=config_path)
         cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(
             config=config, syn_temp_name="hoc_synapses"
         )
         hoc_paths = get_hoc_paths_args(config)
         write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, run_hoc_filename, syn_hoc)
 
-        subprocess.call(["sh", "run_py.sh", configfile])
         subprocess.call(["sh", "./run_hoc.sh"])
+        run_emodel(config_path=config_path)
 
     for idx in range(3):
         hoc_path = os.path.join(
@@ -63,7 +64,7 @@ def test_voltages():
         assert rms < threshold
 
 
-def test_synapses(configfile="config_synapses.ini"):
+def test_synapses(config_path="config/config_synapses.ini"):
     """Test to compare the output of cell with synapses between our run.py and bglibpy.
 
     Attributes:
@@ -75,19 +76,9 @@ def test_synapses(configfile="config_synapses.ini"):
     # load bglibpy data
     bg_v = np.loadtxt(os.path.join(data_dir, "bglibpy_voltage.dat"))
 
-    # rewrite hocs and run cell
-    run_hoc_filename = "run.hoc"
-
     with cwd(example_dir):
-        # write hocs
-        config = load_config(filename=configfile)
-        cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(
-            config=config, syn_temp_name="hoc_synapses"
-        )
-        hoc_paths = get_hoc_paths_args(config)
-        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, run_hoc_filename, syn_hoc)
-
-        subprocess.call(["sh", "run_py.sh", configfile])
+        compile_mechanisms()
+        run_emodel(config_path=config_path)
 
     py_path = os.path.join(example_dir, "python_recordings", "soma_voltage_vecstim.dat")
     py_v = np.loadtxt(py_path)
@@ -97,7 +88,7 @@ def test_synapses(configfile="config_synapses.ini"):
     assert rms < threshold
 
 
-def test_synapses_hoc_vs_py_script(configfile="config_synapses.ini"):
+def test_synapses_hoc_vs_py_script(config_path="config/config_synapses.ini"):
     """Test to compare the voltages produced via python and hoc.
 
     Attributes:
@@ -111,7 +102,7 @@ def test_synapses_hoc_vs_py_script(configfile="config_synapses.ini"):
     # start with hoc, to compile mechs
     with cwd(example_dir):
         # write hocs
-        config = load_config(filename=configfile)
+        config = load_config(config_path=config_path)
         cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(
             config=config, syn_temp_name="hoc_synapses"
         )
@@ -119,7 +110,7 @@ def test_synapses_hoc_vs_py_script(configfile="config_synapses.ini"):
         write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, run_hoc_filename, syn_hoc)
 
         subprocess.call(["sh", "./run_hoc.sh"])
-        subprocess.call(["sh", "run_py.sh", configfile])
+        run_emodel(config_path=config_path)
 
     # load output
     hoc_path = os.path.join(example_dir, "hoc_recordings", "soma_voltage_vecstim.dat")
@@ -314,6 +305,6 @@ def check_mechanisms(config):
 def test_factsheets_fcts():
     """Test dictionary output from functions used for factsheets."""
     with cwd(example_dir):
-        config = load_config(filename="config_singlestep.ini")
+        config = load_config(config_path="config/config_singlestep.ini")
         check_features(config)
         check_mechanisms(config)

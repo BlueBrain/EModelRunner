@@ -121,15 +121,14 @@ def get_hoc(config, syn_temp_name="hoc_synapses"):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--c",
-        default="config_multistep.ini",
-        help="the name of the config file",
+        "--config_path",
+        default=None,
+        help="the path to the config file.",
     )
     args = parser.parse_args()
 
-    config_file = args.c
     run_hoc_filename_ = "run.hoc"
-    config_ = load_config(filename=config_file)
+    config_ = load_config(config_path=args.config_path)
 
     cell_hoc_, syn_hoc_, simul_hoc_, run_hoc_ = get_hoc(
         config=config_, syn_temp_name="hoc_synapses"

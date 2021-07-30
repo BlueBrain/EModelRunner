@@ -47,7 +47,7 @@ Dependencies
 
 The main dependencies of EModelRunner are::
 
-    Python 2.7+ or Python3.6+ 
+    Python3.6+ 
     Matplotlib
     Numpy
     Neurom

@@ -16,10 +16,10 @@ from emodelrunner.output import write_current
 from emodelrunner.output import write_responses
 
 
-def main(config_file):
+def main(config_path):
     """Main."""
     # pylint: disable=too-many-locals
-    config = load_config(filename=config_file)
+    config = load_config(config_path=config_path)
 
     cell = create_cell_using_config(config)
     release_params = get_release_params(config)
@@ -61,9 +61,9 @@ def main(config_file):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--c",
+        "--config_path",
         default=None,
-        help="the name of the config file to be looked under ./config directory",
+        help="the path to the config file.",
     )
     args = parser.parse_args()
-    main(args.c)
+    main(config_path=args.config_path)

@@ -119,10 +119,10 @@ class NeuronSimulation:
             type=0 if inhib, type=1 if excit
     """
 
-    def __init__(self, config_file="config_allsteps.ini"):
+    def __init__(self, config_path="config/config_allsteps.ini"):
         """Constructor. Load default params from config file."""
         # load config file
-        self.config = load_config(filename=config_file)
+        self.config = load_config(config_path=config_path)
         self.cell_path = self.config.get("Paths", "memodel_dir")
 
         # get default params

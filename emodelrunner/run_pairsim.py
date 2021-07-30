@@ -21,15 +21,15 @@ logger = logging.getLogger(__name__)
 
 
 def run(
+    config_path,
     cvode_active=True,
     postsyn_protocol_name="pulse",
     presyn_protocol_name="presyn_pulse",
     fixhp=True,
-    config_file="config_pairsim.ini",
 ):
     """Run cell with pulse stimuli and pre-cell spike train."""
     # pylint:disable=too-many-locals
-    config = load_config(filename=config_file)
+    config = load_config(config_path=config_path)
 
     # load extra_params
     syn_setup_params = get_syn_setup_params(
@@ -99,6 +99,7 @@ def run(
         pre_param_values=pre_release_params,
         post_param_values=post_release_params,
         sim=sim,
+        isolate=False,
     )
 
     # write responses
@@ -111,11 +112,10 @@ def run(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--c",
-        default="config_pairsim.ini",
-        help="the name of the config file",
+        "--config_path",
+        default=None,
+        help="the path to the config file.",
     )
     args = parser.parse_args()
 
-    _config_file = args.c
-    run(config_file=_config_file)
+    run(config_path=args.config_path)

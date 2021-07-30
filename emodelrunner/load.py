@@ -12,7 +12,7 @@ from emodelrunner.synapses.mechanism import NrnMODPointProcessMechanismCustom
 from emodelrunner.locations import multi_locations
 
 
-def load_config(filename, config_dir="config"):
+def load_config(config_path):
     """Set config from config file and set default value."""
     defaults = {
         "Cell": {
@@ -86,7 +86,6 @@ def load_config(filename, config_dir="config"):
     config.read_dict(defaults)
 
     # read config file
-    config_path = os.path.join(config_dir, filename)
     if not os.path.exists(config_path):
         raise FileNotFoundError("The file at {} does not exist".format(config_path))
     config.read(config_path)
