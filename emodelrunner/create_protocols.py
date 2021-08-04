@@ -48,7 +48,6 @@ def get_step_protocol(
     syn_stim=None,
 ):
     """Create Step Stimuli and return the Protocols for all stimuli."""
-    # pylint: disable=too-many-locals
     # get current amplitude data
     amplitudes = [
         step_args["stimulus_amp1"],

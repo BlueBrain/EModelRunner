@@ -2,26 +2,7 @@
 
 import logging
 
-import json
-
 logger = logging.getLogger(__name__)
-
-
-def load_emodel_recipe_dict(recipes_path, emodel):
-    """Get recipe dict."""
-    with open(recipes_path, "r") as recipes_file:
-        recipes = json.load(recipes_file)
-
-    return recipes[emodel]
-
-
-def load_raw_exp_features(recipe):
-    """Load experimental features from file."""
-    features_path = recipe["features"]
-    with open(features_path, "r") as features_file:
-        features = json.load(features_file)
-
-    return features
 
 
 def morphology_used_in_fitting(optimized_params_dict, emodel):
