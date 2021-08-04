@@ -2,8 +2,8 @@
     "pulse0": {
         "Mode": "Current",
         "Pattern": "Pulse",
-        "AmpStart": 1.9000000000000001,
-        "AmpEnd": 1.9000000000000001,
+        "AmpStart": 0.6,
+        "AmpEnd": 0.6,
         "Frequency": 0.1,
         "Width": 3.0,
         "Delay": 301000.0,
@@ -12,41 +12,41 @@
     "pulse1": {
         "Mode": "Current",
         "Pattern": "Pulse",
-        "AmpStart": 1.9000000000000001,
-        "AmpEnd": 1.9000000000000001,
+        "AmpStart": 0.6,
+        "AmpEnd": 0.6,
         "Frequency": 0.1,
         "Width": 3.0,
-        "Delay": 301100.0,
+        "Delay": 302000.0,
         "Duration": 100000.0
     },
     "pulse2": {
         "Mode": "Current",
         "Pattern": "Pulse",
-        "AmpStart": 1.9000000000000001,
-        "AmpEnd": 1.9000000000000001,
+        "AmpStart": 0.6,
+        "AmpEnd": 0.6,
         "Frequency": 0.1,
         "Width": 3.0,
-        "Delay": 301200.0,
+        "Delay": 303000.0,
         "Duration": 100000.0
     },
     "pulse3": {
         "Mode": "Current",
         "Pattern": "Pulse",
-        "AmpStart": 1.9000000000000001,
-        "AmpEnd": 1.9000000000000001,
+        "AmpStart": 0.6,
+        "AmpEnd": 0.6,
         "Frequency": 0.1,
         "Width": 3.0,
-        "Delay": 301300.0,
+        "Delay": 304000.0,
         "Duration": 100000.0
     },
     "pulse4": {
         "Mode": "Current",
         "Pattern": "Pulse",
-        "AmpStart": 1.9000000000000001,
-        "AmpEnd": 1.9000000000000001,
+        "AmpStart": 0.6,
+        "AmpEnd": 0.6,
         "Frequency": 0.1,
         "Width": 3.0,
-        "Delay": 301400.0,
+        "Delay": 305000.0,
         "Duration": 100000.0
     }
 }
