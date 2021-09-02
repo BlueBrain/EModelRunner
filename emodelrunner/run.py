@@ -8,6 +8,7 @@ from emodelrunner.create_cells import create_cell_using_config
 from emodelrunner.create_protocols import SSCXProtocols
 from emodelrunner.load import (
     load_config,
+    get_recipe_prot_args,
     get_release_params,
     get_step_prot_args,
     get_syn_prot_args,
@@ -35,19 +36,20 @@ def main(config_path):
     add_synapses = config.getboolean("Synapses", "add_synapses")
     step_args = get_step_prot_args(config)
     syn_args = get_syn_prot_args(config)
+    recipe_args = get_recipe_prot_args(config)
 
     sscx_protocols = SSCXProtocols(
-        step_args, syn_args, step_stim, add_synapses, cvode_active, cell
+        step_args, syn_args, recipe_args, step_stim, add_synapses, cvode_active, cell
     )
     ephys_protocols = sscx_protocols.get_ephys_protocols()
-    currents = sscx_protocols.get_stim_currents()
 
     # run
     print("Python Recordings Running...")
-
     responses = ephys_protocols.run(
         cell_model=cell, param_values=release_params, sim=sim
     )
+
+    currents = sscx_protocols.get_stim_currents(responses)
 
     # write responses
     output_dir = config.get("Paths", "output_dir")

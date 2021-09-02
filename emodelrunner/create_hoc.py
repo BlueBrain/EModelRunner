@@ -21,7 +21,7 @@ from emodelrunner.create_hoc_tools import (
 def write_hoc(hoc_dir, hoc_file_name, hoc):
     """Write hoc file."""
     hoc_path = os.path.join(hoc_dir, hoc_file_name)
-    with open(hoc_path, "w") as hoc_file:
+    with open(hoc_path, "w", encoding="utf-8") as hoc_file:
         hoc_file.write(hoc)
 
 

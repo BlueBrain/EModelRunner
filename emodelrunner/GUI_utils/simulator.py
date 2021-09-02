@@ -173,7 +173,7 @@ class NeuronSimulation:
             self.config.get("Paths", "syn_dir"),
             self.config.get("Paths", "syn_mtype_map"),
         )
-        with open(mtype_path, "r") as mtype_file:
+        with open(mtype_path, "r", encoding="utf-8") as mtype_file:
             raw_mtypes = mtype_file.readlines()
 
         # mtypes[id] = m-type name

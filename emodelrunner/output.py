@@ -11,17 +11,24 @@ def write_responses(responses, output_dir, output_file):
     for key, resp in responses.items():
         output_path = os.path.join(output_dir, output_file + key + ".dat")
 
-        time = np.array(resp["time"])
-        soma_voltage = np.array(resp["voltage"])
+        # holding & threshold current cases for recipe protocols
+        if isinstance(resp, (float, np.float)):
+            np.savetxt(output_path, np.array([resp]))
+        else:
+            time = np.array(resp["time"])
+            soma_voltage = np.array(resp["voltage"])
 
-        np.savetxt(output_path, np.transpose(np.vstack((time, soma_voltage))))
+            np.savetxt(output_path, np.transpose(np.vstack((time, soma_voltage))))
 
 
 def write_current(currents, output_dir):
     """Write currents into separate files."""
-    for idx, (time, current) in enumerate(currents):
-        output_path = os.path.join(output_dir, "current_step" + str(idx + 1) + ".dat")
-        np.savetxt(output_path, np.transpose(np.vstack((time, current))))
+    for key, curr_dict in currents.items():
+        output_path = os.path.join(output_dir, key + ".dat")
+        np.savetxt(
+            output_path,
+            np.transpose(np.vstack((curr_dict["time"], curr_dict["current"]))),
+        )
 
 
 def write_synplas_output(
@@ -37,7 +44,7 @@ def write_synplas_output(
     # add synprop
     synprop_path = os.path.join(syn_dir, syn_fname)
     if os.path.isfile(synprop_path):
-        with open(synprop_path, "r") as f:
+        with open(synprop_path, "r", encoding="utf-8") as f:
             synprop = json.load(f)
             results["synprop"] = synprop
 

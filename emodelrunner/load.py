@@ -42,6 +42,9 @@ def load_config(config_path):
             "syn_stim_seed": "1",
             "vecstim_random": "python",  # can be "python" or "neuron"
             "precell_amplitude": "1.0",
+            "run_recipe_protocols": "False",
+            # added this only for the run not to crash when no apical point is given
+            "apical_point_isec": "1",
         },
         "Morphology": {
             "do_replace_axon": "True",
@@ -102,6 +105,16 @@ def get_hoc_paths_args(config):
         "syn_dir": config.get("Paths", "syn_dir"),
         "syn_dir_for_hoc": config.get("Paths", "syn_dir_for_hoc"),
         "syn_hoc_filename": config.get("Paths", "syn_hoc_file"),
+    }
+
+
+def get_recipe_prot_args(config):
+    """Get the dict containing recipe protocols configuration data."""
+    return {
+        "run_recipe_protocols": config.getboolean("Protocol", "run_recipe_protocols"),
+        "emodel": config.get("Cell", "emodel"),
+        "recipe_path": config.get("Paths", "recipes_path"),
+        "apical_point_isec": config.getint("Protocol", "apical_point_isec"),
     }
 
 
@@ -191,7 +204,7 @@ def get_presyn_stim_args(config, pre_spike_train):
 
 def find_param_file(recipes_path, emodel):
     """Find the parameter file for unfrozen params."""
-    with open(recipes_path, "r") as recipes_file:
+    with open(recipes_path, "r", encoding="utf-8") as recipes_file:
         recipes = json.load(recipes_file)
     recipe = recipes[emodel]
 
@@ -200,7 +213,7 @@ def find_param_file(recipes_path, emodel):
 
 def load_emodel_params(emodel, params_path):
     """Get optimised parameters."""
-    with open(params_path, "r") as params_file:
+    with open(params_path, "r", encoding="utf-8") as params_file:
         params = json.load(params_file)
 
     param_dict = params[emodel]["params"]
@@ -217,11 +230,13 @@ def get_syn_setup_params(
     invivo,
 ):
     """Load json files and return syn_setup_params dict."""
-    with open(os.path.join(syn_dir, syn_extra_params_fname), "r") as f:
+    with open(
+        os.path.join(syn_dir, syn_extra_params_fname), "r", encoding="utf-8"
+    ) as f:
         syn_extra_params = json.load(f)
-    with open(os.path.join(syn_dir, cpre_cpost_fname), "r") as f:
+    with open(os.path.join(syn_dir, cpre_cpost_fname), "r", encoding="utf-8") as f:
         cpre_cpost = json.load(f)
-    with open(fit_params_path, "r") as f:
+    with open(fit_params_path, "r", encoding="utf-8") as f:
         fit_params = json.load(f)
 
     return {
@@ -249,7 +264,7 @@ def get_release_params(config, precell=False):
 
 def load_mechanisms(mechs_path):
     """Define mechanisms."""
-    with open(mechs_path, "r") as mechs_file:
+    with open(mechs_path, "r", encoding="utf-8") as mechs_file:
         mechs = json.load(mechs_file)
     mech_definitions = mechs["mechanisms"]
 
@@ -285,7 +300,7 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
     # pylint: disable=too-many-locals, too-many-branches, too-many-statements
     parameters = []
 
-    with open(params_path, "r") as params_file:
+    with open(params_path, "r", encoding="utf-8") as params_file:
         definitions = json.load(params_file)
 
     # set distributions
@@ -439,7 +454,7 @@ def load_syn_mechs(
 def load_synapses_tsv_data(tsv_path):
     """Load synapse data from tsv."""
     synapses = []
-    with open(tsv_path, "r") as f:
+    with open(tsv_path, "r", encoding="utf-8") as f:
         # first line is dimensions
         for line in f.readlines()[1:]:
             syn = {}
@@ -467,7 +482,7 @@ def load_synapses_tsv_data(tsv_path):
 def load_synapse_configuration_data(synconf_path):
     """Load synapse configuration data into dict[command]=list(ids)."""
     synconf_dict = {}
-    with open(synconf_path, "r") as f:
+    with open(synconf_path, "r", encoding="utf-8") as f:
         synconfs = f.read().split("-1000000000000000.0")
 
     for synconf in synconfs:

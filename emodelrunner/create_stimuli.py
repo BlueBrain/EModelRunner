@@ -25,7 +25,7 @@ def load_pulses(soma_loc, stim_dir="protocols", stim_fname="stimuli.json"):
     """Return a list of pulse stimuli."""
     pulse_stims = []
     stim_path = os.path.join(stim_dir, stim_fname)
-    with open(stim_path, "r") as f:
+    with open(stim_path, "r", encoding="utf-8") as f:
         stimuli = json.load(f)
 
     for _, stim in stimuli.items():

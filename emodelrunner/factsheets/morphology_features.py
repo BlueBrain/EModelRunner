@@ -17,8 +17,10 @@ class MorphologyFeature(object):
 
     @staticmethod
     def replace_empty_value(value):
-        """Replaces the empty value with [0]."""
-        if len(value) == 0:
+        """Replaces the empty value with 0 or [0]."""
+        if value is None:
+            value = 0
+        elif hasattr(value, "len") and len(value) == 0:
             value = [0]
         return value
 
@@ -41,13 +43,12 @@ class TotalLength(MorphologyFeature):
         super(TotalLength, self).__init__()
         self.name = "total {} length".format(neurite_name)
         self.unit = "\u00b5m"
-        feature_values = nm.get("total_length", morphology, neurite_type=neurite_type)
-        feature_values = self.replace_empty_value(feature_values)
-        self.value = sum(feature_values)
+        feature_value = nm.get("total_length", morphology, neurite_type=neurite_type)
+        self.value = self.replace_empty_value(feature_value)
 
 
 class NeuriteVolumes(MorphologyFeature):
-    """Neurite volumes feature."""
+    """Total neurite volume feature."""
 
     def __init__(self, morphology, neurite_name, neurite_type):
         """Constructor.
@@ -61,7 +62,7 @@ class NeuriteVolumes(MorphologyFeature):
         self.name = "mean {} volume".format(neurite_name)
         self.unit = "\u00b5m\u00b3"
         feature_values = nm.get(
-            "neurite_volumes", morphology, neurite_type=neurite_type
+            "total_volume_per_neurite", morphology, neurite_type=neurite_type
         )
         feature_values = self.replace_empty_value(feature_values)
         self.value = sum(feature_values) / len(feature_values)
@@ -121,9 +122,8 @@ class SomaDiamater(MorphologyFeature):
         super(SomaDiamater, self).__init__()
         self.name = "soma diameter"
         self.unit = "\u00b5m"
-        feature_value = nm.get("soma_radii", morphology)
-        feature_value = self.replace_empty_value(feature_value)
-        self.value = 2 * feature_value[0]
+        feature_value = nm.get("soma_radius", morphology)
+        self.value = 2 * self.replace_empty_value(feature_value)
 
 
 class MorphologyFactsheetBuilder:

@@ -18,7 +18,7 @@ def create_run_hoc(template_dir, template_filename, step_stimulus):
     """Returns a string containing run.hoc."""
     # load template
     template_path = os.path.join(template_dir, template_filename)
-    with open(template_path) as template_file:
+    with open(template_path, "r", encoding="utf-8") as template_file:
         template = template_file.read()
         template = jinja2.Template(template)
 
@@ -40,7 +40,7 @@ def create_synapse_hoc(
     """Returns a string containing the synapse hoc."""
     # load template
     template_path = os.path.join(template_dir, template_filename)
-    with open(template_path) as template_file:
+    with open(template_path, "r", encoding="utf-8") as template_file:
         template = template_file.read()
         template = jinja2.Template(template)
 
@@ -106,7 +106,7 @@ def create_hoc(
         )
 
     template_path = os.path.join(template_dir, template_filename)
-    with open(template_path) as template_file:
+    with open(template_path, "r", encoding="utf-8") as template_file:
         template = template_file.read()
         template = jinja2.Template(template)
 
@@ -181,7 +181,7 @@ def create_simul_hoc(
 
     # load template
     template_path = os.path.join(template_dir, template_filename)
-    with open(template_path) as template_file:
+    with open(template_path, "r", encoding="utf-8") as template_file:
         template = template_file.read()
         template = jinja2.Template(template)
 

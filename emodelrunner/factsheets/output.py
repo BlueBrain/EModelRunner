@@ -41,7 +41,7 @@ def write_metype_json(
 
     output = [anatomy, physiology, morphology]
 
-    with open(output_path, "w") as out_file:
+    with open(output_path, "w", encoding="utf-8") as out_file:
         json.dump(output, out_file, indent=4, cls=NpEncoder)
     print("me-type json file written.")
 
@@ -91,6 +91,6 @@ def write_emodel_json(
         channel_mechanisms,
     ]
 
-    with open(output_path, "w") as out_file:
+    with open(output_path, "w", encoding="utf-8") as out_file:
         json.dump(output, out_file, indent=4, cls=NpEncoder)
     print("e-model json file is written.")

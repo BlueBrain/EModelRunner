@@ -20,6 +20,7 @@ def test_morphology_factsheet_builder():
     assert len(morph_features) == 13
 
     for feature in morph_features:
+        print(feature)
         assert feature["value"] >= 0
 
 
