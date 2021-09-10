@@ -70,7 +70,7 @@ class NrnSomaDistanceCompLocationApical(NrnSomaDistanceCompLocation):
         soma_distance=None,
         seclist_name=None,
         comment="",
-        apical_point_isec=None,
+        apical_point_isec=-1,
     ):
         """Constructor."""
         super(NrnSomaDistanceCompLocationApical, self).__init__(
@@ -80,7 +80,7 @@ class NrnSomaDistanceCompLocationApical(NrnSomaDistanceCompLocation):
 
     def instantiate(self, sim=None, icell=None):
         """Find the instantiate compartment."""
-        if self.apical_point_isec is None:
+        if self.apical_point_isec == -1:
             raise ephys.locations.EPhysLocInstantiateException(
                 "No apical point was given"
             )

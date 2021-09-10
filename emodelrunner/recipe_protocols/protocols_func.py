@@ -186,6 +186,11 @@ def get_extra_recording_location(recording_definition, apical_point_isec):
         )
 
     elif recording_definition["type"] == "somadistanceapic":
+        if apical_point_isec == -1:
+            raise Exception(
+                "Cannot record at a given distance from apical point"
+                "if apical_point_isec is {}.".format(apical_point_isec)
+            )
         location = NrnSomaDistanceCompLocationApical(
             name=recording_definition["name"],
             soma_distance=recording_definition["somadistance"],
@@ -298,7 +303,7 @@ def define_protocols(
     protocols_filename,
     stochkv_det=None,
     prefix="",
-    apical_point_isec=None,
+    apical_point_isec=-1,
 ):
     """Define protocols."""
     with open(os.path.join(protocols_filename), "r", encoding="utf-8") as protocol_file:
@@ -394,6 +399,7 @@ def create_protocols(
         etype (str): emodel
         recipe_path (str): path to recipe path. Not mandatory.
         apical_point_isec (int): section index of the apical point
+            Set to -1 if there is no apical point
         stochkv_det (bool): set if stochastic or deterministic
         prot_path (str): protocol path. if not set, is taken from recipe.
         features_path (str): feature path. if not set, is taken from recipe.

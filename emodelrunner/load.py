@@ -43,8 +43,8 @@ def load_config(config_path):
             "vecstim_random": "python",  # can be "python" or "neuron"
             "precell_amplitude": "1.0",
             "run_recipe_protocols": "False",
-            # added this only for the run not to crash when no apical point is given
-            "apical_point_isec": "1",
+            # -1 means there is no apical point
+            "apical_point_isec": "-1",
         },
         "Morphology": {
             "do_replace_axon": "True",
