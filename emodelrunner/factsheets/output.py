@@ -46,16 +46,53 @@ def write_metype_json(
     print("me-type json file written.")
 
 
-def write_metype_json_from_config(config, voltage_path, morphology_path, output_path):
-    """Write the me-type factsheet json file."""
-    # get current amplitude
-    step_number = config.getint("Protocol", "run_step_number")
-    stim_name = "stimulus_amp" + str(step_number)
-    current_amplitude = config.getfloat("Protocol", stim_name)
+def get_stim_params_from_config_for_physiology_factsheet(prot_path, protocol_key):
+    """Get step amplitude, delay and duration for phisiology factsheet.
 
-    # get parameters from config
-    stim_start = config.getint("Protocol", "stimulus_delay")
-    stim_duration = config.getint("Protocol", "stimulus_duration")
+    Args:
+        prot_path (str or Path): path to the json file containing the protocols
+        protocol_key (str): name of the protocol used for physiology features extraction
+
+    Returns:
+        current_amplitude (int or float): the amplitude current of the step protocol (mA)
+        stim_start (int or float): the start of the stimulus (ms)
+        stim_duration (int or float): the duration of the stimulus (ms)
+
+    Raises:
+        Exception: If a step protocol with multiple steps has been provided
+    """
+    with open(prot_path, "r", encoding="utf-8") as protocol_file:
+        protocol_definitions = json.load(protocol_file)
+
+    prot = protocol_definitions[protocol_key]
+    step_stim = prot["stimuli"]["step"]
+
+    if isinstance(step_stim, list):
+        exception_message = (
+            "ME-type factsheet expects only one step stimulus "
+            + "for protocol {key} at {filepath}"
+        )
+        raise Exception(exception_message.format(key=protocol_key, filepath=prot_path))
+
+    # get parameters from protocol
+    current_amplitude = step_stim["amp"]
+    stim_start = step_stim["delay"]
+    stim_duration = step_stim["duration"]
+
+    return current_amplitude, stim_start, stim_duration
+
+
+def write_metype_json_from_config(
+    config, voltage_path, morphology_path, output_path, protocol_key
+):
+    """Write the me-type factsheet json file."""
+    # get protocol data
+    prot_path = config.get("Paths", "prot_path")
+
+    stim_params = get_stim_params_from_config_for_physiology_factsheet(
+        prot_path, protocol_key
+    )
+    current_amplitude, stim_start, stim_duration = stim_params
 
     write_metype_json(
         voltage_path,
@@ -69,7 +106,7 @@ def write_metype_json_from_config(config, voltage_path, morphology_path, output_
 
 def write_emodel_json(
     emodel,
-    recipes_dict,
+    morphology_prefix,
     features_dict,
     feature_units_dict,
     unoptimized_params_dict,
@@ -80,7 +117,11 @@ def write_emodel_json(
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     exp_features = get_exp_features_data(
-        emodel, recipes_dict, features_dict, feature_units_dict, optimized_params_dict
+        emodel,
+        morphology_prefix,
+        features_dict,
+        feature_units_dict,
+        optimized_params_dict,
     )
     channel_mechanisms = get_mechanisms_data(
         emodel, optimized_params_dict, unoptimized_params_dict

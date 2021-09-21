@@ -13,11 +13,6 @@ def morphology_used_in_fitting(optimized_params_dict, emodel):
     return morph_name
 
 
-def get_morphology_prefix_from_recipe(emodel, recipe):
-    """Get the morphology prefix from an emodel recipe (e.g. '_' or 'L5TPCa')."""
-    return recipe[emodel]["morphology"][0][0]
-
-
 def get_feature_dict(feature, units, morphology_prefix, stimulus, location, fitness):
     """Return dict containing one feature."""
     feature_name = feature["feature"]
@@ -51,14 +46,12 @@ def get_feature_dict(feature, units, morphology_prefix, stimulus, location, fitn
 
 
 def get_exp_features_data(
-    emodel, recipe_dict, features_dict, units, optimized_params_dict
+    emodel, morphology_prefix, features_dict, units, optimized_params_dict
 ):
     """Returns a dict containing mean and std of experimental features and model fitness."""
     # pylint: disable=too-many-locals
     # it is hard to reduce number of locals without reducing readibility
     fitness = optimized_params_dict[emodel]["fitness"]
-
-    morphology_prefix = get_morphology_prefix_from_recipe(emodel, recipe_dict)
 
     values_dict = {}
     for stimulus, stim_data in features_dict.items():

@@ -34,6 +34,7 @@ setup(
         "neurom",
         "h5py",
         "matplotlib",
+        "Pebble>=4.3.10",
     ],
     packages=find_packages(),
     python_requires=">=3.6",

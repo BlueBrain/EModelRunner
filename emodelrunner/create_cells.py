@@ -4,7 +4,6 @@ import os
 
 from emodelrunner.cell import CellModelCustom
 from emodelrunner.load import (
-    find_param_file,
     load_mechanisms,
     load_syn_mechs,
     load_unoptimized_parameters,
@@ -15,7 +14,7 @@ from emodelrunner.morphology import NrnFileMorphologyCustom, get_axon_hoc
 
 
 def create_cell(
-    recipes_path,
+    unopt_params_path,
     emodel,
     add_synapses,
     morph_args,
@@ -30,8 +29,7 @@ def create_cell(
     """Create a cell."""
     # pylint: disable=too-many-arguments, too-many-locals
     # load mechanisms
-    params_filepath = find_param_file(recipes_path, emodel)
-    mechs = load_mechanisms(params_filepath)
+    mechs = load_mechanisms(unopt_params_path)
 
     # add synapses mechs
     if add_synapses:
@@ -47,7 +45,7 @@ def create_cell(
         ]
 
     # load parameters
-    params = load_unoptimized_parameters(params_filepath, v_init, celsius)
+    params = load_unoptimized_parameters(unopt_params_path, v_init, celsius)
 
     # load morphology
     replace_axon_hoc = get_axon_hoc(morph_args["axon_hoc_path"])
@@ -73,8 +71,7 @@ def create_cell(
 
 def create_cell_using_config(config):
     """Create a cell given configuration. Return cell, release params and time step."""
-    # get recipes path
-    recipes_path = config.get("Paths", "recipes_path")
+    unopt_params_path = config.get("Paths", "unoptimized_params_path")
 
     # get synapse config data
     add_synapses = config.getboolean("Synapses", "add_synapses")
@@ -85,7 +82,7 @@ def create_cell_using_config(config):
 
     # create cell
     cell = create_cell(
-        recipes_path,
+        unopt_params_path,
         config.get("Cell", "emodel"),
         add_synapses,
         morph_args,
@@ -110,7 +107,7 @@ def get_postcell(
     v_init = config.getint("Cell", "v_init")
     celsius = config.getint("Cell", "celsius")
 
-    recipes_path = config.get("Paths", "recipes_path")
+    unopt_params_path = config.get("Paths", "unoptimized_params_path")
 
     syn_mech_args = get_syn_mech_args(config)
     # rewrite seed and rng setting mode over basic emodelrunner config defaults
@@ -122,7 +119,7 @@ def get_postcell(
     add_synapses = True
 
     cell = create_cell(
-        recipes_path,
+        unopt_params_path,
         emodel,
         add_synapses,
         morph_args,
@@ -147,14 +144,14 @@ def get_precell(
     v_init = config.getint("Cell", "v_init")
     celsius = config.getint("Cell", "celsius")
 
-    recipes_path = config.get("Paths", "recipes_path")
+    unopt_params_path = config.get("Paths", "unoptimized_params_path")
 
     morph_args = get_morph_args(config, precell=True)
 
     add_synapses = False
 
     cell = create_cell(
-        recipes_path,
+        unopt_params_path,
         emodel,
         add_synapses,
         morph_args,

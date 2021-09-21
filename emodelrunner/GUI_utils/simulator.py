@@ -13,7 +13,6 @@ from emodelrunner.load import (
     load_syn_mechs,
     load_unoptimized_parameters,
     load_mechanisms,
-    find_param_file,
     get_morph_args,
     get_release_params,
 )
@@ -248,9 +247,8 @@ class NeuronSimulation:
         gid = self.config.getint("Cell", "gid")
 
         # load mechanisms
-        recipes_path = self.config.get("Paths", "recipes_path")
-        params_filepath = find_param_file(recipes_path, emodel)
-        mechs = load_mechanisms(params_filepath)
+        unopt_params_path = self.config.get("Paths", "unoptimized_params_path")
+        mechs = load_mechanisms(unopt_params_path)
 
         # add synapses mechs
         seed = self.config.getint("Synapses", "seed")
@@ -278,7 +276,7 @@ class NeuronSimulation:
 
         # load parameters
         params = load_unoptimized_parameters(
-            params_filepath,
+            unopt_params_path,
             v_init=self.config.getint("Cell", "v_init"),
             celsius=self.config.getint("Cell", "celsius"),
         )

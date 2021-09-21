@@ -21,33 +21,14 @@ def load_config(config_path):
             "gid": "0",
         },
         "Protocol": {
-            "step_stimulus": "True",
-            "run_all_steps": "True",
-            "run_step_number": "1",
-            "total_duration": "3000",
-            "stimulus_delay": "700",
-            "stimulus_duration": "2000",
-            "stimulus_amp1": "0",
-            "stimulus_amp2": "0",
-            "stimulus_amp3": "0",
-            "hold_amp": "0",
-            "hold_stimulus_delay": "0",
-            "hold_stimulus_duration": "3000",
-            "syn_stim_mode": "vecstim",
-            "syn_stop": "%(total_duration)s",
-            "syn_interval": "100",
-            "syn_nmb_of_spikes": "5",
-            "syn_start": "50",
-            "syn_noise": "0",
-            "syn_stim_seed": "1",
-            "vecstim_random": "python",  # can be "python" or "neuron"
             "precell_amplitude": "1.0",
-            "run_recipe_protocols": "False",
             # -1 means there is no apical point
             "apical_point_isec": "-1",
         },
         "Morphology": {
             "do_replace_axon": "True",
+            # is only used for naming the output files
+            "mtype": "",
         },
         "Sim": {
             "cvode_active": "False",
@@ -61,8 +42,6 @@ def load_config(config_path):
         "Paths": {
             "memodel_dir": ".",
             "output_dir": "%(memodel_dir)s/python_recordings",
-            "output_file": "soma_voltage_",
-            "recipes_path": "config/recipes/recipes.json",
             "params_path": "config/params/final.json",
             "units_path": "config/features/units.json",
             "templates_dir": "templates",
@@ -78,7 +57,6 @@ def load_config(config_path):
             "syn_mtype_map": "mtype_map.tsv",
             "simul_hoc_file": "createsimulation.hoc",
             "synplas_fit_params_path": "config/fit_params.json",
-            "morph_dir": "morphology",
         },
         "SynapsePlasticity": {},
     }
@@ -90,7 +68,7 @@ def load_config(config_path):
 
     # read config file
     if not os.path.exists(config_path):
-        raise FileNotFoundError("The file at {} does not exist".format(config_path))
+        raise FileNotFoundError(f"The file at {config_path} does not exist")
     config.read(config_path)
 
     return config
@@ -108,45 +86,14 @@ def get_hoc_paths_args(config):
     }
 
 
-def get_recipe_prot_args(config):
+def get_prot_args(config):
     """Get the dict containing recipe protocols configuration data."""
     return {
-        "run_recipe_protocols": config.getboolean("Protocol", "run_recipe_protocols"),
         "emodel": config.get("Cell", "emodel"),
-        "recipe_path": config.get("Paths", "recipes_path"),
         "apical_point_isec": config.getint("Protocol", "apical_point_isec"),
-    }
-
-
-def get_step_prot_args(config):
-    """Get the dict containing step & holding protocols configuration data."""
-    return {
-        "total_duration": config.getint("Protocol", "total_duration"),
-        "step_delay": config.getint("Protocol", "stimulus_delay"),
-        "step_duration": config.getint("Protocol", "stimulus_duration"),
-        "hold_step_delay": config.getint("Protocol", "hold_stimulus_delay"),
-        "hold_step_duration": config.getint("Protocol", "hold_stimulus_duration"),
-        "run_all_steps": config.getboolean("Protocol", "run_all_steps"),
-        "run_step_number": config.getint("Protocol", "run_step_number"),
-        "hold_amp": config.getfloat("Protocol", "hold_amp"),
-        "stimulus_amp1": config.getfloat("Protocol", "stimulus_amp1"),
-        "stimulus_amp2": config.getfloat("Protocol", "stimulus_amp2"),
-        "stimulus_amp3": config.getfloat("Protocol", "stimulus_amp3"),
-    }
-
-
-def get_syn_prot_args(config):
-    """Get the dict containing synapse protocols configuration data."""
-    return {
-        "netstim_total_duration": config.getint("Protocol", "total_duration"),
-        "syn_stop": config.getint("Protocol", "syn_stop"),
-        "syn_interval": config.getint("Protocol", "syn_interval"),
-        "syn_nmb_of_spikes": config.getint("Protocol", "syn_nmb_of_spikes"),
-        "syn_start": config.getint("Protocol", "syn_start"),
-        "syn_noise": config.getint("Protocol", "syn_noise"),
-        "syn_stim_seed": config.getint("Protocol", "syn_stim_seed"),
-        "vecstim_random": config.get("Protocol", "vecstim_random"),
-        "syn_stim_mode": config.get("Protocol", "syn_stim_mode"),
+        "mtype": config.get("Morphology", "mtype"),
+        "prot_path": config.get("Paths", "prot_path"),
+        "features_path": config.get("Paths", "features_path"),
     }
 
 
@@ -169,12 +116,10 @@ def get_morph_args(config, precell=False):
         precell (bool): True to load precell morph. False to load usual morph.
     """
     # load morphology path
-    morph_dir = config.get("Paths", "morph_dir")
     if precell:
-        morph_fname = config.get("Paths", "precell_morph_file")
+        morph_path = config.get("Paths", "precell_morph_path")
     else:
-        morph_fname = config.get("Paths", "morph_file")
-    morph_path = os.path.join(morph_dir, morph_fname)
+        morph_path = config.get("Paths", "morph_path")
 
     # load axon hoc path
     axon_hoc_path = os.path.join(
@@ -200,15 +145,6 @@ def get_presyn_stim_args(config, pre_spike_train):
         "amp": config.getfloat("Protocol", "precell_amplitude"),
         "width": config.getint("Protocol", "precell_width"),
     }
-
-
-def find_param_file(recipes_path, emodel):
-    """Find the parameter file for unfrozen params."""
-    with open(recipes_path, "r", encoding="utf-8") as recipes_file:
-        recipes = json.load(recipes_file)
-    recipe = recipes[emodel]
-
-    return recipe["params"]
 
 
 def load_emodel_params(emodel, params_path):
@@ -276,7 +212,7 @@ def load_mechanisms(mechs_path):
         for channel in channels["mech"]:
             mechanisms_list.append(
                 ephys.mechanisms.NrnMODMechanism(
-                    name="%s.%s" % (channel, sectionlist),
+                    name=f"{channel}.{sectionlist}",
                     mod_path=None,
                     suffix=channel,
                     locations=seclist_locs,
@@ -376,7 +312,7 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
             elif is_dist:
                 parameters.append(
                     ephys.parameters.MetaParameter(
-                        name="%s.%s" % (param_name, sectionlist),
+                        name=f"{param_name}.{sectionlist}",
                         obj=dist,
                         attr_name=param_name,
                         frozen=is_frozen,
@@ -396,7 +332,7 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
                 if use_range:
                     parameters.append(
                         ephys.parameters.NrnRangeParameter(
-                            name="%s.%s" % (param_name, sectionlist),
+                            name=f"{param_name}.{sectionlist}",
                             param_name=param_name,
                             value_scaler=dist,
                             value=value,
@@ -408,7 +344,7 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
                 else:
                     parameters.append(
                         ephys.parameters.NrnSectionParameter(
-                            name="%s.%s" % (param_name, sectionlist),
+                            name=f"{param_name}.{sectionlist}",
                             param_name=param_name,
                             value_scaler=dist,
                             value=value,

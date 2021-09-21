@@ -41,7 +41,7 @@ class TotalLength(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super(TotalLength, self).__init__()
-        self.name = "total {} length".format(neurite_name)
+        self.name = f"total {neurite_name} length"
         self.unit = "\u00b5m"
         feature_value = nm.get("total_length", morphology, neurite_type=neurite_type)
         self.value = self.replace_empty_value(feature_value)
@@ -59,7 +59,7 @@ class NeuriteVolumes(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super(NeuriteVolumes, self).__init__()
-        self.name = "mean {} volume".format(neurite_name)
+        self.name = f"mean {neurite_name} volume"
         self.unit = "\u00b5m\u00b3"
         feature_values = nm.get(
             "total_volume_per_neurite", morphology, neurite_type=neurite_type
@@ -80,7 +80,7 @@ class MaxBranchOrder(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super(MaxBranchOrder, self).__init__()
-        self.name = "{} maximum branch order".format(neurite_name)
+        self.name = f"{neurite_name} maximum branch order"
         self.unit = ""
         feature_values = nm.get(
             "section_branch_orders", morphology, neurite_type=neurite_type
@@ -101,7 +101,7 @@ class MaxSectionLength(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super(MaxSectionLength, self).__init__()
-        self.name = "{} maximum section length".format(neurite_name)
+        self.name = f"{neurite_name} maximum section length"
         self.unit = "\u00b5m"
         feature_values = nm.get(
             "section_lengths", morphology, neurite_type=neurite_type

@@ -38,6 +38,7 @@ class SynapseMixin:
 
     def execute_synapse_configuration(self, synconf_dict, synapse, sim, exec_all=False):
         """Create a hoc file configuring synapse."""
+        # pylint: disable=consider-using-f-string
         for cmd, ids in synconf_dict.items():
             if synapse["sid"] in ids and (exec_all or "*" not in cmd):
                 cmd = cmd.replace("%s", "\n%(syn)s")

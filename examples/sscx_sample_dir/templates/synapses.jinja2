@@ -32,7 +32,7 @@ begintemplate {{TEMPLATENAME}}
 
 public load_synapses, synapse_list, netcon_list, \
         stim_list, \
-        weights, delays, synconf_list, persistent_list, rng, create_netcons
+        weights, delays, synconf_list, persistent_list, rng, create_netcons, reset_netcons
 
 objref synapse_list, netcon_list,  \
         stim_list, rng_list, \
@@ -236,15 +236,33 @@ proc load_synapses() { local isynapse, nsynapses, ncols, synapse_id, \
 
 }
 
+// Reset all netcons for both Vecstim and Netstim
+proc reset_netcons() {
+    netcon_list = new List()
+    stim_list = new List()
+    persistent_list = new List()
+}
 
-proc create_netcons() { local isynapse, netstim_id, delay, weight, seg_x \
+/* syn_stim_mode: 0-> vecstim, 1-> netstim */
+proc create_netcons() { local isynapse, netstim_id, delay, weight, seg_x, \
+                        syn_stim_mode, syn_start, syn_stop, syn_interval, \
+                        syn_nmb_of_spikes, syn_noise, syn_stim_seed, dt \
                         localobj synapse, rand, netcon, netstim, \
                         t_vec, vecstim, section
+    
+    dt = {{dt}}
+    syn_stim_mode = $1
+    syn_start = $2
+    syn_stop = $3
+    syn_interval = $4
+    syn_nmb_of_spikes = $5
+    syn_noise = $6
+    syn_stim_seed = $7
 
-    {%- if syn_stim_mode=="vecstim" %}
-    rand = new Random({{syn_stim_seed}})
-    rand.uniform({{syn_start}},{{syn_stop}})  
-    {%- endif %}
+    if (syn_stim_mode==0){
+        rand = new Random(syn_stim_seed)
+        rand.uniform(syn_start,syn_stop)  
+    }
 
     for isynapse=0, synapse_list.count()-1 {
         synapse = synapse_list.o(isynapse)
@@ -254,27 +272,24 @@ proc create_netcons() { local isynapse, netstim_id, delay, weight, seg_x \
         seg_x = seg_xs.x[isynapse]
 
         // stimuli
-        {%- if syn_stim_mode=="netstim" %}
+        if (syn_stim_mode==1){ // netstim
             // create netstim (spike generator) 
             section.sec netstim = new NetStim(seg_x)
-            netstim.start = {{syn_start}}
-            netstim.interval = {{syn_interval}}
-            netstim.number = {{syn_nmb_of_spikes}}
-            netstim.noise = {{syn_noise}}
+            netstim.start = syn_start
+            netstim.interval = syn_interval
+            netstim.number = syn_nmb_of_spikes
+            netstim.noise = syn_noise
 
             // Create a connection between the netstim and the synapse
             netcon = new NetCon(netstim, synapse, -30, delay, weight)
             netcon_list.append(netcon)
             stim_list.append(netstim)
-        {%- endif %}
-
-        // vecstim
-        {%- if syn_stim_mode=="vecstim" %}
+        } else if (syn_stim_mode==0){ // vecstim
             // create vecstim (spike generator)    
             t_vec = new Vector(1)
             t_vec.x[0] = rand.repick()
             section.sec vecstim = new VecStim(seg_x)
-            vecstim.play(t_vec, {{syn_interval}})
+            vecstim.play(t_vec, dt)
         
             // Create a connection between the netstim and the synapse
             netcon = new NetCon(vecstim, synapse, -30, delay, weight)
@@ -282,7 +297,7 @@ proc create_netcons() { local isynapse, netstim_id, delay, weight, seg_x \
             stim_list.append(vecstim)
             //persistent_list.append(rand)
             persistent_list.append(t_vec)
-        {%- endif %}
+        }
 
         //printf("Added %s synapse %d originating from cell %d on %s section %d(%f) and dep %f\n", \
         //    synapse_type_name, synapse_id, pre_cell_id,  sectionlist_name, \

@@ -14,7 +14,248 @@ from bluepyopt.ephys.create_hoc import (
 )
 
 
-def create_run_hoc(template_dir, template_filename, step_stimulus):
+class HocStimuliCreator:
+    """Class to create the stimuli in hoc.
+
+    Attributes:
+        n_stims (int): total number of protocols to be run by hoc.
+            Gets incremented during initiation to enumerate the protocols.
+        max_steps (int): A StepProtocol can have multiple steps. This attribute
+            counts the maximum steps that the StepProtocol with the most steps has.
+            Stays at 0 if there is no StepProtocol.
+        reset_step_stimuli (str): hoc script resetting the step stimuli objects
+            to be put inhoc file.
+        init_step_stimuli (str): hoc script initiating the step stimuli objects
+            to be put in hoc file.
+        stims_hoc (str): hoc script containing all the protocols to be run by hoc.
+            The Protocols supported by this library to be converted to hoc are:
+            StepProtocol
+            RampProtocol
+            Vecstim
+            Netstim
+        save_recs (str): hoc scipt to save the recordings of each protocol.
+    """
+
+    def __init__(self, prot_definitions, mtype, add_synapses):
+        """Get stimuli in hoc to put in createsimulation.hoc."""
+        self.n_stims = 0
+        self.max_steps = 0
+        self.reset_step_stimuli = ""
+        self.init_step_stimuli = ""
+        self.stims_hoc = ""
+        self.save_recs = ""
+        for prot_name, prot in prot_definitions.items():
+            if "type" in prot and prot["type"] == "StepProtocol":
+                self.n_stims += 1
+                step_hoc = self.get_stim_hoc(self.get_step_hoc, prot)
+                self.stims_hoc += step_hoc
+
+                self.add_save_recordings_hoc(mtype, prot_name)
+            elif "type" in prot and prot["type"] == "RampProtocol":
+                self.n_stims += 1
+                ramp_hoc = self.get_stim_hoc(self.get_ramp_hoc, prot)
+                self.stims_hoc += ramp_hoc
+
+                self.add_save_recordings_hoc(mtype, prot_name)
+            elif "type" in prot and prot["type"] == "Vecstim" and add_synapses:
+                self.n_stims += 1
+                vecstim_hoc = self.get_stim_hoc(self.get_vecstim_hoc, prot)
+                self.stims_hoc += vecstim_hoc
+
+                self.add_save_recordings_hoc(mtype, prot_name)
+            elif "type" in prot and prot["type"] == "Netstim" and add_synapses:
+                self.n_stims += 1
+                netstim_hoc = self.get_stim_hoc(self.get_netstim_hoc, prot)
+                self.stims_hoc += netstim_hoc
+
+                self.add_save_recordings_hoc(mtype, prot_name)
+
+        self.get_reset_step()
+        self.get_init_step()
+
+    def add_save_recordings_hoc(self, mtype, prot_name):
+        """Add this to the hoc file to save the recordings."""
+        self.save_recs += f"""
+            if (stim_number == {self.n_stims}) {{
+                sprint(fpath.s, "hoc_recordings/{mtype}.{prot_name}.soma.v.dat")
+            }}
+        """
+
+    def get_step_hoc(self, prot):
+        """Get step stimuli in hoc format from step protocol dict."""
+        step_hoc = ""
+
+        if "holding" in prot["stimuli"]:
+            hold = prot["stimuli"]["holding"]
+            step_hoc += f"""
+                holding_stimulus = new IClamp(0.5)
+                holding_stimulus.dur = {hold["duration"]}
+                holding_stimulus.del = {hold["delay"]}
+                holding_stimulus.amp = {hold["amp"]}
+
+                cell.soma holding_stimulus
+            """
+
+        step_definitions = prot["stimuli"]["step"]
+        if isinstance(step_definitions, dict):
+            step_definitions = [step_definitions]
+        for i, step in enumerate(step_definitions):
+            if i + 1 > self.max_steps:
+                self.max_steps = i + 1
+            step_hoc += f"""
+                step_stimulus_{i} = new IClamp(0.5)
+                step_stimulus_{i}.dur = {step["duration"]}
+                step_stimulus_{i}.del = {step["delay"]}
+                step_stimulus_{i}.amp = {step["amp"]}
+
+                cell.soma step_stimulus_{i}
+            """
+
+        step_hoc += f"tstop={step_definitions[0]['totduration']}"
+
+        return step_hoc
+
+    @staticmethod
+    def get_ramp_hoc(prot):
+        """Get ramp stimuli in hoc format from step protocol dict."""
+        ramp_hoc = ""
+
+        if "holding" in prot["stimuli"]:
+            hold = prot["stimuli"]["holding"]
+            ramp_hoc += f"""
+                holding_stimulus = new IClamp(0.5)
+                holding_stimulus.dur = {hold["duration"]}
+                holding_stimulus.del = {hold["delay"]}
+                holding_stimulus.amp = {hold["amp"]}
+
+                cell.soma holding_stimulus
+            """
+
+        ramp_definition = prot["stimuli"]["ramp"]
+        # create time and amplitude of stimulus vectors
+        ramp_hoc += """
+            ramp_times = new Vector()
+            ramp_amps = new Vector()
+
+            ramp_times.append(0.0)
+            ramp_amps.append(0.0)
+
+            ramp_times.append({delay})
+            ramp_amps.append(0.0)
+
+            ramp_times.append({delay})
+            ramp_amps.append({amplitude_start})
+
+            ramp_times.append({delay} + {duration})
+            ramp_amps.append({amplitude_end})
+
+            ramp_times.append({delay} + {duration})
+            ramp_amps.append(0.0)
+
+            ramp_times.append({total_duration})
+            ramp_amps.append(0.0)
+        """.format(
+            delay=ramp_definition["ramp_delay"],
+            amplitude_start=ramp_definition["ramp_amplitude_start"],
+            duration=ramp_definition["ramp_duration"],
+            amplitude_end=ramp_definition["ramp_amplitude_end"],
+            total_duration=ramp_definition["totduration"],
+        )
+        ramp_hoc += f"""
+            ramp_stimulus = new IClamp(0.5)
+            ramp_stimulus.dur = {ramp_definition["totduration"]}
+
+            ramp_amps.play(&ramp_stimulus.amp, ramp_times, 1)
+
+            cell.soma ramp_stimulus
+        """
+
+        ramp_hoc += f"tstop={ramp_definition['totduration']}"
+
+        return ramp_hoc
+
+    @staticmethod
+    def get_vecstim_hoc(prot):
+        """Get vecstim stimulus in hoc format from vecstim protocol dict."""
+        stim = prot["stimuli"]
+
+        vecstim_hoc = f"tstop={stim['syn_stop']}"
+
+        hoc_synapse_creation = (
+            "cell.synapses.create_netcons "
+            + "({mode},{t0},{tf},{itv},{n_spike},{noise},{seed})"
+        )
+        vecstim_hoc += hoc_synapse_creation.format(
+            mode=0,
+            t0=stim["syn_start"],
+            tf=stim["syn_stop"],
+            itv=0,
+            n_spike=0,
+            noise=0,
+            seed=stim["syn_stim_seed"],
+        )
+
+        return vecstim_hoc
+
+    @staticmethod
+    def get_netstim_hoc(prot):
+        """Get netstim stimulus in hoc format from netstim protocol dict."""
+        stim = prot["stimuli"]
+
+        netstim_hoc = f"tstop={stim['syn_stop']}"
+
+        hoc_synapse_creation = (
+            "cell.synapses.create_netcons"
+            + "({mode},{t0},{tf},{itv},{n_spike},{noise},{seed})"
+        )
+        netstim_hoc += hoc_synapse_creation.format(
+            mode=1,
+            t0=stim["syn_start"],
+            tf=stim["syn_stop"],
+            itv=stim["syn_interval"],
+            n_spike=stim["syn_nmb_of_spikes"],
+            noise=stim["syn_noise"],
+            seed=0,
+        )
+
+        return netstim_hoc
+
+    def get_stim_hoc(self, fct, prot):
+        """Get stimulus in hoc."""
+        stim_hoc = f"""
+            if (stim_number == {self.n_stims}) {{
+        """
+
+        stim_hoc += fct(prot)
+
+        stim_hoc += """
+            }
+        """
+        return stim_hoc
+
+    def get_reset_step(self):
+        """Hoc script reseting all step stimuli needed by all the step protocols."""
+        for i in range(max(self.max_steps, 1)):
+            self.reset_step_stimuli += """
+                step_stimulus_{i} = new IClamp(0.5)
+                step_stimulus_{i}.dur = 0.0
+                step_stimulus_{i}.del = 0.0
+                step_stimulus_{i}.amp = 0.0
+
+                cell.soma step_stimulus_{i}
+            """.format(
+                i=i
+            )
+
+    def get_init_step(self):
+        """Hoc script initiating all step stimuli needed by all the step protocols."""
+        for i in range(max(self.max_steps, 1)):
+            self.init_step_stimuli += f"""
+                objref step_stimulus_{i}
+            """
+
+
+def create_run_hoc(template_dir, template_filename, n_stims):
     """Returns a string containing run.hoc."""
     # load template
     template_path = os.path.join(template_dir, template_filename)
@@ -24,17 +265,17 @@ def create_run_hoc(template_dir, template_filename, step_stimulus):
 
     # edit template
     return template.render(
-        step_stimulus=step_stimulus,
+        n_stims=n_stims,
     )
 
 
 def create_synapse_hoc(
     syn_mech_args,
-    syn_prot_args,
     syn_hoc_dir,
     template_dir,
     template_filename,
     gid,
+    dt,
     synapses_template_name="synapses",
 ):
     """Returns a string containing the synapse hoc."""
@@ -49,24 +290,17 @@ def create_synapse_hoc(
         TEMPLATENAME=synapses_template_name,
         GID=gid,
         SEED=syn_mech_args["seed"],
-        syn_stim_mode=syn_prot_args["syn_stim_mode"],
-        syn_interval=syn_prot_args["syn_interval"],
-        syn_start=syn_prot_args["syn_start"],
-        syn_noise=syn_prot_args["syn_noise"],
-        syn_nmb_of_spikes=syn_prot_args["syn_nmb_of_spikes"],
-        syn_stop=syn_prot_args["syn_stop"],
-        syn_stim_seed=syn_prot_args["syn_stim_seed"],
         rng_settings_mode=syn_mech_args["rng_settings_mode"],
         syn_dir=syn_hoc_dir,
         syn_conf_file=syn_mech_args["syn_conf_file"],
         syn_data_file=syn_mech_args["syn_data_file"],
+        dt=dt,
     )
 
 
 def create_hoc(
     mechs,
     parameters,
-    morphology=None,
     ignored_globals=(),
     replace_axon=None,
     template_name="CCell",
@@ -83,7 +317,6 @@ def create_hoc(
     Args:
         mechs (): All the mechs for the hoc template
         parameters (): All the parameters in the hoc template
-        morphology (str): Name of morphology
         ignored_globals (iterable str): HOC coded is added for each
         NrnGlobalParameter
         that exists, to test that it matches the values set in the parameters.
@@ -122,10 +355,7 @@ def create_hoc(
             del global_params[ignored_global]
 
     if not disable_banner:
-        banner = "Created by BluePyOpt(%s) at %s" % (
-            bluepyopt.__version__,
-            datetime.now(),
-        )
+        banner = f"Created by BluePyOpt({bluepyopt.__version__}) at {datetime.now()}"
     else:
         banner = None
 
@@ -135,7 +365,6 @@ def create_hoc(
         template_name=template_name,
         banner=banner,
         channels=channels,
-        morphology=morphology,
         section_params=section_params,
         range_params=range_params,
         global_params=global_params,
@@ -152,32 +381,19 @@ def create_hoc(
 def create_simul_hoc(
     template_dir,
     template_filename,
-    step_args,
     add_synapses,
-    syn_stim_mode,
     hoc_paths,
     constants_args,
-    step_stimulus,
+    protocol_definitions,
 ):
     """Create createsimulation.hoc file."""
-    # pylint: disable=too-many-locals
-    # load config data
-
-    stimulus_duration = step_args["step_duration"]
-    stimulus_delay = step_args["step_delay"]
-    hold_stimulus_delay = step_args["hold_step_delay"]
-    hold_stimulus_duration = step_args["hold_step_duration"]
-    total_duration = step_args["total_duration"]
-
     syn_dir = hoc_paths["syn_dir_for_hoc"]
     syn_hoc_file = hoc_paths["syn_hoc_filename"]
     hoc_file = hoc_paths["hoc_filename"]
 
-    # load data from current_amps
-    holding = step_args["hold_amp"]
-    amp1 = step_args["stimulus_amp1"]
-    amp2 = step_args["stimulus_amp2"]
-    amp3 = step_args["stimulus_amp3"]
+    hoc_stim_creator = HocStimuliCreator(
+        protocol_definitions, constants_args["mtype"], add_synapses
+    )
 
     # load template
     template_path = os.path.join(template_dir, template_filename)
@@ -186,27 +402,22 @@ def create_simul_hoc(
         template = jinja2.Template(template)
 
     # edit template
-    return template.render(
-        step_stimulus=step_stimulus,
-        stimulus_duration=stimulus_duration,
-        stimulus_delay=stimulus_delay,
-        hold_stimulus_delay=hold_stimulus_delay,
-        hold_stimulus_duration=hold_stimulus_duration,
-        total_duration=total_duration,
-        add_synapses=add_synapses,
-        syn_stim_mode=syn_stim_mode,
-        syn_dir=syn_dir,
-        syn_hoc_file=syn_hoc_file,
-        hoc_file=hoc_file,
-        template_name=constants_args["emodel"],
-        morph_dir=constants_args["morph_dir"],
-        morph_fname=constants_args["morph_file"],
-        gid=constants_args["gid"],
-        amp1=amp1,
-        amp2=amp2,
-        amp3=amp3,
-        holding=holding,
-        dt=constants_args["dt"],
-        celsius=constants_args["celsius"],
-        v_init=constants_args["v_init"],
+    return (
+        template.render(
+            hoc_file=hoc_file,
+            add_synapses=add_synapses,
+            syn_dir=syn_dir,
+            syn_hoc_file=syn_hoc_file,
+            celsius=constants_args["celsius"],
+            v_init=constants_args["v_init"],
+            dt=constants_args["dt"],
+            template_name=constants_args["emodel"],
+            gid=constants_args["gid"],
+            morph_path=constants_args["morph_path"],
+            stims=hoc_stim_creator.stims_hoc,
+            save_recordings=hoc_stim_creator.save_recs,
+            initiate_step_stimuli=hoc_stim_creator.init_step_stimuli,
+            reset_step_stimuli=hoc_stim_creator.reset_step_stimuli,
+        ),
+        hoc_stim_creator.n_stims,
     )

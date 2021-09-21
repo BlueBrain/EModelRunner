@@ -4,17 +4,18 @@ from pathlib import Path
 import json
 
 import numpy as np
+import pytest
 
 from emodelrunner.load import load_config
 from emodelrunner.run import main as run_emodel
 from emodelrunner.factsheets import morphology_features
 from emodelrunner.factsheets.output import (
+    get_stim_params_from_config_for_physiology_factsheet,
     write_metype_json_from_config,
     write_emodel_json,
 )
 from emodelrunner.factsheets.experimental_features import (
     get_exp_features_data,
-    get_morphology_prefix_from_recipe,
 )
 from emodelrunner.factsheets.ion_channel_mechanisms import get_mechanisms_data
 from emodelrunner.factsheets.physiology_features import physiology_factsheet_info
@@ -32,26 +33,35 @@ class TestMETypeFactsheet:
         """setup any state specific to the execution of the given class (which
         usually contains tests).
         """
-        config_path_in_memodel_dir = Path("config") / "config_singlestep.ini"
+        protocol_key = "RmpRiTau"
+        config_path_in_memodel_dir = Path("config") / "config_factsheets.ini"
         config_path = example_dir / config_path_in_memodel_dir
         config = load_config(config_path=config_path)
-        cls.output_path = example_dir / "factsheets" / "me_type_factsheet.json"
+        output_path = Path("factsheets") / "me_type_factsheet.json"
 
         with cwd(example_dir):
             run_emodel(config_path=config_path_in_memodel_dir)
 
-        voltage_path = (
-            Path(example_dir) / "python_recordings" / "soma_voltage_step1.dat"
+        voltage_path = Path("python_recordings") / (
+            "L5TPCa." + protocol_key + ".soma.v.dat"
         )
         morphology_path = (
-            Path(example_dir)
-            / "morphology"
+            Path("morphology")
             / "dend-C270999B-P3_axon-C060110A3_-_Scale_x1.000_y0.950_z1.000.asc"
         )
-        assert morphology_path.is_file()
-        write_metype_json_from_config(
-            config, voltage_path, morphology_path, cls.output_path
-        )
+        assert (Path(example_dir) / morphology_path).is_file()
+
+        # need to move to example_dir to be able to open protocol file
+        with cwd(example_dir):
+            write_metype_json_from_config(
+                config,
+                voltage_path,
+                morphology_path,
+                output_path,
+                protocol_key=protocol_key,
+            )
+
+        cls.output_path = Path(example_dir) / output_path
 
     def test_metype_factsheet_exists(self):
         """Test if the factsheet file is created."""
@@ -60,16 +70,13 @@ class TestMETypeFactsheet:
 
 def test_emodel_factsheet_exists():
     """Tests if the emodel factsheet output file is created."""
-    config_path = example_dir / "config" / "config_singlestep.ini"
+    config_path = example_dir / "config" / "config_factsheets.ini"
     config = load_config(config_path=config_path)
 
     output_path = example_dir / "factsheets" / "e_model_factsheet.json"
     emodel = config.get("Cell", "emodel")
 
-    recipes_path = Path(example_dir) / "config" / "recipes" / "recipes.json"
-
-    with open(recipes_path) as json_file:
-        recipes_dict = json.load(json_file)
+    mtype = config.get("Morphology", "mtype")
 
     unoptimized_params_path = Path(example_dir) / "config" / "params" / "pyr.json"
     with open(unoptimized_params_path) as json_file:
@@ -89,7 +96,7 @@ def test_emodel_factsheet_exists():
 
     write_emodel_json(
         emodel,
-        recipes_dict,
+        mtype,
         features_dict,
         feature_units_dict,
         unoptimized_params_dict,
@@ -169,19 +176,24 @@ def test_physiology_features():
     Checks that data exists and is a float and is positive (except for membrane pot.).
     Checks that there is no physiology field missing.
     """
-    config_path = example_dir / "config" / "config_singlestep.ini"
+    protocol_key = "RmpRiTau"
+    config_path = example_dir / "config" / "config_factsheets.ini"
     config = load_config(config_path=config_path)
-    # get current amplitude
-    step_number = config.getint("Protocol", "run_step_number")
-    stim_name = "stimulus_amp" + str(step_number)
-    current_amplitude = config.getfloat("Protocol", stim_name)
 
-    # get parameters from config
-    stim_start = config.getint("Protocol", "stimulus_delay")
-    stim_duration = config.getint("Protocol", "stimulus_duration")
+    # get stimulus amp, delay and duration
+    prot_path = Path(example_dir) / config.get("Paths", "prot_path")
+
+    stim_params = get_stim_params_from_config_for_physiology_factsheet(
+        prot_path, protocol_key
+    )
+    current_amplitude, stim_start, stim_duration = stim_params
 
     # get data path from run.py output
-    voltage_path = Path(example_dir) / "python_recordings" / "soma_voltage_step1.dat"
+    voltage_path = (
+        Path(example_dir)
+        / "python_recordings"
+        / ("L5TPCa." + protocol_key + ".soma.v.dat")
+    )
     data = np.loadtxt(voltage_path)
 
     phys_dict = physiology_factsheet_info(
@@ -256,7 +268,7 @@ def test_mechanisms():
 
         return "", 0
 
-    config_path = example_dir / "config" / "config_singlestep.ini"
+    config_path = example_dir / "config" / "config_factsheets.ini"
     config = load_config(config_path=config_path)
 
     # original data
@@ -346,14 +358,10 @@ def test_experimental_feature_values():
                 return True
         return False
 
-    config_path = example_dir / "config" / "config_singlestep.ini"
+    config_path = example_dir / "config" / "config_factsheets.ini"
     config = load_config(config_path=config_path)
+
     # original files data
-    recipes_path = example_dir / "config" / "recipes" / "recipes.json"
-
-    with open(recipes_path) as json_file:
-        recipes_dict = json.load(json_file)
-
     optimized_params_path = example_dir / "config" / "params" / "final.json"
     with open(optimized_params_path) as json_file:
         optimized_params_dict = json.load(json_file)
@@ -367,11 +375,11 @@ def test_experimental_feature_values():
     with open(feature_units_path) as json_file:
         feature_units_dict = json.load(json_file)
     fitness = optimized_params_dict[emodel]["fitness"]
-    prefix = get_morphology_prefix_from_recipe(emodel=emodel, recipe=recipes_dict)
+    prefix = config.get("Morphology", "mtype")
 
     # tested func
     feat_dict = get_exp_features_data(
-        emodel, recipes_dict, original_feat, feature_units_dict, optimized_params_dict
+        emodel, prefix, original_feat, feature_units_dict, optimized_params_dict
     )
 
     for items in feat_dict["values"]:
@@ -387,3 +395,29 @@ def test_experimental_feature_values():
                     assert check_feature_mean_std(original, feat)
                     assert feat["unit"] == feature_units_dict[feat["name"]]
                     assert feat["model fitness"] == fitness[key_fitness]
+
+
+def test_get_stim_params_for_physiology():
+    """Test get_stim_params_function."""
+    # test function's output
+    config_path = example_dir / "config" / "config_factsheets.ini"
+    config = load_config(config_path=config_path)
+
+    prot_path = Path(example_dir) / config.get("Paths", "prot_path")
+
+    stim_params = get_stim_params_from_config_for_physiology_factsheet(
+        prot_path, "RmpRiTau"
+    )
+    current_amplitude, stim_start, stim_duration = stim_params
+
+    assert current_amplitude == -0.01
+    assert stim_start == 1000.0
+    assert stim_duration == 1000.0
+
+    # test function's exception
+    prot_path = example_dir / "config" / "protocols" / "multiprotocols.json"
+
+    with pytest.raises(Exception):
+        stim_params = get_stim_params_from_config_for_physiology_factsheet(
+            prot_path, "MultiStepProtocolNoHolding"
+        )

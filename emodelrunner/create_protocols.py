@@ -5,18 +5,16 @@ from bluepyopt import ephys
 
 from emodelrunner.create_recordings import get_pairsim_recordings
 from emodelrunner.create_stimuli import load_pulses
-from emodelrunner.create_stimuli import generate_current
-from emodelrunner.create_stimuli import get_step_stimulus
-from emodelrunner.protocols import SweepProtocolCustom
-from emodelrunner.protocols import SweepProtocolPairSim
-from emodelrunner.recipe_protocols.protocols_func import (
+
+from emodelrunner.synplas_protocols import SweepProtocolCustom
+from emodelrunner.synplas_protocols import SweepProtocolPairSim
+from emodelrunner.protocols_func import (
     create_protocols as create_recipe_protocols,
 )
-from emodelrunner.recordings import RecordingCustom
+
 from emodelrunner.recordings import SynapseRecordingCustom
 from emodelrunner.stimuli import MultipleSteps
 from emodelrunner.synapses.create_locations import get_syn_locs
-from emodelrunner.synapses.create_stimuli import get_syn_stim
 from emodelrunner.synapses.stimuli import (
     NrnVecStimStimulusCustom,
     NetConSpikeDetector,
@@ -25,190 +23,58 @@ from emodelrunner.synapses.stimuli import (
 logger = logging.getLogger(__name__)
 
 
-def get_step_numbers(run_all_steps, run_step_number, step_number=3):
-    """Return the first and last step +1 to be run."""
-    if run_all_steps:
-        return 0, step_number
-    elif run_step_number in range(1, step_number + 1):
-        return run_step_number - 1, run_step_number
-    else:
-        logger.warning(
-            " ".join(
-                (
-                    "Bad run_step_number parameter.",
-                    "Should be between 1 and {}.".format(step_number),
-                    "Only first step will be run.",
-                )
-            )
-        )
-        return 0, 1
-
-
-def get_step_protocol(
-    step_args,
-    soma_loc,
-    cvode_active=False,
-    syn_stim=None,
-):
-    """Create Step Stimuli and return the Protocols for all stimuli."""
-    # get current amplitude data
-    amplitudes = [
-        step_args["stimulus_amp1"],
-        step_args["stimulus_amp2"],
-        step_args["stimulus_amp3"],
-    ]
-    hypamp = step_args["hold_amp"]
-
-    # get step numbers to run
-    from_step, up_to = get_step_numbers(
-        step_args["run_all_steps"], step_args["run_step_number"]
-    )
-
-    # protocol names
-    protocol_names = ["step{}".format(x) for x in range(1, 4)]
-
-    step_protocols = []
-    for protocol_name, amplitude in zip(
-        protocol_names[from_step:up_to], amplitudes[from_step:up_to]
-    ):
-        # use RecordingCustom to sample time, voltage every 0.1 ms.
-        rec = RecordingCustom(name=protocol_name, location=soma_loc, variable="v")
-
-        stims = get_step_stimulus(step_args, amplitude, hypamp, soma_loc, syn_stim)
-
-        protocol = ephys.protocols.SweepProtocol(
-            protocol_name, stims, [rec], cvode_active
-        )
-
-        step_protocols.append(protocol)
-
-    return step_protocols
-
-
 class SSCXProtocols:
     """Class representing the protocols applied in SSCX."""
 
     def __init__(
         self,
-        step_args,
-        syn_args,
-        recipe_args,
-        step_stim,
         add_synapses,
-        cvode_active,
+        prot_args,
         cell=None,
     ):
         """Define Protocols."""
-        self.step_args = step_args
         self.protocols = None
-        self.run_recipe_protocols = recipe_args["run_recipe_protocols"]
-        self.run_step_protocols = step_stim
 
-        if self.run_recipe_protocols:
-            self.protocols = create_recipe_protocols(
-                recipe_args["emodel"],
-                recipe_args["recipe_path"],
-                recipe_args["apical_point_isec"],
-            )
-        else:
-            # synapses location and stimuli
-            if add_synapses and syn_args["syn_stim_mode"] in ["vecstim", "netstim"]:
-                if cell is not None:
-                    # locations
-                    syn_locs = get_syn_locs(cell)
-                    # get synpase stimuli
-                    syn_stim = get_syn_stim(syn_locs, syn_args)
-                else:
-                    raise Exception(
-                        "The cell is missing in the define_protocol function."
-                    )
+        syn_locs = None
+        if add_synapses:
+            if cell is not None:
+                # locations
+                syn_locs = get_syn_locs(cell)
             else:
-                syn_stim = None
+                raise Exception("The cell is missing in the define_protocol function.")
 
-            # recording location
-            soma_loc = ephys.locations.NrnSeclistCompLocation(
-                name="soma", seclist_name="somatic", sec_index=0, comp_x=0.5
-            )
-            # get step stimuli and make protocol(s)
-            if self.run_step_protocols:
-                # get step protocols
-                protocols = get_step_protocol(
-                    self.step_args, soma_loc, cvode_active, syn_stim
-                )
-            elif syn_stim:
-                protocol_name = syn_args["syn_stim_mode"]
-                # use RecordingCustom to sample time, voltage every 0.1 ms.
-                rec = RecordingCustom(
-                    name=protocol_name, location=soma_loc, variable="v"
-                )
-
-                protocol = ephys.protocols.SweepProtocol(
-                    protocol_name, [syn_stim], [rec], cvode_active
-                )
-                protocols = [protocol]
-            else:
-                raise Exception(
-                    "No valid protocol was found. step_stimulus is {}".format(
-                        self.run_step_protocols
-                    )
-                    + " and syn_stim_mode ({}) not in ['vecstim', 'netstim'].".format(
-                        syn_args["syn_stim_mode"]
-                    )
-                )
-
-            self.protocols = ephys.protocols.SequenceProtocol(
-                "twostep", protocols=protocols
-            )
+        self.protocols = create_recipe_protocols(
+            prot_args["apical_point_isec"],
+            mtype=prot_args["mtype"],
+            syn_locs=syn_locs,
+            prot_path=prot_args["prot_path"],
+            features_path=prot_args["features_path"],
+        )
 
     def get_ephys_protocols(self):
         """Returns the list of ephys protocol objects."""
         return self.protocols
 
-    def generate_step_currents(self):
-        """Generates the step currents injected by protocols."""
-        stim_start = self.step_args["step_delay"]
-        step_duration = self.step_args["step_duration"]
-        stim_end = stim_start + step_duration
-        total_duration = self.step_args["total_duration"]
-        holding_current = self.step_args["hold_amp"]
-        amplitudes = [
-            self.step_args["stimulus_amp1"],
-            self.step_args["stimulus_amp2"],
-            self.step_args["stimulus_amp3"],
-        ]
-        from_step, up_to = get_step_numbers(
-            self.step_args["run_all_steps"], self.step_args["run_step_number"]
-        )
-
-        currents = {}
-        for i, amplitude in zip(range(from_step, up_to), amplitudes[from_step:up_to]):
-            time, current = generate_current(
-                total_duration, holding_current, stim_start, stim_end, amplitude
-            )
-            key = "current_step" + str(i + 1)
-            currents[key] = {"time": time, "current": current}
-
-        return currents
-
     def get_stim_currents(self, responses):
         """Generates the currents injected by protocols."""
         currents = {}
-        if self.run_recipe_protocols:
-            # find threshold and holding currents
-            thres_i = None
-            hold_i = None
-            for key, resp in responses.items():
-                if "threshold_current" in key:
-                    thres_i = resp
-                elif "holding_current" in key:
-                    hold_i = resp
 
-            # assume we have main protocol
-            currents = self.protocols.protocols[0].generate_current(
-                threshold_current=thres_i, holding_current=hold_i
+        # find threshold and holding currents
+        thres_i = None
+        hold_i = None
+        for key, resp in responses.items():
+            if "threshold_current" in key:
+                thres_i = resp
+            elif "holding_current" in key:
+                hold_i = resp
+
+        currents = {}
+        for protocol in self.protocols.protocols:
+            currents.update(
+                protocol.generate_current(
+                    threshold_current=thres_i, holding_current=hold_i
+                )
             )
-        elif self.run_step_protocols:
-            currents = self.generate_step_currents()
 
         return currents
 
@@ -290,8 +156,9 @@ def define_pairsim_protocols(
     presyn_stims.append(syn_stim)
 
     # create protocol
-    protocol_name = "presynaptic protocol: {}, postsynaptic protocol: {}".format(
-        presyn_prot_name, postsyn_prot_name
+    protocol_name = (
+        f"presynaptic protocol: {presyn_prot_name},"
+        + f"postsynaptic protocol: {postsyn_prot_name}"
     )
     return SweepProtocolPairSim(
         protocol_name,

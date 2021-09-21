@@ -89,7 +89,7 @@ class eFELFeatureCustom(eFELFeature):
         """
         if (self.prefix + "." + self.efel_feature_name) not in responses:
             raise KeyError(
-                "Internal BluePyOpt feature %s not set " % self.efel_feature_name
+                f"Internal BluePyOpt feature {self.efel_feature_name} not set"
             )
         return responses[self.prefix + "." + self.efel_feature_name]
 
@@ -140,13 +140,8 @@ def get_feature(
     else:
         protocol = main_protocol[protocol_name]
 
-    feature_name = "%s.%s.%s.%s" % (
-        prefix,
-        protocol_name,
-        recording_name,
-        efel_feature_name,
-    )
-    recording_names = {"": "%s.%s.%s" % (prefix, protocol_name, recording_name)}
+    feature_name = f"{prefix}.{protocol_name}.{recording_name}.{efel_feature_name}"
+    recording_names = {"": f"{prefix}.{protocol_name}.{recording_name}"}
 
     if "strict_stim" in feature_config:
         strict_stim = feature_config["strict_stim"]

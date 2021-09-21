@@ -14,7 +14,7 @@ from emodelrunner.load import (
     load_config,
     get_hoc_paths_args,
 )
-from emodelrunner.recipe_protocols.protocols import (
+from emodelrunner.protocols import (
     StepProtocol,
     StepThresholdProtocol,
     RampProtocol,
@@ -25,6 +25,19 @@ from tests.utils import compile_mechanisms, cwd
 
 data_dir = os.path.join("tests", "data")
 example_dir = os.path.join("examples", "sscx_sample_dir")
+
+
+def compare_hoc_and_py(filename, threshold):
+    """Compare hoc and py datafiles."""
+    hoc_path = os.path.join(example_dir, "hoc_recordings", filename)
+    py_path = os.path.join(example_dir, "python_recordings", filename)
+
+    hoc_voltage = np.loadtxt(hoc_path)
+    py_voltage = np.loadtxt(py_path)
+
+    # check rms
+    rms = np.sqrt(np.mean((hoc_voltage[:, 1] - py_voltage[:, 1]) ** 2))
+    assert rms < threshold
 
 
 def test_voltages():
@@ -52,18 +65,8 @@ def test_voltages():
         run_emodel(config_path=config_path)
 
     for idx in range(3):
-        hoc_path = os.path.join(
-            example_dir, "hoc_recordings", "soma_voltage_step%d.dat" % (idx + 1)
-        )
-        py_path = os.path.join(
-            example_dir, "python_recordings", "soma_voltage_step%d.dat" % (idx + 1)
-        )
-
-        hoc_voltage = np.loadtxt(hoc_path)
-        py_voltage = np.loadtxt(py_path)
-
-        rms = np.sqrt(np.mean((hoc_voltage[:, 1] - py_voltage[:, 1]) ** 2))
-        assert rms < threshold
+        filename = "L5TPCa.Step_{}.soma.v.dat".format(150 + idx * 50)
+        compare_hoc_and_py(filename, threshold)
 
 
 def test_synapses(config_path="config/config_synapses.ini"):
@@ -82,7 +85,9 @@ def test_synapses(config_path="config/config_synapses.ini"):
         compile_mechanisms()
         run_emodel(config_path=config_path)
 
-    py_path = os.path.join(example_dir, "python_recordings", "soma_voltage_vecstim.dat")
+    py_path = os.path.join(
+        example_dir, "python_recordings", "L5TPCa.Synapses_Vecstim.soma.v.dat"
+    )
     py_v = np.loadtxt(py_path)
 
     # compare
@@ -114,16 +119,7 @@ def test_synapses_hoc_vs_py_script(config_path="config/config_synapses.ini"):
         subprocess.call(["sh", "./run_hoc.sh"])
         run_emodel(config_path=config_path)
 
-    # load output
-    hoc_path = os.path.join(example_dir, "hoc_recordings", "soma_voltage_vecstim.dat")
-    py_path = os.path.join(example_dir, "python_recordings", "soma_voltage_vecstim.dat")
-
-    hoc_voltage = np.loadtxt(hoc_path)
-    py_voltage = np.loadtxt(py_path)
-
-    # check rms
-    rms = np.sqrt(np.mean((hoc_voltage[:, 1] - py_voltage[:, 1]) ** 2))
-    assert rms < threshold
+    compare_hoc_and_py("L5TPCa.Synapses_Vecstim.soma.v.dat", threshold)
 
 
 def test_recipe_protocols():
@@ -135,31 +131,31 @@ def test_recipe_protocols():
 
     output_dir = os.path.join(example_dir, "python_recordings")
     output_files = [
-        "current_APWaveform_320.dat",
-        "current_Step_200.dat",
-        "soma_voltage_L5TPCa.RMP.soma.v.dat",
-        "soma_voltage_L5TPCa.Step_280.soma.v.dat",
-        "soma_voltage_L5TPCa.bAP.dend1.v.dat",
-        "current_IV_-100.dat",
-        "current_Step_280.dat",
-        "soma_voltage_L5TPCa.Rin.soma.v.dat",
-        "soma_voltage_L5TPCa.bAP.ca_ais.v.dat",
-        "soma_voltage_L5TPCa.bAP.dend2.v.dat",
-        "current_RMP.dat",
-        "current_bAP.dat",
-        "soma_voltage_L5TPCa.SpikeRec_600.soma.v.dat",
-        "soma_voltage_L5TPCa.bAP.ca_prox_apic.v.dat",
-        "soma_voltage_L5TPCa.bAP.soma.v.dat",
-        "current_SpikeRec_600.dat",
-        "soma_voltage_L5TPCa.APWaveform_320.soma.v.dat",
-        "soma_voltage_L5TPCa.Step_150.soma.v.dat",
-        "soma_voltage_L5TPCa.bAP.ca_prox_basal.v.dat",
-        "soma_voltage_L5TPCa.bpo_holding_current.dat",
-        "current_Step_150.dat",
-        "soma_voltage_L5TPCa.IV_-100.soma.v.dat",
-        "soma_voltage_L5TPCa.Step_200.soma.v.dat",
-        "soma_voltage_L5TPCa.bAP.ca_soma.v.dat",
-        "soma_voltage_L5TPCa.bpo_threshold_current.dat",
+        "L5TPCa.Step_150.soma.v.dat",
+        "L5TPCa.Step_200.soma.v.dat",
+        "L5TPCa.Step_280.soma.v.dat",
+        "L5TPCa.RMP.soma.v.dat",
+        "L5TPCa.bAP.dend1.v.dat",
+        "L5TPCa.Rin.soma.v.dat",
+        "L5TPCa.bAP.ca_ais.v.dat",
+        "L5TPCa.bAP.dend2.v.dat",
+        "L5TPCa.SpikeRec_600.soma.v.dat",
+        "L5TPCa.bAP.ca_prox_apic.v.dat",
+        "L5TPCa.bAP.soma.v.dat",
+        "L5TPCa.APWaveform_320.soma.v.dat",
+        "L5TPCa.bAP.ca_prox_basal.v.dat",
+        "L5TPCa.IV_-100.soma.v.dat",
+        "L5TPCa.bAP.ca_soma.v.dat",
+        "L5TPCa.bpo_holding_current.dat",
+        "L5TPCa.bpo_threshold_current.dat",
+        "current_L5TPCa.Step_150.dat",
+        "current_L5TPCa.Step_200.dat",
+        "current_L5TPCa.Step_280.dat",
+        "current_L5TPCa.APWaveform_320.dat",
+        "current_L5TPCa.bAP.dat",
+        "current_L5TPCa.IV_-100.dat",
+        "current_L5TPCa.RMP.dat",
+        "current_L5TPCa.SpikeRec_600.dat",
     ]
 
     for fname in output_files:
@@ -208,7 +204,8 @@ def test_generate_current():
         step_stimuli=[step_stim],
         holding_stimulus=hold_stim,
     )
-    _, step_curr = step_prot.generate_current()
+    step_curr_dict = step_prot.generate_current()
+    step_curr = step_curr_dict["current_"]["current"]
     assert np.all(step_curr[:200] == np.full(200, -0.1))
     assert np.all(step_curr[900:] == np.full(100, -0.1))
     assert np.all(step_curr[200:900] == np.full(700, pytest.approx(0.2)))
@@ -220,9 +217,10 @@ def test_generate_current():
         holding_stimulus=hold_stim,
         thresh_perc=50,
     )
-    _, step_thres_curr = step_prot_thres.generate_current(
+    step_thres_curr_dict = step_prot_thres.generate_current(
         threshold_current=1.0, holding_current=-0.2
     )
+    step_thres_curr = step_thres_curr_dict["current_"]["current"]
     assert np.all(step_thres_curr[:200] == np.full(200, -0.2))
     assert np.all(step_thres_curr[900:] == np.full(100, -0.2))
     assert np.all(step_thres_curr[200:900] == np.full(700, 0.3))
@@ -233,7 +231,8 @@ def test_generate_current():
         ramp_stimulus=flat_ramp,
         holding_stimulus=hold_stim,
     )
-    _, flat_ramp_curr = flat_ramp_prot.generate_current()
+    flat_ramp_curr_dict = flat_ramp_prot.generate_current()
+    flat_ramp_curr = flat_ramp_curr_dict["current_"]["current"]
     assert np.all(step_curr == flat_ramp_curr)
 
     # threshold step stimulus vs threshold 'flat' ramp
@@ -244,9 +243,10 @@ def test_generate_current():
         thresh_perc_start=50,
         thresh_perc_end=50,
     )
-    _, flat_thres_ramp_curr = flat_thres_ramp_prot.generate_current(
+    flat_thres_ramp_curr_dict = flat_thres_ramp_prot.generate_current(
         threshold_current=1.0, holding_current=-0.2
     )
+    flat_thres_ramp_curr = flat_thres_ramp_curr_dict["current_"]["current"]
     assert np.all(step_thres_curr == flat_thres_ramp_curr)
 
     # no delay ramp
@@ -255,7 +255,8 @@ def test_generate_current():
         ramp_stimulus=no_delay_ramp,
         holding_stimulus=hold_stim,
     )
-    _, ramp_curr = ramp_prot.generate_current()
+    ramp_curr_dict = ramp_prot.generate_current()
+    ramp_curr = ramp_curr_dict["current_"]["current"]
     assert np.all(ramp_curr == np.linspace(-0.1, 0.9, 1001)[:-1])
 
     # no delay thres ramp
@@ -266,7 +267,39 @@ def test_generate_current():
         thresh_perc_start=0,
         thresh_perc_end=100,
     )
-    _, ramp_thres_curr = ramp_thres_prot.generate_current(
+    ramp_thres_curr_dict = ramp_thres_prot.generate_current(
         threshold_current=0.5, holding_current=-0.2
     )
+    ramp_thres_curr = ramp_thres_curr_dict["current_"]["current"]
     assert np.all(ramp_thres_curr == np.linspace(-0.2, 0.3, 1001)[:-1])
+
+
+def test_multiprotocols_hoc_vs_py_script(
+    config_path="config/config_multiprotocols.ini",
+):
+    """Compare voltages from python and hoc for successive protocols.
+
+    Attributes:
+        configfile : name of config file in /config to use when running script / creating hoc
+    """
+    threshold = 1e-5
+
+    # rewrite hocs and run cells
+    run_hoc_filename = "run.hoc"
+
+    # start with hoc, to compile mechs
+    with cwd(example_dir):
+        # write hocs
+        config = load_config(config_path=config_path)
+        cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(
+            config=config, syn_temp_name="hoc_synapses"
+        )
+        hoc_paths = get_hoc_paths_args(config)
+        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, run_hoc_filename, syn_hoc)
+
+        subprocess.call(["sh", "./run_hoc.sh"])
+        run_emodel(config_path=config_path)
+
+    compare_hoc_and_py("L5TPCa.Ramp.soma.v.dat", threshold)
+    compare_hoc_and_py("L5TPCa.Synapses_Netstim.soma.v.dat", threshold)
+    compare_hoc_and_py("L5TPCa.MultiStepProtocolNoHolding.soma.v.dat", threshold)

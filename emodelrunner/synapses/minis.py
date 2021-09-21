@@ -42,6 +42,7 @@ class Minis(ephys.stimuli.Stimulus):
     def instantiate(self, sim=None, icell=None):
         """Run stimulus."""
         # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+        # pylint: disable=consider-using-f-string
         if self.persistent is None:
             self.persistent = []
         if self.ips is None:
@@ -141,7 +142,7 @@ class Minis(ephys.stimuli.Stimulus):
                             )
                         else:
                             raise ValueError(
-                                "Cell: Unknown rng mode: %s" % synapse.rng_settings_mode
+                                f"Cell: Unknown rng mode: {synapse.rng_settings_mode}"
                             )
 
                         exprng.MCellRan4(exp_seed1, exp_seed2)
@@ -170,6 +171,7 @@ class Minis(ephys.stimuli.Stimulus):
 
     def __str__(self):
         """String representation."""
+        # pylint: disable=consider-using-f-string
         return (
             "Minis at %s" % ",".join(location for location in self.locations)
             if self.locations is not None

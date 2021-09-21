@@ -60,7 +60,7 @@ class FrameSetIntFromEntry(ttk.Frame):
         style_dict = get_style_cst()
 
         # label
-        self.label = ttk.Label(self, text="{}:".format(label))
+        self.label = ttk.Label(self, text=f"{label}:")
 
         # to enforce only digits in entry
         self.reg = self.register(positive_int_callback)
@@ -98,7 +98,7 @@ class FrameSetIntFromEntry(ttk.Frame):
             gui.config_has_changed()
         except (ValueError, TypeError):
             tk.messagebox.showerror(
-                "Bad {} value".format(attr_name),
+                f"Bad {attr_name} value",
                 "Must be an int.",
             )
 
@@ -132,7 +132,7 @@ class FrameStepStimulus(ttk.Frame):
 
         self.step1 = ttk.Radiobutton(
             self,
-            text="{0:.3g} nA".format(gui.simulation.steps[0]),
+            text=f"{gui.simulation.steps[0]:.3g} nA",
             variable=self.step_stim,
             value=gui.simulation.steps[0],
             command=lambda: self.get_step_stim(gui),
@@ -140,7 +140,7 @@ class FrameStepStimulus(ttk.Frame):
 
         self.step2 = ttk.Radiobutton(
             self,
-            text="{0:.3g} nA".format(gui.simulation.steps[1]),
+            text=f"{gui.simulation.steps[1]:.3g} nA",
             variable=self.step_stim,
             value=gui.simulation.steps[1],
             command=lambda: self.get_step_stim(gui),
@@ -148,7 +148,7 @@ class FrameStepStimulus(ttk.Frame):
 
         self.step3 = ttk.Radiobutton(
             self,
-            text="{0:.3g} nA".format(gui.simulation.steps[2]),
+            text=f"{gui.simulation.steps[2]:.3g} nA",
             variable=self.step_stim,
             value=gui.simulation.steps[2],
             command=lambda: self.get_step_stim(gui),
@@ -242,7 +242,7 @@ class FrameHoldStimulus(ttk.Frame):
 
         self.default_hypamp = ttk.Radiobutton(
             self,
-            text="{0:.3g} nA".format(gui.simulation.default_hypamp),
+            text=f"{gui.simulation.default_hypamp:.3g} nA",
             variable=self.hold_stim,
             value=gui.simulation.default_hypamp,
             command=lambda: self.get_hold_stim(gui),

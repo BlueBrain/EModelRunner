@@ -1,1 +1,0 @@
-"""Protocols from recipe."""

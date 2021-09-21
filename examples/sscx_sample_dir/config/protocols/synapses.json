@@ -1,0 +1,11 @@
+{
+    "Synapses_Vecstim": {
+        "type": "Vecstim",
+        "stimuli": {
+            "syn_stop": 600.0,
+            "syn_start": 50.0,
+            "syn_stim_seed": 1,
+            "vecstim_random": "neuron"
+        }
+    }
+}

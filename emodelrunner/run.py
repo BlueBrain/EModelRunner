@@ -8,10 +8,8 @@ from emodelrunner.create_cells import create_cell_using_config
 from emodelrunner.create_protocols import SSCXProtocols
 from emodelrunner.load import (
     load_config,
-    get_recipe_prot_args,
+    get_prot_args,
     get_release_params,
-    get_step_prot_args,
-    get_syn_prot_args,
 )
 from emodelrunner.output import write_current
 from emodelrunner.output import write_responses
@@ -32,15 +30,10 @@ def main(config_path):
     sim = ephys.simulators.NrnSimulator(dt=dt, cvode_active=cvode_active)
 
     # create protocols
-    step_stim = config.getboolean("Protocol", "step_stimulus")
     add_synapses = config.getboolean("Synapses", "add_synapses")
-    step_args = get_step_prot_args(config)
-    syn_args = get_syn_prot_args(config)
-    recipe_args = get_recipe_prot_args(config)
+    prot_args = get_prot_args(config)
 
-    sscx_protocols = SSCXProtocols(
-        step_args, syn_args, recipe_args, step_stim, add_synapses, cvode_active, cell
-    )
+    sscx_protocols = SSCXProtocols(add_synapses, prot_args, cell)
     ephys_protocols = sscx_protocols.get_ephys_protocols()
 
     # run
@@ -53,8 +46,8 @@ def main(config_path):
 
     # write responses
     output_dir = config.get("Paths", "output_dir")
-    output_file = config.get("Paths", "output_file")
-    write_responses(responses, output_dir, output_file)
+    # output_file = config.get("Paths", "output_file")
+    write_responses(responses, output_dir)
     write_current(currents, output_dir)
 
     print("Python Recordings Done")

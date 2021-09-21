@@ -1,0 +1,49 @@
+{
+    "Ramp": {
+        "type": "RampProtocol",
+        "stimuli": {
+            "ramp": {
+                "ramp_delay": 70.0,
+                "ramp_amplitude_start": 0.0,
+                "ramp_amplitude_end": 0.2728125,
+                "ramp_duration": 200.0,
+                "totduration": 300.0
+            },
+            "holding": {
+                "delay": 0.0,
+                "amp": -0.0699371509782054,
+                "duration": 300.0,
+                "totduration": 300.0
+            }
+        }
+    },
+    "Synapses_Netstim": {
+        "type": "Netstim",
+        "stimuli": {
+            "syn_start": 50.0,
+            "syn_stop": 300.0,
+            "syn_nmb_of_spikes": 10.0,
+            "syn_interval": 10.0,
+            "syn_noise": 0.0
+        }
+    },
+    "MultiStepProtocolNoHolding": {
+        "type": "StepProtocol",
+        "stimuli": {
+            "step": [
+                {
+                    "delay": 70.0,
+                    "amp": 0.2728125,
+                    "duration": 200.0,
+                    "totduration": 300.0
+                },
+                {
+                    "delay": 140.0,
+                    "amp": 0.54,
+                    "duration": 60.0,
+                    "totduration": 300.0
+                }
+            ]
+        }
+    }
+}

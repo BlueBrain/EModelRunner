@@ -12,7 +12,6 @@ load_file("{{syn_dir}}/{{syn_hoc_file}}")
 //======================== constants ========================
 celsius={{celsius}}
 v_init={{v_init}}
-tstop={{total_duration}}
 dt={{dt}}
 
 //=================== creating cell object ===========================
@@ -20,7 +19,7 @@ objref cell
 
 proc create_cell() { localobj cellstring
     cellstring = new String()
-    sprint(cellstring.s, "cell = new %s(%d, \"%s\", \"%s\")", "{{template_name}}", {{gid}}, "{{morph_dir}}", "{{morph_fname}}")
+    sprint(cellstring.s, "cell = new %s(%d, \"%s\")", "{{template_name}}", {{gid}}, "{{morph_path}}")
     execute(cellstring.s)
 }
 //==================== recording settings ==========================
@@ -36,53 +35,42 @@ proc create_recording() {
 
 }
 
-proc read_currents() {
-
-   holding = {{holding}}
-   amp1 = {{amp1}}
-   amp2 = {{amp2}}
-   amp3 = {{amp3}}
-}
-
 //==================== stimulus settings ===========================
 
 objref holding_stimulus
-objref step_stimulus
+{{initiate_step_stimuli}}
+objref ramp_times
+objref ramp_amps
+objref ramp_stimulus
+
+proc reset_stimuli () {
+    holding_stimulus = new IClamp(0.5)
+    holding_stimulus.dur = 0.0
+    holding_stimulus.del = 0.0
+    holding_stimulus.amp = 0.0
+    cell.soma holding_stimulus
+
+    ramp_times = new Vector()
+    ramp_amps = new Vector()
+
+    ramp_stimulus = new IClamp(0.5)
+    ramp_stimulus.dur = 0.0
+    cell.soma ramp_stimulus
+
+    {{reset_step_stimuli}}
+}
 
 
-proc create_stimulus() {
-    strdef stepcurrent
-    {%- if step_stimulus %}
-        step_index = $1
-        holding_stimulus = new IClamp(0.5)
-        holding_stimulus.dur = {{hold_stimulus_duration}}
-        holding_stimulus.del = {{hold_stimulus_delay}}
-
-        cell.soma holding_stimulus
-
-        step_stimulus = new IClamp(0.5)
-        step_stimulus.dur = {{stimulus_duration}}
-        step_stimulus.del = {{stimulus_delay}}
-        if (step_index == 1) { 
-            step_stimulus.amp = amp1
-            holding_stimulus.amp = holding
-        } else if (step_index == 2) {
-            step_stimulus.amp = amp2
-            holding_stimulus.amp = holding
-        } else if (step_index == 3) {
-            step_stimulus.amp = amp3
-            holding_stimulus.amp = holding
-        } else {
-            step_stimulus.amp = 0.0
-            holding_stimulus.amp = 0.0
-        }
-
-        cell.soma step_stimulus
-    {%- endif %}
-
+proc create_stimulus() { local stim_number
     {%- if add_synapses %}
-    cell.synapses.create_netcons() 
+    // Reset the synapses if there are any from previous protocols
+    cell.synapses.reset_netcons()
     {%- endif %}
+    reset_stimuli()
+
+    stim_number = $1
+
+    {{stims}}
 }
 
 //============================= simulation ================================
@@ -90,7 +78,7 @@ proc create_stimulus() {
 proc simulate() {
     cvode.active(0)
 
-    print "Running simulation for ", {{total_duration}}, " ms"
+    print "Running simulation"
 
     run()
 }
@@ -99,13 +87,9 @@ proc simulate() {
 
 proc save_recording() { localobj timevoltage, fh, fpath
     fpath = new String()
-    step_index = $1
+    stim_number = $1
 
-    {%- if step_stimulus %}
-    sprint(fpath.s, "hoc_recordings/soma_voltage_step%d.dat", step_index)
-    {%- else %}
-    sprint(fpath.s, "hoc_recordings/soma_voltage_%s.dat", "{{syn_stim_mode}}")
-    {%- endif %}
+    {{save_recordings}}
 
     timevoltage = new Matrix(time.size(), 2)
     timevoltage.setcol(0, time)
@@ -116,9 +100,5 @@ proc save_recording() { localobj timevoltage, fh, fpath
     timevoltage.fprint(0, fh, "%e ")
     fh.close()
 
-    {%- if step_stimulus %}
-    print "Saved voltage trace of step ", step_index, " to: ", fpath.s
-    {%- else %}
     print "Saved voltage trace to: ", fpath.s
-    {%- endif %}
 }

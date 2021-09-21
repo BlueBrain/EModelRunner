@@ -6,10 +6,10 @@ import h5py
 import numpy as np
 
 
-def write_responses(responses, output_dir, output_file):
+def write_responses(responses, output_dir):
     """Write each response in a file."""
     for key, resp in responses.items():
-        output_path = os.path.join(output_dir, output_file + key + ".dat")
+        output_path = os.path.join(output_dir, key + ".dat")
 
         # holding & threshold current cases for recipe protocols
         if isinstance(resp, (float, np.float)):

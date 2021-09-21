@@ -1,6 +1,5 @@
 """Contains tests for the synapse plasticity workflow (only postcell & pair sim)."""
 import os
-import subprocess
 
 import h5py
 import numpy as np

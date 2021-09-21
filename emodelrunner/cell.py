@@ -1,7 +1,6 @@
 """Custom Cell class."""
 
 import logging
-import os
 from bluepyopt import ephys
 
 from emodelrunner.create_hoc_tools import create_hoc
@@ -100,8 +99,6 @@ class CellModelCustom(ephys.models.CellModel):
         # pylint: disable=too-many-arguments
         to_unfreeze = self.freeze_params(param_values)
 
-        morphology = os.path.basename(self.morphology.morphology_path)
-
         replace_axon = self.get_replace_axon()
 
         mechs = self.remove_point_process_mechs()
@@ -109,7 +106,6 @@ class CellModelCustom(ephys.models.CellModel):
         ret = create_hoc(
             mechs=mechs,
             parameters=self.params.values(),
-            morphology=morphology,
             ignored_globals=ignored_globals,
             replace_axon=replace_axon,
             template_name=self.name,
@@ -138,14 +134,14 @@ class CellModelCustom(ephys.models.CellModel):
 
         if seclist_names:
             for seclist_name in seclist_names:
-                objref_str += ", %s" % seclist_name
-                newseclist_str += "             %s = new SectionList()\n" % seclist_name
+                objref_str += f", {seclist_name}"
+                newseclist_str += f"             {seclist_name} = new SectionList()\n"
 
         secarrays_str = ""
         if secarray_names:
             secarrays_str = "create "
             secarrays_str += ", ".join(
-                "%s[1]" % secarray_name for secarray_name in secarray_names
+                f"{secarray_name}[1]" for secarray_name in secarray_names
             )
             secarrays_str += "\n"
 

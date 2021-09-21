@@ -1,14 +1,15 @@
 """Creates .hoc from cell."""
 import argparse
+import json
 import os
 
 from emodelrunner.load import (
     load_config,
     get_release_params,
     get_syn_mech_args,
-    get_syn_prot_args,
+    # get_syn_prot_args,
     get_hoc_paths_args,
-    get_step_prot_args,
+    # get_step_prot_args,
 )
 from emodelrunner.create_cells import create_cell_using_config
 from emodelrunner.create_hoc_tools import (
@@ -48,22 +49,26 @@ def get_hoc(config, syn_temp_name="hoc_synapses"):
     template_dir = config.get("Paths", "templates_dir")
     template = config.get("Paths", "create_hoc_template_file")
     add_synapses = config.getboolean("Synapses", "add_synapses")
-    syn_stim_mode = config.get("Protocol", "syn_stim_mode")
-    step_args = get_step_prot_args(config)
     hoc_paths = get_hoc_paths_args(config)
     syn_hoc_filename = config.get("Paths", "syn_hoc_file")
     syn_dir = config.get("Paths", "syn_dir_for_hoc")
-    step_stimulus = config.getboolean("Protocol", "step_stimulus")
 
     constants_args = {
         "emodel": config.get("Cell", "emodel"),
-        "morph_dir": config.get("Paths", "morph_dir"),
-        "morph_file": config.get("Paths", "morph_file"),
+        "morph_path": config.get("Paths", "morph_path"),
         "gid": config.getint("Cell", "gid"),
         "dt": config.getfloat("Sim", "dt"),
         "celsius": config.getint("Cell", "celsius"),
         "v_init": config.getint("Cell", "v_init"),
+        "mtype": config.get("Morphology", "mtype"),
     }
+
+    # get the protocols definitions
+    protocols_filename = config.get("Paths", "prot_path")
+    with open(protocols_filename, "r", encoding="utf-8") as protocol_file:
+        protocol_definitions = json.load(protocol_file)
+    if "__comment" in protocol_definitions:
+        del protocol_definitions["__comment"]
 
     # get cell
     cell = create_cell_using_config(config)
@@ -79,37 +84,34 @@ def get_hoc(config, syn_temp_name="hoc_synapses"):
         syn_temp_name=syn_temp_name,
     )
 
-    simul_hoc = create_simul_hoc(
+    simul_hoc, n_stims = create_simul_hoc(
         template_dir=template_dir,
         template_filename="createsimulation.jinja2",
-        step_args=step_args,
         add_synapses=add_synapses,
-        syn_stim_mode=syn_stim_mode,
         hoc_paths=hoc_paths,
         constants_args=constants_args,
-        step_stimulus=step_stimulus,
+        protocol_definitions=protocol_definitions,
     )
 
     run_hoc = create_run_hoc(
         template_dir=template_dir,
         template_filename="run_hoc.jinja2",
-        step_stimulus=step_stimulus,
+        n_stims=n_stims,
     )
 
     # get synapse hoc
     if cell.add_synapses:
         # load synapse config data
         syn_mech_args = get_syn_mech_args(config)
-        syn_prot_args = get_syn_prot_args(config)
 
         # get synapse hoc
         syn_hoc = create_synapse_hoc(
             syn_mech_args=syn_mech_args,
-            syn_prot_args=syn_prot_args,
             syn_hoc_dir=syn_dir,
             template_dir=template_dir,
             template_filename="synapses.jinja2",
             gid=cell.gid,
+            dt=constants_args["dt"],
             synapses_template_name=syn_temp_name,
         )
     else:

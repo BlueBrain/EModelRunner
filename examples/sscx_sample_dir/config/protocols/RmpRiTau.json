@@ -1,0 +1,13 @@
+{
+    "RmpRiTau": {
+        "type": "StepProtocol",
+        "stimuli": {
+            "step": {
+                "delay": 1000.0,
+                "amp": -0.01,
+                "duration": 1000.0,
+                "totduration": 3000.0
+            }
+        }
+    }
+}

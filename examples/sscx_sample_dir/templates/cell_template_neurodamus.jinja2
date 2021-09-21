@@ -85,7 +85,7 @@ proc connect2target() { //$o1 target point process, $o2 returned NetCon
 }
 
 
-proc init(/* args: morphology_dir, morphology_name */) {
+proc init(/* args: gid, morphology_path */) {
   all = new SectionList()
   apical = new SectionList()
   axonal = new SectionList()
@@ -103,15 +103,8 @@ proc init(/* args: morphology_dir, morphology_name */) {
 
   gid = $1
 
-  if(numarg() >= 3) {
-    load_morphology($s2, $s3)
-  } else {
-  {%- if morphology %}
-    load_morphology($s2, "{{morphology}}")
-  {%- else %}
-    execerror("Template {{template_name}} requires morphology name to instantiate")
-  {%- endif %}
-  }
+  load_morphology($s2)
+
 
   geom_nseg()
   indexSections()
@@ -148,9 +141,9 @@ proc indexSections() { local index
 
 func getThreshold() { return 0.0 }
 
-proc load_morphology(/* morphology_dir, morphology_name */) {localobj morph, import, sf, extension
+proc load_morphology(/* morphology_path */) {localobj morph, import, sf, extension
   strdef morph_path
-  sprint(morph_path, "%s/%s", $s1, $s2)
+  morph_path = $s1
 
   sf = new StringFunctions()
   extension = new String()

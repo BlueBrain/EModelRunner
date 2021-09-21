@@ -71,6 +71,7 @@ class NrnNetStimStimulusCustom(ephys.stimuli.Stimulus):
 
     def __str__(self):
         """String representation."""
+        # pylint: disable=consider-using-f-string
         return (
             "Netstim at %s" % ",".join(location for location in self.locations)
             if self.locations is not None
@@ -153,6 +154,7 @@ class NrnVecStimStimulusCustom(ephys.stimuli.Stimulus):
 
     def __str__(self):
         """String representation."""
+        # pylint: disable=consider-using-f-string
         return (
             "Vecstim at %s" % ",".join(location for location in self.locations)
             if self.locations is not None
@@ -200,6 +202,7 @@ class NetConSpikeDetector(ephys.stimuli.Stimulus):
 
     def __str__(self):
         """String representation."""
+        # pylint: disable=consider-using-f-string
         return (
             "NetconSpikeDetector at %s"
             % ",".join(location for location in self.locations)

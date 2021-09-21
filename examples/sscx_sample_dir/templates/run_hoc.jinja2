@@ -14,19 +14,9 @@ stepcurrent = "none"
 create_cell()
 create_recording()
 
-{%- if step_stimulus %}
-read_currents()
-for i_step=1,3 {
-    print "Simulation current step ", i_step
-    create_stimulus(i_step)
+for i_stim=1,{{n_stims}} {
+    print "Simulation current stimulus ", i_stim
+    create_stimulus(i_stim)
     simulate()
-    save_recording(i_step)
+    save_recording(i_stim)
 }
-{%- else %}
-print "Simulation running "
-create_stimulus(0)
-simulate()
-save_recording(0)
-{%- endif %}
-
-

@@ -30,7 +30,7 @@ class RecordingCustom(ephys.recordings.CompRecording):
 
         self.varvector = sim.neuron.h.Vector()
         seg = self.location.instantiate(sim=sim, icell=icell)
-        self.varvector.record(getattr(seg, "_ref_%s" % self.variable), 0.1)
+        self.varvector.record(getattr(seg, f"_ref_{self.variable}"), 0.1)
 
         self.tvector = sim.neuron.h.Vector()
         self.tvector.record(sim.neuron.h._ref_t, 0.1)  # pylint: disable=W0212
@@ -83,7 +83,7 @@ class SynapseRecordingCustom(ephys.recordings.Recording):
         pprocesses = self.location.instantiate(sim=sim, icell=icell)
         for synapse in pprocesses:
             varvector = sim.neuron.h.Vector()
-            varvector.record(getattr(synapse.hsynapse, "_ref_%s" % self.variable))
+            varvector.record(getattr(synapse.hsynapse, f"_ref_{self.variable}"))
             self.varvectors.append(varvector)
 
         self.tvector = sim.neuron.h.Vector()
@@ -100,4 +100,4 @@ class SynapseRecordingCustom(ephys.recordings.Recording):
 
     def __str__(self):
         """String representation."""
-        return "%s: %s at %s" % (self.name, self.variable, self.location)
+        return f"{self.name}: {self.variable} at {self.location}"
