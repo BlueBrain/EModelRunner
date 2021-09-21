@@ -144,7 +144,7 @@ def get_precell(
     v_init = config.getint("Cell", "v_init")
     celsius = config.getint("Cell", "celsius")
 
-    unopt_params_path = config.get("Paths", "unoptimized_params_path")
+    unopt_params_path = config.get("Paths", "precell_unoptimized_params_path")
 
     morph_args = get_morph_args(config, precell=True)
 
