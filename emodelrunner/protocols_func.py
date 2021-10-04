@@ -296,10 +296,11 @@ def get_recordings(protocol_name, protocol_definition, prefix, apical_point_isec
                 recording_definition, apical_point_isec
             )
 
+            var = recording_definition["var"]
             recording = RecordingCustom(
-                name=f"{prefix}.{protocol_name}.{location.name}.v",
+                name=f"{prefix}.{protocol_name}.{location.name}.{var}",
                 location=location,
-                variable="v",
+                variable=var,
             )
             recordings.append(recording)
 

@@ -24,14 +24,115 @@ proc create_cell() { localobj cellstring
 }
 //==================== recording settings ==========================
 
-objref time, voltage
-proc create_recording() {
+/*
+    Gives the min_distance and max_distance of the edges of the accessed section
+    with respect to the specified origin (which should be set with distance() before using this function)
+
+    Returns: min_max_distances (vector with [min_distance, max_distance])
+*/
+obfunc get_min_and_max_distance() { local start_distance, end_distance \
+                                localobj min_max_distances
+
+    min_max_distances = new Vector(2)
+    
+    start_distance = distance(1, 0.0)
+    end_distance = distance(1, 1.0)
+
+    if (start_distance > end_distance){
+        min_max_distances.x[0] = end_distance
+        min_max_distances.x[1] = start_distance
+    } else {
+        min_max_distances.x[0] = start_distance
+        min_max_distances.x[1] = end_distance
+    }
+
+    return min_max_distances
+}
+/*
+    $o1: iseclist
+    $2: soma_distance
+
+    Returns: reference to the section of the section list which is at given soma distance
+*/
+obfunc find_isec_at_soma_distance() { local soma_distance \
+                                    localobj sref, iseclist, min_max_distances
+    iseclist = $o1
+    soma_distance = $2
+
+    cell.soma[0] distance(0, 0.5)
+
+    forsec iseclist {
+        min_max_distances = get_min_and_max_distance()
+
+        if (min_max_distances.x[0] <= soma_distance && soma_distance <= min_max_distances.x[1]){
+            sref = new SectionRef()
+            break
+        }
+    }
+
+    return sref
+}
+
+/*
+    $o1: section reference
+    $2: soma_distance
+
+    Returns: location in given section that is at given soma distance
+*/
+func find_comp_x_at_soma_distance() { local soma_distance, comp_x \
+                                    localobj sref, min_max_distances
+    sref = $o1
+    soma_distance = $2
+
+    cell.soma[0] distance(0, 0.5)
+
+    sref.sec {
+        min_max_distances = get_min_and_max_distance()
+    }
+    comp_x = (soma_distance - min_max_distances.x[0]) / (min_max_distances.x[1] - min_max_distances.x[0])
+
+    return comp_x
+}
+
+/*
+    $1: apical_point_isec
+
+    Returns: section list containing all section in apical branch
+*/
+obfunc get_apical_branch() { local apical_point_isec \
+                            localobj apical_branch, current_section_ref, strobj
+    apical_point_isec = $1
+    apical_branch = new SectionList()
+    strobj = new StringFunctions()
+
+    cell.apic[apical_point_isec] current_section_ref = new SectionRef()
+
+    while (current_section_ref.has_parent) {
+        current_section_ref.sec {
+            if (strobj.substr(secname(), "soma[0]") != -1) { // if section is soma
+                break
+            }
+
+            current_section_ref.sec apical_branch.append()
+        }
+
+        // change current section to its parent
+        current_section_ref.parent current_section_ref = new SectionRef()
+    }
+
+    return apical_branch
+}
+
+
+objref time, voltage {{extra_recordings_vars}}
+proc create_recording() { local comp_x localobj secref, apical_branch // local vars needed depending on extra recordings
     voltage = new Vector()
     time = new Vector()
 
-    access cell.soma
     time.record(&t, 0.1)
     voltage.record(&v(0.5), 0.1)
+
+    {{extra_recordings}}
 
 }
 
@@ -85,15 +186,9 @@ proc simulate() {
 
 //============================= saving results ============================
 
-proc save_recording() { localobj timevoltage, fh, fpath
-    fpath = new String()
-    stim_number = $1
-
-    {{save_recordings}}
-
-    timevoltage = new Matrix(time.size(), 2)
-    timevoltage.setcol(0, time)
-    timevoltage.setcol(1, voltage)
+proc write_output_file() { localobj timevoltage, fh, fpath
+    fpath = $o1
+    timevoltage = $o2
 
     fh = new File()
     fh.wopen(fpath.s)
@@ -101,4 +196,11 @@ proc save_recording() { localobj timevoltage, fh, fpath
     fh.close()
 
     print "Saved voltage trace to: ", fpath.s
+}
+
+proc save_recording() { localobj timevoltage, fpath
+    fpath = new String()
+    stim_number = $1
+
+    {{save_recordings}}
 }

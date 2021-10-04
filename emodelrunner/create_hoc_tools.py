@@ -18,6 +18,8 @@ class HocStimuliCreator:
     """Class to create the stimuli in hoc.
 
     Attributes:
+        apical_point_isec (int): section index of the apical point
+            Set to -1 if there is no apical point
         n_stims (int): total number of protocols to be run by hoc.
             Gets incremented during initiation to enumerate the protocols.
         max_steps (int): A StepProtocol can have multiple steps. This attribute
@@ -34,51 +36,117 @@ class HocStimuliCreator:
             Vecstim
             Netstim
         save_recs (str): hoc scipt to save the recordings of each protocol.
+        extra_recs_vars (str): names of the extra recordings hoc variables
+            Have the form ', var1, var2, ..., var_n' to be added to the hoc variable declaration
+        extra_recs (str): hoc script to declare the extra recordings
     """
 
-    def __init__(self, prot_definitions, mtype, add_synapses):
+    def __init__(self, prot_definitions, mtype, add_synapses, apical_point_isec):
         """Get stimuli in hoc to put in createsimulation.hoc."""
+        self.apical_point_isec = apical_point_isec
         self.n_stims = 0
         self.max_steps = 0
         self.reset_step_stimuli = ""
         self.init_step_stimuli = ""
         self.stims_hoc = ""
         self.save_recs = ""
+        self.extra_recs_vars = ""
+        self.extra_recs = ""
         for prot_name, prot in prot_definitions.items():
+            if "extra_recordings" in prot:
+                self.add_extra_recs(prot["extra_recordings"])
+
             if "type" in prot and prot["type"] == "StepProtocol":
                 self.n_stims += 1
                 step_hoc = self.get_stim_hoc(self.get_step_hoc, prot)
                 self.stims_hoc += step_hoc
 
-                self.add_save_recordings_hoc(mtype, prot_name)
+                self.add_save_recordings_hoc(mtype, prot_name, prot)
             elif "type" in prot and prot["type"] == "RampProtocol":
                 self.n_stims += 1
                 ramp_hoc = self.get_stim_hoc(self.get_ramp_hoc, prot)
                 self.stims_hoc += ramp_hoc
 
-                self.add_save_recordings_hoc(mtype, prot_name)
+                self.add_save_recordings_hoc(mtype, prot_name, prot)
             elif "type" in prot and prot["type"] == "Vecstim" and add_synapses:
                 self.n_stims += 1
                 vecstim_hoc = self.get_stim_hoc(self.get_vecstim_hoc, prot)
                 self.stims_hoc += vecstim_hoc
 
-                self.add_save_recordings_hoc(mtype, prot_name)
+                self.add_save_recordings_hoc(mtype, prot_name, prot)
             elif "type" in prot and prot["type"] == "Netstim" and add_synapses:
                 self.n_stims += 1
                 netstim_hoc = self.get_stim_hoc(self.get_netstim_hoc, prot)
                 self.stims_hoc += netstim_hoc
 
-                self.add_save_recordings_hoc(mtype, prot_name)
+                self.add_save_recordings_hoc(mtype, prot_name, prot)
 
         self.get_reset_step()
         self.get_init_step()
 
-    def add_save_recordings_hoc(self, mtype, prot_name):
+    def add_extra_recs(self, extra_recs):
+        """Add extra recordings to the recordings settings."""
+        for extra_rec in extra_recs:
+            name = extra_rec["name"]
+            seclist_name = extra_rec["seclist_name"]
+            var = extra_rec["var"]
+
+            if name not in self.extra_recs_vars.split(", "):
+                self.extra_recs_vars += f", {name}"
+                if extra_rec["type"] == "nrnseclistcomp":
+                    sec_index = extra_rec["sec_index"]
+                    comp_x = extra_rec["comp_x"]
+
+                    self.extra_recs += f"""
+                        {name} = new Vector()
+                        cell.{seclist_name}[{sec_index}] {name}.record(&{var}({comp_x}), 0.1)
+                    """
+                elif extra_rec["type"] == "somadistance":
+                    somadistance = extra_rec["somadistance"]
+
+                    self.extra_recs += f"""
+                        {name} = new Vector()
+                        secref = find_isec_at_soma_distance(cell.{seclist_name}, {somadistance})
+                        comp_x = find_comp_x_at_soma_distance(secref, {somadistance})
+
+                        secref.sec {name}.record(&{var}(comp_x), 0.1)
+                    """
+
+                elif extra_rec["type"] == "somadistanceapic":
+                    somadistance = extra_rec["somadistance"]
+
+                    self.extra_recs += f"""
+                        {name} = new Vector()
+                        apical_branch = get_apical_branch({self.apical_point_isec})
+                        secref = find_isec_at_soma_distance(apical_branch, {somadistance})
+                        comp_x = find_comp_x_at_soma_distance(secref, {somadistance})
+
+                        secref.sec {name}.record(&{var}(comp_x), 0.1)
+                    """
+
+    def add_save_recordings_hoc(self, mtype, prot_name, prot):
         """Add this to the hoc file to save the recordings."""
         self.save_recs += f"""
             if (stim_number == {self.n_stims}) {{
                 sprint(fpath.s, "hoc_recordings/{mtype}.{prot_name}.soma.v.dat")
-            }}
+                timevoltage = new Matrix(time.size(), 2)
+                timevoltage.setcol(0, time)
+                timevoltage.setcol(1, voltage)
+                write_output_file(fpath, timevoltage)
+        """
+        if "extra_recordings" in prot:
+            for extra_rec in prot["extra_recordings"]:
+                var = extra_rec["var"]
+                name = extra_rec["name"]
+                self.save_recs += f"""
+                    sprint(fpath.s, "hoc_recordings/{mtype}.{prot_name}.{name}.{var}.dat")
+                    timevoltage = new Matrix(time.size(), 2)
+                    timevoltage.setcol(0, time)
+                    timevoltage.setcol(1, {name})
+                    write_output_file(fpath, timevoltage)
+                """
+        self.save_recs += """
+            }
         """
 
     def get_step_hoc(self, prot):
@@ -179,7 +247,7 @@ class HocStimuliCreator:
         """Get vecstim stimulus in hoc format from vecstim protocol dict."""
         stim = prot["stimuli"]
 
-        vecstim_hoc = f"tstop={stim['syn_stop']}"
+        vecstim_hoc = f"tstop={stim['syn_stop']}\n"
 
         hoc_synapse_creation = (
             "cell.synapses.create_netcons "
@@ -202,7 +270,7 @@ class HocStimuliCreator:
         """Get netstim stimulus in hoc format from netstim protocol dict."""
         stim = prot["stimuli"]
 
-        netstim_hoc = f"tstop={stim['syn_stop']}"
+        netstim_hoc = f"tstop={stim['syn_stop']}\n"
 
         hoc_synapse_creation = (
             "cell.synapses.create_netcons"
@@ -385,6 +453,7 @@ def create_simul_hoc(
     hoc_paths,
     constants_args,
     protocol_definitions,
+    apical_point_isec=-1,
 ):
     """Create createsimulation.hoc file."""
     syn_dir = hoc_paths["syn_dir_for_hoc"]
@@ -392,7 +461,10 @@ def create_simul_hoc(
     hoc_file = hoc_paths["hoc_filename"]
 
     hoc_stim_creator = HocStimuliCreator(
-        protocol_definitions, constants_args["mtype"], add_synapses
+        protocol_definitions,
+        constants_args["mtype"],
+        add_synapses,
+        apical_point_isec,
     )
 
     # load template
@@ -418,6 +490,8 @@ def create_simul_hoc(
             save_recordings=hoc_stim_creator.save_recs,
             initiate_step_stimuli=hoc_stim_creator.init_step_stimuli,
             reset_step_stimuli=hoc_stim_creator.reset_step_stimuli,
+            extra_recordings_vars=hoc_stim_creator.extra_recs_vars,
+            extra_recordings=hoc_stim_creator.extra_recs,
         ),
         hoc_stim_creator.n_stims,
     )

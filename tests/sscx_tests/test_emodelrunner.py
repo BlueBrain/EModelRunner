@@ -134,18 +134,18 @@ def test_recipe_protocols():
         "L5TPCa.Step_150.soma.v.dat",
         "L5TPCa.Step_200.soma.v.dat",
         "L5TPCa.Step_280.soma.v.dat",
-        "L5TPCa.RMP.soma.v.dat",
-        "L5TPCa.bAP.dend1.v.dat",
-        "L5TPCa.Rin.soma.v.dat",
-        "L5TPCa.bAP.ca_ais.v.dat",
-        "L5TPCa.bAP.dend2.v.dat",
-        "L5TPCa.SpikeRec_600.soma.v.dat",
-        "L5TPCa.bAP.ca_prox_apic.v.dat",
-        "L5TPCa.bAP.soma.v.dat",
         "L5TPCa.APWaveform_320.soma.v.dat",
-        "L5TPCa.bAP.ca_prox_basal.v.dat",
+        "L5TPCa.bAP.soma.v.dat",
+        "L5TPCa.bAP.dend1.v.dat",
+        "L5TPCa.bAP.dend2.v.dat",
+        "L5TPCa.bAP.ca_soma.cai.dat",
+        "L5TPCa.bAP.ca_ais.cai.dat",
+        "L5TPCa.bAP.ca_prox_apic.cai.dat",
+        "L5TPCa.bAP.ca_prox_basal.cai.dat",
         "L5TPCa.IV_-100.soma.v.dat",
-        "L5TPCa.bAP.ca_soma.v.dat",
+        "L5TPCa.Rin.soma.v.dat",
+        "L5TPCa.RMP.soma.v.dat",
+        "L5TPCa.SpikeRec_600.soma.v.dat",
         "L5TPCa.bpo_holding_current.dat",
         "L5TPCa.bpo_threshold_current.dat",
         "current_L5TPCa.Step_150.dat",
@@ -303,3 +303,8 @@ def test_multiprotocols_hoc_vs_py_script(
     compare_hoc_and_py("L5TPCa.Ramp.soma.v.dat", threshold)
     compare_hoc_and_py("L5TPCa.Synapses_Netstim.soma.v.dat", threshold)
     compare_hoc_and_py("L5TPCa.MultiStepProtocolNoHolding.soma.v.dat", threshold)
+
+    compare_hoc_and_py("L5TPCa.Ramp.ca_soma.cai.dat", threshold)
+    compare_hoc_and_py("L5TPCa.Ramp.ca_ais.cai.dat", threshold)
+    compare_hoc_and_py("L5TPCa.Ramp.ca_prox_basal.cai.dat", threshold)
+    compare_hoc_and_py("L5TPCa.Ramp.dend1.v.dat", threshold)

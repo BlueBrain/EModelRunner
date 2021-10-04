@@ -15,7 +15,39 @@
                 "duration": 300.0,
                 "totduration": 300.0
             }
-        }
+        },
+        "extra_recordings": [
+            {
+                "var": "cai",
+                "comp_x": 0.5,
+                "type": "nrnseclistcomp",
+                "name": "ca_soma",
+                "seclist_name": "soma",
+                "sec_index": 0
+            },
+            {
+                "var": "cai",
+                "comp_x": 0.5,
+                "type": "nrnseclistcomp",
+                "name": "ca_ais",
+                "seclist_name": "axon",
+                "sec_index": 0
+            },
+            {
+                "var": "cai",
+                "somadistance": 50,
+                "type": "somadistance",
+                "name": "ca_prox_basal",
+                "seclist_name": "basal"
+            },
+            {
+                "var": "v",
+                "somadistance": 208,
+                "type": "somadistanceapic",
+                "name": "dend1",
+                "seclist_name": "apical"
+            }
+        ]
     },
     "Synapses_Netstim": {
         "type": "Netstim",

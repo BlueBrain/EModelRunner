@@ -52,6 +52,7 @@ def get_hoc(config, syn_temp_name="hoc_synapses"):
     hoc_paths = get_hoc_paths_args(config)
     syn_hoc_filename = config.get("Paths", "syn_hoc_file")
     syn_dir = config.get("Paths", "syn_dir_for_hoc")
+    apical_point_isec = config.get("Protocol", "apical_point_isec")
 
     constants_args = {
         "emodel": config.get("Cell", "emodel"),
@@ -91,6 +92,7 @@ def get_hoc(config, syn_temp_name="hoc_synapses"):
         hoc_paths=hoc_paths,
         constants_args=constants_args,
         protocol_definitions=protocol_definitions,
+        apical_point_isec=apical_point_isec,
     )
 
     run_hoc = create_run_hoc(
