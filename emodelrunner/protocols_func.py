@@ -16,10 +16,6 @@ from emodelrunner.protocols import (
     SweepProtocolCustom,
 )
 from emodelrunner.recordings import RecordingCustom
-from emodelrunner.locations import (
-    NrnSomaDistanceCompLocation,
-    NrnSomaDistanceCompLocationApical,
-)
 from emodelrunner.features import define_efeatures
 from emodelrunner.synapses.stimuli import (
     NrnNetStimStimulusCustom,
@@ -31,6 +27,12 @@ logger = logging.getLogger(__name__)
 soma_loc = ephys.locations.NrnSeclistCompLocation(
     name="soma", seclist_name="somatic", sec_index=0, comp_x=0.5
 )
+seclist_to_sec = {
+    "somatic": "soma",
+    "apical": "apic",
+    "axonal": "axon",
+    "myelinated": "myelin",
+}
 
 
 def read_ramp_threshold_protocol(protocol_name, protocol_definition, recordings):
@@ -245,7 +247,7 @@ def read_netstim_protocol(protocol_name, protocol_definition, recordings, syn_lo
 def get_extra_recording_location(recording_definition, apical_point_isec):
     """Get the location for the extra recording."""
     if recording_definition["type"] == "somadistance":
-        location = NrnSomaDistanceCompLocation(
+        location = ephys.locations.NrnSomaDistanceCompLocation(
             name=recording_definition["name"],
             soma_distance=recording_definition["somadistance"],
             seclist_name=recording_definition["seclist_name"],
@@ -257,11 +259,11 @@ def get_extra_recording_location(recording_definition, apical_point_isec):
                 "Cannot record at a given distance from apical point"
                 f"if apical_point_isec is {apical_point_isec}."
             )
-        location = NrnSomaDistanceCompLocationApical(
+        location = ephys.locations.NrnSecSomaDistanceCompLocation(
             name=recording_definition["name"],
             soma_distance=recording_definition["somadistance"],
-            seclist_name=recording_definition["seclist_name"],
-            apical_point_isec=apical_point_isec,
+            sec_name=seclist_to_sec[recording_definition["seclist_name"]],
+            sec_index=apical_point_isec,
         )
 
     elif recording_definition["type"] == "nrnseclistcomp":
