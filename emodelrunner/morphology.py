@@ -2,166 +2,55 @@
 
 # pylint: disable=unnecessary-comprehension
 import logging
-import math
-import numpy
 
 from bluepyopt import ephys
 
 logger = logging.getLogger(__name__)
 
 
-def get_axon_hoc(replace_axon_hoc):
-    """Returns string containing replace axon hoc."""
-    with open(replace_axon_hoc, "r", encoding="utf-8") as f:
+def get_axon_hoc(axon_hoc_path):
+    """Returns string containing axon hoc to use as replacement.
+
+    Args:
+        axon_hoc_path (str): path to axon hoc file
+
+    Returns:
+        str: new axon hoc
+    """
+    with open(axon_hoc_path, "r", encoding="utf-8") as f:
         return f.read()
 
 
 class NrnFileMorphologyCustom(ephys.morphologies.NrnFileMorphology):
-    """Custom Morphology."""
+    """Custom Morphology.
 
-    def __init__(
-        self,
-        morphology_path,
-        do_replace_axon=False,
-        do_set_nseg=True,
-        comment="",
-        replace_axon_hoc=None,
-        do_simplify_morph=False,
-    ):
-        """Constructor.
-
-        Args:
-            morphology_path (str): path to the morphology file
-            do_replace_axon (bool): set to True to replace the axon
-            do_set_nseg (bool): if True, it will put 40 segments per section
-            comment (str) : comment for class heritance
-            replace_axon_hoc (str) : hoc script as a string to replace the axon
-            do_simplify_morph (bool) : set to True to simplify the morphology
-        """
-        super(NrnFileMorphologyCustom, self).__init__(
-            morphology_path, do_replace_axon, do_set_nseg, comment, replace_axon_hoc
-        )
-
-        self.do_simplify_morph = do_simplify_morph
-
-    def instantiate(self, sim=None, icell=None):
-        """Load morphology."""
-        super(NrnFileMorphologyCustom, self).instantiate(sim, icell)
-
-        if self.do_simplify_morph:
-            self.simplify_morph(sim, icell)
-
-    @staticmethod
-    def section_area(sim, section):
-        """Section area."""
-        return sum(sim.neuron.h.area(seg.x, sec=section) for seg in section)
-
-    def cell_area(self, sim):
-        """Cell area."""
-        total_area = 0
-        for section in sim.neuron.h.allsec():
-            total_area += self.section_area(sim, section)
-
-        return total_area
-
-    def simplify_morph(self, sim, cell):
-        """Simplify morphology."""
-        soma = cell.soma[0]
-
-        print(soma.L, soma.diam, self.section_area(sim, soma), self.cell_area(sim))
-
-        soma_children = [x for x in sim.neuron.h.SectionRef(sec=soma).child]
-        for soma_child in soma_children:
-            if ("axon" not in sim.neuron.h.secname(sec=soma_child)) and (
-                "myelin" not in sim.neuron.h.secname(sec=soma_child)
-            ):
-                self.simplify_children_cross(sim, soma_child, 0)
-
-        sim.neuron.h.topology()
-        print(soma.L, soma.diam, self.section_area(sim, soma), self.cell_area(sim))
-
-    def simplify_children_cross(self, sim, parent, level):
-        """Simplify parent + children."""
-        sparent = sim.neuron.h.SectionRef(sec=parent)
-        children = [x for x in sparent.child]
-
-        total_area = self.section_area(sim, parent)
-        child_cross_sec = 0
-
-        # DON'T put this in the for loop below ...
-
-        for child in children:
-            self.simplify_children_cross(sim, child, level + 1)
-
-            total_area += self.section_area(sim, child)
-            child_cross_sec += math.pi * child.diam * child.diam / 4
-
-            sim.neuron.h.delete_section(sec=child)
-
-        parent_cross_sec = math.pi * parent.diam * parent.diam / 4
-
-        if child_cross_sec == 0:
-            total_cross_sec = parent_cross_sec
-        else:
-            total_cross_sec = child_cross_sec
-
-        new_diam = math.sqrt(float(4 * total_cross_sec) / math.pi)
-
-        parent.diam = new_diam
-
-        parent.L = total_area / (math.pi * parent.diam)
-
-        parent.nseg = 1  # + 2 * int(parent.L / 100.)
-
-    def simplify_children_length(self, sim, parent, level):
-        """Simplify parent + children."""
-        sparent = sim.neuron.h.SectionRef(sec=parent)
-        children = [x for x in sparent.child]
-
-        total_area = self.section_area(sim, parent)
-        max_child_length = 0
-        child_lengths = []
-
-        # DON'T put this in the for loop below ...
-
-        for child in children:
-            self.simplify_children_length(sim, child, level + 1)
-
-            total_area += self.section_area(sim, child)
-
-            child_lengths.append(child.L)
-
-            if child.L > max_child_length:
-                max_child_length = child.L
-
-            sim.neuron.h.delete_section(sec=child)
-
-        if len(child_lengths) > 0:
-            max_child_length = numpy.max(child_lengths)
-        else:
-            max_child_length = 0
-
-        new_l = parent.L + max_child_length
-
-        parent.L = new_l
-
-        parent.diam = total_area / (math.pi * parent.L)
-
-        parent.nseg = 1 + 2 * int(parent.L / 100.0)
-
-    # @staticmethod
-    def set_nseg(self, icell):
-        """Set the nseg of every section."""
-        if self.do_set_nseg:
-            div = 40
-
-            logger.debug("Using set_nseg divider %d", div)
-
-        for section in icell.all:
-            section.nseg = 1 + 2 * int(section.L / div)
+    Attributes:
+        name (str): name of this object
+        comment (str): comment
+        morphology_path (str): location of the file describing the morphology
+        do_replace_axon (bool): Does the axon need to be replaced by an AIS
+            stub with default function ?
+        replace_axon_hoc (str): Translation in HOC language for the
+            'replace_axon' method. This code will 'only' be used when
+            calling create_hoc on a cell model. While the model is run in
+            python, replace_axon is used instead. Must include
+            'proc replace_axon(){ ... }
+            If None,the default replace_axon is used
+        do_set_nseg (bool): if True, it will use nseg_frequency
+        nseg_frequency (float): frequency of nseg
+        morph_modifiers (list): list of functions to modify the icell
+            with (sim, icell) as arguments
+        morph_modifiers_hoc (list): list of hoc strings corresponding
+            to morph_modifiers
+    """
 
     def replace_axon(self, sim=None, icell=None):
-        """Replace axon."""
+        """Replace axon.
+
+        Args:
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            icell (neuron cell): cell instantiation in simulator
+        """
         L_target = 60  # length of stub axon
         nseg0 = 5  # number of segments for each of the two axon sections
 
