@@ -2,7 +2,6 @@
 
 import collections
 
-import configparser
 import json
 import os
 
@@ -10,68 +9,37 @@ from bluepyopt import ephys
 
 from emodelrunner.synapses.mechanism import NrnMODPointProcessMechanismCustom
 from emodelrunner.locations import multi_locations
+from emodelrunner.configuration import SSCXConfigValidator, SynplasConfigValidator
 
 
-def load_config(config_path):
-    """Set config from config file and set default value."""
-    defaults = {
-        "Cell": {
-            "celsius": "34",
-            "v_init": "-80",
-            "gid": "0",
-        },
-        "Protocol": {
-            "precell_amplitude": "1.0",
-            # -1 means there is no apical point
-            "apical_point_isec": "-1",
-        },
-        "Morphology": {
-            "do_replace_axon": "True",
-            # is only used for naming the output files
-            "mtype": "",
-        },
-        "Sim": {
-            "cvode_active": "False",
-            "dt": "0.025",
-        },
-        "Synapses": {
-            "add_synapses": "False",
-            "seed": "846515",
-            "rng_settings_mode": "Random123",  # can be "Random123" or "Compatibility"
-        },
-        "Paths": {
-            "memodel_dir": ".",
-            "output_dir": "%(memodel_dir)s/python_recordings",
-            "params_path": "config/params/final.json",
-            "units_path": "config/features/units.json",
-            "templates_dir": "templates",
-            "hoc_file": "cell.hoc",
-            "create_hoc_template_file": "cell_template_neurodamus.jinja2",
-            "replace_axon_hoc_dir": "%(templates_dir)s",
-            "replace_axon_hoc_file": "replace_axon_hoc.hoc",
-            "syn_dir_for_hoc": "synapses",
-            "syn_dir": "%(memodel_dir)s/%(syn_dir_for_hoc)s",
-            "syn_data_file": "synapses.tsv",
-            "syn_conf_file": "synconf.txt",
-            "syn_hoc_file": "synapses.hoc",
-            "syn_mtype_map": "mtype_map.tsv",
-            "simul_hoc_file": "createsimulation.hoc",
-            "synplas_fit_params_path": "config/fit_params.json",
-        },
-        "SynapsePlasticity": {},
-    }
+def load_sscx_config(config_path):
+    """Validates and returns the configuration file for the SSCX packages.
 
-    config = configparser.ConfigParser()
+    Args:
+        config_path (str or Path): path to the configuration file.
 
-    # set defaults
-    config.read_dict(defaults)
+    Returns:
+        configparser.ConfigParser: loaded config object
+    """
+    conf_validator = SSCXConfigValidator()
+    validated_config = conf_validator.validate_from_file(config_path)
 
-    # read config file
-    if not os.path.exists(config_path):
-        raise FileNotFoundError(f"The file at {config_path} does not exist")
-    config.read(config_path)
+    return validated_config
 
-    return config
+
+def load_synplas_config(config_path):
+    """Validates and returns the configuration file for the Synplas packages.
+
+    Args:
+        config_path (str or Path): path to the configuration file.
+
+    Returns:
+        configparser.ConfigParser: loaded config object
+    """
+    conf_validator = SynplasConfigValidator()
+    validated_config = conf_validator.validate_from_file(config_path)
+
+    return validated_config
 
 
 def get_hoc_paths_args(config):
@@ -108,12 +76,34 @@ def get_syn_mech_args(config):
     }
 
 
-def get_morph_args(config, precell=False):
-    """Get the dict containing morphology configuration data.
+def get_sscx_morph_args(config):
+    """Get morphology arguments for SSCX from the configuration object.
+
+    Args:
+        config (configparser.ConfigParser): configuration object.
+
+    Returns:
+        dict: dictionary containing morphology arguments.
+    """
+    morph_path = config.get("Paths", "morph_path")
+    # load axon hoc path
+    axon_hoc_path = config.get("Paths", "replace_axon_hoc_path")
+    return {
+        "morph_path": morph_path,
+        "axon_hoc_path": axon_hoc_path,
+        "do_replace_axon": config.getboolean("Morphology", "do_replace_axon"),
+    }
+
+
+def get_synplas_morph_args(config, precell=False):
+    """Get morphology arguments for Synplas from the configuration object.
 
     Args:
         config (dict): data from config file.
         precell (bool): True to load precell morph. False to load usual morph.
+
+    Returns:
+        dict: dictionary containing morphology arguments.
     """
     # load morphology path
     if precell:
@@ -121,14 +111,8 @@ def get_morph_args(config, precell=False):
     else:
         morph_path = config.get("Paths", "morph_path")
 
-    # load axon hoc path
-    axon_hoc_path = os.path.join(
-        config.get("Paths", "replace_axon_hoc_dir"),
-        config.get("Paths", "replace_axon_hoc_file"),
-    )
     return {
         "morph_path": morph_path,
-        "axon_hoc_path": axon_hoc_path,
         "do_replace_axon": config.getboolean("Morphology", "do_replace_axon"),
     }
 
@@ -143,7 +127,7 @@ def get_presyn_stim_args(config, pre_spike_train):
     return {
         "stim_train": pre_spike_train - spike_delay,
         "amp": config.getfloat("Protocol", "precell_amplitude"),
-        "width": config.getint("Protocol", "precell_width"),
+        "width": config.getfloat("Protocol", "precell_width"),
     }
 
 
@@ -229,8 +213,8 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
     Args:
         params_path (str): path to the json file containing
             the non-optimised parameters
-        v_init (int): initial voltage. Will override v_init value from parameter file
-        celsius (int): cell temperature in celsius.
+        v_init (float): initial voltage. Will override v_init value from parameter file
+        celsius (float): cell temperature in celsius.
             Will override celsius value from parameter file
     """
     # pylint: disable=too-many-locals, too-many-branches, too-many-statements

@@ -7,7 +7,7 @@ from bluepyopt import ephys
 from emodelrunner.create_cells import create_cell_using_config
 from emodelrunner.create_protocols import SSCXProtocols
 from emodelrunner.load import (
-    load_config,
+    load_sscx_config,
     get_prot_args,
     get_release_params,
 )
@@ -18,7 +18,7 @@ from emodelrunner.output import write_responses
 def main(config_path):
     """Main."""
     # pylint: disable=too-many-locals
-    config = load_config(config_path=config_path)
+    config = load_sscx_config(config_path=config_path)
 
     cell = create_cell_using_config(config)
     release_params = get_release_params(config)
@@ -46,7 +46,6 @@ def main(config_path):
 
     # write responses
     output_dir = config.get("Paths", "output_dir")
-    # output_file = config.get("Paths", "output_file")
     write_responses(responses, output_dir)
     write_current(currents, output_dir)
 

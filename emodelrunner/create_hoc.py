@@ -4,7 +4,7 @@ import json
 import os
 
 from emodelrunner.load import (
-    load_config,
+    load_sscx_config,
     get_release_params,
     get_syn_mech_args,
     # get_syn_prot_args,
@@ -59,8 +59,8 @@ def get_hoc(config, syn_temp_name="hoc_synapses"):
         "morph_path": config.get("Paths", "morph_path"),
         "gid": config.getint("Cell", "gid"),
         "dt": config.getfloat("Sim", "dt"),
-        "celsius": config.getint("Cell", "celsius"),
-        "v_init": config.getint("Cell", "v_init"),
+        "celsius": config.getfloat("Cell", "celsius"),
+        "v_init": config.getfloat("Cell", "v_init"),
         "mtype": config.get("Morphology", "mtype"),
     }
 
@@ -132,7 +132,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     run_hoc_filename_ = "run.hoc"
-    config_ = load_config(config_path=args.config_path)
+    config_ = load_sscx_config(config_path=args.config_path)
 
     cell_hoc_, syn_hoc_, simul_hoc_, run_hoc_ = get_hoc(
         config=config_, syn_temp_name="hoc_synapses"

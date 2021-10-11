@@ -6,7 +6,7 @@ import json
 import numpy as np
 import pytest
 
-from emodelrunner.load import load_config
+from emodelrunner.load import load_sscx_config
 from emodelrunner.run import main as run_emodel
 from emodelrunner.factsheets import morphology_features
 from emodelrunner.factsheets.output import (
@@ -35,11 +35,10 @@ class TestMETypeFactsheet:
         """
         protocol_key = "RmpRiTau"
         config_path_in_memodel_dir = Path("config") / "config_factsheets.ini"
-        config_path = example_dir / config_path_in_memodel_dir
-        config = load_config(config_path=config_path)
         output_path = Path("factsheets") / "me_type_factsheet.json"
 
         with cwd(example_dir):
+            config = load_sscx_config(config_path=config_path_in_memodel_dir)
             run_emodel(config_path=config_path_in_memodel_dir)
 
         voltage_path = Path("python_recordings") / (
@@ -70,13 +69,10 @@ class TestMETypeFactsheet:
 
 def test_emodel_factsheet_exists():
     """Tests if the emodel factsheet output file is created."""
-    config_path = example_dir / "config" / "config_factsheets.ini"
-    config = load_config(config_path=config_path)
 
     output_path = example_dir / "factsheets" / "e_model_factsheet.json"
-    emodel = config.get("Cell", "emodel")
-
-    mtype = config.get("Morphology", "mtype")
+    emodel = "cADpyr_L5TPC"
+    mtype = "L5TPCa"
 
     unoptimized_params_path = Path(example_dir) / "config" / "params" / "pyr.json"
     with open(unoptimized_params_path) as json_file:
@@ -177,11 +173,8 @@ def test_physiology_features():
     Checks that there is no physiology field missing.
     """
     protocol_key = "RmpRiTau"
-    config_path = example_dir / "config" / "config_factsheets.ini"
-    config = load_config(config_path=config_path)
-
     # get stimulus amp, delay and duration
-    prot_path = Path(example_dir) / config.get("Paths", "prot_path")
+    prot_path = Path(example_dir) / "config" / "protocols" / "RmpRiTau.json"
 
     stim_params = get_stim_params_from_config_for_physiology_factsheet(
         prot_path, protocol_key
@@ -268,11 +261,8 @@ def test_mechanisms():
 
         return "", 0
 
-    config_path = example_dir / "config" / "config_factsheets.ini"
-    config = load_config(config_path=config_path)
-
     # original data
-    emodel = config.get("Cell", "emodel")
+    emodel = "cADpyr_L5TPC"
     optimized_params_path = example_dir / "config" / "params" / "final.json"
     with open(optimized_params_path) as json_file:
         optimized_params_dict = json.load(json_file)
@@ -358,15 +348,12 @@ def test_experimental_feature_values():
                 return True
         return False
 
-    config_path = example_dir / "config" / "config_factsheets.ini"
-    config = load_config(config_path=config_path)
-
     # original files data
     optimized_params_path = example_dir / "config" / "params" / "final.json"
     with open(optimized_params_path) as json_file:
         optimized_params_dict = json.load(json_file)
 
-    emodel = config.get("Cell", "emodel")
+    emodel = "cADpyr_L5TPC"
     features_path = example_dir / "config" / "features" / "cADpyr_L5PC.json"
     with open(features_path) as json_file:
         original_feat = json.load(json_file)
@@ -375,11 +362,11 @@ def test_experimental_feature_values():
     with open(feature_units_path) as json_file:
         feature_units_dict = json.load(json_file)
     fitness = optimized_params_dict[emodel]["fitness"]
-    prefix = config.get("Morphology", "mtype")
+    morph_prefix = "L5TPCa"
 
     # tested func
     feat_dict = get_exp_features_data(
-        emodel, prefix, original_feat, feature_units_dict, optimized_params_dict
+        emodel, morph_prefix, original_feat, feature_units_dict, optimized_params_dict
     )
 
     for items in feat_dict["values"]:
@@ -390,7 +377,9 @@ def test_experimental_feature_values():
                 assert loc_data
                 for feat in loc_data["features"]:
                     original = original_feat[stim_name][loc_name]
-                    key_fitness = ".".join((prefix, stim_name, loc_name, feat["name"]))
+                    key_fitness = ".".join(
+                        (morph_prefix, stim_name, loc_name, feat["name"])
+                    )
 
                     assert check_feature_mean_std(original, feat)
                     assert feat["unit"] == feature_units_dict[feat["name"]]
@@ -400,10 +389,7 @@ def test_experimental_feature_values():
 def test_get_stim_params_for_physiology():
     """Test get_stim_params_function."""
     # test function's output
-    config_path = example_dir / "config" / "config_factsheets.ini"
-    config = load_config(config_path=config_path)
-
-    prot_path = Path(example_dir) / config.get("Paths", "prot_path")
+    prot_path = Path(example_dir) / "config" / "protocols" / "RmpRiTau.json"
 
     stim_params = get_stim_params_from_config_for_physiology_factsheet(
         prot_path, "RmpRiTau"

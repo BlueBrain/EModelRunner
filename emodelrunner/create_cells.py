@@ -7,7 +7,8 @@ from emodelrunner.load import (
     load_mechanisms,
     load_syn_mechs,
     load_unoptimized_parameters,
-    get_morph_args,
+    get_sscx_morph_args,
+    get_synplas_morph_args,
     get_syn_mech_args,
 )
 from emodelrunner.morphology import NrnFileMorphologyCustom, get_axon_hoc
@@ -48,7 +49,10 @@ def create_cell(
     params = load_unoptimized_parameters(unopt_params_path, v_init, celsius)
 
     # load morphology
-    replace_axon_hoc = get_axon_hoc(morph_args["axon_hoc_path"])
+    try:
+        replace_axon_hoc = get_axon_hoc(morph_args["axon_hoc_path"])
+    except KeyError:
+        replace_axon_hoc = None
     morph = NrnFileMorphologyCustom(
         morph_args["morph_path"],
         do_replace_axon=morph_args["do_replace_axon"],
@@ -78,7 +82,7 @@ def create_cell_using_config(config):
     syn_mech_args = get_syn_mech_args(config)
 
     # get morphology config data
-    morph_args = get_morph_args(config)
+    morph_args = get_sscx_morph_args(config)
 
     # create cell
     cell = create_cell(
@@ -88,8 +92,8 @@ def create_cell_using_config(config):
         morph_args,
         config.getint("Cell", "gid"),
         syn_mech_args,
-        v_init=config.getint("Cell", "v_init"),
-        celsius=config.getint("Cell", "celsius"),
+        v_init=config.getfloat("Cell", "v_init"),
+        celsius=config.getfloat("Cell", "celsius"),
     )
 
     return cell
@@ -104,8 +108,8 @@ def get_postcell(
     emodel = config.get("Cell", "emodel")
     gid = config.getint("Cell", "gid")
     base_seed = config.getint("SynapsePlasticity", "base_seed")
-    v_init = config.getint("Cell", "v_init")
-    celsius = config.getint("Cell", "celsius")
+    v_init = config.getfloat("Cell", "v_init")
+    celsius = config.getfloat("Cell", "celsius")
 
     unopt_params_path = config.get("Paths", "unoptimized_params_path")
 
@@ -114,7 +118,7 @@ def get_postcell(
     syn_mech_args["seed"] = base_seed
     syn_mech_args["rng_settings_mode"] = "Compatibility"
 
-    morph_args = get_morph_args(config)
+    morph_args = get_synplas_morph_args(config)
 
     add_synapses = True
 
@@ -141,12 +145,12 @@ def get_precell(
     """Return the precell for synapse plasticity pair simulation run."""
     emodel = config.get("Cell", "emodel")
     gid = config.getint("Cell", "gid")
-    v_init = config.getint("Cell", "v_init")
-    celsius = config.getint("Cell", "celsius")
+    v_init = config.getfloat("Cell", "v_init")
+    celsius = config.getfloat("Cell", "celsius")
 
     unopt_params_path = config.get("Paths", "precell_unoptimized_params_path")
 
-    morph_args = get_morph_args(config, precell=True)
+    morph_args = get_synplas_morph_args(config, precell=True)
 
     add_synapses = False
 

@@ -9,11 +9,11 @@ from emodelrunner.recordings import RecordingCustom
 from emodelrunner.cell import CellModelCustom
 from emodelrunner.synapses.stimuli import NrnNetStimStimulusCustom
 from emodelrunner.load import (
-    load_config,
+    load_sscx_config,
     load_syn_mechs,
     load_unoptimized_parameters,
     load_mechanisms,
-    get_morph_args,
+    get_sscx_morph_args,
     get_release_params,
 )
 from emodelrunner.morphology import NrnFileMorphologyCustom, get_axon_hoc
@@ -121,7 +121,7 @@ class NeuronSimulation:
     def __init__(self, config_path="config/config_allsteps.ini"):
         """Constructor. Load default params from config file."""
         # load config file
-        self.config = load_config(config_path=config_path)
+        self.config = load_sscx_config(config_path=config_path)
         self.cell_path = self.config.get("Paths", "memodel_dir")
 
         # get default params
@@ -277,12 +277,12 @@ class NeuronSimulation:
         # load parameters
         params = load_unoptimized_parameters(
             unopt_params_path,
-            v_init=self.config.getint("Cell", "v_init"),
-            celsius=self.config.getint("Cell", "celsius"),
+            v_init=self.config.getfloat("Cell", "v_init"),
+            celsius=self.config.getfloat("Cell", "celsius"),
         )
 
         # load morphology
-        morph_config = get_morph_args(self.config)
+        morph_config = get_sscx_morph_args(self.config)
         replace_axon_hoc = get_axon_hoc(morph_config["axon_hoc_path"])
         morph = NrnFileMorphologyCustom(
             morph_config["morph_path"],

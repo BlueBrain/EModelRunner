@@ -11,7 +11,7 @@ import pytest
 from bluepyopt import ephys
 from emodelrunner.create_hoc import get_hoc, write_hocs
 from emodelrunner.load import (
-    load_config,
+    load_sscx_config,
     get_hoc_paths_args,
 )
 from emodelrunner.protocols import (
@@ -54,7 +54,7 @@ def test_voltages():
 
     with cwd(example_dir):
         # write hocs
-        config = load_config(config_path=config_path)
+        config = load_sscx_config(config_path=config_path)
         cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(
             config=config, syn_temp_name="hoc_synapses"
         )
@@ -109,7 +109,7 @@ def test_synapses_hoc_vs_py_script(config_path="config/config_synapses.ini"):
     # start with hoc, to compile mechs
     with cwd(example_dir):
         # write hocs
-        config = load_config(config_path=config_path)
+        config = load_sscx_config(config_path=config_path)
         cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(
             config=config, syn_temp_name="hoc_synapses"
         )
@@ -290,7 +290,7 @@ def test_multiprotocols_hoc_vs_py_script(
     # start with hoc, to compile mechs
     with cwd(example_dir):
         # write hocs
-        config = load_config(config_path=config_path)
+        config = load_sscx_config(config_path=config_path)
         cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(
             config=config, syn_temp_name="hoc_synapses"
         )
