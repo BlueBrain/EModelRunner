@@ -150,6 +150,8 @@ class SSCXConfigValidator(ConfigValidator):
             "add_synapses": "False",
             "seed": "846515",
             "rng_settings_mode": "Random123",  # can be "Random123" or "Compatibility"
+            # name to use for the hoc synapse template
+            "hoc_synapse_template_name": "hoc_synapses",
         },
         "Paths": {
             "memodel_dir": ".",
@@ -157,8 +159,10 @@ class SSCXConfigValidator(ConfigValidator):
             "params_path": "%(memodel_dir)s/config/params/final.json",
             "units_path": "%(memodel_dir)s/config/features/units.json",
             "templates_dir": "%(memodel_dir)s/templates",
-            "hoc_file": "cell.hoc",
-            "create_hoc_template_file": "cell_template_neurodamus.jinja2",
+            "cell_template_path": "%(templates_dir)s/cell_template_neurodamus.jinja2",
+            "run_hoc_template_path": "%(templates_dir)s/run_hoc.jinja2",
+            "createsimulation_template_path": "%(templates_dir)s/createsimulation.jinja2",
+            "synapses_template_path": "%(templates_dir)s/synapses.jinja2",
             "replace_axon_hoc_path": "%(templates_dir)s/replace_axon_hoc.hoc",
             "syn_dir_for_hoc": "%(memodel_dir)s/synapses",
             "syn_dir": "%(memodel_dir)s/synapses",
@@ -167,6 +171,8 @@ class SSCXConfigValidator(ConfigValidator):
             "syn_hoc_file": "synapses.hoc",
             "syn_mtype_map": "mtype_map.tsv",
             "simul_hoc_file": "createsimulation.hoc",
+            "cell_hoc_file": "cell.hoc",
+            "run_hoc_file": "run.hoc",
         },
     }
 
@@ -195,6 +201,7 @@ class SSCXConfigValidator(ConfigValidator):
                     "add_synapses": self.boolean_expression,
                     "seed": self.int_expression,
                     "rng_settings_mode": Or("Random123", "Compatibility"),
+                    "hoc_synapse_template_name": And(str, len),
                 },
                 "Paths": {
                     "morph_path": lambda n: Path(n).exists(),
@@ -206,8 +213,10 @@ class SSCXConfigValidator(ConfigValidator):
                     "params_path": lambda n: Path(n).exists(),
                     "units_path": lambda n: Path(n).exists(),
                     "templates_dir": lambda n: Path(n).exists(),
-                    "hoc_file": And(str, len),
-                    "create_hoc_template_file": And(str, len),
+                    "cell_template_path": lambda n: Path(n).exists(),
+                    "run_hoc_template_path": lambda n: Path(n).exists(),
+                    "createsimulation_template_path": lambda n: Path(n).exists(),
+                    "synapses_template_path": lambda n: Path(n).exists(),
                     "replace_axon_hoc_path": lambda n: Path(n).exists(),
                     "syn_dir_for_hoc": lambda n: Path(n).exists(),
                     "syn_dir": lambda n: Path(n).exists(),
@@ -216,6 +225,8 @@ class SSCXConfigValidator(ConfigValidator):
                     "syn_hoc_file": And(str, len),
                     "syn_mtype_map": And(str, len),
                     "simul_hoc_file": And(str, len),
+                    "cell_hoc_file": And(str, len),
+                    "run_hoc_file": And(str, len),
                 },
             }
         )
@@ -234,6 +245,11 @@ class SynplasConfigValidator(ConfigValidator):
             "syn_dir": "%(memodel_dir)s/synapses",
             "syn_data_file": "synapses.tsv",
             "syn_conf_file": "synconf.txt",
+            "pulse_stimuli_path": "%(memodel_dir)s/protocols/stimuli.json",
+            "synplas_output_path": "%(memodel_dir)s/output.h5",
+            "pairsim_output_path": "%(memodel_dir)s/output.h5",
+            "pairsim_precell_output_path": "%(memodel_dir)s/output_precell.h5",
+            "syn_prop_path": "%(syn_dir)s/synapse_properties.json",
         },
         "Morphology": {
             "do_replace_axon": "True",
@@ -275,6 +291,13 @@ class SynplasConfigValidator(ConfigValidator):
                     "syn_dir": lambda n: Path(n).exists(),
                     "syn_data_file": And(str, len),
                     "syn_conf_file": And(str, len),
+                    "pulse_stimuli_path": lambda n: Path(n).exists(),
+                    "syn_prop_path": lambda n: Path(n).exists(),
+                    # cannot validate output paths before the files are created,
+                    # so check that it is a str
+                    "synplas_output_path": And(str, len),
+                    "pairsim_output_path": And(str, len),
+                    "pairsim_precell_output_path": And(str, len),
                 },
                 "Protocol": {
                     "tstop": self.float_or_int_expression,

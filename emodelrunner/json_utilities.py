@@ -9,7 +9,14 @@ class NpEncoder(json.JSONEncoder):
     """Class to encode numpy object as python object."""
 
     def default(self, o):
-        """Convert numpy integer to int."""
+        """Convert numpy values to regular python values.
+
+        Args:
+            o: value to enventually convert if is a numpy object
+
+        Returns:
+            converted values or parent default method if not a numpy object
+        """
         if isinstance(o, np.integer):
             return int(o)
         elif isinstance(o, np.floating):

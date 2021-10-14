@@ -3,7 +3,22 @@ from emodelrunner.synapses.synapse import SynapseMixin
 
 
 class GluSynapseCustom(SynapseMixin):
-    """Attach a synapse to the simulation."""
+    """Attach a synapse to the simulation.
+
+    Attributes:
+        seed (int): random number generator seed number
+        rng_settins_mode (str) : mode of the random number generator
+            Can be "Random123" or "Compatibility"
+        section (neuron section): cell location where the synapse is attached to
+        hsynapse (neuron GluSynapse): Glusynapse instantion in simulator
+        delay (float): synapse delay
+        weight (float): synapse weight
+        pre_mtype (int): ID (but not gid) of the presynaptic cell
+        start (int/None): force synapse to start firing at given value when using NetStim
+        interval (int/None): force synapse to fire at given interval when using NetStim
+        number (int/None): force synapse to fire N times when using NetStim
+        noise (int/None): force synapse to have given noise when using NetStim
+    """
 
     def __init__(
         self,
@@ -24,11 +39,12 @@ class GluSynapseCustom(SynapseMixin):
         Args:
             sim (NrnSimulator): simulator
             icell (Hoc Cell): cell to which attach the synapse
-            synapse (dict) : synapse data
-            section (): cell location where the synapse is attached to
-            seed (int) : random seed number
-            rng_settings_mode (str) : mode of the random number generator
-            synconf_dict (dict) : synapse configuration
+            synapse (dict): synapse data
+            section (neuron section): cell location where the synapse is attached to
+            seed (int): random number generator seed number
+            rng_settings_mode (str): mode of the random number generator
+                Can be "Random123" or "Compatibility"
+            synconf_dict (dict): synapse configuration
             start (int/None): force synapse to start firing at given value when using NetStim
             interval (int/None): force synapse to fire at given interval when using NetStim
             number (int/None): force synapse to fire N times when using NetStim
@@ -55,9 +71,9 @@ class GluSynapseCustom(SynapseMixin):
         self.hsynapse.Nrrp_TM = synapse["Nrrp"]
 
         # set random number generator
-        self.set_random_nmb_generator(sim, icell, synapse)
+        self.set_random_nmb_generator(sim, icell, synapse["sid"])
 
-        self.execute_synapse_configuration(synconf_dict, synapse, sim)
+        self.execute_synapse_configuration(synconf_dict, synapse["sid"], sim)
 
         self.delay = synapse["delay"]
         self.weight = synapse["weight"]
@@ -70,9 +86,16 @@ class GluSynapseCustom(SynapseMixin):
         self.number = number
         self.noise = noise
 
-    # taken from glusynapse.simulation.simulator._runconnectedpair_process
+    # taken from glusynapseutils.simulation.simulator._runconnectedpair_process
     def set_local_params(self, fit_params, extra_params, c_pre=0.0, c_post=0.0):
-        """Set local parameters of given synapse."""
+        """Set local parameters of given synapse.
+
+        Args:
+            fit_params (dict): glusynapse parameters from fitting to get threshold values
+            extra_params (dict): contains synapse location and synapse extra parameters
+            c_pre (float): calcium peak during a single EPSP
+            c_post (float): calcium peak during a single bAP
+        """
         # Update basic synapse parameters
         for param in extra_params:
             if param == "loc":
@@ -117,7 +140,17 @@ class GluSynapseCustom(SynapseMixin):
 
     # taken from glusynapse.simulation.simulator._runconnectedpair_process
     def setup_synapses(self, params):
-        """Set local parameters of given synapse from params dict."""
+        """Set local parameters of given synapse from params dict.
+
+        Args:
+            params (dict): contains
+                fit_params: glusynapse parameters from fitting to get threshold values
+                syn_extra_params: synapse location and synapse extra parameters
+                c_pre: calcium peak during a single EPSP
+                c_post: calcium peak during a single bAP
+                postgid: ID of the postsynaptic cell
+                invivo: whether to put synapse in 'in vivo' conditions
+        """
         syn_id = int(self.hsynapse.synapseID)
         # Set local parameters
         key = str((params["postgid"], syn_id))

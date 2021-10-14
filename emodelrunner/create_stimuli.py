@@ -1,5 +1,4 @@
 """Functions to create stimuli."""
-import os
 
 import json
 
@@ -8,7 +7,15 @@ from emodelrunner.stimuli import Pulse
 
 # adapted from bglibpy.cell
 def add_pulse(stimulus, soma_loc):
-    """Return Pulse Stimulus."""
+    """Return Pulse Stimulus.
+
+    Args:
+        stimulus (dict): contains the stimulus configuration data
+        soma_loc (bluepyopt.ephys.locations.NrnSeclistCompLocation): location of the soma
+
+    Returns:
+        Pulse stimulus
+    """
     return Pulse(
         location=soma_loc,
         delay=float(stimulus["Delay"]),
@@ -19,15 +26,26 @@ def add_pulse(stimulus, soma_loc):
     )
 
 
-def load_pulses(soma_loc, stim_dir="protocols", stim_fname="stimuli.json"):
-    """Return a list of pulse stimuli."""
+def load_pulses(soma_loc, stim_path="protocols/stimuli.json"):
+    """Return a list of pulse stimuli.
+
+    Args:
+        soma_loc (bluepyopt.ephys.locations.NrnSeclistCompLocation):
+            location of the soma
+        stim_path (str): path to the pulse stimuli file
+
+    Raises:
+        NotImplementedError if stim["Pattern"] is not "Pulse" in simuli file
+
+    Returns:
+        list of Pulse stimuli
+    """
     pulse_stims = []
-    stim_path = os.path.join(stim_dir, stim_fname)
     with open(stim_path, "r", encoding="utf-8") as f:
         stimuli = json.load(f)
 
     for _, stim in stimuli.items():
-        if stim["Pattern"] == "Pulse":
+        if "Pattern" in stim and stim["Pattern"] == "Pulse":
             pulse_stims.append(add_pulse(stim, soma_loc))
         else:
             NotImplementedError(

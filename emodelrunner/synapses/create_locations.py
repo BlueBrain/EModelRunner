@@ -3,7 +3,14 @@ from bluepyopt import ephys
 
 
 def get_syn_locs(cell):
-    """Load synapse point process location."""
+    """Load synapse point process location.
+
+    Args:
+        cell (bluepyopt.ephys.models.CellModel): cell model containing the synapses
+
+    Returns:
+        list containing the synapse locations
+    """
     syn_locs = []
     for mech in cell.mechanisms:
         if hasattr(mech, "pprocesses"):

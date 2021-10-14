@@ -7,7 +7,15 @@ import numpy as np
 
 
 def write_responses(responses, output_dir):
-    """Write each response in a file."""
+    """Write each response in a file.
+
+    Args:
+        responses (dict): time and recorded value of each recording
+            Should have structure "key": {"time": time, "voltage": response}
+            Note that all response have a "voltage" field, even if the recorded value
+            was not the voltage
+        output_dir (str): path to the output repository
+    """
     for key, resp in responses.items():
         output_path = os.path.join(output_dir, key + ".dat")
 
@@ -22,7 +30,13 @@ def write_responses(responses, output_dir):
 
 
 def write_current(currents, output_dir):
-    """Write currents into separate files."""
+    """Write currents into separate files.
+
+    Args:
+        currents (dict): time and trace to each recording
+            Should have structure "key": {"time": time, "current": current}
+        output_dir (str): path to the output repository
+    """
     for key, curr_dict in currents.items():
         output_path = os.path.join(output_dir, key + ".dat")
         np.savetxt(
@@ -34,17 +48,21 @@ def write_current(currents, output_dir):
 def write_synplas_output(
     responses,
     pre_spike_train,
-    output_dir="",
-    output_file="output.h5",
-    syn_dir="synapses",
-    syn_fname="synapse_properties.json",
+    output_path="./output.h5",
+    syn_prop_path="synapses/synapse_properties.json",
 ):
-    """Write output as h5."""
+    """Write output as h5.
+
+    Args:
+        responses (dict): responses of the postsynaptic cell
+        pre_spike_train (list): times at which the synapses fire (ms)
+        output_path (str): path to the (postsynaptic data) output file
+        syn_prop_path (str): path to the synapse properties file
+    """
     results = {"prespikes": pre_spike_train}
     # add synprop
-    synprop_path = os.path.join(syn_dir, syn_fname)
-    if os.path.isfile(synprop_path):
-        with open(synprop_path, "r", encoding="utf-8") as f:
+    if os.path.isfile(syn_prop_path):
+        with open(syn_prop_path, "r", encoding="utf-8") as f:
             synprop = json.load(f)
             results["synprop"] = synprop
 
@@ -57,7 +75,6 @@ def write_synplas_output(
             results["v"] = np.array(resp["voltage"])
 
     # Store results
-    output_path = os.path.join(output_dir, output_file)
     h5file = h5py.File(output_path, "w")
     for key, result in results.items():
         if key == "synprop":
@@ -76,10 +93,15 @@ def write_synplas_output(
 def write_synplas_precell_output(
     responses,
     protocol_name,
-    output_dir="",
-    output_file="output_precell.h5",
+    precell_output_path="./output_precell.h5",
 ):
-    """Write output as h5."""
+    """Write precell output as h5.
+
+    Args:
+        responses (dict): responses of the presynaptic cell
+        protocol_name (str): name of the presynaptic protocol
+        precell_output_path (str): path to the presynaptic data output file
+    """
     results = {}
 
     # add responses
@@ -87,8 +109,7 @@ def write_synplas_precell_output(
     results["v"] = np.array(responses[protocol_name]["voltage"])
 
     # Store results
-    output_path = os.path.join(output_dir, output_file)
-    h5file = h5py.File(output_path, "w")
+    h5file = h5py.File(precell_output_path, "w")
     for key, result in results.items():
         h5file.create_dataset(
             key,

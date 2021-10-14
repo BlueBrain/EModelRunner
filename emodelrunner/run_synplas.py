@@ -21,6 +21,12 @@ logger = logging.getLogger(__name__)
 
 # taken from glusynapse.simulation.simulator
 def _set_global_params(allparams, sim):
+    """Set the global parameters of glusynapses.
+
+    Args:
+        allparams (dict): global glusynapse parameter to be set
+        sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+    """
     logger.debug("Setting global parameters")
     for param_name, param_val in allparams.items():
         if re.match(".*_GluSynapse$", param_name):
@@ -35,14 +41,20 @@ def run(
     protocol_name="pulse",
     fixhp=True,
 ):
-    """Run cell with pulse stimuli and pre-cell spike train."""
+    """Run cell with pulse stimuli and pre-cell spike train.
+
+    Args:
+        config_path (str): path to config file
+        cvode_active (bool): whether to use variable time step
+        protocol_name (str): name of the protocol
+        fixhp (bool): to uninsert SK_E2 for hyperpolarization in cell model
+    """
     config = load_synplas_config(config_path=config_path)
 
     # load extra_params
     syn_setup_params = get_syn_setup_params(
-        "synapses",
-        "syn_extra_params.json",
-        "cpre_cpost.json",
+        "synapses/syn_extra_params.json",
+        "synapses/cpre_cpost.json",
         config.get("Paths", "synplas_fit_params_path"),
         config.getint("Cell", "gid"),
         config.getboolean("SynapsePlasticity", "invivo"),
@@ -84,6 +96,7 @@ def run(
         json.loads(config.get("SynapsePlasticity", "synrec")),
         config.getfloat("Protocol", "tstop"),
         config.getfloat("SynapsePlasticity", "fastforward"),
+        config.get("Paths", "pulse_stimuli_path"),
     )
 
     # run
@@ -92,7 +105,9 @@ def run(
     responses = protocol.run(cell_model=cell, param_values=release_params, sim=sim)
 
     # write responses
-    write_synplas_output(responses, pre_spike_train)
+    output_path = config.get("Paths", "synplas_output_path")
+    syn_prop_path = config.get("Paths", "syn_prop_path")
+    write_synplas_output(responses, pre_spike_train, output_path, syn_prop_path)
 
     logger.info("Python Recordings Done.")
 

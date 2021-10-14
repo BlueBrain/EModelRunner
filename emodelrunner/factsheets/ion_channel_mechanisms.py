@@ -47,7 +47,7 @@ def get_channel_and_equations(
     Returns:
         channel (str): name of the channel (ex: "Ca_HVA2")
         biophys (str): parameter name (ex: "gCa_HVAbar")
-        equations (dict): dictionary containing equation values (for plotting and latex display)
+        equation_dict (dict): dictionary containing equation values (for plotting and latex display)
             and type (uniform or exponential)
     """
     # parameter value (obtained from optimisation)
@@ -93,7 +93,20 @@ def get_channel_and_equations(
 
 
 def append_equation(location_map, section, channel, biophys, equation_dict):
-    """Append equation to location map dict."""
+    """Append equation to location map dict.
+
+    Args:
+        location_map (dict): contains the equations for each channel at each location.
+            To be filled by this function
+        section (str): the section(s) to which the equations should be appended
+            Can be
+            "alldend", "somadend", "somaxon", "allact",
+            "apical", "basal", "axonal" or "somatic"
+        channel (str): name of the channel (ex: "Ca_HVA2")
+        biophys (str): parameter name (ex: "gCa_HVAbar")
+        equation_dict (dict): dictionary containing equation values (for plotting and latex display)
+            and type (uniform or exponential)
+    """
     # do not take into account "all" section
     # set default to create keys then add equations
     # this allows to either create channel data or append to channel key
@@ -178,14 +191,28 @@ def append_equation(location_map, section, channel, biophys, equation_dict):
 
 
 def clean_location_map(location_map):
-    """Remove empty locations."""
+    """Remove empty locations.
+
+    Args:
+        location_map (dict): contains the equations for each channel at each location
+    """
     for key, loc in list(location_map.items()):
         if not loc["channels"]:
             location_map.pop(key)
 
 
 def get_mechanisms_data(emodel, optimized_params_dict, unoptimized_params_dict):
-    """Return a dictionary containing channel mechanisms for each section."""
+    """Return a dictionary containing channel mechanisms for each section.
+
+    Args:
+        emodel (str): name of the emodel
+        optimized_params_dict (dict): contains the optimized parameters
+        unoptimized_params_dict (dict): contains the unoptimized parameters,
+            and also contains the decay and exponential equations
+
+    Returns:
+        dict containing the channel mechanisms
+    """
     # pylint: disable=too-many-locals
     release_params = optimized_params_dict[emodel]["params"]
 

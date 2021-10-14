@@ -3,7 +3,6 @@
 import collections
 
 import json
-import os
 
 from bluepyopt import ephys
 
@@ -43,11 +42,19 @@ def load_synplas_config(config_path):
 
 
 def get_hoc_paths_args(config):
-    """Get the dict containing the paths to the hoc files."""
+    """Get the dict containing the paths to the hoc files.
+
+    Args:
+        config (configparser.ConfigParser): configuration
+
+    Returns:
+        dict: hoc paths related configuration data
+    """
     return {
         "hoc_dir": config.get("Paths", "memodel_dir"),
-        "hoc_filename": config.get("Paths", "hoc_file"),
+        "cell_hoc_filename": config.get("Paths", "cell_hoc_file"),
         "simul_hoc_filename": config.get("Paths", "simul_hoc_file"),
+        "run_hoc_filename": config.get("Paths", "run_hoc_file"),
         "syn_dir": config.get("Paths", "syn_dir"),
         "syn_dir_for_hoc": config.get("Paths", "syn_dir_for_hoc"),
         "syn_hoc_filename": config.get("Paths", "syn_hoc_file"),
@@ -55,7 +62,14 @@ def get_hoc_paths_args(config):
 
 
 def get_prot_args(config):
-    """Get the dict containing recipe protocols configuration data."""
+    """Get the dict containing protocols configuration data.
+
+    Args:
+        config (configparser.ConfigParser): configuration
+
+    Returns:
+        dict: protocol related configuration data
+    """
     return {
         "emodel": config.get("Cell", "emodel"),
         "apical_point_isec": config.getint("Protocol", "apical_point_isec"),
@@ -66,7 +80,14 @@ def get_prot_args(config):
 
 
 def get_syn_mech_args(config):
-    """Get the dict containing synapse config used when loading synapse mechanisms."""
+    """Get the dict containing synapse config used when loading synapse mechanisms.
+
+    Args:
+        config (configparser.ConfigParser): configuration
+
+    Returns:
+        dict: synapse related configuration data
+    """
     return {
         "seed": config.getint("Synapses", "seed"),
         "rng_settings_mode": config.get("Synapses", "rng_settings_mode"),
@@ -99,7 +120,7 @@ def get_synplas_morph_args(config, precell=False):
     """Get morphology arguments for Synplas from the configuration object.
 
     Args:
-        config (dict): data from config file.
+        config (configparser.ConfigParser): configuration
         precell (bool): True to load precell morph. False to load usual morph.
 
     Returns:
@@ -118,7 +139,15 @@ def get_synplas_morph_args(config, precell=False):
 
 
 def get_presyn_stim_args(config, pre_spike_train):
-    """Get the dict containing pre-synaptic stimulus config."""
+    """Get the dict containing pre-synaptic stimulus config.
+
+    Args:
+        config (configparser.ConfigParser): configuration
+        pre_spike_train (list): times at which the synapses fire (ms)
+
+    Returns:
+        dict: presynaptic stimuli related configuration data
+    """
     # spikedelay is the time between the start of the stimulus
     # and the precell spike time
     spike_delay = config.getfloat("Protocol", "precell_spikedelay")
@@ -132,7 +161,15 @@ def get_presyn_stim_args(config, pre_spike_train):
 
 
 def load_emodel_params(emodel, params_path):
-    """Get optimised parameters."""
+    """Get optimized parameters.
+
+    Args:
+        emodel (str): name of the emodel
+        params_path (str): path to the optimized parameters json file
+
+    Returns:
+        dict: optimized parameters for the given emodel
+    """
     with open(params_path, "r", encoding="utf-8") as params_file:
         params = json.load(params_file)
 
@@ -142,19 +179,31 @@ def load_emodel_params(emodel, params_path):
 
 
 def get_syn_setup_params(
-    syn_dir,
-    syn_extra_params_fname,
-    cpre_cpost_fname,
+    syn_extra_params_path,
+    cpre_cpost_path,
     fit_params_path,
     gid,
     invivo,
 ):
-    """Load json files and return syn_setup_params dict."""
-    with open(
-        os.path.join(syn_dir, syn_extra_params_fname), "r", encoding="utf-8"
-    ) as f:
+    """Load json files and return syn_setup_params dict.
+
+    Args:
+        syn_extra_params_path (str): path to the glusynapses related extra parameters file
+        cpre_cpost_path (str): path to the c_pre and c_post related file
+            c_pre (resp. c_post) is the calcium amplitude during isolated presynaptic
+            (resp. postsynaptic) activation
+        fit_params_path (str): path to the file containing the glusynapse fitted parameters
+            The fitted parameters are time constant of calcium integrator, depression rate,
+            potentiation rate, and factors used in plasticity threshold computation.
+        gid (int): ID of the postsynaptic cell
+        invivo (bool): whether to run the simulation in 'in vivo' conditions
+
+    Returns:
+        dict: glusynapse setup related parameters
+    """
+    with open(syn_extra_params_path, "r", encoding="utf-8") as f:
         syn_extra_params = json.load(f)
-    with open(os.path.join(syn_dir, cpre_cpost_fname), "r", encoding="utf-8") as f:
+    with open(cpre_cpost_path, "r", encoding="utf-8") as f:
         cpre_cpost = json.load(f)
     with open(fit_params_path, "r", encoding="utf-8") as f:
         fit_params = json.load(f)
@@ -170,7 +219,15 @@ def get_syn_setup_params(
 
 
 def get_release_params(config, precell=False):
-    """Return the final parameters."""
+    """Return the final parameters.
+
+    Args:
+        config (configparser.ConfigParser): configuration
+        precell (bool): True to load precell optimized parameters. False to get usual parameters.
+
+    Returns:
+        dict: optimized parameters
+    """
     if precell:
         emodel = config.get("Cell", "precell_emodel")
     else:
@@ -183,7 +240,14 @@ def get_release_params(config, precell=False):
 
 
 def load_mechanisms(mechs_path):
-    """Define mechanisms."""
+    """Define mechanisms.
+
+    Args:
+        mechs_path (str): path to the unoptimized parameters json file
+
+    Returns:
+        list of ephys.mechanisms.NrnMODMechanism from file
+    """
     with open(mechs_path, "r", encoding="utf-8") as mechs_file:
         mechs = json.load(mechs_file)
     mech_definitions = mechs["mechanisms"]
@@ -213,9 +277,12 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
     Args:
         params_path (str): path to the json file containing
             the non-optimised parameters
-        v_init (float): initial voltage. Will override v_init value from parameter file
-        celsius (float): cell temperature in celsius.
+        v_init (int): initial voltage (mV). Will override v_init value from parameter file
+        celsius (int): cell temperature in celsius.
             Will override celsius value from parameter file
+
+    Returns:
+        list of parameters
     """
     # pylint: disable=too-many-locals, too-many-branches, too-many-statements
     parameters = []
@@ -351,7 +418,26 @@ def load_syn_mechs(
     use_glu_synapse=False,
     syn_setup_params=None,
 ):
-    """Load synapse mechanisms."""
+    """Load synapse mechanisms.
+
+    Args:
+        seed (int): random number generator seed number
+        rng_settings_mode (str): mode of the random number generator
+            Can be "Random123" or "Compatibility"
+        syn_data_path (str): path to the (tsv) synapses data file
+        syn_conf_path (str): path to the synapse configuration data file
+        pre_mtypes (list of ints): activate only synapses whose pre_mtype
+            is in this list. if None, all synapses are activated
+        stim_params (dict or None): dict with pre_mtype as key,
+            and netstim params list as item.
+            netstim params list is [start, interval, number, noise]
+        use_glu_synapse (bool): if True, instantiate synapses to use GluSynapse
+        syn_setup_params (dict): contains extra parameters to setup synapses
+            when using GluSynapseCustom
+
+    Returns:
+        NrnMODPointProcessMechanismCustom: the synapses mechanisms
+    """
     # load synapse file data
     synapses_data = load_synapses_tsv_data(syn_data_path)
 
@@ -372,7 +458,14 @@ def load_syn_mechs(
 
 
 def load_synapses_tsv_data(tsv_path):
-    """Load synapse data from tsv."""
+    """Load synapse data from tsv.
+
+    Args:
+        tsv_path (str): path to the tsv synapses data file
+
+    Returns:
+        list of dicts containing each data for one synapse
+    """
     synapses = []
     with open(tsv_path, "r", encoding="utf-8") as f:
         # first line is dimensions
@@ -400,7 +493,15 @@ def load_synapses_tsv_data(tsv_path):
 
 
 def load_synapse_configuration_data(synconf_path):
-    """Load synapse configuration data into dict[command]=list(ids)."""
+    """Load synapse configuration data into dict[command]=list(ids).
+
+    Args:
+        synconf_path (str): path to the synapse configuration data file
+
+    Returns:
+        dict: each key contains a command to execute using hoc,
+            and each value contains a list of synapse id on which to execute the command
+    """
     synconf_dict = {}
     with open(synconf_path, "r", encoding="utf-8") as f:
         synconfs = f.read().split("-1000000000000000.0")

@@ -4,11 +4,17 @@
 class SynapseMixin:
     """Class containing the synapse-related methods."""
 
-    def set_random_nmb_generator(self, sim, icell, synapse):
-        """Sets the random number generator."""
+    def set_random_nmb_generator(self, sim, icell, sid):
+        """Sets the random number generator.
+
+        Args:
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            icell (neuron cell): cell instantiation in simulator
+            sid (int): synapse id
+        """
         if self.rng_settings_mode == "Random123":
             self.randseed1 = icell.gid + 250
-            self.randseed2 = synapse["sid"] + 100
+            self.randseed2 = sid + 100
             self.randseed3 = 300
 
             self.hsynapse.setRNG(self.randseed1, self.randseed2, self.randseed3)
@@ -16,31 +22,44 @@ class SynapseMixin:
         if self.rng_settings_mode == "Compatibility":
             self.rndd = sim.neuron.h.Random()
             self.rndd.MCellRan4(
-                synapse["sid"] * 100000 + 100,
+                sid * 100000 + 100,
                 icell.gid + 250 + self.seed,
             )
             self.rndd.uniform(0, 1)
 
             self.hsynapse.setRNG(self.rndd)
 
-    def set_tau_r(self, sim, icell, synapse):
-        """Set tau_r_GABAA using random nmb generator."""
+    def set_tau_r(self, sim, icell, sid):
+        """Set tau_r_GABAA using random nmb generator.
+
+        Args:
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            icell (neuron cell): cell instantiation in simulator
+            sid (int): synapse id
+        """
         self.rng = sim.neuron.h.Random()
         if self.rng_settings_mode == "Random123":
-            self.rng.Random123(icell.gid + 250, synapse["sid"] + 100, 450)
+            self.rng.Random123(icell.gid + 250, sid + 100, 450)
         elif self.rng_settings_mode == "Compatibility":
             self.rng.MCellRan4(
-                synapse["sid"] * 100000 + 100,
+                sid * 100000 + 100,
                 icell.gid + 250 + self.seed,
             )
         self.rng.lognormal(0.2, 0.1)
         self.hsynapse.tau_r_GABAA = self.rng.repick()
 
-    def execute_synapse_configuration(self, synconf_dict, synapse, sim, exec_all=False):
-        """Create a hoc file configuring synapse."""
+    def execute_synapse_configuration(self, synconf_dict, sid, sim, exec_all=False):
+        """Create a hoc file configuring synapse.
+
+        Args:
+            synconf_dict (dict): synapse configuration
+            sid (int): synapse id
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            exec_all (bool): whether to also execute commands with '*'
+        """
         # pylint: disable=consider-using-f-string
         for cmd, ids in synconf_dict.items():
-            if synapse["sid"] in ids and (exec_all or "*" not in cmd):
+            if sid in ids and (exec_all or "*" not in cmd):
                 cmd = cmd.replace("%s", "\n%(syn)s")
                 hoc_cmd = cmd % {"syn": self.hsynapse.hname()}
                 hoc_cmd = "{%s}" % hoc_cmd
@@ -48,7 +67,22 @@ class SynapseMixin:
 
 
 class SynapseCustom(SynapseMixin):
-    """Attach a synapse to the simulation."""
+    """Attach a synapse to the simulation.
+
+    Attributes:
+        seed (int): random number generator seed number
+        rng_settins_mode (str) : mode of the random number generator
+            Can be "Random123" or "Compatibility"
+        section (neuron section): cell location where the synapse is attached to
+        hsynapse (neuron ProbGABAAB_EMS or ProbAMPANMDA_EMS): synapse instantion in simulator
+        delay (float): synapse delay
+        weight (float): synapse weight
+        pre_mtype (int): ID (but not gid) of the presynaptic cell
+        start (int/None): force synapse to start firing at given value when using NetStim
+        interval (int/None): force synapse to fire at given interval when using NetStim
+        number (int/None): force synapse to fire N times when using NetStim
+        noise (int/None): force synapse to have given noise when using NetStim
+    """
 
     def __init__(
         self,
@@ -69,10 +103,11 @@ class SynapseCustom(SynapseMixin):
         Args:
             sim (NrnSimulator): simulator
             icell (Hoc Cell): cell to which attach the synapse
-            synapse (dict) : synapse data
-            section (): cell location where the synapse is attached to
-            seed (int) : random seed number
+            synapse (dict): synapse data
+            section (neuron section): cell location where the synapse is attached to
+            seed (int) : random number generator seed number
             rng_settings_mode (str) : mode of the random number generator
+                Can be "Random123" or "Compatibility"
             synconf_dict (dict) : synapse configuration
             start (int/None): force synapse to start firing at given value when using NetStim
             interval (int/None): force synapse to fire at given interval when using NetStim
@@ -91,7 +126,7 @@ class SynapseCustom(SynapseMixin):
             )
             self.hsynapse.tau_d_GABAA = synapse["tau_d"]
 
-            self.set_tau_r(sim, icell, synapse)
+            self.set_tau_r(sim, icell, synapse["sid"])
 
         # the synapse is excitatory
         elif synapse["synapse_type"] > 100:
@@ -109,9 +144,9 @@ class SynapseCustom(SynapseMixin):
         self.hsynapse.Nrrp = synapse["Nrrp"]
 
         # set random number generator
-        self.set_random_nmb_generator(sim, icell, synapse)
+        self.set_random_nmb_generator(sim, icell, synapse["sid"])
 
-        self.execute_synapse_configuration(synconf_dict, synapse, sim)
+        self.execute_synapse_configuration(synconf_dict, synapse["sid"], sim)
 
         self.delay = synapse["delay"]
         self.weight = synapse["weight"]

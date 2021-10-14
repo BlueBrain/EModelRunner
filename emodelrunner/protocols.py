@@ -1,4 +1,5 @@
 """Protocols."""
+# pylint: disable=too-many-lines
 
 import collections
 import copy
@@ -14,7 +15,11 @@ class ProtocolMixin:
     """Contains methods useful for multiple Protocol classes."""
 
     def curr_output_key(self):
-        """Get the output key for current based on the one for voltage."""
+        """Get the output key for current based on the one for voltage.
+
+        Returns:
+            str used as key in current dict
+        """
         if self.recordings is not None:
             # this gives 'prefix.name'
             name = ".".join(self.recordings[0].name.split(".")[:2])
@@ -35,6 +40,17 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
             Run IDRest
             Possibly run other protocols (based on constructor arguments)
             Return all the responses
+
+    Attributes:
+        name (str): name of the protocol
+        rmp_protocol (StepProtocol): resting membrane potential protocol
+        rmp_efeature (bluepyopt.ephys.efeatures.eFELFeature): voltage base efeature
+        rinhold_protocol (RatSSCxRinHoldcurrentProtocol): protocol to get the holding current
+        rin_efeature (bluepyopt.ephys.efeatures.eFELFeature): ohmic input resistance vb ssse
+        thdetect_protocol (RatSSCxThresholdDetectionProtocol): protocol to detect threshold current
+        other_protocols (bluepyopt.ephys.protocols.Protocol): other protocols to run
+        pre_protocols (bluepyopt.ephys.protocols.Protocol):
+            protocols to run before the 'other protocols'
     """
 
     def __init__(
@@ -47,9 +63,21 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
         thdetect_protocol=None,
         other_protocols=None,
         pre_protocols=None,
-        fitness_calculator=None,
     ):
-        """Constructor."""
+        """Constructor.
+
+        Args:
+            name (str): name of the protocol
+            rmp_protocol (StepProtocol): resting membrane potential protocol
+            rmp_efeature (bluepyopt.ephys.efeatures.eFELFeature): voltage base efeature
+            rinhold_protocol (RatSSCxRinHoldcurrentProtocol): protocol to get the holding current
+            rin_efeature (bluepyopt.ephys.efeatures.eFELFeature): ohmic input resistance vb ssse
+            thdetect_protocol (RatSSCxThresholdDetectionProtocol): protocol to detect
+                threshold current
+            other_protocols (bluepyopt.ephys.protocols.Protocol): other protocols to run
+            pre_protocols (bluepyopt.ephys.protocols.Protocol): protocols to run
+                before the 'other protocols'
+        """
         # pylint: disable=too-many-arguments
         super(RatSSCxMainProtocol, self).__init__(name=name)
 
@@ -64,10 +92,12 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
 
         self.pre_protocols = pre_protocols
 
-        self.fitness_calculator = fitness_calculator
-
     def subprotocols(self):
-        """Return all the subprotocols contained in this protocol, is recursive."""
+        """Return all the subprotocols contained in this protocol, is recursive.
+
+        Returns:
+            dict containing all the subprotocols
+        """
         subprotocols = collections.OrderedDict({self.name: self})
         subprotocols.update(self.rmp_protocol.subprotocols())
         subprotocols.update(self.rinhold_protocol.subprotocols())
@@ -81,7 +111,11 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
 
     @property
     def rin_efeature(self):
-        """Get in_efeature."""
+        """Get in_efeature.
+
+        Returns:
+            bluepyopt.ephys.efeatures.eFELFeature
+        """
         return self.rinhold_protocol.rin_efeature
 
     @rin_efeature.setter
@@ -90,19 +124,44 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
         self.rinhold_protocol.rin_efeature = value
 
     def run_pre_protocols(self, responses, cell_model, sim):
-        """Run the pre-protocols."""
+        """Run the pre-protocols.
+
+        Args:
+            responses (dict): responses to be updated
+            cell_model (bluepyopt.ephys.models.CellModel): the cell on which
+                to apply the pre protocols
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+        """
         for pre_protocol in self.pre_protocols:
             response = pre_protocol.run(cell_model, {}, sim=sim)
             responses.update(response)
 
     def run_other_protocols(self, responses, cell_model, sim):
-        """Run other protocols."""
+        """Run other protocols.
+
+        Args:
+            responses (dict): responses to be updated
+            cell_model (bluepyopt.ephys.models.CellModel): the cell on which
+                to apply the other protocols
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+        """
         for other_protocol in self.other_protocols:
             response = other_protocol.run(cell_model, {}, sim=sim)
             responses.update(response)
 
     def run(self, cell_model, param_values, sim=None, isolate=None):
-        """Run protocol."""
+        """Run protocol.
+
+        Args:
+            cell_model (bluepyopt.ephys.models.CellModel): the cell model
+            param_values (dict): optimized parameters
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            isolate (bool): whether to isolate the run in a process with a timeout
+                to avoid bad cells running for too long
+
+        Returns:
+            dict containing the responses for all the protocols
+        """
         # pylint: disable=unused-argument
         responses = collections.OrderedDict()
 
@@ -139,7 +198,16 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
         return responses
 
     def generate_current(self, threshold_current=None, holding_current=None, dt=0.1):
-        """Generate current for all protocols except rin and threshold detection."""
+        """Generate current for all protocols except rin and threshold detection.
+
+        Args:
+            threshold_current (float): the threshold current (nA)
+            holding_current (float): the holding current (nA)
+            dt (float): timestep of the generated currents (ms)
+
+        Returns:
+            dict containing the generated currents
+        """
         currents = {}
 
         # rmp is step protocol
@@ -173,7 +241,23 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
 
 
 class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
-    """IDRest protocol to fit RatSSCx neuron ephys parameters."""
+    """IDRest protocol to fit RatSSCx neuron ephys parameters.
+
+    Attributes:
+        name (str): name of the protocol
+        rin_protocol_template (StepProtocol): template for Rin protocol
+            with amplitude for the holding stimulus to be filled
+        voltagebase_efeature (bluepyopt.ephys.efeatures.eFELFeature): voltage base efeature
+        holdi_estimate_multiplier (float): when searching for holding current amplitude,
+            multiply holding current estimate by this value to get lower bound
+        holdi_precision (float): precision with which to reach holding voltage when searching
+            for holding current
+        holdi_max_depth (int): maximum number of times to compute the holding voltage
+            when searching for holding current if holdi_precision is not reached
+        prefix (str): prefix used in naming responses, features, recordings, etc.
+        rin_efeature (bluepyopt.ephys.efeatures.eFELFeature): ohmic input resistance vb ssse
+        rin_protocol (StepProtocol): Rin protocol with holding current amplitude
+    """
 
     def __init__(
         self,
@@ -185,7 +269,21 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         holdi_max_depth=5,
         prefix=None,
     ):
-        """Constructor."""
+        """Constructor.
+
+        Args:
+            name (str): name of the protocol
+            rin_protocol_template (StepProtocol): template for Rin protocol
+                with amplitude for the holding stimulus to be filled
+            voltagebase_efeature (bluepyopt.ephys.efeatures.eFELFeature): voltage base efeature
+            holdi_estimate_multiplier (float): when searching for holding current amplitude,
+                multiply holding current estimate by this value to get lower bound
+            holdi_precision (float): precision with which to reach holding voltage when searching
+                for holding current
+            holdi_max_depth (int): maximum number of times to compute the holding voltage
+                when searching for holding current if holdi_precision is not reached
+            prefix (str): prefix used in naming responses, features, recordings, etc.
+        """
         # pylint: disable=too-many-arguments
         super(RatSSCxRinHoldcurrentProtocol, self).__init__(name=name)
         self.rin_protocol_template = rin_protocol_template
@@ -206,7 +304,17 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         self.rin_protocol = None
 
     def run(self, cell_model, param_values, sim, rmp=None):
-        """Run protocol."""
+        """Run protocol.
+
+        Args:
+            cell_model (bluepyopt.ephys.models.CellModel): the cell model
+            param_values (dict): optimized parameters
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            rmp (float): resting membrane potential (mV)
+
+        Returns:
+            dict containing the responses for the Rin protocol using holding current
+        """
         responses = collections.OrderedDict()
 
         # Calculate Rin without holding current
@@ -242,7 +350,11 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         return responses
 
     def subprotocols(self):
-        """Return subprotocols."""
+        """Return subprotocols.
+
+        Returns:
+            dict containing the Rin protocol and the Rin protocol template
+        """
         subprotocols = collections.OrderedDict({self.name: self})
 
         subprotocols.update(
@@ -252,7 +364,14 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         return subprotocols
 
     def create_rin_protocol(self, holdi=None):
-        """Create threshold protocol."""
+        """Create threshold protocol.
+
+        Args:
+            holdi (float): amplitude of holding current (nA)
+
+        Returns:
+            StepProtocol: the Rin protocol with holding current
+        """
         rin_protocol = copy.deepcopy(self.rin_protocol_template)
         rin_protocol.name = "Rin"
         for recording in rin_protocol.recordings:
@@ -267,7 +386,21 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
     def search_holdi(
         self, cell_model, param_values, sim, holding_voltage, rin_noholding, rmp
     ):
-        """Find the holding current to hold cell at holding_voltage."""
+        """Find the holding current to hold cell at holding_voltage.
+
+        Args:
+            cell_model (bluepyopt.ephys.models.CellModel): the cell model
+            param_values (dict): optimized parameters
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            holding_voltage (float): experimental mean of the voltage base efeature (mV)
+            rin_noholding (float): Rin efeature (ohmic input resistance vb ssse) value
+                when no holding current is applied (mV/nA)
+            rmp (float): resting membrane potential (mV)
+
+        Returns:
+            float: the holding current amplitude (nA)
+                that reproduces the experimental holding voltage
+        """
         holdi_estimate = float(holding_voltage - rmp) / rin_noholding
 
         upper_bound = 0.0
@@ -295,7 +428,17 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         return middle_bound
 
     def voltage_base(self, current, cell_model, param_values, sim=None):
-        """Calculate voltage base for certain stimulus current."""
+        """Calculate voltage base for certain stimulus current.
+
+        Args:
+            current (float): amplitude of the holding current to inject (nA)
+            cell_model (bluepyopt.ephys.models.CellModel): the cell model
+            param_values (dict): optimized parameters
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+
+        Returns:
+            float: voltage base (mV) of response
+        """
         protocol = self.create_rin_protocol(holdi=current)
 
         response = protocol.run(cell_model, param_values, sim=sim)
@@ -316,7 +459,23 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
 
 
 class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
-    """IDRest protocol to fit RatSSCx neuron ephys parameters."""
+    """IDRest protocol to fit RatSSCx neuron ephys parameters.
+
+    Attributes:
+        name (str): name of the protocol
+        step_protocol_template (StepProtocol): template for threshold protocol
+            with amplitude for the holding and steps stimuli to be filled
+        max_threshold_voltage (float): Use this (mV) to get max threshold current upper bound
+            when searching for threshold current
+        short_perc (float): multiply step duration by this value
+            when detecting spikes with short stimulus. Should be < 1.
+            Not actually a percentage (0.1 -> 10%)
+        short_steps (int): the number of short steps to perform to determine
+            the upper bound of the threshold search with long steps
+        holding_voltage (float): experimental mean of the voltage base efeature (mV)
+            of the Rin protocol
+        prefix (str): prefix used in naming responses, features, recordings, etc.
+    """
 
     def __init__(
         self,
@@ -326,7 +485,18 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         holding_voltage=None,
         prefix=None,
     ):
-        """Constructor."""
+        """Constructor.
+
+        Args:
+            name (str): name of the protocol
+            step_protocol_template (StepProtocol): template for threshold protocol
+                with amplitude for the holding and steps stimuli to be filled
+            max_threshold_voltage (float): Use this (mV) to get max threshold current upper bound
+                when searching for threshold current
+            holding_voltage (float): experimental mean of the voltage base efeature (mV)
+                of the Rin protocol
+            prefix (str): prefix used in naming responses, features, recordings, etc.
+        """
         super(RatSSCxThresholdDetectionProtocol, self).__init__(name=name)
 
         self.step_protocol_template = step_protocol_template
@@ -342,7 +512,12 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
             self.prefix = prefix + "."
 
     def subprotocols(self):
-        """Return subprotocols."""
+        """Return subprotocols.
+
+        Returns:
+            dict containing the threshold detection protocol and
+                the threshold detection protocol template
+        """
         subprotocols = collections.OrderedDict({self.name: self})
 
         subprotocols.update(self.step_protocol_template.subprotocols())
@@ -350,7 +525,17 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         return subprotocols
 
     def run(self, cell_model, sim, holdi, rin):
-        """Run protocol."""
+        """Run protocol.
+
+        Args:
+            cell_model (bluepyopt.ephys.models.CellModel): the cell model
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            holdi (float): holding current amplitude (nA)
+            rin (float): Rin efeature (ohmic input resistance vb ssse) value (mV/nA)
+
+        Returns:
+            dict containing threshold current
+        """
         responses = collections.OrderedDict()
 
         # Calculate max threshold current
@@ -373,7 +558,14 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         return responses
 
     def max_threshold_current(self, rin=None):
-        """Find the current necessary to get to max_threshold_voltage."""
+        """Find the current necessary to get to max_threshold_voltage.
+
+        Args:
+            rin (float): Rin efeature (ohmic input resistance vb ssse) value (mV/nA)
+
+        Returns:
+            float: maximum threshold current (nA)
+        """
         max_threshold_current = (
             float(self.max_threshold_voltage - self.holding_voltage) / rin
         )
@@ -383,7 +575,15 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         return max_threshold_current
 
     def create_step_protocol(self, holdi=0.0, step_current=0.0):
-        """Create threshold protocol."""
+        """Create threshold protocol.
+
+        Args:
+            holdi (float): holding current amplitude (nA)
+            step_current (float): step current amplitude (nA)
+
+        Returns:
+            StepProtocol: the threshold protocol
+        """
         threshold_protocol = copy.deepcopy(self.step_protocol_template)
         threshold_protocol.name = "Threshold"
         for recording in threshold_protocol.recordings:
@@ -400,7 +600,15 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         return threshold_protocol
 
     def create_short_threshold_protocol(self, holdi=None, step_current=None):
-        """Create short threshold protocol."""
+        """Create short threshold protocol.
+
+        Args:
+            holdi (float): holding current amplitude (nA)
+            step_current (float): step current amplitude (nA)
+
+        Returns:
+            StepProtocol: the threshold protocol with shorter step duration and total duration
+        """
         short_protocol = self.create_step_protocol(
             holdi=holdi, step_current=step_current
         )
@@ -428,7 +636,19 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         holdi=None,
         short=False,
     ):
-        """Detect if spike is present at current level."""
+        """Detect if spike is present at current level.
+
+        Args:
+            cell_model (bluepyopt.ephys.models.CellModel): the cell model
+            param_values (dict): optimized parameters
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            step_current (float): step current amplitude (nA)
+            holdi (float): holding current amplitude (nA)
+            short (bool): whether the protocol step duration should be shorten
+
+        Returns:
+            bool: True if at least one spike was detected, False otherwise
+        """
         # Only run short pulse if percentage set smaller than 100%
         if short and self.short_perc < 1.0:
             protocol = self.create_short_threshold_protocol(
@@ -464,7 +684,22 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         precision=0.01,
         max_depth=5,
     ):
-        """Find the current step spiking threshold."""
+        """Find the current step spiking threshold.
+
+        Args:
+            cell_model (bluepyopt.ephys.models.CellModel): the cell model
+            param_values (dict): optimized parameters
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            holdi (float): holding current amplitude (nA)
+            lower_bound (float): lower bound in which to search for threshold current (nA)
+            upper_bound (float): upper bound in which to search for threshold current (nA)
+            precision (float): precision with which to compute threshold current (nA)
+            max_depth (int): maximum number of times to run the cell when searching for
+                threshold current when precision is not reached
+
+        Returns:
+            float: threshold current amplitude (nA)
+        """
         # pylint: disable=undefined-loop-variable, too-many-arguments
         step_currents = np.linspace(lower_bound, upper_bound, num=self.short_steps)
 
@@ -526,7 +761,17 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
 
 
 class StepProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
-    """Protocol consisting of step and holding current."""
+    """Protocol consisting of step and holding current.
+
+    Attributes:
+        name (str): name of this object
+        stimuli (list of Stimuli): List of all Stimulus objects used in protocol
+        recordings (list of Recordings): Recording objects used in the protocol
+        cvode_active (bool): whether to use variable time step
+        step_stimuli (list of Stimuli): List of step Stimulus objects used in protocol
+        holding_stimulus (Stimulus): Holding Stimulus
+        stochkv_det (bool): set if stochastic or deterministic
+    """
 
     def __init__(
         self,
@@ -563,7 +808,12 @@ class StepProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
         self.stochkv_det = stochkv_det
 
     def instantiate(self, sim=None, icell=None):
-        """Instantiate."""
+        """Instantiate.
+
+        Args:
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            icell (neuron cell): cell instantiation in simulator
+        """
         for stimulus in self.stimuli:
             stimulus.instantiate(sim=sim, icell=icell)
 
@@ -578,8 +828,22 @@ class StepProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
                 )
 
     def run(self, cell_model, param_values, sim=None, isolate=None, timeout=None):
-        """Run protocol."""
+        """Run protocol.
+
+        Args:
+            cell_model (bluepyopt.ephys.models.CellModel): the cell model
+            param_values (dict): optimized parameters
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            isolate (bool): whether to isolate the run in a process with a timeout
+                to avoid bad cells running for too long
+            timeout (float): maximum real time (s) the cell is allowed to run when isolated
+
+        Returns:
+            dict containing the responses for the step protocol
+        """
         responses = {}
+
+        cvode_active_copy = self.cvode_active
         if self.stochkv_det is not None and not self.stochkv_det:
             for mechanism in cell_model.mechanisms:
                 if "Stoch" in mechanism.prefix:
@@ -588,7 +852,7 @@ class StepProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
 
         responses.update(
             super(StepProtocol, self).run(
-                cell_model, param_values, sim=sim, isolate=isolate
+                cell_model, param_values, sim=sim, isolate=isolate, timeout=timeout
             )
         )
 
@@ -596,12 +860,21 @@ class StepProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
             for mechanism in cell_model.mechanisms:
                 if "Stoch" in mechanism.prefix:
                     mechanism.deterministic = True
-            self.cvode_active = True
+            self.cvode_active = cvode_active_copy
 
         return responses
 
     def generate_current(self, threshold_current=None, holding_current=None, dt=0.1):
-        """Return current time series."""
+        """Return current time series.
+
+        Args:
+            threshold_current (float): the threshold current (nA)
+            holding_current (float): the holding current (nA)
+            dt (float): timestep of the generated currents (ms)
+
+        Returns:
+            dict containing the generated current
+        """
         # pylint: disable=unused-argument
         holding_current = 0.0
         if self.holding_stimulus is not None:
@@ -624,12 +897,20 @@ class StepProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
 
     @property
     def stim_start(self):
-        """Time stimulus starts."""
+        """Time stimulus starts.
+
+        Returns:
+            the time at which the stimulus starts (ms)
+        """
         return self.step_stimuli[0].step_delay
 
     @property
     def stim_duration(self):
-        """Time stimulus duration."""
+        """Time stimulus duration.
+
+        Returns:
+            the duration of the stimulus (ms)
+        """
         return (
             self.step_stimuli[-1].step_delay
             + self.step_stimuli[-1].step_duration
@@ -638,17 +919,29 @@ class StepProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
 
     @property
     def stim_end(self):
-        """Time stimulus ends."""
+        """Time stimulus ends.
+
+        Returns:
+            the time at which the stimulus ends (ms)
+        """
         return self.step_stimuli[-1].step_delay + self.step_stimuli[-1].step_duration
 
     @property
     def stim_last_start(self):
-        """Time stimulus last start."""
+        """Time stimulus last start.
+
+        Returns:
+            the time at which the last step stimulus in the list starts (ms)
+        """
         return self.step_stimuli[-1].step_delay
 
     @property
     def step_amplitude(self):
-        """Stimuli mean amplitude."""
+        """Stimuli mean amplitude.
+
+        Returns:
+            the mean amplitude of the step stimuli (nA)
+        """
         amplitudes = [step_stim.step_amplitude for step_stim in self.step_stimuli]
 
         if None in amplitudes:
@@ -658,7 +951,19 @@ class StepProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
 
 
 class StepThresholdProtocol(StepProtocol, ProtocolMixin):
-    """Step protocol based on threshold."""
+    """Step protocol based on threshold.
+
+    Attributes:
+        name (str): name of this object
+        stimuli (list of Stimuli): List of all Stimulus objects used in protocol
+        recordings (list of Recordings): Recording objects used in the protocol
+        cvode_active (bool): whether to use variable time step
+        step_stimuli (list of Stimuli): List of step Stimulus objects used in protocol
+        holding_stimulus (Stimulus): Holding Stimulus
+        stochkv_det (bool): set if stochastic or deterministic
+        thresh_perc (float): percentage of the threshold current
+            at which to set the step amplitudes
+    """
 
     def __init__(
         self,
@@ -670,7 +975,19 @@ class StepThresholdProtocol(StepProtocol, ProtocolMixin):
         cvode_active=None,
         stochkv_det=None,
     ):
-        """Constructor."""
+        """Constructor.
+
+        Args:
+            name (str): name of this object
+            thresh_perc (float): percentage of the threshold current
+                at which to set the step amplitudes
+            step_stimuli (list of Stimuli): List of Stimulus objects used in protocol
+            holding_stimulus (Stimulus): Holding Stimulus
+            recordings (list of Recordings): Recording objects used in the
+                protocol
+            cvode_active (bool): whether to use variable time step
+            stochkv_det (bool): set if stochastic or deterministic
+        """
         super(StepThresholdProtocol, self).__init__(
             name,
             step_stimuli=step_stimuli,
@@ -683,7 +1000,22 @@ class StepThresholdProtocol(StepProtocol, ProtocolMixin):
         self.thresh_perc = thresh_perc
 
     def run(self, cell_model, param_values, sim=None, isolate=None, timeout=None):
-        """Run protocol."""
+        """Run protocol.
+
+        Args:
+            cell_model (bluepyopt.ephys.models.CellModel): the cell model
+            param_values (dict): optimized parameters
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            isolate (bool): whether to isolate the run in a process with a timeout
+                to avoid bad cells running for too long
+            timeout (float): maximum real time (s) the cell is allowed to run when isolated
+
+        Raises:
+            Exception if the threshold_current is not set to the cell model
+
+        Returns:
+            dict containing the responses for the step protocol
+        """
         # pylint: disable=unused-argument
         responses = {}
         if not hasattr(cell_model, "threshold_current"):
@@ -701,14 +1033,23 @@ class StepThresholdProtocol(StepProtocol, ProtocolMixin):
 
         responses.update(
             super(StepThresholdProtocol, self).run(
-                cell_model, param_values, sim=sim, isolate=isolate
+                cell_model, param_values, sim=sim, isolate=isolate, timeout=timeout
             )
         )
 
         return responses
 
     def generate_current(self, threshold_current, holding_current, dt=0.1):
-        """Return current time series."""
+        """Return current time series.
+
+        Args:
+            threshold_current (float): the threshold current (nA)
+            holding_current (float): the holding current (nA)
+            dt (float): timestep of the generated currents (ms)
+
+        Returns:
+            dict containing the generated current
+        """
         # pylint: disable=signature-differs
         total_duration = self.step_stimuli[-1].total_duration
 
@@ -730,7 +1071,16 @@ class StepThresholdProtocol(StepProtocol, ProtocolMixin):
 
 
 class RampProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
-    """Protocol consisting of ramp and holding current."""
+    """Protocol consisting of ramp and holding current.
+
+    Attributes:
+        name (str): name of this object
+        stimuli (list of Stimuli): List of all Stimulus objects used in protocol
+        recordings (list of Recordings): Recording objects used in the protocol
+        cvode_active (bool): whether to use variable time step
+        ramp_stimulus (Stimulus): ramp Stimulus
+        holding_stimulus (Stimulus): Holding Stimulus
+    """
 
     def __init__(
         self,
@@ -763,7 +1113,16 @@ class RampProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
         self.holding_stimulus = holding_stimulus
 
     def generate_current(self, threshold_current=None, holding_current=None, dt=0.1):
-        """Return current time series."""
+        """Return current time series.
+
+        Args:
+            threshold_current (float): the threshold current (nA)
+            holding_current (float): the holding current (nA)
+            dt (float): timestep of the generated currents (ms)
+
+        Returns:
+            dict containing the generated current
+        """
         # pylint: disable=unused-argument
         holding_current = 0.0
         if self.holding_stimulus is not None:
@@ -784,17 +1143,38 @@ class RampProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
 
     @property
     def step_delay(self):
-        """Time stimulus delay."""
+        """Time stimulus delay.
+
+        Returns:
+            time at which the ramp starts (ms)
+        """
         return self.ramp_stimulus.ramp_delay
 
     @property
     def step_duration(self):
-        """Time stimulus duration."""
+        """Time stimulus duration.
+
+        Returns:
+            duration of the ramp stimulus (ms)
+        """
         return self.ramp_stimulus.ramp_duration
 
 
 class RampThresholdProtocol(RampProtocol, ProtocolMixin):
-    """Step protocol based on threshold."""
+    """Step protocol based on threshold.
+
+    Attributes:
+        name (str): name of this object
+        stimuli (list of Stimuli): List of all Stimulus objects used in protocol
+        recordings (list of Recordings): Recording objects used in the protocol
+        cvode_active (bool): whether to use variable time step
+        ramp_stimulus (Stimulus): ramp Stimulus
+        holding_stimulus (Stimulus): Holding Stimulus
+        thresh_perc_start (float): percentage of the threshold current
+            at which to set the start of the ramp amplitude
+        thresh_perc_end (float): percentage of the threshold current
+            at which to set the end of the ramp amplitude
+    """
 
     def __init__(
         self,
@@ -806,7 +1186,20 @@ class RampThresholdProtocol(RampProtocol, ProtocolMixin):
         recordings=None,
         cvode_active=None,
     ):
-        """Constructor."""
+        """Constructor.
+
+        Args:
+           name (str): name of this object
+           thresh_perc_start (float): percentage of the threshold current
+               at which to set the start of the ramp amplitude
+           thresh_perc_end (float): percentage of the threshold current
+               at which to set the end of the ramp amplitude
+           ramp_stimulus (Stimulus): Stimulus objects used in protocol
+           holding_stimulus (Stimulus): Holding Stimulus
+           recordings (list of Recordings): Recording objects used in the
+               protocol
+           cvode_active (bool): whether to use variable time step
+        """
         super(RampThresholdProtocol, self).__init__(
             name,
             ramp_stimulus=ramp_stimulus,
@@ -819,7 +1212,22 @@ class RampThresholdProtocol(RampProtocol, ProtocolMixin):
         self.thresh_perc_end = thresh_perc_end
 
     def run(self, cell_model, param_values, sim=None, isolate=None, timeout=None):
-        """Run protocol."""
+        """Run protocol.
+
+        Args:
+            cell_model (bluepyopt.ephys.models.CellModel): the cell model
+            param_values (dict): optimized parameters
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            isolate (bool): whether to isolate the run in a process with a timeout
+                to avoid bad cells running for too long
+            timeout (float): maximum real time (s) the cell is allowed to run when isolated
+
+        Raises:
+            Exception if the threshold_current is not set to the cell model
+
+        Returns:
+            dict containing the responses for the ramp protocol
+        """
         # pylint: disable=unused-argument
         responses = {}
         if not hasattr(cell_model, "threshold_current"):
@@ -839,14 +1247,23 @@ class RampThresholdProtocol(RampProtocol, ProtocolMixin):
 
         responses.update(
             super(RampThresholdProtocol, self).run(
-                cell_model, param_values, sim=sim, isolate=isolate
+                cell_model, param_values, sim=sim, isolate=isolate, timeout=timeout
             )
         )
 
         return responses
 
     def generate_current(self, threshold_current, holding_current, dt=0.1):
-        """Return current time series."""
+        """Return current time series.
+
+        Args:
+            threshold_current (float): the threshold current (nA)
+            holding_current (float): the holding current (nA)
+            dt (float): timestep of the generated currents (ms)
+
+        Returns:
+            dict containing the generated current
+        """
         # pylint: disable=signature-differs
         t = np.arange(0.0, self.ramp_stimulus.total_duration, dt)
         current = np.full(t.shape, holding_current, dtype="float64")
@@ -868,6 +1285,12 @@ class RampThresholdProtocol(RampProtocol, ProtocolMixin):
 class SweepProtocolCustom(ephys.protocols.SweepProtocol):
     """SweepProtocol with generate_current method.
 
+    Attributes:
+        name (str): name of this object
+        stimuli (list of Stimuli): List of all Stimulus objects used in protocol
+        recordings (list of Recordings): Recording objects used in the protocol
+        cvode_active (bool): whether to use variable time step
+
     Parent constructor:
         Args:
             name (str): name of this object
@@ -879,6 +1302,15 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
 
     @staticmethod
     def generate_current(threshold_current, holding_current, dt=0.1):
-        """Return an empty dictionary."""
+        """Return an empty dictionary.
+
+        Args:
+            threshold_current (float): the threshold current (nA)
+            holding_current (float): the holding current (nA)
+            dt (float): timestep of the generated currents (ms)
+
+        Returns:
+            empty dict
+        """
         # pylint: disable=unused-argument
         return {}

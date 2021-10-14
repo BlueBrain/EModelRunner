@@ -7,7 +7,13 @@ logger = logging.getLogger(__name__)
 
 
 class MorphologyFeature(object):
-    """Morphology feature representation."""
+    """Morphology feature representation.
+
+    Attributes:
+        name (str): name of the feature
+        value (float or list): value of the feature
+        unit (str): unit of the feature
+    """
 
     def __init__(self):
         """Sets initial attribute values."""
@@ -17,7 +23,14 @@ class MorphologyFeature(object):
 
     @staticmethod
     def replace_empty_value(value):
-        """Replaces the empty value with 0 or [0]."""
+        """Replaces the empty value with 0 or [0].
+
+        Attrs:
+            value (float or list): the value to be replaced if empty
+
+        Returns:
+            float/int or non-empty list
+        """
         if value is None:
             value = 0
         elif hasattr(value, "len") and len(value) == 0:
@@ -30,7 +43,13 @@ class MorphologyFeature(object):
 
 
 class TotalLength(MorphologyFeature):
-    """Total length feature."""
+    """Total length feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (float): value of the feature
+        unit (str): unit of the feature
+    """
 
     def __init__(self, morphology, neurite_name, neurite_type):
         """Constructor.
@@ -48,7 +67,13 @@ class TotalLength(MorphologyFeature):
 
 
 class NeuriteVolumes(MorphologyFeature):
-    """Total neurite volume feature."""
+    """Total neurite volume feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (float): value of the feature
+        unit (str): unit of the feature
+    """
 
     def __init__(self, morphology, neurite_name, neurite_type):
         """Constructor.
@@ -69,7 +94,13 @@ class NeuriteVolumes(MorphologyFeature):
 
 
 class MaxBranchOrder(MorphologyFeature):
-    """Maximum branch order feature."""
+    """Maximum branch order feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (int): value of the feature
+        unit (str): unit of the feature
+    """
 
     def __init__(self, morphology, neurite_name, neurite_type):
         """Constructor.
@@ -90,7 +121,13 @@ class MaxBranchOrder(MorphologyFeature):
 
 
 class MaxSectionLength(MorphologyFeature):
-    """Maximum section length feature."""
+    """Maximum section length feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (float): value of the feature
+        unit (str): unit of the feature
+    """
 
     def __init__(self, morphology, neurite_name, neurite_type):
         """Constructor.
@@ -111,7 +148,13 @@ class MaxSectionLength(MorphologyFeature):
 
 
 class SomaDiamater(MorphologyFeature):
-    """Soma diameter feature."""
+    """Soma diameter feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (float): value of the feature
+        unit (str): unit of the feature
+    """
 
     def __init__(self, morphology):
         """Constructor.
@@ -127,7 +170,13 @@ class SomaDiamater(MorphologyFeature):
 
 
 class MorphologyFactsheetBuilder:
-    """Computes the factsheet values for a morphology."""
+    """Computes the factsheet values for a morphology.
+
+    Attributes:
+        morphology (neurom.core.morphology.Morphology): morphology of the neuron
+        neurite_names (str): names of the neurites types
+        neurite_types (neurom type): the neurite types
+    """
 
     def __init__(self, morph_path):
         """Load the morphology.
@@ -135,13 +184,16 @@ class MorphologyFactsheetBuilder:
         Args:
             morph_path (str or Path): Path to the morphology file.
         """
-        self.morphology = nm.load_neuron(morph_path)
+        self.morphology = nm.load_morphology(morph_path)
         self.neurite_names, self.neurite_types = self.get_neurites()
 
     def get_neurites(self):
         """Return neurite names (str) and types (neurom type).
 
         If basal or apical are not present, name them 'dendrite'.
+
+        Returns:
+            tuple containing: list of str, list of neurom type
         """
         api = nm.get("total_length", self.morphology, neurite_type=nm.APICAL_DENDRITE)
         bas = nm.get("total_length", self.morphology, neurite_type=nm.BASAL_DENDRITE)

@@ -4,18 +4,31 @@ from bluepyopt.ephys.stimuli import Stimulus
 
 # inspired by bluepyemodel.ecode.sAHP
 class Pulse(Stimulus):
-    """Train pulse."""
+    """Train pulse.
+
+    Attributes:
+        delay (float): delay after which the stimuli begin (ms)
+        duration (float): duration of the stimuli (ms)
+        amp (float): amplitude of the stimuli (nA)
+        tpulse (float): time between two pulse starts (ms)
+        width (float): width of the step stimuli (ms)
+        total_duration (float): total duration (delay + duration) (ms)
+        location (Location): location of stimulus
+        iclamp (neuron IClamp): clamp to inject the stimulus into the cell
+        current_vec (neuron Vector): current to inject to the cell
+        time_vec (neuron Vector): times at which to play the current
+    """
 
     def __init__(self, location, delay, duration, amp, frequency, width):
         """Constructor.
 
         Args:
-            location(Location): location of stimulus
-            delay (float): delay after which the stimuli begin
-            duration (float): time at which the stimuli end
-            amp (float): amplitude of the stimuli
-            frequency (float): frequency of the pulse stimuli
-            width (float): width of the step stimuli
+            location (Location): location of stimulus
+            delay (float): delay after which the stimuli begin (ms)
+            duration (float): duration of the stimuli (ms)
+            amp (float): amplitude of the stimuli (nA)
+            frequency (float): frequency of the pulse stimuli (1/s)
+            width (float): width of the step stimuli (ms)
         """
         self.delay = delay
         self.duration = duration
@@ -33,7 +46,12 @@ class Pulse(Stimulus):
         super(Pulse, self).__init__()
 
     def instantiate(self, sim=None, icell=None):
-        """Instantiate stimulus."""
+        """Instantiate stimulus.
+
+        Args:
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            icell (neuron cell): cell instantiation in simulator
+        """
         # adaptation from TStim.hoc proc train from neurodamus
 
         icomp = self.location.instantiate(sim=sim, icell=icell)
@@ -104,7 +122,11 @@ class Pulse(Stimulus):
         )
 
     def destroy(self, sim=None):  # pylint:disable=W0613
-        """Destroy stimulus."""
+        """Destroy stimulus.
+
+        Args:
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+        """
         self.iclamp = None
         self.time_vec = None
         self.current_vec = None
@@ -112,16 +134,27 @@ class Pulse(Stimulus):
 
 # inspired by bluepyemodel.ecode.sAHP
 class MultipleSteps(Stimulus):
-    """Multiple steps protocol at custom times."""
+    """Multiple steps protocol at custom times.
+
+    Attributes:
+        starts (list): times at which each step occurs (ms)
+        amp (float): amplitude of the stimuli (nA)
+        width (float): width of the step stimuli (ms)
+        total_duration (float): total duration (ms)
+        location (Location): location of stimulus
+        iclamp (neuron IClamp): clamp to inject the stimulus into the cell
+        current_vec (neuron Vector): current to inject to the cell
+        time_vec (neuron Vector): times at which to play the current
+    """
 
     def __init__(self, location, starts, amp, width):
         """Constructor.
 
         Args:
-            location(Location): location of stimulus
-            starts (list): times at which each step occurs
-            amp (float): amplitude of the stimuli
-            width (float): width of the step stimuli
+            location (Location): location of stimulus
+            starts (list): times at which each step occurs (ms)
+            amp (float): amplitude of the stimuli (nA)
+            width (float): width of the step stimuli (ms)
         """
         self.starts = starts
         self.amp = amp
@@ -137,7 +170,12 @@ class MultipleSteps(Stimulus):
         super(MultipleSteps, self).__init__()
 
     def instantiate(self, sim=None, icell=None):
-        """Instantiate stimulus."""
+        """Instantiate stimulus.
+
+        Args:
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            icell (neuron cell): cell instantiation in simulator
+        """
         # adaptation from TStim.hoc proc train from neurodamus
 
         icomp = self.location.instantiate(sim=sim, icell=icell)
@@ -173,7 +211,11 @@ class MultipleSteps(Stimulus):
         )
 
     def destroy(self, sim=None):  # pylint:disable=W0613
-        """Destroy stimulus."""
+        """Destroy stimulus.
+
+        Args:
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+        """
         self.iclamp = None
         self.time_vec = None
         self.current_vec = None

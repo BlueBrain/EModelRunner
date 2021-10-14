@@ -36,7 +36,17 @@ seclist_to_sec = {
 
 
 def read_ramp_threshold_protocol(protocol_name, protocol_definition, recordings):
-    """Read ramp threshold protocol from definition."""
+    """Read ramp threshold protocol from definition.
+
+    Args:
+        protocol_name (str): name of the protocol
+        protocol_definition (dict): contains the protocol configuration data
+        recordings (bluepyopt.ephys.recordings.CompRecording):
+            recordings to use with this protocol
+
+    Returns:
+        RampThresholdProtocol: Ramp Protocol depending on cell's threshold current
+    """
     ramp_definition = protocol_definition["stimuli"]["ramp"]
     ramp_stimulus = ephys.stimuli.NrnRampPulse(
         ramp_delay=ramp_definition["ramp_delay"],
@@ -63,7 +73,17 @@ def read_ramp_threshold_protocol(protocol_name, protocol_definition, recordings)
 
 
 def read_ramp_protocol(protocol_name, protocol_definition, recordings):
-    """Read ramp protocol from definition."""
+    """Read ramp protocol from definition.
+
+    Args:
+        protocol_name (str): name of the protocol
+        protocol_definition (dict): contains the protocol configuration data
+        recordings (bluepyopt.ephys.recordings.CompRecording):
+            recordings to use with this protocol
+
+    Returns:
+        RampProtocol: Ramp Protocol
+    """
     ramp_definition = protocol_definition["stimuli"]["ramp"]
     ramp_stimulus = ephys.stimuli.NrnRampPulse(
         ramp_amplitude_start=ramp_definition["ramp_amplitude_start"],
@@ -95,9 +115,20 @@ def read_ramp_protocol(protocol_name, protocol_definition, recordings):
 
 
 def read_step_protocol(
-    protocol_name, protocol_definition, recordings, stochkv_det=None, cvode_active=False
+    protocol_name, protocol_definition, recordings, stochkv_det=None
 ):
-    """Read step protocol from definition."""
+    """Read step protocol from definition.
+
+    Args:
+        protocol_name (str): name of the protocol
+        protocol_definition (dict): contains the protocol configuration data
+        recordings (bluepyopt.ephys.recordings.CompRecording):
+            recordings to use with this protocol
+        stochkv_det (bool): set if stochastic or deterministic
+
+    Returns:
+        StepProtocol: Step Protocol
+    """
     # pylint: disable=undefined-loop-variable
     step_definitions = protocol_definition["stimuli"]["step"]
     if isinstance(step_definitions, dict):
@@ -137,14 +168,23 @@ def read_step_protocol(
         holding_stimulus=holding_stimulus,
         recordings=recordings,
         stochkv_det=stochkv_det,
-        cvode_active=cvode_active,
     )
 
 
 def read_step_threshold_protocol(
     protocol_name, protocol_definition, recordings, stochkv_det=None
 ):
-    """Read step threshold protocol from definition."""
+    """Read step threshold protocol from definition.
+
+    Args:
+        protocol_name (str): name of the protocol
+        protocol_definition (dict): contains the protocol configuration data
+        recordings (bluepyopt.ephys.recordings.CompRecording): recordings to use with this protocol
+        stochkv_det (bool): set if stochastic or deterministic
+
+    Returns:
+        StepThresholdProtocol: Step Protocol depending on cell's threshold currentd
+    """
     # pylint: disable=undefined-loop-variable
     step_definitions = protocol_definition["stimuli"]["step"]
     if isinstance(step_definitions, dict):
@@ -188,7 +228,8 @@ def read_vecstim_protocol(protocol_name, protocol_definition, recordings, syn_lo
     Args:
         protocol_name (str): name of the protocol
         protocol_definition (dict): dict containing the protocol data
-        recordings (RecordingCustom): recordings
+        recordings (bluepyopt.ephys.recordings.CompRecording):
+            recordings to use with this protocol
         syn_locs (list of ephys.locations.NrnPointProcessLocation):
             locations of the synapses
 
@@ -223,7 +264,8 @@ def read_netstim_protocol(protocol_name, protocol_definition, recordings, syn_lo
     Args:
         protocol_name (str): name of the protocol
         protocol_definition (dict): dict containing the protocol data
-        recordings (RecordingCustom): recordings
+        recordings (bluepyopt.ephys.recordings.CompRecording):
+            recordings to use with this protocol
         syn_locs (list of ephys.locations.NrnPointProcessLocation):
             locations of the synapses
 
@@ -244,8 +286,23 @@ def read_netstim_protocol(protocol_name, protocol_definition, recordings, syn_lo
     return SweepProtocolCustom(protocol_name, [stim], recordings)
 
 
-def get_extra_recording_location(recording_definition, apical_point_isec):
-    """Get the location for the extra recording."""
+def get_extra_recording_location(recording_definition, apical_point_isec=-1):
+    """Get the location for the extra recording.
+
+    Args:
+        recording_definition (dict): contains the extra recording configuration data
+        apical_point_isec (int): apical point section index.
+            Should be given if the recording definition "type" is "somadistanceapic"
+
+    Raises:
+        Exception if the recording definition "type" is "somadistanceapic" and
+            apical_point_isec is -1.
+        Exception if the 'type' in the recording definition is neither
+            "somadistance", nor "somadistanceapic", nor "nrnseclistcomp"
+
+    Returns:
+        location of the extra recording
+    """
     if recording_definition["type"] == "somadistance":
         location = ephys.locations.NrnSomaDistanceCompLocation(
             name=recording_definition["name"],
@@ -280,8 +337,20 @@ def get_extra_recording_location(recording_definition, apical_point_isec):
     return location
 
 
-def get_recordings(protocol_name, protocol_definition, prefix, apical_point_isec):
-    """Get recordings from protocol definition."""
+def get_recordings(protocol_name, protocol_definition, prefix, apical_point_isec=-1):
+    """Get recordings from protocol definition.
+
+    Args:
+        protocol_name (str): name of the protocol
+        protocol_definition (dict): dict containing the protocol data
+        prefix (str): prefix used in naming responses, features, recordings, etc.
+        apical_point_isec (int): apical point section index
+            Should be given if there is "somadistanceapic" in "type"
+            of at least one of the extra recording definition
+
+    Returns:
+        list of RecordingCustom
+    """
     recordings = []
     recordings.append(
         RecordingCustom(
@@ -318,7 +387,18 @@ def add_protocol(
     prefix,
     syn_locs=None,
 ):
-    """Add protocol from protocol definition to protocols dict."""
+    """Add protocol from protocol definition to protocols dict.
+
+    Args:
+        protocols_dict (dict): the dict to which to append the protocol
+        protocol_name (str): name of the protocol
+        protocol_definition (dict): dict containing the protocol data
+        recordings (bluepyopt.ephys.recordings.CompRecording): recordings to use with this protocol
+        stochkv_det (bool): set if stochastic or deterministic
+        prefix (str): prefix used in naming responses, features, recordings, etc.
+        syn_locs (list of ephys.locations.NrnPointProcessLocation): locations of the synapses
+            (if any, else None)
+    """
     if "type" in protocol_definition and protocol_definition["type"] == "StepProtocol":
         protocols_dict[protocol_name] = read_step_protocol(
             protocol_name, protocol_definition, recordings, stochkv_det
@@ -408,14 +488,28 @@ def check_for_forbidden_protocol(protocols_dict):
 
 
 def define_protocols(
-    protocols_filename,
+    protocols_filepath,
     stochkv_det=None,
     prefix="",
     apical_point_isec=-1,
     syn_locs=None,
 ):
-    """Define protocols."""
-    with open(protocols_filename, "r", encoding="utf-8") as protocol_file:
+    """Define protocols.
+
+    Args:
+        protocols_filename (str): path to the protocols file
+        stochkv_det (bool): set if stochastic or deterministic
+        prefix (str): prefix used in naming responses, features, recordings, etc.
+        apical_point_isec (int): apical point section index
+            Should be given if there is "somadistanceapic" in "type"
+            of at least one of the extra recordings
+        syn_locs (list of ephys.locations.NrnPointProcessLocation):
+            locations of the synapses (if any, else None)
+
+    Returns:
+        dict containing the protocols
+    """
+    with open(protocols_filepath, "r", encoding="utf-8") as protocol_file:
         protocol_definitions = json.load(protocol_file)
 
     if "__comment" in protocol_definitions:
@@ -476,12 +570,20 @@ def define_protocols(
     return protocols_dict
 
 
-def set_main_protocol_efeatures(protocols_dict, efeatures, mtype):
-    """Set the efeatures of the main protocol."""
-    protocols_dict["Main"].rmp_efeature = efeatures[mtype + ".RMP.soma.v.voltage_base"]
+def set_main_protocol_efeatures(protocols_dict, efeatures, prefix):
+    """Set the efeatures of the main protocol.
+
+    Args:
+        protocols_dict (dict): contains all protocols to be run
+            If this function is called, should contain the MainProtocol
+            and the associated protocols (RinHoldCurrent, ThresholdDetection)
+        efeatures (dict): contains the efeatures
+        prefix (str): prefix used in naming responses, features, recordings, etc.
+    """
+    protocols_dict["Main"].rmp_efeature = efeatures[f"{prefix}.RMP.soma.v.voltage_base"]
 
     protocols_dict["Main"].rin_efeature = efeatures[
-        mtype + ".Rin.soma.v.ohmic_input_resistance_vb_ssse"
+        f"{prefix}.Rin.soma.v.ohmic_input_resistance_vb_ssse"
     ]
 
     protocols_dict["Main"].rin_efeature.stimulus_current = protocols_dict[
@@ -489,10 +591,10 @@ def set_main_protocol_efeatures(protocols_dict, efeatures, mtype):
     ].rinhold_protocol.rin_protocol_template.step_amplitude
 
     protocols_dict["RinHoldcurrent"].voltagebase_efeature = efeatures[
-        mtype + ".Rin.soma.v.voltage_base"
+        f"{prefix}.Rin.soma.v.voltage_base"
     ]
     protocols_dict["ThresholdDetection"].holding_voltage = efeatures[
-        mtype + ".Rin.soma.v.voltage_base"
+        f"{prefix}.Rin.soma.v.voltage_base"
     ].exp_mean
 
 
@@ -508,12 +610,15 @@ def create_protocols(
 
     Args:
         apical_point_isec (int): section index of the apical point
-            Set to -1 if there is no apical point
-        prot_path (str): protocol path. if not set, is taken from recipe.
-        features_path (str): feature path. if not set, is taken from recipe.
-        mtype (str): morphology name to be used in output filenames
+            Set to -1 no apical point is used in any extra recordings
+        prot_path (str): path to the protocols file
+        features_path (str): path to the features file
+        mtype (str): morphology name to be used as prefix in output filenames
         syn_locs (list): list of synapse locations
         stochkv_det (bool): set if stochastic or deterministic
+
+    Returns:
+        ephys.protocols.SequenceProtocol containing all the protocols
     """
     # pylint: disable=unbalanced-tuple-unpacking, too-many-locals
     protocols_dict = define_protocols(

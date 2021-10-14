@@ -27,7 +27,25 @@ def create_cell(
     v_init=-80,
     celsius=34,
 ):
-    """Create a cell."""
+    """Create a cell.
+
+    Args:
+        unopt_params_path (str): path to the unoptimized parameters json file
+        emodel (str): name to give to the cell model
+        add_synapses (bool): whether to add synapses to the cell
+        morph_args (dict): morphology-related configuration
+        gid (int): cell model ID
+        syn_mech_args (dict): synapse-related configuration
+        use_glu_synapse (bool): whether to use GluSynapseCustom class for synapses
+        fixhp (bool): to uninsert SK_E2 for hyperpolarization in cell model
+        syn_setup_params (dict): contains extra parameters to setup synapses
+            when using GluSynapseCustom
+        v_init (int): initial voltage (mV)
+        celsius (int): cell temperature (celsius)
+
+    Returns:
+        CellModelCustom cell model
+    """
     # pylint: disable=too-many-arguments, too-many-locals
     # load mechanisms
     mechs = load_mechanisms(unopt_params_path)
@@ -74,7 +92,13 @@ def create_cell(
 
 
 def create_cell_using_config(config):
-    """Create a cell given configuration. Return cell, release params and time step."""
+    """Create a cell given configuration.
+
+    Args:
+        config (configparser.ConfigParser): configuration
+    Returns:
+        CellModelCustom cell model
+    """
     unopt_params_path = config.get("Paths", "unoptimized_params_path")
 
     # get synapse config data
@@ -104,7 +128,17 @@ def get_postcell(
     fixhp=False,
     syn_setup_params=None,
 ):
-    """Return the postcell for synapse plasticity run."""
+    """Return the postcell for synapse plasticity run.
+
+    Args:
+        config (configparser.ConfigParser): configuration
+        fixhp (bool): to uninsert SK_E2 for hyperpolarization in cell model
+        syn_setup_params (dict): contains extra parameters to setup synapses
+            when using GluSynapseCustom
+
+    Returns:
+        CellModelCustom post-synaptic cell model
+    """
     emodel = config.get("Cell", "emodel")
     gid = config.getint("Cell", "gid")
     base_seed = config.getint("SynapsePlasticity", "base_seed")
@@ -142,7 +176,15 @@ def get_precell(
     config,
     fixhp=False,
 ):
-    """Return the precell for synapse plasticity pair simulation run."""
+    """Return the precell for synapse plasticity pair simulation run.
+
+     Args:
+        config (configparser.ConfigParser): configuration
+        fixhp (bool): to uninsert SK_E2 for hyperpolarization in cell model
+
+    Returns:
+        CellModelCustom pre-synaptic cell model
+    """
     emodel = config.get("Cell", "emodel")
     gid = config.getint("Cell", "gid")
     v_init = config.getfloat("Cell", "v_init")

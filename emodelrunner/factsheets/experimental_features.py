@@ -6,7 +6,16 @@ logger = logging.getLogger(__name__)
 
 
 def morphology_used_in_fitting(optimized_params_dict, emodel):
-    """Returns the morphology name from finals.json used in model fitting."""
+    """Returns the morphology name from finals.json used in model fitting.
+
+    Args:
+        optimized_params_dict (dict): contains the optimized parameters,
+            as well as the original morphology path
+        emodel (str): name of the emodel
+
+    Returns:
+        str: the original morphology name used in model fitting
+    """
     emodel_params = optimized_params_dict[emodel]
     morph_path = emodel_params["morph_path"]
     morph_name = morph_path.split("/")[-1]
@@ -14,7 +23,19 @@ def morphology_used_in_fitting(optimized_params_dict, emodel):
 
 
 def get_feature_dict(feature, units, morphology_prefix, stimulus, location, fitness):
-    """Return dict containing one feature."""
+    """Return dict containing one feature.
+
+    Args:
+        feature (dict): contains feature name and mean and std of feature
+        units (dict): contains the units for the feature
+        morphology_prefix (str): prefix used in the fitness key to the feature
+        stimulus (str): name of the stimulus used for this feature
+        location (str): name of the location for which the feature is calculated
+        fitness (dict): contains the fitness of the feature
+
+    Returns:
+        dict containing name, values, unit and model fitness of the feature
+    """
     feature_name = feature["feature"]
     mean = feature["val"][0]
     std = feature["val"][1]
@@ -48,7 +69,19 @@ def get_feature_dict(feature, units, morphology_prefix, stimulus, location, fitn
 def get_exp_features_data(
     emodel, morphology_prefix, features_dict, units, optimized_params_dict
 ):
-    """Returns a dict containing mean and std of experimental features and model fitness."""
+    """Returns a dict containing mean and std of experimental features and model fitness.
+
+    Args:
+        emodel (str): name of the emodel
+        morphology_prefix (str): prefix used in the fitness key to the feature
+        features_dict (dict): contains the features
+        units (dict): contains the units for the features
+        optimized_params_dict (dict): contains the optimized parameters,
+            as well as the original morphology path
+    Returns:
+        dict containing the output feature dicts and
+            the original morphology name used in model fitting
+    """
     # pylint: disable=too-many-locals
     # it is hard to reduce number of locals without reducing readibility
     fitness = optimized_params_dict[emodel]["fitness"]

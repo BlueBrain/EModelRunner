@@ -49,17 +49,14 @@ def test_voltages():
     threshold = 1e-5
 
     # rewrite hocs and run cells
-    run_hoc_filename = "run.hoc"
     config_path = "config/config_allsteps.ini"
 
     with cwd(example_dir):
         # write hocs
         config = load_sscx_config(config_path=config_path)
-        cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(
-            config=config, syn_temp_name="hoc_synapses"
-        )
+        cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(config=config)
         hoc_paths = get_hoc_paths_args(config)
-        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, run_hoc_filename, syn_hoc)
+        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc)
 
         subprocess.call(["sh", "./run_hoc.sh"])
         run_emodel(config_path=config_path)
@@ -104,17 +101,13 @@ def test_synapses_hoc_vs_py_script(config_path="config/config_synapses.ini"):
     threshold = 1e-5
 
     # rewrite hocs and run cells
-    run_hoc_filename = "run.hoc"
-
     # start with hoc, to compile mechs
     with cwd(example_dir):
         # write hocs
         config = load_sscx_config(config_path=config_path)
-        cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(
-            config=config, syn_temp_name="hoc_synapses"
-        )
+        cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(config=config)
         hoc_paths = get_hoc_paths_args(config)
-        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, run_hoc_filename, syn_hoc)
+        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc)
 
         subprocess.call(["sh", "./run_hoc.sh"])
         run_emodel(config_path=config_path)
@@ -285,17 +278,13 @@ def test_multiprotocols_hoc_vs_py_script(
     threshold = 1e-5
 
     # rewrite hocs and run cells
-    run_hoc_filename = "run.hoc"
-
     # start with hoc, to compile mechs
     with cwd(example_dir):
         # write hocs
         config = load_sscx_config(config_path=config_path)
-        cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(
-            config=config, syn_temp_name="hoc_synapses"
-        )
+        cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(config=config)
         hoc_paths = get_hoc_paths_args(config)
-        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, run_hoc_filename, syn_hoc)
+        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc)
 
         subprocess.call(["sh", "./run_hoc.sh"])
         run_emodel(config_path=config_path)

@@ -9,7 +9,23 @@ logger = logging.getLogger(__name__)
 
 
 class CellModelCustom(ephys.models.CellModel):
-    """Cell model class."""
+    """Cell model class.
+
+    Attributes:
+        name (str): name of the model
+        morphology (bluepyopt.ephys.morphologies.Morphology):
+            underlying Morphology of the cell
+        mechanisms (list of bluepyopt.ephys.mechanisms.Mechanisms):
+            Mechanisms associated with the cell
+        params (collections.OrderedDict of bluepyopt.Parameters): Parameters of the cell model
+        icell (neuron cell): Cell instantiation in simulator
+        param_values (dict): contains values of the optimized parameters
+        gid (int): cell's ID
+        seclist_names (list of strings): Names of the lists of sections
+        secarray_names (list of strings): Names of the sections
+        add_synapses (bool): set to True to add synapses to the cell
+        fixhp (bool): to uninsert SK_E2 for hyperpolarization
+    """
 
     def __init__(
         self,
@@ -39,7 +55,11 @@ class CellModelCustom(ephys.models.CellModel):
         self.fixhp = fixhp
 
     def get_replace_axon(self):
-        """Return appropriate replace_axon str."""
+        """Return appropriate replace_axon str.
+
+        Returns:
+            str containing a hoc script defining the replacement axon
+        """
         if self.morphology.do_replace_axon:
             replace_axon = self.morphology.replace_axon_hoc
         else:
@@ -66,7 +86,14 @@ class CellModelCustom(ephys.models.CellModel):
         return replace_axon
 
     def freeze_params(self, param_values):
-        """Freeze params and return list pf params to unfreze afterwards."""
+        """Freeze params and return list of params to unfreze afterwards.
+
+        Args:
+            param_values (dict): contains values of the optimized parameters
+
+        Returns:
+            list of the names of the newly frozen parameters
+        """
         to_unfreeze = []
         for param in self.params.values():
             if not param.frozen:
@@ -76,7 +103,11 @@ class CellModelCustom(ephys.models.CellModel):
         return to_unfreeze
 
     def remove_point_process_mechs(self):
-        """Return mechanisms without point process mechanisms."""
+        """Return mechanisms without point process mechanisms.
+
+        Returns:
+            list of Mechanisms without the point process mechanisms
+        """
         mechs = []
         for mech in self.mechanisms:
             if not hasattr(mech, "pprocesses"):
@@ -88,14 +119,29 @@ class CellModelCustom(ephys.models.CellModel):
         self,
         param_values,
         ignored_globals=(),
-        template="cell_template.jinja2",
+        template_path="templates/cell_template.jinja2",
         disable_banner=False,
-        template_dir=None,
         syn_dir=None,
         syn_hoc_filename=None,
         syn_temp_name="hoc_synapses",
     ):
-        """Create hoc code for this model."""
+        """Create hoc code for this model.
+
+        Args:
+            param_values (dict): contains values of the optimized parameters
+            ignored_globals (iterable str): HOC coded is added for each
+                NrnGlobalParameter that exists, to test that it matches the values
+                set in the parameters.
+                This iterable contains parameter names that aren't checked
+            template_path (str): path to the jinja2 template
+            disable_banner (bool): if not True: a banner is added to the hoc file
+            syn_dir (str): directory where the synapse data /files are
+            syn_hoc_filename (str): file name of synapse hoc file
+            syn_temp_name (str): synapse class name in hoc
+
+        Returns:
+            str containing hoc script describing this cell model
+        """
         # pylint: disable=too-many-arguments
         to_unfreeze = self.freeze_params(param_values)
 
@@ -109,8 +155,7 @@ class CellModelCustom(ephys.models.CellModel):
             ignored_globals=ignored_globals,
             replace_axon=replace_axon,
             template_name=self.name,
-            template_filename=template,
-            template_dir=template_dir,
+            template_path=template_path,
             disable_banner=disable_banner,
             add_synapses=self.add_synapses,
             synapses_template_name=syn_temp_name,
@@ -128,7 +173,17 @@ class CellModelCustom(ephys.models.CellModel):
         seclist_names=None,
         secarray_names=None,
     ):
-        """Create an empty cell with an additional connection function."""
+        """Create a hoc script of an empty cell with an additional connection function.
+
+        Args:
+            template_name (str): name of the cell model
+            seclist_names (list of strings): Names of the lists of sections
+            secarray_names (list of strings): Names of the sections
+
+        Returns:
+            str containing hoc script describing an empty cell model
+                with connection function
+        """
         objref_str = "objref this, CellRef"
         newseclist_str = ""
 
@@ -190,9 +245,17 @@ class CellModelCustom(ephys.models.CellModel):
         return template
 
     def create_empty_cell(self, name, sim, seclist_names=None, secarray_names=None):
-        """Create an empty cell in Neuron."""
-        # TODO minize hardcoded definition
-        # E.g. sectionlist can be procedurally generated
+        """Create an empty cell in Neuron.
+
+        Args:
+            template_name (str): name of the cell model
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            seclist_names (list of strings): Names of the lists of sections
+            secarray_names (list of strings): Names of the sections
+
+        Returns:
+            Cell instantiation in simulator
+        """
         hoc_template = self.connectable_empty_cell_template(
             name, seclist_names, secarray_names
         )
@@ -203,7 +266,11 @@ class CellModelCustom(ephys.models.CellModel):
         return template_function()
 
     def instantiate(self, sim=None):
-        """Instantiate model in simulator."""
+        """Instantiate model in simulator.
+
+        Args:
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+        """
         # pylint: disable=unnecessary-comprehension
         super(CellModelCustom, self).instantiate(sim)
 

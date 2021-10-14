@@ -16,7 +16,12 @@ from emodelrunner.output import write_responses
 
 
 def main(config_path):
-    """Main."""
+    """Main.
+
+    Args:
+        config_path (str): path to config file
+            The config file should have '.ini' suffix
+    """
     # pylint: disable=too-many-locals
     config = load_sscx_config(config_path=config_path)
 

@@ -1,7 +1,6 @@
 """Creates .hoc from cell."""
 
 # pylint: disable=too-many-arguments
-import os
 from datetime import datetime
 
 import jinja2
@@ -42,7 +41,16 @@ class HocStimuliCreator:
     """
 
     def __init__(self, prot_definitions, mtype, add_synapses, apical_point_isec):
-        """Get stimuli in hoc to put in createsimulation.hoc."""
+        """Get stimuli in hoc to put in createsimulation.hoc.
+
+        Args:
+            prot_definitions (dict): dictionary defining the protocols.
+                Should have the structure of the protocol file in example/sscx/config/protocols
+            mtype (str): mtype of the cell. prefix to use in the output files names
+            add_synapses (bool): whether to add synapses to the cell
+            apical_point_isec (int): section index of the apical point
+                Set to -1 if there is no apical point
+        """
         self.apical_point_isec = apical_point_isec
         self.n_stims = 0
         self.max_steps = 0
@@ -85,7 +93,11 @@ class HocStimuliCreator:
         self.get_init_step()
 
     def add_extra_recs(self, extra_recs):
-        """Add extra recordings to the recordings settings."""
+        """Add extra recordings to the recordings settings.
+
+        Args:
+            extra_recs (list): list of dicts defining the extra recordings
+        """
         for extra_rec in extra_recs:
             name = extra_rec["name"]
             seclist_name = extra_rec["seclist_name"]
@@ -125,7 +137,13 @@ class HocStimuliCreator:
                     """
 
     def add_save_recordings_hoc(self, mtype, prot_name, prot):
-        """Add this to the hoc file to save the recordings."""
+        """Add this to the hoc file to save the recordings.
+
+        Args:
+            mtype (str): mtype of the cell. prefix to use in the output files names
+            prot_name (str): name of the protocol. used in the output files names
+            prot (dict): dictionary defining the protocol
+        """
         self.save_recs += f"""
             if (stim_number == {self.n_stims}) {{
                 sprint(fpath.s, "hoc_recordings/{mtype}.{prot_name}.soma.v.dat")
@@ -150,7 +168,14 @@ class HocStimuliCreator:
         """
 
     def get_step_hoc(self, prot):
-        """Get step stimuli in hoc format from step protocol dict."""
+        """Get step stimuli in hoc format from step protocol dict.
+
+        Args:
+            prot (dict): dictionary defining the step protocol
+
+        Returns:
+            string containing a hoc script declaring one or more step stimuli
+        """
         step_hoc = ""
 
         if "holding" in prot["stimuli"]:
@@ -185,7 +210,14 @@ class HocStimuliCreator:
 
     @staticmethod
     def get_ramp_hoc(prot):
-        """Get ramp stimuli in hoc format from step protocol dict."""
+        """Get ramp stimuli in hoc format from ramp protocol dict.
+
+        Args:
+            prot (dict): dictionary defining the ramp protocol
+
+        Returns:
+            string containing a hoc script declaring the ramp stimulus
+        """
         ramp_hoc = ""
 
         if "holding" in prot["stimuli"]:
@@ -244,7 +276,14 @@ class HocStimuliCreator:
 
     @staticmethod
     def get_vecstim_hoc(prot):
-        """Get vecstim stimulus in hoc format from vecstim protocol dict."""
+        """Get vecstim stimulus in hoc format from vecstim protocol dict.
+
+        Args:
+            prot (dict): dictionary defining the vecstim protocol
+
+        Returns:
+            string containing a hoc script declaring the vecstim stimuli
+        """
         stim = prot["stimuli"]
 
         vecstim_hoc = f"tstop={stim['syn_stop']}\n"
@@ -267,7 +306,14 @@ class HocStimuliCreator:
 
     @staticmethod
     def get_netstim_hoc(prot):
-        """Get netstim stimulus in hoc format from netstim protocol dict."""
+        """Get netstim stimulus in hoc format from netstim protocol dict.
+
+        Args:
+            prot (dict): dictionary defining the netstim protocol
+
+        Returns:
+            string containing a hoc script declaring the netstim simuli
+        """
         stim = prot["stimuli"]
 
         netstim_hoc = f"tstop={stim['syn_stop']}\n"
@@ -289,7 +335,15 @@ class HocStimuliCreator:
         return netstim_hoc
 
     def get_stim_hoc(self, fct, prot):
-        """Get stimulus in hoc."""
+        """Get stimulus in hoc.
+
+        Args:
+            fct (class method): method to use to get the appropriate stimulus hoc script
+            prot (dict): dictionary defining the protocol
+
+        Returns:
+            string containing a hoc script declaring the simulus
+        """
         stim_hoc = f"""
             if (stim_number == {self.n_stims}) {{
         """
@@ -323,10 +377,17 @@ class HocStimuliCreator:
             """
 
 
-def create_run_hoc(template_dir, template_filename, n_stims):
-    """Returns a string containing run.hoc."""
+def create_run_hoc(template_path, n_stims):
+    """Returns a string containing run.hoc.
+
+    Args:
+        template_path (str): path to the template to fill in
+        n_stims (int): total number of protocols to be run by hoc
+
+    Returns:
+        string containing a hoc script to run the simulation
+    """
     # load template
-    template_path = os.path.join(template_dir, template_filename)
     with open(template_path, "r", encoding="utf-8") as template_file:
         template = template_file.read()
         template = jinja2.Template(template)
@@ -340,15 +401,25 @@ def create_run_hoc(template_dir, template_filename, n_stims):
 def create_synapse_hoc(
     syn_mech_args,
     syn_hoc_dir,
-    template_dir,
-    template_filename,
+    template_path,
     gid,
     dt,
-    synapses_template_name="synapses",
+    synapses_template_name="hoc_synapses",
 ):
-    """Returns a string containing the synapse hoc."""
+    """Returns a string containing the synapse hoc.
+
+    Args:
+        syn_mech_args (dict): synapse-related configuration
+        syn_hoc_dir (str): path to directory containing synapse-related data
+        template_path (str): path to the template to fill in
+        gid (int): cell ID
+        dt (float): timestep (ms)
+        synapses_template_name (str): template name of the synapse class
+
+    Returns:
+        string containing a hoc script with the synapse class template
+    """
     # load template
-    template_path = os.path.join(template_dir, template_filename)
     with open(template_path, "r", encoding="utf-8") as template_file:
         template = template_file.read()
         template = jinja2.Template(template)
@@ -372,9 +443,8 @@ def create_hoc(
     ignored_globals=(),
     replace_axon=None,
     template_name="CCell",
-    template_filename="cell_template.jinja2",
+    template_path="templates/cell_template.jinja2",
     disable_banner=None,
-    template_dir=None,
     add_synapses=False,
     synapses_template_name="hoc_synapses",
     syn_hoc_filename="synapses.hoc",
@@ -383,30 +453,27 @@ def create_hoc(
     """Return a string containing the hoc template.
 
     Args:
-        mechs (): All the mechs for the hoc template
-        parameters (): All the parameters in the hoc template
+        mechs (list of bluepyopt.ephys.mechanisms.Mechanisms):
+            All the mechs for the hoc template
+        parameters (list of bluepyopt.Parameters): All the parameters in the hoc template
         ignored_globals (iterable str): HOC coded is added for each
-        NrnGlobalParameter
-        that exists, to test that it matches the values set in the parameters.
-        This iterable contains parameter names that aren't checked
+            NrnGlobalParameter
+            that exists, to test that it matches the values set in the parameters.
+            This iterable contains parameter names that aren't checked
         replace_axon (str): String replacement for the 'replace_axon' command.
-        Must include 'proc replace_axon(){ ... }
+            Must include 'proc replace_axon(){ ... }
         template_name (str): name of cell class in hoc
-        template_filename (str): file name of the jinja2 template
-        template_dir (str): dir name of the jinja2 template
+        template_path (str): path to the jinja2 template
         disable_banner (bool): if not True: a banner is added to the hoc file
         add_synapses (bool): if True: synapses are loaded in the hoc
         synapses_template_name (str): synapse class name in hoc
         syn_hoc_filename (str): file name of synapse hoc file
         syn_dir (str): directory where the synapse data /files are
+
+    Returns:
+        string containing hoc script describing the cell model
     """
     # pylint: disable=too-many-locals
-    if template_dir is None:
-        template_dir = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "templates")
-        )
-
-    template_path = os.path.join(template_dir, template_filename)
     with open(template_path, "r", encoding="utf-8") as template_file:
         template = template_file.read()
         template = jinja2.Template(template)
@@ -447,18 +514,32 @@ def create_hoc(
 
 
 def create_simul_hoc(
-    template_dir,
-    template_filename,
+    template_path,
     add_synapses,
     hoc_paths,
     constants_args,
     protocol_definitions,
     apical_point_isec=-1,
 ):
-    """Create createsimulation.hoc file."""
+    """Create createsimulation.hoc file.
+
+    Args:
+        template_path (str): path to the template to fill in
+        add_synapses (bool): whether to add synapses to the cell
+        hoc_paths (dict): contains paths of the hoc files to be created
+            See load.get_hoc_paths_args for details
+        constants_args (dict): contains data about the constants of the simulation
+        protocol_definitions (dict): dictionary defining the protocols.
+            Should have the structure of the protocol file in example/sscx/config/protocols
+        apical_point_isec (int): section index of the apical point
+            Set to -1 if there is no apical point
+
+    Returns:
+        string containing hoc script to create the simulation
+    """
     syn_dir = hoc_paths["syn_dir_for_hoc"]
     syn_hoc_file = hoc_paths["syn_hoc_filename"]
-    hoc_file = hoc_paths["hoc_filename"]
+    cell_hoc_file = hoc_paths["cell_hoc_filename"]
 
     hoc_stim_creator = HocStimuliCreator(
         protocol_definitions,
@@ -468,7 +549,6 @@ def create_simul_hoc(
     )
 
     # load template
-    template_path = os.path.join(template_dir, template_filename)
     with open(template_path, "r", encoding="utf-8") as template_file:
         template = template_file.read()
         template = jinja2.Template(template)
@@ -476,7 +556,7 @@ def create_simul_hoc(
     # edit template
     return (
         template.render(
-            hoc_file=hoc_file,
+            cell_hoc_file=cell_hoc_file,
             add_synapses=add_synapses,
             syn_dir=syn_dir,
             syn_hoc_file=syn_hoc_file,

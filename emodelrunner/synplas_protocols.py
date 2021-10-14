@@ -30,7 +30,22 @@ def fastforward_synapses(cell_model):
 
 
 class SweepProtocolCustom(ephys.protocols.SweepProtocol):
-    """SweepProtocol with ability of synapse fastforwarding."""
+    """SweepProtocol with ability of synapse fastforwarding.
+
+    Attributes:
+        name (str): name of this object.
+        stimuli (list of 2 lists of Stimuli): Stimulus objects used in the protocol
+            The list must be of size 2 and
+            contain first the list for the presynaptic stimuli
+            and then the list for the postsynaptic stimuli.
+        recordings (list of 2 lists of Recordings): Recording objects used in the
+            protocol. The list must be of size 2 and
+            contain first the list for the presynaptic recording
+            and then the list for the postsynaptic recording.
+        cvode_active (bool): whether to use variable time step
+        fastforward (float): Time after which the synapses are fasforwarded.
+            Leave None for no fastforward.
+    """
 
     def __init__(
         self,
@@ -40,7 +55,22 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
         cvode_active=None,
         fastforward=None,
     ):
-        """Constructor."""
+        """Constructor.
+
+        Args:
+            name (str): name of this object.
+            stimuli (list of 2 lists of Stimuli): Stimulus objects used in the protocol
+                The list must be of size 2 and
+                contain first the list for the presynaptic stimuli
+                and then the list for the postsynaptic stimuli.
+            recordings (list of 2 lists of Recordings): Recording objects used in the
+                protocol. The list must be of size 2 and
+                contain first the list for the presynaptic recording
+                and then the list for the postsynaptic recording.
+            cvode_active (bool): whether to use variable time step
+            fastforward (float): Time after which the synapses are fasforwarded.
+                Leave None for no fastforward.
+        """
         super(SweepProtocolCustom, self).__init__(
             name, stimuli, recordings, cvode_active
         )
@@ -48,7 +78,19 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
         self.fastforward = fastforward
 
     def _run_func(self, cell_model, param_values, sim=None):
-        """Run protocols."""
+        """Run protocols.
+
+        Args:
+            cell_model (bluepyopt.ephys.models.CellModel): the cell model
+            param_values (dict): optimized parameters
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+
+        Raises:
+            Exception if the instantiation failed
+
+        Returns:
+            dict containing the responses
+        """
         # pylint: disable=raise-missing-from
         try:
             cell_model.freeze(param_values)
@@ -88,7 +130,22 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
 
 
 class SweepProtocolPairSim(ephys.protocols.Protocol):
-    """Sweep protocol for pair simulation with fastforwarding."""
+    """Sweep protocol for pair simulation with fastforwarding.
+
+    Attributes:
+        name (str): name of this object.
+        stimuli (list of 2 lists of Stimuli): Stimulus objects used in the protocol
+            The list must be of size 2 and
+            contain first the list for the presynaptic stimuli
+            and then the list for the postsynaptic stimuli.
+        recordings (list of 2 lists of Recordings): Recording objects used in the
+            protocol. The list must be of size 2 and
+            contain first the list for the presynaptic recording
+            and then the list for the postsynaptic recording.
+        cvode_active (bool): whether to use variable time step
+        fastforward (float): Time after which the synapses are fasforwarded.
+            Leave None for no fastforward.
+    """
 
     def __init__(
         self,
@@ -113,6 +170,10 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
             cvode_active (bool): whether to use variable time step
             fastforward (float): Time after which the synapses are fasforwarded.
                 Leave None for no fastforward.
+
+        Raises:
+            Exception if stimuli is not of size 2 and is not None
+            Exception if recordings is not of size 2 and is not None
         """
         super(SweepProtocolPairSim, self).__init__(name)
         if stimuli is not None and len(stimuli) != 2:
@@ -132,7 +193,11 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
 
     @property
     def total_duration(self):
-        """Total duration."""
+        """Total duration.
+
+        Returns:
+            float: total duration
+        """
         return max(
             [
                 stimulus.total_duration
@@ -142,7 +207,11 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
         )
 
     def subprotocols(self):
-        """Return subprotocols."""
+        """Return subprotocols.
+
+        Returns:
+            a dict containing the object
+        """
         return collections.OrderedDict({self.name: self})
 
     def _run_func(
@@ -153,7 +222,22 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
         post_param_values,
         sim=None,
     ):
-        """Run protocols."""
+        """Run protocols.
+
+        Args:
+            precell_model (bluepyopt.ephys.models.CellModel): the presynaptic cell model
+            postcell_model (bluepyopt.ephys.models.CellModel): the postsynaptic cell model
+            pre_param_values (dict): optimized parameters of the presynaptic cell model
+            post_param_values (dict): optimized parameters of the postsynaptic cell model
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+
+        Raises:
+            Exception if the instantiation failed
+
+        Returns:
+            list of 2 dicts containing the responses of both the cells
+            Has the structure [presynaptic response dict, postsynaptic response dict]
+        """
         # pylint: disable=raise-missing-from
         try:
             precell_model.freeze(pre_param_values)
@@ -214,7 +298,22 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
         isolate=None,
         timeout=None,
     ):
-        """Instantiate protocol."""
+        """Instantiate protocol.
+
+        Args:
+            precell_model (bluepyopt.ephys.models.CellModel): the presynaptic cell model
+            postcell_model (bluepyopt.ephys.models.CellModel): the postsynaptic cell model
+            pre_param_values (dict): optimized parameters of the presynaptic cell model
+            post_param_values (dict): optimized parameters of the postsynaptic cell model
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            isolate (bool): whether to isolate the run in a process with a timeout
+                to avoid bad cells running for too long
+            timeout (float): maximum real time (s) the cells are allowed to run when isolated
+
+        Returns:
+            list of 2 dicts containing the responses of both the cells
+            Has the structure [presynaptic response dict, postsynaptic response dict]
+        """
         # pylint:disable=too-many-locals, import-outside-toplevel
         if isolate is None:
             isolate = True
@@ -271,7 +370,13 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
         return responses
 
     def instantiate(self, sim=None, pre_icell=None, post_icell=None):
-        """Instantiate."""
+        """Instantiate.
+
+        Args:
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            pre_icell (neuron cell): presynaptic cell instantiation in simulator
+            post_icell (neuron cell): postsynaptic cell instantiation in simulator
+        """
         icells = [pre_icell, post_icell]
 
         for i, _ in enumerate(icells):
@@ -290,7 +395,11 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
                     )
 
     def destroy(self, sim=None):
-        """Destroy protocol."""
+        """Destroy protocol.
+
+        Args:
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+        """
         for stimulus_list in self.stimuli:
             for stimulus in stimulus_list:
                 stimulus.destroy(sim=sim)
@@ -300,7 +409,11 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
                 recording.destroy(sim=sim)
 
     def __str__(self):
-        """String representation."""
+        """String representation.
+
+        Returns:
+            str describing the stimuli and recordings
+        """
         content = f"{self.name}:\n"
 
         content += "  pre-synaptic stimuli:\n"

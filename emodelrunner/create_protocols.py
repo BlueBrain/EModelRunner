@@ -8,11 +8,9 @@ from emodelrunner.create_stimuli import load_pulses
 
 from emodelrunner.synplas_protocols import SweepProtocolCustom
 from emodelrunner.synplas_protocols import SweepProtocolPairSim
-from emodelrunner.protocols_func import (
-    create_protocols as create_recipe_protocols,
-)
+from emodelrunner.protocols_func import create_protocols
 
-from emodelrunner.recordings import SynapseRecordingCustom
+from emodelrunner.synapses.recordings import SynapseRecordingCustom
 from emodelrunner.stimuli import MultipleSteps
 from emodelrunner.synapses.create_locations import get_syn_locs
 from emodelrunner.synapses.stimuli import (
@@ -24,7 +22,11 @@ logger = logging.getLogger(__name__)
 
 
 class SSCXProtocols:
-    """Class representing the protocols applied in SSCX."""
+    """Class representing the protocols applied in SSCX.
+
+    Attributes:
+        protocols (bluepyopt.ephys.protocols.SequenceProtocol): the protocols to apply to the cell
+    """
 
     def __init__(
         self,
@@ -32,7 +34,14 @@ class SSCXProtocols:
         prot_args,
         cell=None,
     ):
-        """Define Protocols."""
+        """Define Protocols.
+
+        Args:
+            add_synapses (bool): whether to add synapses to the cell
+            prot_args (dict): config data relative to protocols
+                See load.get_prot_args for details
+            cell (CellModelCustom): cell model
+        """
         self.protocols = None
 
         syn_locs = None
@@ -43,7 +52,7 @@ class SSCXProtocols:
             else:
                 raise Exception("The cell is missing in the define_protocol function.")
 
-        self.protocols = create_recipe_protocols(
+        self.protocols = create_protocols(
             prot_args["apical_point_isec"],
             mtype=prot_args["mtype"],
             syn_locs=syn_locs,
@@ -52,11 +61,24 @@ class SSCXProtocols:
         )
 
     def get_ephys_protocols(self):
-        """Returns the list of ephys protocol objects."""
+        """Returns the list of ephys protocol objects.
+
+        Returns:
+            bluepyopt.ephys.protocols.SequenceProtocol: the protocols to apply to the cell
+        """
         return self.protocols
 
     def get_stim_currents(self, responses):
-        """Generates the currents injected by protocols."""
+        """Generates the currents injected by protocols.
+
+        Args:
+            responses (dict): the responses to the protocols run
+
+        Returns:
+            dict: the currents of the protocols.
+                If the MainProtocol was used, only the RMP protocol,
+                'pre-protocols' and 'other protocols' currents are returned
+        """
         currents = {}
 
         # find threshold and holding currents
@@ -80,9 +102,31 @@ class SSCXProtocols:
 
 
 def define_synapse_plasticity_protocols(
-    cell, pre_spike_train, protocol_name, cvode_active, synrecs, tstop, fastforward
+    cell,
+    pre_spike_train,
+    protocol_name,
+    cvode_active,
+    synrecs,
+    tstop,
+    fastforward,
+    stim_path="protocols/stimuli.json",
 ):
-    """Create stimuli and protocols to run glusynapse cell."""
+    """Create stimuli and protocols to run glusynapse cell.
+
+    Args:
+        cell (CellModelCustom): post-synaptic cell model
+        pre_spike_train (list): times at which the synapses fire (ms)
+        protocol_name (str): protocol name to be passed on to Recording and Protocol classes
+        cvode_active (bool): whether to activate the adaptative time step
+        synrecs (list of str): the extra synapse variables to record
+        tstop (float): total duration of the simulation (ms)
+        fastforward (float): time at which to enable synapse fast-forwarding (ms)
+        stim_path (str): path to the pulse stimuli file
+
+    Returns:
+        synplas_protocols.SweepProtocolCustom: synapse plasticity protocols
+    """
+    # pylint: disable=too-many-locals
     syn_locs = get_syn_locs(cell)
     syn_stim = NrnVecStimStimulusCustom(
         syn_locs,
@@ -107,7 +151,7 @@ def define_synapse_plasticity_protocols(
             )
 
     # pulses
-    stims = load_pulses(soma_loc)
+    stims = load_pulses(soma_loc, stim_path)
 
     stims.append(syn_stim)
 
@@ -124,8 +168,28 @@ def define_pairsim_protocols(
     tstop,
     fastforward,
     presyn_stim_args,
+    stim_path="protocols/stimuli.json",
 ):
-    """Create stimuli and protocols to run glusynapse cell."""
+    """Create stimuli and protocols to run glusynapse cell.
+
+    Args:
+        postcell (CellModelCustom): post-synaptic cell model
+        presyn_prot_name (str): presynaptic protocol name
+            to be passed on to Recording and Protocol classes
+        postsyn_prot_name (str): postsynaptic protocol name
+            to be passed on to Recording and Protocol classes
+        cvode_active (bool): whether to activate the adaptative time step
+        synrecs (list of str): the extra synapse variables to record
+        tstop (float): total duration of the simulation (ms)
+        fastforward (float): time at which to enable synapse fast-forwarding (ms)
+        presyn_stim_args (dict): presynaptic stimulus configuration data
+            See load.get_presyn_stim_args for details
+        stim_path (str): path to the pulse stimuli file
+
+    Returns:
+        synplas_protocols.SweepProtocolPairSim: pair simulation synapse plasticity protocols
+    """
+    # pylint: disable=too-many-arguments, too-many-locals
     # locations
     soma_loc = ephys.locations.NrnSeclistCompLocation(
         name="soma", seclist_name="somatic", sec_index=0, comp_x=0.5
@@ -139,7 +203,7 @@ def define_pairsim_protocols(
     )
 
     # stimuli
-    postsyn_stims = load_pulses(soma_loc)
+    postsyn_stims = load_pulses(soma_loc, stim_path)
 
     presyn_stims = [
         MultipleSteps(

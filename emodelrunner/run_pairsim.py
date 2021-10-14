@@ -27,15 +27,22 @@ def run(
     presyn_protocol_name="presyn_pulse",
     fixhp=True,
 ):
-    """Run cell with pulse stimuli and pre-cell spike train."""
+    """Run cell with pulse stimuli and pre-cell spike train.
+
+    Args:
+        config_path (str): path to config file
+        cvode_active (bool): whether to use variable time step
+        postsyn_protocol_name (str): name of the postsynaptic protocol
+        presyn_protocol_name (str): name of the presynaptic protocol
+        fixhp (bool): to uninsert SK_E2 for hyperpolarization in cell model
+    """
     # pylint:disable=too-many-locals
     config = load_synplas_config(config_path=config_path)
 
     # load extra_params
     syn_setup_params = get_syn_setup_params(
-        "synapses",
-        "syn_extra_params.json",
-        "cpre_cpost.json",
+        "synapses/syn_extra_params.json",
+        "synapses/cpre_cpost.json",
         config.get("Paths", "synplas_fit_params_path"),
         config.getint("Cell", "gid"),
         config.getboolean("SynapsePlasticity", "invivo"),
@@ -88,6 +95,7 @@ def run(
         config.getfloat("Protocol", "tstop"),
         config.getfloat("SynapsePlasticity", "fastforward"),
         presyn_stim_args,
+        config.get("Paths", "pulse_stimuli_path"),
     )
 
     # run
@@ -103,8 +111,13 @@ def run(
     )
 
     # write responses
-    write_synplas_output(responses[1], pre_spike_train)
-    write_synplas_precell_output(responses[0], presyn_protocol_name)
+    output_path = config.get("Paths", "pairsim_output_path")
+    precell_output_path = config.get("Paths", "pairsim_precell_output_path")
+    syn_prop_path = config.get("Paths", "syn_prop_path")
+    write_synplas_output(responses[1], pre_spike_train, output_path, syn_prop_path)
+    write_synplas_precell_output(
+        responses[0], presyn_protocol_name, precell_output_path
+    )
 
     logger.info("Python Recordings Done.")
 

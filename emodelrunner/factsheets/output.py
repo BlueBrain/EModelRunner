@@ -19,7 +19,18 @@ def write_metype_json(
     morphology_path,
     output_path,
 ):
-    """Write the me-type factsheet json file."""
+    """Write the me-type factsheet json file.
+
+    The output metype factsheet contains anatomy, physiology and morphology data.
+
+    Args:
+        data_path (str): path to the trace data (usually output of emodelrunner run)
+        current_amplitude (float): current amplitude of the stimulus (nA)
+        stim_start (float): time at which the stimulus begins (ms)
+        stim_duration (float): stimulus duration (ms)
+        morphology_path (str or Path): Path to the morphology file.
+        output_path (str): path to the metype factsheet output
+    """
     morphology_path = Path(morphology_path)
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -85,7 +96,15 @@ def get_stim_params_from_config_for_physiology_factsheet(prot_path, protocol_key
 def write_metype_json_from_config(
     config, voltage_path, morphology_path, output_path, protocol_key
 ):
-    """Write the me-type factsheet json file."""
+    """Write the me-type factsheet json file.
+
+    Args:
+        config (configparser.ConfigParser): configuration
+        voltage_path (str): path to the trace data (usually output of emodelrunner run)
+        morphology_path (str): Path to the morphology file.
+        output_path (str): path to the metype factsheet output
+        protocol_key (str): name of the protocol used for physiology features extraction
+    """
     # get protocol data
     prot_path = config.get("Paths", "prot_path")
 
@@ -113,7 +132,21 @@ def write_emodel_json(
     optimized_params_dict,
     output_path,
 ):
-    """Write the e-model factsheet json file."""
+    """Write the e-model factsheet json file.
+
+    The output metype factsheet contains experimental features and channel mechanisms data.
+
+    Args:
+        emodel (str): name of the emodel
+        morphology_prefix (str): prefix used in the fitness key to the experimental feature
+        features_dict (dict): contains the experimental features
+        feature_units_dict (dict): contains the units for the experimental features
+        unoptimized_params_dict (dict): contains the unoptimized parameters,
+            and also contains the decay and exponential equations
+        optimized_params_dict (dict): contains the optimized parameters,
+            as well as the original morphology path
+        output_path (str): path to the e-model factsheet output
+    """
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     exp_features = get_exp_features_data(

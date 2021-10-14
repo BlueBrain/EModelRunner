@@ -20,38 +20,65 @@ from emodelrunner.create_hoc_tools import (
 
 
 def write_hoc(hoc_dir, hoc_file_name, hoc):
-    """Write hoc file."""
+    """Write hoc file.
+
+    Args:
+        hoc_dir (str): directory to write the file in
+        hoc_file_name (str): name to give to the file
+        hoc (str): content of the file
+    """
     hoc_path = os.path.join(hoc_dir, hoc_file_name)
     with open(hoc_path, "w", encoding="utf-8") as hoc_file:
         hoc_file.write(hoc)
 
 
-def write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, run_hoc_filename, syn_hoc=None):
-    """Write hoc files."""
+def write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc=None):
+    """Write hoc files.
+
+    Args:
+        hoc_paths (dict): contains paths of the hoc files to be created
+            See load.get_hoc_paths_args for details
+        cell_hoc (str): content of the cell template hoc file
+        simul_hoc (str): content of the 'create simulation' hoc file
+        run_hoc (str): content of the hoc file meant to run the simulation
+        syn_hoc (str): content of the synapses template hoc file
+    """
     # cell hoc
-    write_hoc(hoc_paths["hoc_dir"], hoc_paths["hoc_filename"], cell_hoc)
+    write_hoc(hoc_paths["hoc_dir"], hoc_paths["cell_hoc_filename"], cell_hoc)
 
     # createsimulation.hoc
     write_hoc(hoc_paths["hoc_dir"], hoc_paths["simul_hoc_filename"], simul_hoc)
 
     # run.hoc
-    write_hoc(hoc_paths["hoc_dir"], run_hoc_filename, run_hoc)
+    write_hoc(hoc_paths["hoc_dir"], hoc_paths["run_hoc_filename"], run_hoc)
 
     # synapses hoc
     if syn_hoc is not None:
         write_hoc(hoc_paths["syn_dir"], hoc_paths["syn_hoc_filename"], syn_hoc)
 
 
-def get_hoc(config, syn_temp_name="hoc_synapses"):
-    """Returns hoc file and emodel."""
+def get_hoc(config):
+    """Return the hoc scripts as strings.
+
+    Args:
+        config (configparser.ConfigParser): configuration
+
+    Returns:
+        (str, str, str, str): cell_hoc, syn_hoc, simul_hoc, run_hoc
+            the hoc scripts for the cell, the synapses, the simulation and the run_launcher.
+            syn_hoc is None if the synapses were not added
+    """
     # pylint: disable=too-many-locals
     # get directories and filenames from config
-    template_dir = config.get("Paths", "templates_dir")
-    template = config.get("Paths", "create_hoc_template_file")
+    cell_template_path = config.get("Paths", "cell_template_path")
+    run_hoc_template_path = config.get("Paths", "run_hoc_template_path")
+    createsimulation_template_path = config.get(
+        "Paths", "createsimulation_template_path"
+    )
+    synapses_template_path = config.get("Paths", "synapses_template_path")
     add_synapses = config.getboolean("Synapses", "add_synapses")
+    syn_temp_name = config.get("Synapses", "hoc_synapse_template_name")
     hoc_paths = get_hoc_paths_args(config)
-    syn_hoc_filename = config.get("Paths", "syn_hoc_file")
-    syn_dir = config.get("Paths", "syn_dir_for_hoc")
     apical_point_isec = config.get("Protocol", "apical_point_isec")
 
     constants_args = {
@@ -78,16 +105,14 @@ def get_hoc(config, syn_temp_name="hoc_synapses"):
     # get cell hoc
     cell_hoc = cell.create_custom_hoc(
         release_params,
-        template=template,
-        template_dir=template_dir,
-        syn_dir=syn_dir,
-        syn_hoc_filename=syn_hoc_filename,
+        template_path=cell_template_path,
+        syn_dir=hoc_paths["syn_dir_for_hoc"],
+        syn_hoc_filename=hoc_paths["syn_hoc_filename"],
         syn_temp_name=syn_temp_name,
     )
 
     simul_hoc, n_stims = create_simul_hoc(
-        template_dir=template_dir,
-        template_filename="createsimulation.jinja2",
+        template_path=createsimulation_template_path,
         add_synapses=add_synapses,
         hoc_paths=hoc_paths,
         constants_args=constants_args,
@@ -96,8 +121,7 @@ def get_hoc(config, syn_temp_name="hoc_synapses"):
     )
 
     run_hoc = create_run_hoc(
-        template_dir=template_dir,
-        template_filename="run_hoc.jinja2",
+        template_path=run_hoc_template_path,
         n_stims=n_stims,
     )
 
@@ -109,9 +133,8 @@ def get_hoc(config, syn_temp_name="hoc_synapses"):
         # get synapse hoc
         syn_hoc = create_synapse_hoc(
             syn_mech_args=syn_mech_args,
-            syn_hoc_dir=syn_dir,
-            template_dir=template_dir,
-            template_filename="synapses.jinja2",
+            syn_hoc_dir=hoc_paths["syn_dir_for_hoc"],
+            template_path=synapses_template_path,
             gid=cell.gid,
             dt=constants_args["dt"],
             synapses_template_name=syn_temp_name,
@@ -131,12 +154,9 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    run_hoc_filename_ = "run.hoc"
     config_ = load_sscx_config(config_path=args.config_path)
 
-    cell_hoc_, syn_hoc_, simul_hoc_, run_hoc_ = get_hoc(
-        config=config_, syn_temp_name="hoc_synapses"
-    )
+    cell_hoc_, syn_hoc_, simul_hoc_, run_hoc_ = get_hoc(config=config_)
 
     hoc_paths_ = get_hoc_paths_args(config_)
     write_hocs(
@@ -144,6 +164,5 @@ if __name__ == "__main__":
         cell_hoc_,
         simul_hoc_,
         run_hoc_,
-        run_hoc_filename_,
         syn_hoc_,
     )

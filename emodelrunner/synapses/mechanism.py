@@ -6,7 +6,25 @@ from emodelrunner.synapses.synapse import SynapseCustom
 
 
 class NrnMODPointProcessMechanismCustom(ephys.mechanisms.Mechanism):
-    """Class containing all the synapses."""
+    """Class containing all the synapses.
+
+    Attributes:
+        synapses_data (list of dicts): synapse data
+        synconf_dict (dict): synapse configuration
+        seed (int): random number generator seed number
+        rng_settings_mode (str): mode of the random number generator
+                Can be "Random123" or "Compatibility"
+        pre_mtypes (list of ints): activate only synapses whose pre_mtype
+            is in this list if None, all synapses are activated
+        stim_params (dict or None): dict with pre_mtype as key,
+            and netstim params list as item.
+            netstim params list is [start, interval, number, noise]
+        use_glu_synapse (bool): if True, instantiate synapses to use GluSynapse
+        syn_setup_params (dict): contains extra parameters to setup synapses
+            when using GluSynapseCustom
+        rng (neuron Random): random number generator of the simulator
+        pprocesses (list of SynapseCustom or GluSynapseCustom): list of the synapses
+    """
 
     def __init__(
         self,
@@ -25,19 +43,20 @@ class NrnMODPointProcessMechanismCustom(ephys.mechanisms.Mechanism):
 
         Args:
             name (str): name of this object
-            synapses_data (dict) : synapse data
-            synconf_dict (dict) : synapse configuration
-            seed (int) : random seed number
-            rng_settings_mode (str) : mode of the random number generator
+            synapses_data (list of dicts): synapse data
+            synconf_dict (dict): synapse configuration
+            seed (int): random number generator seed number
+            rng_settings_mode (str): mode of the random number generator
+                 Can be "Random123" or "Compatibility"
             pre_mtypes (list of ints): activate only synapses whose pre_mtype
                 is in this list if None, all synapses are activated
             stim_params (dict or None): dict with pre_mtype as key,
                 and netstim params list as item.
                 netstim params list is [start, interval, number, noise]
-            comment (str) : comment
+            comment (str): comment
             use_glu_synapse (bool): if True, instantiate synapses to use GluSynapse
             syn_setup_params (dict): contains extra parameters to setup synapses
-                when using GluSynapse
+                when using GluSynapseCustom
         """
         # pylint: disable=too-many-arguments
         super(NrnMODPointProcessMechanismCustom, self).__init__(name, comment)
@@ -54,7 +73,15 @@ class NrnMODPointProcessMechanismCustom(ephys.mechanisms.Mechanism):
 
     @staticmethod
     def get_cell_section_for_synapse(synapse, icell):
-        """Returns the cell section on which is the synapse."""
+        """Returns the cell section on which is the synapse.
+
+        Args:
+            synapse (dict): contains the synapse data
+            icell (neuron cell): cell instantiation in simulator
+
+        Returns:
+            neuron section where the synapse is attached
+        """
         if synapse["sectionlist_id"] == 0:
             section = icell.soma[synapse["sectionlist_index"]]
         elif synapse["sectionlist_id"] == 1:
@@ -67,7 +94,14 @@ class NrnMODPointProcessMechanismCustom(ephys.mechanisms.Mechanism):
         return section
 
     def instantiate(self, sim=None, icell=None):
-        """Instantiate the synapses."""
+        """Instantiate the synapses.
+
+        In the process, fill the self.pprocesses list.
+
+        Args:
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+            icell (neuron cell): cell instantiation in simulator
+        """
         if self.rng_settings_mode == "Random123":
             self.rng = sim.neuron.h.Random()
             self.rng.Random123_globalindex(self.seed)
@@ -121,6 +155,10 @@ class NrnMODPointProcessMechanismCustom(ephys.mechanisms.Mechanism):
                 self.pprocesses.append(synapse_obj)
 
     def destroy(self, sim=None):
-        """Destroy mechanism instantiation."""
+        """Destroy mechanism instantiation.
+
+        Args:
+            sim (bluepyopt.ephys.NrnSimulator): neuron simulator
+        """
         # pylint: disable=unused-argument
         self.pprocesses = None
