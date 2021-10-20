@@ -102,7 +102,9 @@ def run(
     # run
     logger.info("Python Recordings Running...")
 
-    responses = protocol.run(cell_model=cell, param_values=release_params, sim=sim)
+    responses = protocol.run(
+        cell_model=cell, param_values=release_params, sim=sim, isolate=False
+    )
 
     # write responses
     output_path = config.get("Paths", "synplas_output_path")

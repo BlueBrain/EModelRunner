@@ -44,7 +44,7 @@ def main(config_path):
     # run
     print("Python Recordings Running...")
     responses = ephys_protocols.run(
-        cell_model=cell, param_values=release_params, sim=sim
+        cell_model=cell, param_values=release_params, sim=sim, isolate=False
     )
 
     currents = sscx_protocols.get_stim_currents(responses)
