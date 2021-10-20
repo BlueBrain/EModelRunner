@@ -2,7 +2,6 @@
 import argparse
 import json
 import logging
-import os
 import re
 
 import numpy as np
@@ -67,16 +66,14 @@ def run(
         syn_setup_params=syn_setup_params,
     )
 
-    sim = ephys.simulators.NrnSimulator(
-        dt=config.getfloat("Sim", "dt"), cvode_active=cvode_active
-    )
+    sim = ephys.simulators.NrnSimulator(cvode_active=cvode_active)
     release_params = get_release_params(config)
 
     # set dynamic timestep tolerance
     sim.neuron.h.cvode.atolscale("v", 0.1)  # 0.01 for more precision
 
     # get pre_spike_train
-    spike_train_path = os.path.join("protocols", "out.dat")
+    spike_train_path = config.get("Paths", "spiketrain_path")
     pre_spike_train = np.unique(np.loadtxt(spike_train_path, skiprows=1)[:, 0])
 
     # Set fitted model parameters
@@ -96,7 +93,7 @@ def run(
         json.loads(config.get("SynapsePlasticity", "synrec")),
         config.getfloat("Protocol", "tstop"),
         config.getfloat("SynapsePlasticity", "fastforward"),
-        config.get("Paths", "pulse_stimuli_path"),
+        config.get("Paths", "stimuli_path"),
     )
 
     # run

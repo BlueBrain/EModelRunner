@@ -14,7 +14,7 @@ example_dir = os.path.join("examples", "synplas_sample_dir")
 
 def remove_all_outputs():
     with cwd(example_dir):
-        filepath = "output.h5"
+        filepath = "output_1Hz_10ms.h5"
         if os.path.exists(filepath):
             os.remove(filepath)
 
@@ -22,7 +22,7 @@ def remove_all_outputs():
 def check_output(threshold_v=0.1):
     """Checks output with respect to the original run."""
     original_path = os.path.join(data_dir, "original.h5")
-    new_path = os.path.join(example_dir, "output.h5")
+    new_path = os.path.join(example_dir, "output_1Hz_10ms.h5")
 
     with h5py.File(original_path, "r") as original:
         with h5py.File(new_path, "r") as new:
@@ -45,7 +45,7 @@ def test_voltages():
 
     with cwd(example_dir):
         compile_mechanisms()
-        run_synplas(config_path="config/config_pairsim.ini")
+        run_synplas(config_path="config/config_1Hz_10ms.ini")
 
     check_output(threshold_v=0.1)
 
@@ -60,6 +60,6 @@ def test_pairsim_voltages():
 
     with cwd(example_dir):
         compile_mechanisms()
-        run_pairsim(config_path="config/config_pairsim.ini")
+        run_pairsim(config_path="config/config_1Hz_10ms.ini")
 
     check_output(threshold_v=1.0)

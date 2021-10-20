@@ -2,7 +2,6 @@
 import argparse
 import json
 import logging
-import os
 
 import numpy as np
 from bluepyopt import ephys
@@ -61,9 +60,7 @@ def run(
         fixhp=fixhp,
     )
 
-    sim = ephys.simulators.NrnSimulator(
-        dt=config.getfloat("Sim", "dt"), cvode_active=cvode_active
-    )
+    sim = ephys.simulators.NrnSimulator(cvode_active=cvode_active)
     pre_release_params = get_release_params(config, precell=True)
     post_release_params = get_release_params(config)
 
@@ -71,7 +68,7 @@ def run(
     sim.neuron.h.cvode.atolscale("v", 0.1)  # 0.01 for more precision
 
     # load spike_train
-    spike_train_path = os.path.join("protocols", "out.dat")
+    spike_train_path = config.get("Paths", "spiketrain_path")
     pre_spike_train = np.unique(np.loadtxt(spike_train_path, skiprows=1)[:, 0])
 
     # get pre-synaptic stimulus parameters
@@ -95,7 +92,7 @@ def run(
         config.getfloat("Protocol", "tstop"),
         config.getfloat("SynapsePlasticity", "fastforward"),
         presyn_stim_args,
-        config.get("Paths", "pulse_stimuli_path"),
+        config.get("Paths", "stimuli_path"),
     )
 
     # run

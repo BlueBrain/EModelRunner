@@ -57,7 +57,7 @@ def test_missing_config():
 def test_invalid_sscx_config():
     """Runs validator with an invalid SSCX config that raises a SchemaError."""
     with cwd(synplas_sample_dir):
-        config_path = Path(".") / "config" / "config_pairsim.ini"
+        config_path = Path(".") / "config" / "config_1Hz_10ms.ini"
         conf_validator = SSCXConfigValidator()
         with pytest.raises(SchemaError):
             _ = conf_validator.validate_from_file(config_path)

@@ -102,14 +102,7 @@ class ConfigValidator(ABC):
         Raises:
             FileNotFoundError: if config_path does not exist.
         """
-        if not Path(config_path).exists():
-            raise FileNotFoundError(f"config file at {config_path} is not found.")
-        config = configparser.ConfigParser()
-
-        # set defaults
-        config.read_dict(self.default_values)
-
-        config.read(config_path)
+        config = self._get_unvalidated_config(config_path)
 
         confdict = {
             section: dict(config.items(section)) for section in config.sections()
@@ -120,6 +113,29 @@ class ConfigValidator(ABC):
         logger.info(pprint.pformat(validated_conf))
 
         logger.info("The config file is valid.")
+
+        return config
+
+    def _get_unvalidated_config(self, config_path):
+        """Returns the config at the given path and fill unset values with default values.
+
+        Args:
+            config_path (str or Path): path to the .ini configuration file.
+
+        Returns:
+            configparser.ConfigParser: the config.
+
+        Raises:
+            FileNotFoundError: if config_path does not exist.
+        """
+        if not Path(config_path).exists():
+            raise FileNotFoundError(f"config file at {config_path} is not found.")
+        config = configparser.ConfigParser()
+
+        # set defaults
+        config.read_dict(self.default_values)
+
+        config.read(config_path)
 
         return config
 
@@ -245,7 +261,6 @@ class SynplasConfigValidator(ConfigValidator):
             "syn_dir": "%(memodel_dir)s/synapses",
             "syn_data_file": "synapses.tsv",
             "syn_conf_file": "synconf.txt",
-            "pulse_stimuli_path": "%(memodel_dir)s/protocols/stimuli.json",
             "synplas_output_path": "%(memodel_dir)s/output.h5",
             "pairsim_output_path": "%(memodel_dir)s/output.h5",
             "pairsim_precell_output_path": "%(memodel_dir)s/output_precell.h5",
@@ -275,9 +290,6 @@ class SynplasConfigValidator(ConfigValidator):
                 "Morphology": {
                     "do_replace_axon": self.boolean_expression,
                 },
-                "Sim": {
-                    "dt": self.float_or_int_expression,
-                },
                 "Paths": {
                     "morph_path": lambda n: Path(n).exists(),
                     "precell_morph_path": lambda n: Path(n).exists(),
@@ -291,7 +303,8 @@ class SynplasConfigValidator(ConfigValidator):
                     "syn_dir": lambda n: Path(n).exists(),
                     "syn_data_file": And(str, len),
                     "syn_conf_file": And(str, len),
-                    "pulse_stimuli_path": lambda n: Path(n).exists(),
+                    "stimuli_path": lambda n: Path(n).exists(),
+                    "spiketrain_path": lambda n: Path(n).exists(),
                     "syn_prop_path": lambda n: Path(n).exists(),
                     # cannot validate output paths before the files are created,
                     # so check that it is a str
