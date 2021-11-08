@@ -1,22 +1,11 @@
+|build|
+
 ############
 EModelRunner
 ############
 
 Runs cells from Blue Brain Project cell packages, such as sscx, synapse plasticity, etc.
 
-
-.. raw:: html
-
-	<table>
-	<tr>
-	  <td>Build Status</td>
-	  <td>
-	    <a href="https://github.com/BlueBrain/EModelRunner/actions">
-	    <img src="https://github.com/BlueBrain/EModelRunner/workflows/Build/badge.svg?branch=main" alt="Actions build status" />
-	    </a>
-	  </td>
-	</tr>
-	</table>
 
 Installing EModelRunner
 =======================
@@ -138,3 +127,8 @@ You can then set on the right column at which time each synapse group should sta
 In the center part of the GUI, you have two plots of the cell, the one on the left showing the voltage at each section, and the one on the right showing the synapses locations.
 You can change the rotation of both plots in 3D with your mouse.
 Below is a plot showing the voltage in the soma depending on time. On top, you have three buttons to (re)start the simulation, pause it or resume it.
+
+
+.. |build| image:: https://github.com/BlueBrain/EModelRunner/actions/workflows/main.yml/badge.svg
+                :target: https://github.com/BlueBrain/EModelRunner/actions/workflows/main.yml
+                :alt: Build Status
