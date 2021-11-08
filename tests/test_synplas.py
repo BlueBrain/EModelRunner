@@ -4,6 +4,7 @@ import os
 import h5py
 import numpy as np
 
+from emodelrunner.synplas_analysis import Experiment, epsp_slope
 from emodelrunner.run_pairsim import run as run_pairsim
 from emodelrunner.run_synplas import run as run_synplas
 from tests.utils import compile_mechanisms, cwd
@@ -63,3 +64,35 @@ def test_pairsim_voltages():
         run_pairsim(config_path="config/config_1Hz_10ms.ini")
 
     check_output(threshold_v=1.0)
+
+
+def test_analysis():
+    """Test analysis script."""
+    # here, the synapses responses are smaller after the stimuli
+    exp = Experiment(
+        data=os.path.join(data_dir, "original.h5"),
+        c01duration=5,
+        c02duration=5,
+        period=5,
+    )
+
+    # check that synapses are smaller after the stimuli
+    assert exp.compute_epsp_ratio(10, method="amplitude") < 1
+    assert exp.compute_epsp_ratio(10, method="slope") < 1
+
+    # check that we collect all 60 synapse responses
+    assert len(exp.epsp["C01"]) == 60
+    assert len(exp.epsp["C02"]) == 60
+
+    # check that synapses are smaller after the stimuli
+    epsp_interval = exp.compute_epsp_interval(5)
+    assert epsp_interval["C01"]["avg"] > epsp_interval["C02"]["avg"]
+
+    # check that all interpolated traces have the same number of data points
+    for trace in exp.cxtrace["C01"]:
+        assert len(trace) == len(exp.cxtrace["t"])
+    for trace in exp.cxtrace["C02"]:
+        assert len(trace) == len(exp.cxtrace["t"])
+
+    # check that EPSP slope is positive
+    assert epsp_slope(exp.cxtrace["C01"][0]) > 0
