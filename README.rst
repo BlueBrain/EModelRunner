@@ -5,6 +5,19 @@ EModelRunner
 Runs cells from Blue Brain Project cell packages, such as sscx, synapse plasticity, etc.
 
 
+.. raw:: html
+
+	<table>
+	<tr>
+	  <td>Build Status</td>
+	  <td>
+	    <a href="https://github.com/BlueBrain/EModelRunner/actions">
+	    <img src="https://github.com/BlueBrain/EModelRunner/workflows/Build/badge.svg?branch=main" alt="Actions build status" />
+	    </a>
+	  </td>
+	</tr>
+	</table>
+
 Installing EModelRunner
 =======================
 
