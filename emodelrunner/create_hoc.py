@@ -65,8 +65,9 @@ def get_hoc(config):
 
     Returns:
         (str, str, str, str): cell_hoc, syn_hoc, simul_hoc, run_hoc
-            the hoc scripts for the cell, the synapses, the simulation and the run_launcher.
-            syn_hoc is None if the synapses were not added
+
+        the hoc scripts for the cell, the synapses, the simulation and the run_launcher.
+        syn_hoc is None if the synapses were not added
     """
     # pylint: disable=too-many-locals
     # get directories and filenames from config

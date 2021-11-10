@@ -144,12 +144,13 @@ class GluSynapseCustom(SynapseMixin):
 
         Args:
             params (dict): contains
-                fit_params: glusynapse parameters from fitting to get threshold values
-                syn_extra_params: synapse location and synapse extra parameters
-                c_pre: calcium peak during a single EPSP
-                c_post: calcium peak during a single bAP
-                postgid: ID of the postsynaptic cell
-                invivo: whether to put synapse in 'in vivo' conditions
+
+                - fit_params: glusynapse parameters from fitting to get threshold values
+                - syn_extra_params: synapse location and synapse extra parameters
+                - c_pre: calcium peak during a single EPSP
+                - c_post: calcium peak during a single bAP
+                - postgid: ID of the postsynaptic cell
+                - invivo: whether to put synapse in 'in vivo' conditions
         """
         syn_id = int(self.hsynapse.synapseID)
         # Set local parameters

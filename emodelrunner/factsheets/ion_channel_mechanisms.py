@@ -15,10 +15,12 @@ def edit_dist_func(value):
             ex: "(-0.8696 + 2.087*math.exp((x)*0.0031))*3.1236056887012746e-06"
 
     Returns:
-        latex (str): a latex-compatible version of the distrib. function
-            ex: "(-0.8696 + 2.087*e^{x*0.0031})*3.1236056887012746e-06"
-        value (str): a plottable version of the distrib. function
-            ex: "(-0.8696 + 2.087exp(x*0.0031))*3.1236056887012746e-06"
+        a tuple containing
+
+        - latex (str): a latex-compatible version of the distrib. function
+          ex: "(-0.8696 + 2.087*e^{x*0.0031})*3.1236056887012746e-06"
+        - value (str): a plottable version of the distrib. function
+          ex: "(-0.8696 + 2.087exp(x*0.0031))*3.1236056887012746e-06"
     """
     if "math" in value:
         value = value.replace("math.", "")
@@ -45,10 +47,11 @@ def get_channel_and_equations(
         release_params (dict): final parameters of the optimised cell.
 
     Returns:
-        channel (str): name of the channel (ex: "Ca_HVA2")
-        biophys (str): parameter name (ex: "gCa_HVAbar")
-        equation_dict (dict): dictionary containing equation values (for plotting and latex display)
-            and type (uniform or exponential)
+        a tuple containing
+
+        - channel (str): name of the channel (ex: "Ca_HVA2")
+        - biophys (str): parameter name (ex: "gCa_HVAbar")
+        - equation_dict (dict): contains equation values and equation type (uniform or exp)
     """
     # parameter value (obtained from optimisation)
     value = release_params[full_name]
@@ -211,7 +214,7 @@ def get_mechanisms_data(emodel, optimized_params_dict, unoptimized_params_dict):
             and also contains the decay and exponential equations
 
     Returns:
-        dict containing the channel mechanisms
+        dict: containing the channel mechanisms
     """
     # pylint: disable=too-many-locals
     release_params = optimized_params_dict[emodel]["params"]

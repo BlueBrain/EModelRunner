@@ -67,6 +67,7 @@ class ConfigValidator(ABC):
         """Check if the input is a list of nonempty strings.
 
         The list itself can be empty but it cannot contain an empty string.
+
         Args:
             list_instance (str): a string that evaluates to list.
 

@@ -18,11 +18,11 @@ class RecordingCustom(ephys.recordings.CompRecording):
         tvector (neuron Vector): vector recording the time (ms)
         instantiated (bool): whether the object has been instantiated or not
 
-    Parent constructor:
-        Args:
-            name (str): name of this object
-            location (Location): location in the model of the recording
-            variable (str): which variable to record from (e.g. 'v')
+    Args of the parent constructor:
+
+    - name (str): name of this object
+    - location (Location): location in the model of the recording
+    - variable (str): which variable to record from (e.g. 'v')
     """
 
     def instantiate(self, sim=None, icell=None):

@@ -76,8 +76,9 @@ class SSCXProtocols:
 
         Returns:
             dict: the currents of the protocols.
-                If the MainProtocol was used, only the RMP protocol,
-                'pre-protocols' and 'other protocols' currents are returned
+
+            If the MainProtocol was used, only the RMP protocol,
+            'pre-protocols' and 'other protocols' currents are returned
         """
         currents = {}
 

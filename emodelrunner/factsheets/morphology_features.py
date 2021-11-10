@@ -193,7 +193,10 @@ class MorphologyFactsheetBuilder:
         If basal or apical are not present, name them 'dendrite'.
 
         Returns:
-            tuple containing: list of str, list of neurom type
+            tuple containing
+
+            - list of str: neurite names
+            - list of neurom type: neurite types
         """
         api = nm.get("total_length", self.morphology, neurite_type=nm.APICAL_DENDRITE)
         bas = nm.get("total_length", self.morphology, neurite_type=nm.BASAL_DENDRITE)

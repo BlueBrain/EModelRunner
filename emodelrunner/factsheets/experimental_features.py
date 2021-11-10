@@ -79,8 +79,7 @@ def get_exp_features_data(
         optimized_params_dict (dict): contains the optimized parameters,
             as well as the original morphology path
     Returns:
-        dict containing the output feature dicts and
-            the original morphology name used in model fitting
+        dict containing the output feature dicts and the original morph name used in model fitting
     """
     # pylint: disable=too-many-locals
     # it is hard to reduce number of locals without reducing readibility

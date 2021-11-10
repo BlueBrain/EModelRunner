@@ -20,8 +20,10 @@ def get_pairsim_recordings(
         postsyn_prot_name (str): postsynaptic protocol name
 
     Returns:
-        (list of recordings, list of recordings):
-            (presynaptic recordings, postsynaptic recordings)
+        a tuple containing
+
+        - list of recordings: presynaptic recordings
+        - list of recordings: postsynaptic recordings
     """
     presyn_rec = ephys.recordings.CompRecording(
         name=presyn_prot_name, location=soma_loc, variable="v"

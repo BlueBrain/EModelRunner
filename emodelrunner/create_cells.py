@@ -44,7 +44,7 @@ def create_cell(
         celsius (int): cell temperature (celsius)
 
     Returns:
-        CellModelCustom cell model
+        CellModelCustom: cell model
     """
     # pylint: disable=too-many-arguments, too-many-locals
     # load mechanisms
@@ -96,8 +96,9 @@ def create_cell_using_config(config):
 
     Args:
         config (configparser.ConfigParser): configuration
+
     Returns:
-        CellModelCustom cell model
+        CellModelCustom: cell model
     """
     unopt_params_path = config.get("Paths", "unoptimized_params_path")
 
@@ -137,7 +138,7 @@ def get_postcell(
             when using GluSynapseCustom
 
     Returns:
-        CellModelCustom post-synaptic cell model
+        CellModelCustom: post-synaptic cell model
     """
     emodel = config.get("Cell", "emodel")
     gid = config.getint("Cell", "gid")
@@ -183,7 +184,7 @@ def get_precell(
         fixhp (bool): to uninsert SK_E2 for hyperpolarization in cell model
 
     Returns:
-        CellModelCustom pre-synaptic cell model
+        CellModelCustom: pre-synaptic cell model
     """
     emodel = config.get("Cell", "emodel")
     gid = config.getint("Cell", "gid")

@@ -174,7 +174,7 @@ class HocStimuliCreator:
             prot (dict): dictionary defining the step protocol
 
         Returns:
-            string containing a hoc script declaring one or more step stimuli
+            str: hoc script declaring one or more step stimuli
         """
         step_hoc = ""
 
@@ -216,7 +216,7 @@ class HocStimuliCreator:
             prot (dict): dictionary defining the ramp protocol
 
         Returns:
-            string containing a hoc script declaring the ramp stimulus
+            str: hoc script declaring the ramp stimulus
         """
         ramp_hoc = ""
 
@@ -282,7 +282,7 @@ class HocStimuliCreator:
             prot (dict): dictionary defining the vecstim protocol
 
         Returns:
-            string containing a hoc script declaring the vecstim stimuli
+            str: hoc script declaring the vecstim stimuli
         """
         stim = prot["stimuli"]
 
@@ -312,7 +312,7 @@ class HocStimuliCreator:
             prot (dict): dictionary defining the netstim protocol
 
         Returns:
-            string containing a hoc script declaring the netstim simuli
+            str: hoc script declaring the netstim simuli
         """
         stim = prot["stimuli"]
 
@@ -342,7 +342,7 @@ class HocStimuliCreator:
             prot (dict): dictionary defining the protocol
 
         Returns:
-            string containing a hoc script declaring the simulus
+            str: hoc script declaring the simulus
         """
         stim_hoc = f"""
             if (stim_number == {self.n_stims}) {{
@@ -385,7 +385,7 @@ def create_run_hoc(template_path, n_stims):
         n_stims (int): total number of protocols to be run by hoc
 
     Returns:
-        string containing a hoc script to run the simulation
+        str: hoc script to run the simulation
     """
     # load template
     with open(template_path, "r", encoding="utf-8") as template_file:
@@ -417,7 +417,7 @@ def create_synapse_hoc(
         synapses_template_name (str): template name of the synapse class
 
     Returns:
-        string containing a hoc script with the synapse class template
+        str: hoc script with the synapse class template
     """
     # load template
     with open(template_path, "r", encoding="utf-8") as template_file:
@@ -471,7 +471,7 @@ def create_hoc(
         syn_dir (str): directory where the synapse data /files are
 
     Returns:
-        string containing hoc script describing the cell model
+        str: hoc script describing the cell model
     """
     # pylint: disable=too-many-locals
     with open(template_path, "r", encoding="utf-8") as template_file:
@@ -535,7 +535,7 @@ def create_simul_hoc(
             Set to -1 if there is no apical point
 
     Returns:
-        string containing hoc script to create the simulation
+        str: hoc script to create the simulation
     """
     syn_dir = hoc_paths["syn_dir_for_hoc"]
     syn_hoc_file = hoc_paths["syn_hoc_filename"]

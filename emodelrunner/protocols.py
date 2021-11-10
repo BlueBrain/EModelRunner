@@ -32,14 +32,16 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
     """Main protocol to fit RatSSCx neuron ephys parameters.
 
     Pseudo code:
-        Find resting membrane potential
-        Find input resistance
-        Run other protocols:
-            Find holding current
-            Find rheobase
-            Run IDRest
-            Possibly run other protocols (based on constructor arguments)
-            Return all the responses
+
+    - Find resting membrane potential
+    - Find input resistance
+    - Run other protocols:
+
+      - Find holding current
+      - Find rheobase
+      - Run IDRest
+      - Possibly run other protocols (based on constructor arguments)
+      - Return all the responses
 
     Attributes:
         name (str): name of the protocol
@@ -111,10 +113,10 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
 
     @property
     def rin_efeature(self):
-        """Get in_efeature.
+        """Get rin_efeature.
 
         Returns:
-            bluepyopt.ephys.efeatures.eFELFeature
+            rin_efeature (bluepyopt.ephys.efeatures.eFELFeature): ohmic input resistance vb ssse
         """
         return self.rinhold_protocol.rin_efeature
 
@@ -398,8 +400,7 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
             rmp (float): resting membrane potential (mV)
 
         Returns:
-            float: the holding current amplitude (nA)
-                that reproduces the experimental holding voltage
+            float: the holding current (nA) that reproduces the experimental holding voltage
         """
         holdi_estimate = float(holding_voltage - rmp) / rin_noholding
 
@@ -515,8 +516,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         """Return subprotocols.
 
         Returns:
-            dict containing the threshold detection protocol and
-                the threshold detection protocol template
+            dict: the threshold detection protocol and the threshold detection protocol template
         """
         subprotocols = collections.OrderedDict({self.name: self})
 
@@ -1011,7 +1011,7 @@ class StepThresholdProtocol(StepProtocol, ProtocolMixin):
             timeout (float): maximum real time (s) the cell is allowed to run when isolated
 
         Raises:
-            Exception if the threshold_current is not set to the cell model
+            Exception: if the threshold_current is not set to the cell model
 
         Returns:
             dict containing the responses for the step protocol
@@ -1223,7 +1223,7 @@ class RampThresholdProtocol(RampProtocol, ProtocolMixin):
             timeout (float): maximum real time (s) the cell is allowed to run when isolated
 
         Raises:
-            Exception if the threshold_current is not set to the cell model
+            Exception: if the threshold_current is not set to the cell model
 
         Returns:
             dict containing the responses for the ramp protocol
@@ -1291,13 +1291,12 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
         recordings (list of Recordings): Recording objects used in the protocol
         cvode_active (bool): whether to use variable time step
 
-    Parent constructor:
-        Args:
-            name (str): name of this object
-            stimuli (list of Stimuli): Stimulus objects used in the protocol
-            recordings (list of Recordings): Recording objects used in the
-                protocol
-            cvode_active (bool): whether to use variable time step
+    Args of the parent constructor:
+
+    - name (str): name of this object
+    - stimuli (list of Stimuli): Stimulus objects used in the protocol
+    - recordings (list of Recordings): Recording objects used in the protocol
+    - cvode_active (bool): whether to use variable time step
     """
 
     @staticmethod

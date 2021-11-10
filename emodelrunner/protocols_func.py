@@ -234,7 +234,8 @@ def read_vecstim_protocol(protocol_name, protocol_definition, recordings, syn_lo
             locations of the synapses
 
     Returns:
-        SweepProtocolCustom: a protocol containing Vecstim stimulus activating synapses
+        emodelrunner.protocols.SweepProtocolCustom:
+            a protocol containing Vecstim stimulus activating synapses
     """
     stim_definition = protocol_definition["stimuli"]
     if stim_definition["vecstim_random"] not in [
@@ -270,7 +271,8 @@ def read_netstim_protocol(protocol_name, protocol_definition, recordings, syn_lo
             locations of the synapses
 
     Returns:
-        SweepProtocolCustom: a protocol containing Netstim stimulus activating synapses
+        emodelrunner.protocols.SweepProtocolCustom:
+            a protocol containing Netstim stimulus activating synapses
     """
     stim_definition = protocol_definition["stimuli"]
 
@@ -295,9 +297,9 @@ def get_extra_recording_location(recording_definition, apical_point_isec=-1):
             Should be given if the recording definition "type" is "somadistanceapic"
 
     Raises:
-        Exception if the recording definition "type" is "somadistanceapic" and
+        Exception: if the recording definition "type" is "somadistanceapic" and
             apical_point_isec is -1.
-        Exception if the 'type' in the recording definition is neither
+        Exception: if the 'type' in the recording definition is neither
             "somadistance", nor "somadistanceapic", nor "nrnseclistcomp"
 
     Returns:
@@ -618,7 +620,7 @@ def create_protocols(
         stochkv_det (bool): set if stochastic or deterministic
 
     Returns:
-        ephys.protocols.SequenceProtocol containing all the protocols
+        ephys.protocols.SequenceProtocol: sequence protocol containing all the protocols
     """
     # pylint: disable=unbalanced-tuple-unpacking, too-many-locals
     protocols_dict = define_protocols(

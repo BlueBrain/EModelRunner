@@ -65,9 +65,11 @@ def get_stim_params_from_config_for_physiology_factsheet(prot_path, protocol_key
         protocol_key (str): name of the protocol used for physiology features extraction
 
     Returns:
-        current_amplitude (int or float): the amplitude current of the step protocol (mA)
-        stim_start (int or float): the start of the stimulus (ms)
-        stim_duration (int or float): the duration of the stimulus (ms)
+        a tuple containing
+
+        - current_amplitude (int or float): the amplitude current of the step protocol (mA)
+        - stim_start (int or float): the start of the stimulus (ms)
+        - stim_duration (int or float): the duration of the stimulus (ms)
 
     Raises:
         Exception: If a step protocol with multiple steps has been provided

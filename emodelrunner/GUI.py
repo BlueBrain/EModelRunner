@@ -2,6 +2,8 @@
 
 from emodelrunner.GUI_utils.interface import GUI
 
-gui = GUI()
 
-gui.root.mainloop()
+if __name__ == "__main__":
+    gui = GUI()
+
+    gui.root.mainloop()
