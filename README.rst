@@ -49,7 +49,7 @@ Dependencies
 
 The main dependencies of EModelRunner are::
 
-    Python3.6+ 
+    Python3.7+ 
     Matplotlib
     Numpy
     Neurom
@@ -63,7 +63,7 @@ pre-installed versions.
 Python
 ------
 
-Modern Linux systems will have Python 2.7 or 3 installed.
+Modern Linux systems will have Python 2.7 or 3 installed. Make sure that your python version is 3.7 or higher.
 
 Make sure you're using a recent version of pip. It's best to run ::
 

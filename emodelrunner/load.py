@@ -499,8 +499,10 @@ def load_synapse_configuration_data(synconf_path):
         synconf_path (str): path to the synapse configuration data file
 
     Returns:
-        dict: each key contains a command to execute using hoc,
-            and each value contains a list of synapse id on which to execute the command
+        dict: configuration data
+
+        each key contains a command to execute using hoc,
+        and each value contains a list of synapse id on which to execute the command
     """
     synconf_dict = {}
     with open(synconf_path, "r", encoding="utf-8") as f:

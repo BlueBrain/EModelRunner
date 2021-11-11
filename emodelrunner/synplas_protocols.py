@@ -86,7 +86,7 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
             sim (bluepyopt.ephys.NrnSimulator): neuron simulator
 
         Raises:
-            Exception if the instantiation failed
+            Exception: if the instantiation failed
 
         Returns:
             dict containing the responses
@@ -172,8 +172,8 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
                 Leave None for no fastforward.
 
         Raises:
-            Exception if stimuli is not of size 2 and is not None
-            Exception if recordings is not of size 2 and is not None
+            Exception: if stimuli is not of size 2 and is not None
+            Exception: if recordings is not of size 2 and is not None
         """
         super(SweepProtocolPairSim, self).__init__(name)
         if stimuli is not None and len(stimuli) != 2:
@@ -232,10 +232,11 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
             sim (bluepyopt.ephys.NrnSimulator): neuron simulator
 
         Raises:
-            Exception if the instantiation failed
+            Exception: if the instantiation failed
 
         Returns:
             list of 2 dicts containing the responses of both the cells
+
             Has the structure [presynaptic response dict, postsynaptic response dict]
         """
         # pylint: disable=raise-missing-from
@@ -312,6 +313,7 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
 
         Returns:
             list of 2 dicts containing the responses of both the cells
+
             Has the structure [presynaptic response dict, postsynaptic response dict]
         """
         # pylint:disable=too-many-locals, import-outside-toplevel

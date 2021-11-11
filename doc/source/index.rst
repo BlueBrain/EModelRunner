@@ -6,4 +6,5 @@
    :maxdepth: 2
 
    Home <self>
+   api.rst
    changelog

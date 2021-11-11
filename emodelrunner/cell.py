@@ -58,7 +58,7 @@ class CellModelCustom(ephys.models.CellModel):
         """Return appropriate replace_axon str.
 
         Returns:
-            str containing a hoc script defining the replacement axon
+            str: hoc script defining the replacement axon
         """
         if self.morphology.do_replace_axon:
             replace_axon = self.morphology.replace_axon_hoc
@@ -92,7 +92,7 @@ class CellModelCustom(ephys.models.CellModel):
             param_values (dict): contains values of the optimized parameters
 
         Returns:
-            list of the names of the newly frozen parameters
+            list: names of the newly frozen parameters
         """
         to_unfreeze = []
         for param in self.params.values():
@@ -140,7 +140,7 @@ class CellModelCustom(ephys.models.CellModel):
             syn_temp_name (str): synapse class name in hoc
 
         Returns:
-            str containing hoc script describing this cell model
+            str: hoc script describing this cell model
         """
         # pylint: disable=too-many-arguments
         to_unfreeze = self.freeze_params(param_values)
@@ -181,8 +181,7 @@ class CellModelCustom(ephys.models.CellModel):
             secarray_names (list of strings): Names of the sections
 
         Returns:
-            str containing hoc script describing an empty cell model
-                with connection function
+            str: hoc script describing an empty cell model with connection function
         """
         objref_str = "objref this, CellRef"
         newseclist_str = ""

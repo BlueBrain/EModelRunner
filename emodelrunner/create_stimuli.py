@@ -14,7 +14,7 @@ def add_pulse(stimulus, soma_loc):
         soma_loc (bluepyopt.ephys.locations.NrnSeclistCompLocation): location of the soma
 
     Returns:
-        Pulse stimulus
+        Pulse: pulse stimulus
     """
     return Pulse(
         location=soma_loc,
@@ -35,7 +35,7 @@ def load_pulses(soma_loc, stim_path="protocols/stimuli.json"):
         stim_path (str): path to the pulse stimuli file
 
     Raises:
-        NotImplementedError if stim["Pattern"] is not "Pulse" in simuli file
+        NotImplementedError: if stim["Pattern"] is not "Pulse" in simuli file
 
     Returns:
         list of Pulse stimuli

@@ -15,11 +15,11 @@ def get_epsp_vector(t, v, spikes, window):
         window (float): Size of EPS detection window in ms.
 
     Returns:
-        epsp (numpy.ndarray): Vector of EPSPs (mV).
+        numpy.ndarray: Vector of EPSPs (mV).
 
     Raises:
-        RuntimeError if a postsynaptic cell spike is found during a connectivity test
-        RuntimeError if the detection window can have multiple EPSPs in it
+        RuntimeError: if a postsynaptic cell spike is found during a connectivity test
+        RuntimeError: if the detection window can have multiple EPSPs in it
     """
     # Verify presence of only one EPSP in window
     if np.max(np.diff(spikes)) < window:
@@ -53,7 +53,7 @@ def epsp_slope(vtrace):
         vtrace (numpy.ndarray): interpolated voltage trace of one EPSP (mV)
 
     Returns:
-        m (float): slope of the EPSP (mV)
+        float: slope of the EPSP (mV)
     """
     # Remove baseline
     v = vtrace - vtrace[0]
@@ -175,7 +175,7 @@ class Experiment(object):
             interval (float): The interval in minutes.
 
         Returns:
-            results (dict): A dictionary of interval statistics for each Cx in Experiment.
+            dict: A dictionary of interval statistics for each Cx in Experiment.
         """
         results = {}
         for cx in self.cxs:
@@ -198,21 +198,21 @@ class Experiment(object):
                 cell stimulus in addition to the epsp ratio
 
         Returns:
-            if full:
-                epsp_before (float): mean value of EPSP or
-                    slope of mean EPSP trace during test C01
-                epsp_after (float): mean value of EPSP or
-                    slope of mean EPSP trace during test C02
-                ratio_epsp (float): Mean EPSP change
-                epsp_before_std (float): standard deviation of EPSP during test C01
-                    if method is amplitude, else 0
-                epsp_after_std (float): standard deviation of EPSP during test C02
-                    if method is amplitude, else 0
-            else:
-                ratio_epsp (float): Mean EPSP change
+            if full is False, returns
+
+            - ratio_epsp (float): Mean EPSP change
+
+            if full is True, returns a tuple containing
+
+            - epsp_before (float): mean value of EPSP or slope of mean EPSP trace in test C01
+            - epsp_after (float): mean value of EPSP or slope of mean EPSP trace in test C02
+            - ratio_epsp (float): Mean EPSP change
+            - epsp_before_std (float): std of EPSP in test C01 if method is amplitude, else 0
+            - epsp_after_std (float): std of EPSP in test C02 if method is amplitude, else 0
+
 
         Raises:
-            ValueError if method is neither 'amplitude' nor 'slope'
+            ValueError: if method is neither 'amplitude' nor 'slope'
         """
         if method == "amplitude":
             epsp_before = np.mean(self.epsp["C01"][-n:])

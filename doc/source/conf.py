@@ -10,9 +10,10 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath("."))
 
 from pkg_resources import get_distribution
 
@@ -33,7 +34,12 @@ release = version
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = []
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.napoleon",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 # templates_path = ['_templates']
@@ -42,6 +48,19 @@ extensions = []
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
+
+autosummary_generate = True
+autodoc_default_options = {
+    "members": True,
+    "show-inheritance": True,
+    # references twice, in protocols.RatSSCxMainProtocol
+    # once in Attributes, and once in a property method
+    "exclude-members": "rin_efeature",
+}
+# so that we don't have to install neuron (imported in GUI) to do the docs
+autodoc_mock_imports = ["neuron"]
+# to be able to put multiple return variables in the docstrings
+# napoleon_custom_sections = [("Returns", "params_style")]
 
 
 # -- Options for HTML output -------------------------------------------------
