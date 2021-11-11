@@ -129,6 +129,15 @@ You can change the rotation of both plots in 3D with your mouse.
 Below is a plot showing the voltage in the soma depending on time. On top, you have three buttons to (re)start the simulation, pause it or resume it.
 
 
+Funding & Acknowledgements
+==========================
+
+The development of this project was supported by funding to the Blue Brain Project, a research center of the École polytechnique fédérale de Lausanne (EPFL), from the Swiss government’s ETH Board of the Swiss Federal Institutes of Technology.
+
+
+Copyright (c) 2020-2021 Blue Brain Project/EPFL
+
+
 .. |build| image:: https://github.com/BlueBrain/EModelRunner/actions/workflows/main.yml/badge.svg
                 :target: https://github.com/BlueBrain/EModelRunner/actions/workflows/main.yml
                 :alt: Build Status
