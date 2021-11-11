@@ -73,8 +73,11 @@ before installing anything else using pip.
 Examples
 ========
 
-Synapse Plasticity example
---------------------------
+Synapse Plasticity example for reproducing results of Chindemi2021 paper
+------------------------------------------------------------------------
+
+This section of EModelRunner aims at reproducing the methods and results of the paper named 
+'A calcium-based plasticity model predicts long-term potentiation and depression in the neocortex', by Chindemi, 2021.
 
 You can find an example cell package in example/synplas_sample_dir.
 Go to this folder, or to a cell package that has been designed to work with the synapse plasticity functions.
