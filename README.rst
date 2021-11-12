@@ -171,6 +171,8 @@ The output can be found under python_recordings.
 GUI
 ~~~
 
+|GUI_screenshot|
+
 There is also a GUI available for the sscx cells. To launch it, you have to go in a sscx-compatible cell package, and then type:
 
     python -m emodelrunner.GUI
@@ -205,3 +207,5 @@ Copyright (c) 2020-2021 Blue Brain Project/EPFL
 .. |license| image:: https://img.shields.io/badge/License-Apache_2.0-blue.svg
                 :target: https://github.com/BlueBrain/EModelRunner/blob/main/LICENSE.txt
                 :alt: Build Status
+
+.. |GUI_screenshot| image:: doc/source/images/GUI_screenshot.png

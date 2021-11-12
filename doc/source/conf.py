@@ -16,6 +16,13 @@ import sys
 sys.path.insert(0, os.path.abspath("."))
 
 from pkg_resources import get_distribution
+from pathlib import Path
+import shutil
+
+# -- copy images referenced in Readme ---------------------------------------
+
+Path("doc/source/images").mkdir(parents=True, exist_ok=True)
+shutil.copy("images/GUI_screenshot.png", "doc/source/images/GUI_screenshot.png")
 
 
 # -- Project information -----------------------------------------------------
