@@ -12,12 +12,11 @@ Installing EModelRunner
 
 The usual way to install EModelRunner is using pip.
 
-In that case, you probably want to use a python 
-`virtual environment <https://bbpteam.epfl.ch/project/spaces/display/BBPWFA/virtualenv>`_.
+In that case, you probably want to use a python virtual environment.
 
-Pip install emodelrunner from the BBP Devpi server::
+Pip install emodelrunner from PyPi will be available after open sourcing::
 
-    pip install -i 'https://bbpteam.epfl.ch/repository/devpi/bbprelman/dev/+simple/' emodelrunner[bbp]
+    pip install emodelrunner
 
 
 Installing from source 
@@ -32,7 +31,7 @@ the only difference is that you clone the git repo::
 and run pip from inside the newly created emodelrunner subdirectory 
 (don't forget the dot at the end of the command)::
 
-    pip install -i https://bbpteam.epfl.ch/repository/devpi/bbprelman/dev/+simple --upgrade .[bbp]
+    pip install -e .
 
 Supported systems
 -----------------
