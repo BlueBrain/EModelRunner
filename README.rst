@@ -1,4 +1,4 @@
-|build|
+|build| |license|
 
 ############
 EModelRunner
@@ -12,15 +12,11 @@ Installing EModelRunner
 
 The usual way to install EModelRunner is using pip.
 
-In that case, you probably want to use a python 
-`virtual environment <https://bbpteam.epfl.ch/project/spaces/display/BBPWFA/virtualenv>`_.
+In that case, you probably want to use a python virtual environment.
 
-Pip install emodelrunner from the BBP Devpi server::
+Pip install emodelrunner from PyPi will be available after open sourcing::
 
-    pip install -i 'https://bbpteam.epfl.ch/repository/devpi/bbprelman/dev/+simple/' emodelrunner[bbp]
-
-Hopefully this installation went smoothly. If it didn't, please create a Jira 
-ticket, assign it to Aurelien Jaquier or Anil Tuncel, and explain as detailed as possible the problems you encountered.
+    pip install emodelrunner
 
 
 Installing from source 
@@ -30,12 +26,12 @@ If you want to make changes to emodelrunner, you might want to install it using 
 source repository. The same remarks of the section above apply, 
 the only difference is that you clone the git repo::
 
-   git clone ssh://bbpcode.epfl.ch/cells/emodelrunner.git
+   git clone https://github.com/BlueBrain/EModelRunner.git
 
 and run pip from inside the newly created emodelrunner subdirectory 
 (don't forget the dot at the end of the command)::
 
-    pip install -i https://bbpteam.epfl.ch/repository/devpi/bbprelman/dev/+simple --upgrade .[bbp]
+    pip install -e .
 
 Supported systems
 -----------------
@@ -56,6 +52,7 @@ The main dependencies of EModelRunner are::
     H5py
     NEURON
     BluePyOpt
+    Schema
 
 Ideally, follow the installation instructions of these tools, or use 
 pre-installed versions.
@@ -75,43 +72,106 @@ before installing anything else using pip.
 Examples
 ========
 
-Two examples are available under the example folder of this package: 
+Synapse Plasticity example for reproducing results of Chindemi2021 paper
+------------------------------------------------------------------------
 
-sscx_sample_dir, containing a cell with configurations for 3 simple step protocols and one synapse exciting protocol.
+This section of EModelRunner aims at reproducing the methods and results of the paper named 
+'A calcium-based plasticity model predicts long-term potentiation and depression in the neocortex', by Chindemi, 2021.
 
-synplas_sample_dir, containing a cell with a protocol exposing the synapse plasticity phenomenon.
+You can find an example cell package in example/synplas_sample_dir.
+Go to this folder, or to a cell package that has been designed to work with the synapse plasticity functions.
 
-In both cases, running the cells can be done in three steps:
+Run the simulation
+~~~~~~~~~~~~~~~~~~
 
-First, go to the folder you are interested in:
+Running the simulation should be as easy as:
 
-For the simple protocol cell:
+    sh run.sh config_path
 
-    cd examples/sscx_sample_dir
+Where config_path is the path to a specific config file. You will find the available config files in the config folder.
+It will run the post-synaptic cell using pre-defined spike train of the pre-synaptic cell to stimulate the synapses.
 
-For the synapse plasticity cell:
+You can also do a true pair simulation, where both the pre-synaptic and the post-synaptic cells. 
+This should be as easy as:
 
-    cd examples/synplas_sample_dir
+    sh run_pairsim.sh config_path
 
-Then, compile the mechanisms using neuron:
+Where config_path is the path to a specific config file. You will find the available config files in the config folder.
 
-    nrnivmodl mechanisms
+Once the simulation is done, the output is stored as output_{protocol_details}.h5.
+If the precell has been simulated too, its output is stored as output_precell_{protocol_details}.h5.
 
-Finally, running the cell with the appropriate script:
-For the simple cell:
+Please, bear in mind that, since it is difficult to make the pre-synaptic cell spike at exactly the same time as in the pre-recorded spike-train file
+(especially when the pre-synaptic cell has to spike multiple times in a row),
+the results of the 'true pair' simulation might differ slightly from those of the 'post-synaptic cell only' simulation.
 
-    sh run_py.sh
+All the config files are working for both the 'post-synaptic cell only' and the 'true pair' simulations.
 
-For the synapse plasticity cell:
 
-    sh run.sh
+Analyse the output
+~~~~~~~~~~~~~~~~~~
 
-The output can be found under python_recordings for the sscx cell, and under output.h5 for the synapse plasticity cell.
+Start by loading the class useful for the analysis with the following command:
+
+    from emodelrunner.synplas_analysis import Experiment
+
+Then create an Experiment instance:
+
+    exp = Experiment(data="output_50Hz_10ms.h5", c01duration=, c02duration=, period=)
+
+With data being the path to your output file, or a dictionary containing the output data, 
+c01duration, respectively c02duration, are the duration of the EPSP monitoring before, respectively after, the induction protocol,
+period is the period at which the synapses are stimulated.
+
+Note that the period argument can be replaced by c01period and c02period if the period used for the stimulation of the synapses is different after and before the induction protocol.
+
+The change of EPSPs can then be computed by using the compute_epsp_ratio method, as follows:
+
+    EPSP_ratio = exp.compute_epsp_ratio(n=60, method="amplitude)
+
+With n the number of sweeps to be considered for mean EPSP calculation, 
+and method the method to use to compute EPSP ratio (can be "amplitude" or "slope").
+
+
+Sscx example
+------------
+
+You can find an example cell package in example/sscx_sample_dir.
+Go to this folder, or to a cell package that has been designed to work with the sscx functions.
+
+Run the simulation using python
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Running the simulation should be as easy as:
+
+    sh run.sh config_path
+
+Where config_path is the path to a specific config file. You will find the available config files in the config folder.
+Note that the protocol used will depend on the contents of the config file.
+
+The output can be found under python_recordings.
+
+Run the simulation using hoc
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can also run the simulation using hoc. In order to do that, you will have to first create the hoc files with the following line:
+
+    python create_hoc.py --config_path config_path
+
+Where config_path is the path to a specific config file. You will find the available config files in the config folder.
+Note that not all the protocols in the config files can be turned into hoc yet.
+
+Then run the simulation with:
+
+    sh run_hoc.sh
+
+The output can be found under python_recordings.
+
 
 GUI
----
+~~~
 
-There is also a GUI available for the sscx cells. To launch it, you have to follow the first two steps of the previous example, and then type:
+There is also a GUI available for the sscx cells. To launch it, you have to go in a sscx-compatible cell package, and then type:
 
     python -m emodelrunner.GUI
 
@@ -140,4 +200,8 @@ Copyright (c) 2020-2021 Blue Brain Project/EPFL
 
 .. |build| image:: https://github.com/BlueBrain/EModelRunner/actions/workflows/main.yml/badge.svg
                 :target: https://github.com/BlueBrain/EModelRunner/actions/workflows/main.yml
+                :alt: Build Status
+
+.. |license| image:: https://img.shields.io/badge/License-Apache_2.0-blue.svg
+                :target: https://github.com/BlueBrain/EModelRunner/blob/main/LICENSE.txt
                 :alt: Build Status
