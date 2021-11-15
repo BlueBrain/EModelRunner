@@ -140,39 +140,26 @@ class FrameStepStimulus(ttk.Frame):
         style_dict = get_style_cst()
 
         self.step_stim = tk.DoubleVar()
-        self.step_stim.set(gui.simulation.steps[0])  # step1 is selected
+        self.step_stim.set(gui.simulation.step_stim)  # step1 is selected
 
         self.step_stim_title = ttk.Label(self, text="Select a Step Stimulus")
 
-        self.step1 = ttk.Radiobutton(
-            self,
-            text=f"{gui.simulation.steps[0]:.3g} nA",
-            variable=self.step_stim,
-            value=gui.simulation.steps[0],
-            command=lambda: self.get_step_stim(gui),
-        )
-
-        self.step2 = ttk.Radiobutton(
-            self,
-            text=f"{gui.simulation.steps[1]:.3g} nA",
-            variable=self.step_stim,
-            value=gui.simulation.steps[1],
-            command=lambda: self.get_step_stim(gui),
-        )
-
-        self.step3 = ttk.Radiobutton(
-            self,
-            text=f"{gui.simulation.steps[2]:.3g} nA",
-            variable=self.step_stim,
-            value=gui.simulation.steps[2],
-            command=lambda: self.get_step_stim(gui),
-        )
+        self.steps = []
+        for step_amp in gui.simulation.steps:
+            protocol_step = ttk.Radiobutton(
+                self,
+                text=f"{step_amp:.3g} nA",
+                variable=self.step_stim,
+                value=step_amp,
+                command=lambda: self.get_step_stim(gui),
+            )
+            self.steps.append(protocol_step)
 
         self.custom_step = ttk.Radiobutton(
             self,
             text="Custom stimulus [nA]: ",
             variable=self.step_stim,
-            value=0.0,
+            value=gui.simulation.step_stim,
             command=lambda: self.get_custom_step_stim(gui),
         )
 
@@ -195,17 +182,18 @@ class FrameStepStimulus(ttk.Frame):
             width=style_dict["entry_width"],
         )
         self.custom_entry.config(validate="key", validatecommand=(self.reg, "%P"))
-        self.custom_entry.state(["disabled"])
+        self.custom_entry.state(["!disabled"])
 
         self.step_stim_title.grid(row=0, column=0, sticky=tk.W)
-        self.step1.grid(row=1, column=0, sticky=tk.W)
-        self.step2.grid(row=2, column=0, sticky=tk.W)
-        self.step3.grid(row=3, column=0, sticky=tk.W)
-        self.custom_step.grid(row=4, column=0, sticky=tk.W)
-        self.custom_entry.grid(row=4, column=1, sticky=tk.E)
+        self.custom_step.grid(row=1, column=0, sticky=tk.W)
+        self.custom_entry.grid(row=1, column=1, sticky=tk.E)
+        step_row = 1
+        for protocol_step in self.steps:
+            step_row += 1
+            protocol_step.grid(row=step_row, column=0, sticky=tk.W)
 
         self.columnconfigure(1, weight=1)  # only center column grows
-        for i in range(5):
+        for i in range(step_row + 1):
             self.rowconfigure(i, weight=1)
 
     def get_step_stim(self, gui):
@@ -248,25 +236,26 @@ class FrameHoldStimulus(ttk.Frame):
         style_dict = get_style_cst()
 
         self.hold_stim = tk.DoubleVar()
-        self.hold_stim.set(
-            gui.simulation.default_hypamp
-        )  # default hold stim is selected
+        self.hold_stim.set(gui.simulation.hypamp)  # default hold stim is selected
 
         self.hold_stim_title = ttk.Label(self, text="Select a Holding Stimulus")
 
-        self.default_hypamp = ttk.Radiobutton(
-            self,
-            text=f"{gui.simulation.default_hypamp:.3g} nA",
-            variable=self.hold_stim,
-            value=gui.simulation.default_hypamp,
-            command=lambda: self.get_hold_stim(gui),
-        )
+        self.hypamps = []
+        for amp in gui.simulation.hypamps:
+            protocol_hypamp = ttk.Radiobutton(
+                self,
+                text=f"{amp:.3g} nA",
+                variable=self.hold_stim,
+                value=amp,
+                command=lambda: self.get_hold_stim(gui),
+            )
+            self.hypamps.append(protocol_hypamp)
 
         self.custom_hold = ttk.Radiobutton(
             self,
             text="Custom stimulus [nA]: ",
             variable=self.hold_stim,
-            value=0.0,
+            value=gui.simulation.hypamp,
             command=lambda: self.get_custom_hold_stim(gui),
         )
 
@@ -289,15 +278,18 @@ class FrameHoldStimulus(ttk.Frame):
             width=style_dict["entry_width"],
         )
         self.custom_entry.config(validate="key", validatecommand=(self.reg, "%P"))
-        self.custom_entry.state(["disabled"])
+        self.custom_entry.state(["!disabled"])
 
         self.hold_stim_title.grid(row=0, column=0, sticky=tk.W)
-        self.default_hypamp.grid(row=1, column=0, sticky=tk.W)
-        self.custom_hold.grid(row=2, column=0, sticky=tk.W)
-        self.custom_entry.grid(row=2, column=1, sticky=tk.E)
+        self.custom_hold.grid(row=1, column=0, sticky=tk.W)
+        self.custom_entry.grid(row=1, column=1, sticky=tk.E)
+        hold_row = 1
+        for protocol_hypamp in self.hypamps:
+            hold_row += 1
+            protocol_hypamp.grid(row=hold_row, column=0, sticky=tk.W)
 
         self.columnconfigure(1, weight=1)  # only center column grows
-        for i in range(3):
+        for i in range(hold_row + 1):
             self.rowconfigure(i, weight=1)
 
     def get_hold_stim(self, gui):

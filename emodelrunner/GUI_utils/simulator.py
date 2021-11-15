@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import os
 import numpy as np
 
@@ -149,23 +150,88 @@ class NeuronSimulation:
         self.sim = None
         self.syn_display_data = None
 
-    def load_protocol_params(self):
-        """Load default protocol params."""
-        self.total_duration = self.config.getint("Protocol", "total_duration")
+    def load_protocol_params(
+        self,
+        total_duration=3000,
+        step_delay=700,
+        step_duration=2000,
+        hold_step_delay=0,
+        hold_step_duration=3000,
+        default_step=0,
+        default_holding=0,
+    ):
+        """Load default protocol params.
 
-        # step protocol params
-        self.steps, self.default_hypamp = self.load_default_step_stim()
-        self.step_stim = self.steps[0]
-        self.hypamp = self.default_hypamp
+        Args:
+            total_duration, etc. : default values if no StepProtocol is found
+        """
+        prot_path = self.config.get("Paths", "prot_path")
+        with open(prot_path, "r", encoding="utf-8") as protocol_file:
+            protocol_data = json.load(protocol_file)
+        if "__comment" in protocol_data:
+            del protocol_data["__comment"]
 
-        self.step_delay = self.config.getint("Protocol", "stimulus_delay")
-        self.step_duration = self.config.getint("Protocol", "stimulus_duration")
-        self.hold_step_delay = self.config.getint("Protocol", "hold_stimulus_delay")
-        self.hold_step_duration = self.config.getint(
-            "Protocol", "hold_stimulus_duration"
-        )
+        # list of all steps and hold amps found in all stepprotocols in prot file
+        steps = []
+        holdings = []
 
-    def load_synapse_params(self):
+        for prot_data in protocol_data.values():
+            if prot_data["type"] == "StepProtocol":
+                step = prot_data["stimuli"]["step"]
+
+                # can be dict or list of dicts
+                if isinstance(step, list):
+                    for step_ in step:
+                        # If a default step amplitude is registered,
+                        # two buttons will have the same value:
+                        # the registered one and the custom one
+                        if step_["amp"] != default_step:
+                            steps.append(step_["amp"])
+
+                        # replace default values
+                        # may be replaced several times
+                        total_duration = step_["totduration"]
+                        step_delay = step_["delay"]
+                        step_duration = step_["duration"]
+                else:
+                    if step["amp"] != default_step:
+                        steps.append(step["amp"])
+
+                    total_duration = step["totduration"]
+                    step_delay = step["delay"]
+                    step_duration = step["duration"]
+
+                if "holding" in prot_data["stimuli"]:
+                    holding = prot_data["stimuli"]["holding"]
+
+                    # amp can be None in e.g. Rin recipe protocol
+                    if holding["amp"] is not None and holding["amp"] != default_holding:
+                        holdings.append(holding["amp"])
+
+                    hold_step_delay = holding["delay"]
+                    hold_step_duration = holding["duration"]
+                else:
+                    hold_step_delay = 0.0
+                    hold_step_duration = total_duration
+
+        self.total_duration = total_duration
+
+        # filter duplicates (dict preserves order for py37+)
+        self.steps = list(dict.fromkeys(steps))
+        self.hypamps = list(dict.fromkeys(holdings))
+
+        # set default values for custom entry
+        self.step_stim = default_step
+        self.hypamp = default_holding
+
+        self.step_delay = step_delay
+        self.step_duration = step_duration
+        self.hold_step_delay = hold_step_delay
+        self.hold_step_duration = hold_step_duration
+
+    def load_synapse_params(
+        self, syn_start=0, syn_interval=0, syn_nmb_of_spikes=0, syn_noise=0
+    ):
         """Load default synapse params."""
         # mtypes to be chosen from {mtypeidx: mtype_name, ...}
         self.available_pre_mtypes = self.load_available_pre_mtypes()
@@ -175,10 +241,10 @@ class NeuronSimulation:
         self.netstim_params = {}
 
         # default synapse params
-        self.syn_start = self.config.getint("Protocol", "syn_start")
-        self.syn_interval = self.config.getint("Protocol", "syn_interval")
-        self.syn_nmb_of_spikes = self.config.getint("Protocol", "syn_nmb_of_spikes")
-        self.syn_noise = self.config.getint("Protocol", "syn_noise")
+        self.syn_start = syn_start
+        self.syn_interval = syn_interval
+        self.syn_nmb_of_spikes = syn_nmb_of_spikes
+        self.syn_noise = syn_noise
 
     def load_available_pre_mtypes(self):
         """Load the list of pre mtype cells to which are connected the synapses."""
@@ -197,17 +263,6 @@ class NeuronSimulation:
                 mtypes[int(line[0])] = line[1]
 
         return mtypes
-
-    def load_default_step_stim(self):
-        """Load the default step & holding stimuli."""
-        amplitudes = [
-            self.config.getfloat("Protocol", "stimulus_amp1"),
-            self.config.getfloat("Protocol", "stimulus_amp2"),
-            self.config.getfloat("Protocol", "stimulus_amp3"),
-        ]
-        hypamp = self.config.getfloat("Protocol", "hold_amp")
-
-        return amplitudes, hypamp
 
     def get_syn_stim(self):
         """Create syanpse stimuli."""

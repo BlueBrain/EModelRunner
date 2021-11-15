@@ -14,10 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import argparse
+
 from emodelrunner.GUI_utils.interface import GUI
 
 
 if __name__ == "__main__":
-    gui = GUI()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--config_path",
+        default=None,
+        help="the path to the config file.",
+    )
+    args = parser.parse_args()
 
+    gui = GUI(config_path=args.config_path)
     gui.root.mainloop()
