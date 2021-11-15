@@ -4,8 +4,27 @@
 EModelRunner
 ############
 
-Runs cells from Blue Brain Project cell packages, such as sscx, synapse plasticity, etc.
+Introduction
+============
 
+EModelRunner is a python library designed to run the cell models provided by the Blue Brain portals in a simple and straightforward way.
+
+It consists of two main modules:
+
+  - one module designed to show the synapse plasticity phenomenon. It has the following features:
+    
+    - ability to run post-synaptic cell with pre-recorded output of pre-synaptic cell
+    - ability to run 'true' pair simulations, where both the pre-synaptic and the post-synaptic cells are run at the same time
+    - analysis tool to compute the change of EPSPs
+
+  - one module designed to run the cells from the SomatoSensoryCortex portal, with the following features:
+    
+    - ability to use Steps and Ramps protocols
+    - synapse stimulation
+    - ability to produce hoc files to run the cells
+    - a GUI
+
+Note that EModelRunner is a convenience tool and does not aim to be a universal simulator.
 
 Installing EModelRunner
 =======================
@@ -72,11 +91,8 @@ before installing anything else using pip.
 Examples
 ========
 
-Synapse Plasticity example for reproducing results of Chindemi2021 paper
-------------------------------------------------------------------------
-
-This section of EModelRunner aims at reproducing the methods and results of the paper named 
-'A calcium-based plasticity model predicts long-term potentiation and depression in the neocortex', by Chindemi, 2021.
+Synapse Plasticity example
+--------------------------
 
 You can find an example cell package in example/synplas_sample_dir.
 Go to this folder, or to a cell package that has been designed to work with the synapse plasticity functions.
