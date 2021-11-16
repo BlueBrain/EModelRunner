@@ -36,12 +36,26 @@ from emodelrunner.GUI_utils.style import get_style_cst
 
 
 def positive_int_callback(input_):
-    """Accepts only digits or '' in entry."""
+    """Accepts only digits or '' as entry.
+
+    Args:
+        input_ (str): input to check
+
+    Returns:
+        bool: True if input is an int or an empty string, False otherwise
+    """
     return input_.isdigit() or input_ == ""
 
 
 def float_callback(input_):
-    """Accepts only a float or '' in entry."""
+    """Accepts only a float or '' as entry.
+
+    Args:
+        input_ (str): input to check
+
+    Returns:
+        bool: True if input is a float or an empty string, False otherwise
+    """
     if input_ != "":
         try:
             float(input_)
@@ -54,7 +68,11 @@ class ToolbarCustom(NavigationToolbar2TkAgg):
     """Matplotlib toolbar class."""
 
     def set_message(self, msg):
-        """Do not show message. This is unstable."""
+        """Do not show message. This is unstable.
+
+        Args:
+            msg (str): message
+        """
 
 
 class FrameSetIntFromEntry(ttk.Frame):
@@ -103,7 +121,12 @@ class FrameSetIntFromEntry(ttk.Frame):
         self.columnconfigure(1, weight=1)  # only center column grows
 
     def get_value(self, gui, attr_name):
-        """Put input value in simulation attribute."""
+        """Put input value in simulation attribute.
+
+        Args:
+            gui (GUI): main class containing main frames and simulation
+            attr_name (str): attribute of gui.simulation that can be changed with the entry
+        """
         value = self.entry.get()
         if value == "":
             value = 0
@@ -140,39 +163,26 @@ class FrameStepStimulus(ttk.Frame):
         style_dict = get_style_cst()
 
         self.step_stim = tk.DoubleVar()
-        self.step_stim.set(gui.simulation.steps[0])  # step1 is selected
+        self.step_stim.set(gui.simulation.step_stim)  # step1 is selected
 
         self.step_stim_title = ttk.Label(self, text="Select a Step Stimulus")
 
-        self.step1 = ttk.Radiobutton(
-            self,
-            text=f"{gui.simulation.steps[0]:.3g} nA",
-            variable=self.step_stim,
-            value=gui.simulation.steps[0],
-            command=lambda: self.get_step_stim(gui),
-        )
-
-        self.step2 = ttk.Radiobutton(
-            self,
-            text=f"{gui.simulation.steps[1]:.3g} nA",
-            variable=self.step_stim,
-            value=gui.simulation.steps[1],
-            command=lambda: self.get_step_stim(gui),
-        )
-
-        self.step3 = ttk.Radiobutton(
-            self,
-            text=f"{gui.simulation.steps[2]:.3g} nA",
-            variable=self.step_stim,
-            value=gui.simulation.steps[2],
-            command=lambda: self.get_step_stim(gui),
-        )
+        self.steps = []
+        for step_amp in gui.simulation.steps:
+            protocol_step = ttk.Radiobutton(
+                self,
+                text=f"{step_amp:.3g} nA",
+                variable=self.step_stim,
+                value=step_amp,
+                command=lambda: self.get_step_stim(gui),
+            )
+            self.steps.append(protocol_step)
 
         self.custom_step = ttk.Radiobutton(
             self,
             text="Custom stimulus [nA]: ",
             variable=self.step_stim,
-            value=0.0,
+            value=gui.simulation.step_stim,
             command=lambda: self.get_custom_step_stim(gui),
         )
 
@@ -195,21 +205,26 @@ class FrameStepStimulus(ttk.Frame):
             width=style_dict["entry_width"],
         )
         self.custom_entry.config(validate="key", validatecommand=(self.reg, "%P"))
-        self.custom_entry.state(["disabled"])
+        self.custom_entry.state(["!disabled"])
 
         self.step_stim_title.grid(row=0, column=0, sticky=tk.W)
-        self.step1.grid(row=1, column=0, sticky=tk.W)
-        self.step2.grid(row=2, column=0, sticky=tk.W)
-        self.step3.grid(row=3, column=0, sticky=tk.W)
-        self.custom_step.grid(row=4, column=0, sticky=tk.W)
-        self.custom_entry.grid(row=4, column=1, sticky=tk.E)
+        self.custom_step.grid(row=1, column=0, sticky=tk.W)
+        self.custom_entry.grid(row=1, column=1, sticky=tk.E)
+        step_row = 1
+        for protocol_step in self.steps:
+            step_row += 1
+            protocol_step.grid(row=step_row, column=0, sticky=tk.W)
 
         self.columnconfigure(1, weight=1)  # only center column grows
-        for i in range(5):
+        for i in range(step_row + 1):
             self.rowconfigure(i, weight=1)
 
     def get_step_stim(self, gui):
-        """Put selected step stim value into simulation attribute."""
+        """Put selected step stim value into simulation attribute.
+
+        Args:
+            gui (GUI): main class containing main frames and simulation
+        """
         self.custom_entry.state(["disabled"])
 
         value = self.step_stim.get()
@@ -217,7 +232,11 @@ class FrameStepStimulus(ttk.Frame):
         gui.config_has_changed()
 
     def get_custom_step_stim(self, gui):
-        """Enable input and put input value into simulation attribute."""
+        """Enable input and put input value into simulation attribute.
+
+        Args:
+            gui (GUI): main class containing main frames and simulation
+        """
         self.custom_entry.state(["!disabled"])
 
         value = self.custom_entry.get()
@@ -248,25 +267,26 @@ class FrameHoldStimulus(ttk.Frame):
         style_dict = get_style_cst()
 
         self.hold_stim = tk.DoubleVar()
-        self.hold_stim.set(
-            gui.simulation.default_hypamp
-        )  # default hold stim is selected
+        self.hold_stim.set(gui.simulation.hypamp)  # default hold stim is selected
 
         self.hold_stim_title = ttk.Label(self, text="Select a Holding Stimulus")
 
-        self.default_hypamp = ttk.Radiobutton(
-            self,
-            text=f"{gui.simulation.default_hypamp:.3g} nA",
-            variable=self.hold_stim,
-            value=gui.simulation.default_hypamp,
-            command=lambda: self.get_hold_stim(gui),
-        )
+        self.hypamps = []
+        for amp in gui.simulation.hypamps:
+            protocol_hypamp = ttk.Radiobutton(
+                self,
+                text=f"{amp:.3g} nA",
+                variable=self.hold_stim,
+                value=amp,
+                command=lambda: self.get_hold_stim(gui),
+            )
+            self.hypamps.append(protocol_hypamp)
 
         self.custom_hold = ttk.Radiobutton(
             self,
             text="Custom stimulus [nA]: ",
             variable=self.hold_stim,
-            value=0.0,
+            value=gui.simulation.hypamp,
             command=lambda: self.get_custom_hold_stim(gui),
         )
 
@@ -289,19 +309,26 @@ class FrameHoldStimulus(ttk.Frame):
             width=style_dict["entry_width"],
         )
         self.custom_entry.config(validate="key", validatecommand=(self.reg, "%P"))
-        self.custom_entry.state(["disabled"])
+        self.custom_entry.state(["!disabled"])
 
         self.hold_stim_title.grid(row=0, column=0, sticky=tk.W)
-        self.default_hypamp.grid(row=1, column=0, sticky=tk.W)
-        self.custom_hold.grid(row=2, column=0, sticky=tk.W)
-        self.custom_entry.grid(row=2, column=1, sticky=tk.E)
+        self.custom_hold.grid(row=1, column=0, sticky=tk.W)
+        self.custom_entry.grid(row=1, column=1, sticky=tk.E)
+        hold_row = 1
+        for protocol_hypamp in self.hypamps:
+            hold_row += 1
+            protocol_hypamp.grid(row=hold_row, column=0, sticky=tk.W)
 
         self.columnconfigure(1, weight=1)  # only center column grows
-        for i in range(3):
+        for i in range(hold_row + 1):
             self.rowconfigure(i, weight=1)
 
     def get_hold_stim(self, gui):
-        """Put selected holding stim value into simulation attribute."""
+        """Put selected holding stim value into simulation attribute.
+
+        Args:
+            gui (GUI): main class containing main frames and simulation
+        """
         self.custom_entry.state(["disabled"])
 
         value = self.hold_stim.get()
@@ -309,7 +336,11 @@ class FrameHoldStimulus(ttk.Frame):
         gui.config_has_changed()
 
     def get_custom_hold_stim(self, gui):
-        """Enable input and put input value into simulation attribute."""
+        """Enable input and put input value into simulation attribute.
+
+        Args:
+            gui (GUI): main class containing main frames and simulation
+        """
         self.custom_entry.state(["!disabled"])
 
         value = self.custom_entry.get()
@@ -495,7 +526,6 @@ class FrameFigures(ttk.Frame):
 
         Args:
             parent (ttk.Frame): parent frame in which to embed this frame
-            gui (GUI): main class containing main frames and simulation
             simulation (NeuronSimulation): contains simulation (and cell) data
             plot_3d (bool): set to True to plot the cell shapes in 3D
             toolbar_on (bool): set to True to display the matplotlib toolbars
@@ -618,7 +648,11 @@ class FrameFigures(ttk.Frame):
         self.rowconfigure(3, weight=1)
 
     def set_fig_morph_display(self, fig):
-        """Set shape figure size and adjustment."""
+        """Set shape figure size and adjustment.
+
+        Args:
+            fig (matplotlib.figure.Figure): figure to adjust
+        """
         if self.figsize == "small":
             fig.set_size_inches((3, 3))
         elif self.figsize == "large":
@@ -634,7 +668,11 @@ class FrameFigures(ttk.Frame):
             fig.subplots_adjust(right=0.98, top=0.98, bottom=0.15, left=0.20)
 
     def set_fig_volt_display(self, fig):
-        """Set shape figure size and adjustment."""
+        """Set shape figure size and adjustment.
+
+        Args:
+            fig (matplotlib.figure.Figure): figure to adjust
+        """
         if self.figsize == "small":
             fig.set_size_inches((4.5, 2))
         elif self.figsize == "large":
@@ -662,14 +700,26 @@ class FrameFigures(ttk.Frame):
 
     @staticmethod
     def get_interactive_3d_rotation(canva, ax):
-        """Connect events to canva to enable rotative 3d plots with mouse."""
+        """Connect events to canva to enable rotative 3d plots with mouse.
+
+        Args:
+            canva (matplotlib.backends.backend_tkagg.FigureCanvasTkAgg): canva
+            ax (matplotlib.axes.Axes): axes
+        """
         # pylint: disable=protected-access
         canva.mpl_connect("button_press_event", ax._button_press)
         canva.mpl_connect("button_release_event", ax._button_release)
         canva.mpl_connect("motion_notify_event", ax._on_move)
 
     def set_axis(self, x_min=0, x_max=3000, y_min=-90, y_max=40):
-        """Set the voltage figure's axis."""
+        """Set the voltage figure's axis.
+
+        Args:
+            x_min (float): min value on x axis
+            x_max (float): max value on x axis
+            y_min (float): min value on y axis
+            y_max (float): max value on y axis
+        """
         self.ax_volt.set_xlim([x_min, x_max])
         self.ax_volt.set_ylim([y_min, y_max])
         self.ax_volt.set_xlabel("t [ms]")
@@ -679,6 +729,13 @@ class FrameFigures(ttk.Frame):
         """Checks the voltage change in the cell sections.
 
         Update display if change is significant.
+
+        Args:
+            root (tk.Tk): root of the GUI
+            simulation (NeuronSimulation): contains simulation (and cell) data
+
+        Returns:
+            bool: True if the cell morphology with color-coded voltage figure has been updated
         """
         # here, update is True if any of the morph lines has a significant change of voltage.
         morph_lines, old_vals, update = get_morph_lines(
@@ -843,18 +900,36 @@ class FrameMain(ttk.Frame):
         self.frame_figures.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
 
     def display(self, root, simulation):
-        """Update figures display."""
+        """Update figures display.
+
+        Args:
+            root (tk.Tk): root of the GUI
+            simulation (NeuronSimulation): contains simulation (and cell) data
+        """
         self.frame_figures.display(root, simulation)
 
     def check_change(self, root, simulation):
         """Checks the voltage change in the cell sections.
 
         Update display if change is significant.
+
+        Args:
+            root (tk.Tk): root of the GUI
+            simulation (NeuronSimulation): contains simulation (and cell) data
+
+        Returns:
+            bool: True if the cell morphology with color-coded voltage figure has been updated
         """
         return self.frame_figures.check_change(root, simulation)
 
     def update_syn_display(self, root, simulation):
-        """Update the display of the synapses on the right figure."""
+        """Update the display of the synapses on the right figure.
+
+        Args:
+            Args:
+            root (tk.Tk): root of the GUI
+            simulation (NeuronSimulation): contains simulation (and cell) data
+        """
         self.frame_figures.update_syn_display(root, simulation)
 
     def restart_volt(self):
@@ -993,7 +1068,14 @@ class FrameSynapses(ttk.LabelFrame):
 
     @staticmethod
     def check_variable(x):
-        """Returns the variable if it is a positive int. Returns 0 if not."""
+        """Returns the variable if it is a positive int. Returns 0 if not.
+
+        Args:
+            x (str): variable to check
+
+        Returns:
+            int: the variable if it is a positive int
+        """
         try:
             if x == "":
                 x = 0
@@ -1009,7 +1091,11 @@ class FrameSynapses(ttk.LabelFrame):
         return x
 
     def load_current_mtype_list(self, gui):
-        """Load current mtype list and netstim params."""
+        """Load current mtype list and netstim params.
+
+        Args:
+            gui (GUI): main class containing main frames and simulation
+        """
         gui.simulation.pre_mtypes = []
         gui.simulation.netstim_params = {}
 
@@ -1123,7 +1209,11 @@ class FrameConfigFig(ttk.LabelFrame):
         self.columnconfigure(2, weight=1)
 
     def load_toolbar_value(self, gui):
-        """Change toolbar value in gui and reload figure frame."""
+        """Change toolbar value in gui and reload figure frame.
+
+        Args:
+            gui (GUI): main class containing main frames and simulation
+        """
         if self.toolbar_var.get():
             gui.toolbar_on = True
         else:
@@ -1132,7 +1222,11 @@ class FrameConfigFig(ttk.LabelFrame):
         gui.reload_figure_frame()
 
     def load_plot_3d_value(self, gui):
-        """Change figure display in gui and reload figure frame."""
+        """Change figure display in gui and reload figure frame.
+
+        Args:
+            gui (GUI): main class containing main frames and simulation
+        """
         if self.plot_3d_var.get():
             gui.plot_3d = True
         else:
@@ -1141,6 +1235,10 @@ class FrameConfigFig(ttk.LabelFrame):
         gui.reload_figure_frame()
 
     def load_figsize_value(self, gui):
-        """Change figure size in gui and reload figure frame."""
+        """Change figure size in gui and reload figure frame.
+
+        Args:
+            gui (GUI): main class containing main frames and simulation
+        """
         gui.figsize = self.figsize_var.get()
         gui.reload_figure_frame()

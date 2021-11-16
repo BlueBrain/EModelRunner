@@ -82,7 +82,14 @@ class GUI:
 
     @staticmethod
     def get_refresh_from_fps(fps):
-        """Get refresh rate from fps."""
+        """Get refresh rate from fps.
+
+        Args:
+            fps (float): number of frames per second to be displayed
+
+        Returns:
+            float: refresh time (s)
+        """
         return 1.0 / fps
 
     def create_frames(self):
@@ -116,6 +123,9 @@ class GUI:
         """Checks the voltage change in the cell sections.
 
         Update display if change is significant.
+
+        Returns:
+            bool: True if the cell morphology with color-coded voltage figure has been updated
         """
         return self.frames["FrameMain"].check_change(self.root, self.simulation)
 
@@ -148,7 +158,7 @@ class GUI:
             self.simulation.sim.neuron.h.fadvance()
             if self.simulation.sim.neuron.h.t > last_t + check_dt:
                 last_t = self.simulation.sim.neuron.h.t
-                # check for big change in voltage. Update display if bif change found.
+                # check for big change in voltage. Update display if big change found.
                 updated = self.check_v_change()
                 if updated:
                     t1 = time.time()

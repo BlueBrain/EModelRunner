@@ -23,7 +23,11 @@ from neuron.gui2.utilities import _segment_3d_pts
 
 
 def auto_aspect(ax):
-    """Sets the x, y, and z range symmetric around the center."""
+    """Sets the x, y, and z range symmetric around the center.
+
+    Args:
+        ax (matplotlib.axes.Axes): axis
+    """
     bounds = [ax.get_xlim(), ax.get_ylim()]
     half_delta_max = max([(item[1] - item[0]) / 2 for item in bounds])
     xmid = sum(bounds[0]) / 2
@@ -34,7 +38,17 @@ def auto_aspect(ax):
 
 
 def get_color_from_cmap(val, val_min, val_max, cmap):
-    """Return color."""
+    """Return color.
+
+    Args:
+        val (float): value to get color for from colormap (mV)
+        val_min (int): minimum value of voltage for colormap (mV)
+        val_max (int): minimum value of voltage for colormap (mV)
+        cmap (matplotlib.colors.Colormap): colormap
+
+    Returns:
+        tuple: tuple of RGBA values indicating a color
+    """
     if val_min >= val_max:
         return "black"
     val_range = val_max - val_min
@@ -42,7 +56,20 @@ def get_color_from_cmap(val, val_min, val_max, cmap):
 
 
 def plot_shape(ax, xaxis, yaxis, zaxis, plot_3d, data, linewidth):
-    """Plot shape and return line."""
+    """Plot shape and return line.
+
+    Args:
+        ax (matplotlib.axes.Axes): axis
+        xaxis (int): indicate which data to plot on the x-axis (0 for x, 1 for y, 2 for z)
+        yaxis (int): indicate which data to plot on the y-axis (0 for x, 1 for y, 2 for z)
+        zaxis (int): indicate which data to plot on the z-axis (0 for x, 1 for y, 2 for z)
+        plot_3d (bool): whether to plot in 3d or 2d
+        data (list): list of (xs, ys, zs, diams) for each segment
+        linewidth (float): width of line in shape plot
+
+    Returns:
+        matplotlib.lines.Line2D: the plotted line
+    """
     if plot_3d:
         (line,) = ax.plot(
             data[xaxis],
@@ -65,7 +92,15 @@ def plot_shape(ax, xaxis, yaxis, zaxis, plot_3d, data, linewidth):
 
 
 def set_labels(ax, xaxis, yaxis, zaxis, plot_3d):
-    """Set labels."""
+    """Set labels.
+
+    Args:
+        ax (matplotlib.axes.Axes): axis
+        xaxis (int): indicate which label to set on the x-axis (0 for x, 1 for y, 2 for z)
+        yaxis (int): indicate which label to set on the y-axis (0 for x, 1 for y, 2 for z)
+        zaxis (int): indicate which label to set on the z-axis (0 for x, 1 for y, 2 for z)
+        plot_3d (bool): whether to plot in 3d or 2d
+    """
     labels = ["x [μm]", "y [μm]", "z [μm]"]
     ax.set_xlabel(labels[xaxis])
     ax.set_ylabel(labels[yaxis])
@@ -95,29 +130,35 @@ def get_morph_lines(
     """Plots a 3D shapeplot.
 
     Args:
-        ax: matplotlib.pyplot axis
-        sim: bluepyopt.ephys.simulators.NrnSimulator object
-        val_min(int): minimum value of voltage for colormap
-        val_max(int): minimum value of voltage for colormap
-        sections: list of h.Section() objects to be plotted. If None, all sections are loaded.
-        variable(str): variable to be plotted. 'v' for voltage.
-        cmap: matplotlib colormap object
-        do_plot(bool): True to plot data. False to get actualised data.
+        ax(matplotlib.axes.Axes): axis
+        sim (bluepyopt.ephys.simulators.NrnSimulator) simulator
+        val_min (int): minimum value of voltage for colormap (mV)
+        val_max (int): minimum value of voltage for colormap (mV)
+        sections (list) list of h.Section() objects to be plotted.
+            If None, all sections are loaded.
+        variable (str): variable to be plotted. 'v' for voltage.
+        cmap (matplotlib.colors.Colormap): colormap
+        do_plot (bool): True to plot data. False to get actualised data.
         plot_3d (bool): set to True to plot the shape in 3D
-        threshold_volt(int): voltage difference from which
-            color should be changed on the cell shape.
-        threshold_volt_fine(int): voltage difference from which
+        threshold_volt (int): voltage difference from which
+            color should be changed on the cell shape. (mV)
+        threshold_volt_fine (int): voltage difference from which
             display should be updated after a small simulation time
-            to fine display rapid changes.
-        old_vals(list): variable values at the last display
-        vals_last_drawn(list): variable values the last time
+            to fine display rapid changes. (mV)
+        old_vals (list): variable values at the last display
+        vals_last_drawn (list): variable values the last time
             the morphology has been drawn (and not blitted).
-        xaxis, yaxis, zaxis(int): 0 for x, 1 for y, 2 for z
-        linewidth(float): width of line in shape plot
+        xaxis (int): indicate which data to plot on the x-axis (0 for x, 1 for y, 2 for z)
+        yaxis (int): indicate which data to plot on the y-axis (0 for x, 1 for y, 2 for z)
+        zaxis (int): indicate which data to plot on the z-axis (0 for x, 1 for y, 2 for z)
+        linewidth (float): width of line in shape plot
 
     Returns:
-        lines = list of line objects making up shapeplot
-        old_vals = list of voltages previously plotted
+        tuple containing
+
+        - list: line objects making up shapeplot to update in figure
+        - list: voltages previously plotted (mV)
+        - bool: True to force the draw of figure, False to blit the figure
     """
     # Adapted from the NEURON package (fct _do_plot in __init__):
     # https://www.neuron.yale.edu/neuron/
