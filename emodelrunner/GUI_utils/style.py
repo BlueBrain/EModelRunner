@@ -18,7 +18,11 @@ import matplotlib as mpl
 
 
 def get_style_cst():
-    """Returns dict containing style vars such as colors."""
+    """Returns dict containing style vars such as colors.
+
+    Returns:
+        dict: style colors, font and width
+    """
     style_dict = {}
     # font & width. has to be an attribute to be accessible.
     # somehow, entry font & width cannot be configurated with style.
@@ -46,7 +50,11 @@ def set_matplotlib_style():
 
 
 def define_style(style):
-    """Define the style for ttk objects."""
+    """Define the style for ttk objects.
+
+    Args:
+        style (ttk.Style): style
+    """
     style_dict = get_style_cst()
 
     style.configure(
