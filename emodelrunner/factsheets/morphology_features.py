@@ -80,7 +80,151 @@ class TotalLength(MorphologyFeature):
         self.value = self.replace_empty_value(feature_value)
 
 
-class NeuriteVolumes(MorphologyFeature):
+class TotalHeight(MorphologyFeature):
+    """Total height feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (float): value of the feature
+        unit (str): unit of the feature
+    """
+
+    def __init__(self, morphology, neurite_name, neurite_type):
+        """Constructor.
+
+        Args:
+            morphology (neurom neuron object): morphology object
+            neurite_name (str): neurite name, e.g. axon
+            neurite_type (NeuriteType): enum for neurite type encoding
+        """
+        super(TotalHeight, self).__init__()
+        self.name = f"total {neurite_name} height"
+        self.unit = "\u00b5m"
+        feature_value = nm.get("total_height", morphology, neurite_type=neurite_type)
+        self.value = self.replace_empty_value(feature_value)
+
+
+class TotalWidth(MorphologyFeature):
+    """Total width feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (float): value of the feature
+        unit (str): unit of the feature
+    """
+
+    def __init__(self, morphology, neurite_name, neurite_type):
+        """Constructor.
+
+        Args:
+            morphology (neurom neuron object): morphology object
+            neurite_name (str): neurite name, e.g. axon
+            neurite_type (NeuriteType): enum for neurite type encoding
+        """
+        super(TotalWidth, self).__init__()
+        self.name = f"total {neurite_name} width"
+        self.unit = "\u00b5m"
+        feature_value = nm.get("total_width", morphology, neurite_type=neurite_type)
+        self.value = self.replace_empty_value(feature_value)
+
+
+class TotalDepth(MorphologyFeature):
+    """Total depth feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (float): value of the feature
+        unit (str): unit of the feature
+    """
+
+    def __init__(self, morphology, neurite_name, neurite_type):
+        """Constructor.
+
+        Args:
+            morphology (neurom neuron object): morphology object
+            neurite_name (str): neurite name, e.g. axon
+            neurite_type (NeuriteType): enum for neurite type encoding
+        """
+        super(TotalDepth, self).__init__()
+        self.name = f"total {neurite_name} depth"
+        self.unit = "\u00b5m"
+        feature_value = nm.get("total_depth", morphology, neurite_type=neurite_type)
+        self.value = self.replace_empty_value(feature_value)
+
+
+class TotalArea(MorphologyFeature):
+    """Total area feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (float): value of the feature
+        unit (str): unit of the feature
+    """
+
+    def __init__(self, morphology, neurite_name, neurite_type):
+        """Constructor.
+
+        Args:
+            morphology (neurom neuron object): morphology object
+            neurite_name (str): neurite name, e.g. axon
+            neurite_type (NeuriteType): enum for neurite type encoding
+        """
+        super(TotalArea, self).__init__()
+        self.name = f"total {neurite_name} area"
+        self.unit = "\u00b5m\u00b2"
+        feature_value = nm.get("total_area", morphology, neurite_type=neurite_type)
+        self.value = self.replace_empty_value(feature_value)
+
+
+class TotalVolume(MorphologyFeature):
+    """Total volume feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (float): value of the feature
+        unit (str): unit of the feature
+    """
+
+    def __init__(self, morphology, neurite_name, neurite_type):
+        """Constructor.
+
+        Args:
+            morphology (neurom neuron object): morphology object
+            neurite_name (str): neurite name, e.g. axon
+            neurite_type (NeuriteType): enum for neurite type encoding
+        """
+        super(TotalVolume, self).__init__()
+        self.name = f"total {neurite_name} volume"
+        self.unit = "\u00b5m\u00b3"
+        feature_value = nm.get("total_volume", morphology, neurite_type=neurite_type)
+        self.value = self.replace_empty_value(feature_value)
+
+
+class NumberOfSections(MorphologyFeature):
+    """Number of sections feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (float): value of the feature
+        unit (str): unit of the feature
+    """
+
+    def __init__(self, morphology, neurite_name, neurite_type):
+        """Constructor.
+
+        Args:
+            morphology (neurom neuron object): morphology object
+            neurite_name (str): neurite name, e.g. axon
+            neurite_type (NeuriteType): enum for neurite type encoding
+        """
+        super(NumberOfSections, self).__init__()
+        self.name = f"number of {neurite_name} sections"
+        self.unit = ""
+        feature_value = nm.get("number_of_sections", morphology, neurite_type=neurite_type)
+        self.value = self.replace_empty_value(feature_value)
+
+
+class MeanNeuriteVolumes(MorphologyFeature):
     """Total neurite volume feature.
 
     Attributes:
@@ -97,7 +241,7 @@ class NeuriteVolumes(MorphologyFeature):
             neurite_name (str): neurite name, e.g. axon
             neurite_type (NeuriteType): enum for neurite type encoding
         """
-        super(NeuriteVolumes, self).__init__()
+        super(MeanNeuriteVolumes, self).__init__()
         self.name = f"mean {neurite_name} volume"
         self.unit = "\u00b5m\u00b3"
         feature_values = nm.get(
@@ -183,6 +327,50 @@ class SomaDiamater(MorphologyFeature):
         self.value = 2 * self.replace_empty_value(feature_value)
 
 
+class SomaSurfaceArea(MorphologyFeature):
+    """Soma surface area feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (float): value of the feature
+        unit (str): unit of the feature
+    """
+
+    def __init__(self, morphology):
+        """Constructor.
+
+        Args:
+            morphology (neurom neuron object): morphology object
+        """
+        super(SomaSurfaceArea, self).__init__()
+        self.name = "soma surface area"
+        self.unit = "\u00b5m\u00b2"
+        feature_value = nm.get("soma_surface_area", morphology)
+        self.value = self.replace_empty_value(feature_value)
+
+
+class SomaVolume(MorphologyFeature):
+    """Soma volume feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (float): value of the feature
+        unit (str): unit of the feature
+    """
+
+    def __init__(self, morphology):
+        """Constructor.
+
+        Args:
+            morphology (neurom neuron object): morphology object
+        """
+        super(SomaVolume, self).__init__()
+        self.name = "soma volume"
+        self.unit = "\u00b5m\u00b3"
+        feature_value = nm.get("soma_volume", morphology)
+        self.value = self.replace_empty_value(feature_value)
+
+
 class MorphologyFactsheetBuilder:
     """Computes the factsheet values for a morphology.
 
@@ -227,14 +415,14 @@ class MorphologyFactsheetBuilder:
         logger.warning("No dendrite found!")
         return ["axon"], [nm.AXON]
 
-    def get_all_feature_values(self):
+    def get_sscx_feature_values(self):
         """Returns the values of all features in a list."""
         all_values = []
         for neurite_name, neurite_type in zip(self.neurite_names, self.neurite_types):
             total_length = TotalLength(self.morphology, neurite_name, neurite_type)
             all_values.append(total_length.to_dict())
 
-            volume = NeuriteVolumes(self.morphology, neurite_name, neurite_type)
+            volume = MeanNeuriteVolumes(self.morphology, neurite_name, neurite_type)
             all_values.append(volume.to_dict())
 
             max_branch_order = MaxBranchOrder(

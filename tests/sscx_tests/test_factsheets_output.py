@@ -137,7 +137,7 @@ def test_anatomy_features():
         morphology_path
     )
 
-    ana_dict = morph_factsheet_builder.get_all_feature_values()
+    ana_dict = morph_factsheet_builder.get_sscx_feature_values()
     ana_dict = {"values": ana_dict, "name": "Anatomy"}
     left_to_check_1 = [
         "total axon length",

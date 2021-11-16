@@ -52,7 +52,7 @@ def write_metype_json(
     data = np.loadtxt(data_path)
 
     morph_factsheet_builder = MorphologyFactsheetBuilder(morph_path=morphology_path)
-    anatomy = morph_factsheet_builder.get_all_feature_values()
+    anatomy = morph_factsheet_builder.get_sscx_feature_values()
     anatomy = {"name": "Anatomy", "values": anatomy}
 
     physiology = physiology_factsheet_info(
