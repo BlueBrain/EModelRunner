@@ -14,5 +14,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-VERSION = "1.0.4.dev1"
+VERSION = "1.0.4.dev2"
 __version__ = VERSION

@@ -15,6 +15,7 @@
 # limitations under the License.
 
 import os
+import json
 import neurom as nm
 from neurom.core.types import NeuriteType
 from emodelrunner.factsheets import morphology_features
@@ -33,15 +34,28 @@ def test_sscx_morphology_factsheet_builder():
     assert len(morph_features) == 13
     for feature in morph_features:
         assert feature["value"] >= 0
+    sscx_morphometrics_dict = factsheet_builder.factsheet_dict()
+
+    with open("tests/unit_tests/data/sscx_morphometrics.json", "r") as in_file:
+        morphometrics_gt = json.load(in_file)
+
+    assert sscx_morphometrics_dict == morphometrics_gt
 
 
 def test_hippocampus_morphology_factsheet_builder():
     """Test hippocampus morphology factsheet builder class."""
-    factsheet_builder = morphology_features.HippocampusMorphologyFactsheetBuilder(test_morph)
+    factsheet_builder = morphology_features.HippocampusMorphologyFactsheetBuilder(
+        test_morph
+    )
     morph_features = factsheet_builder.get_feature_values()
     assert len(morph_features) == 35
     for feature in morph_features:
         assert feature["value"] >= 0
+    hipp_morphometrics_dict = factsheet_builder.factsheet_dict()
+    with open("tests/unit_tests/data/hippocampus_morphometrics.json", "r") as in_file:
+        morphometrics_gt = json.load(in_file)
+
+    assert hipp_morphometrics_dict == morphometrics_gt
 
 
 def test_total_length():
@@ -119,7 +133,9 @@ def test_number_of_sections():
 def test_mean_neurite_volumes():
     """Test neurite volumes feature."""
     morphology = nm.load_neuron(test_morph)
-    feature = morphology_features.MeanNeuriteVolumes(morphology, "axon", NeuriteType.axon)
+    feature = morphology_features.MeanNeuriteVolumes(
+        morphology, "axon", NeuriteType.axon
+    )
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "mean axon volume"
     assert abs(feature_dict["value"] - 2298.9971235076514) <= 1e-3

@@ -220,7 +220,9 @@ class NumberOfSections(MorphologyFeature):
         super(NumberOfSections, self).__init__()
         self.name = f"number of {neurite_name} sections"
         self.unit = ""
-        feature_value = nm.get("number_of_sections", morphology, neurite_type=neurite_type)
+        feature_value = nm.get(
+            "number_of_sections", morphology, neurite_type=neurite_type
+        )
         self.value = self.replace_empty_value(feature_value)
 
 
@@ -376,6 +378,9 @@ class MorphologyFactsheetBuilder:
 
     Attributes:
         morphology (neurom.core.morphology.Morphology): morphology of the neuron
+        neurites (list): list of neurites to be considered
+        neurite_features (list): list of neurite feature to be used
+        soma_features (list): list of soma features to be used
     """
 
     def __init__(self, morph_path):
@@ -385,6 +390,9 @@ class MorphologyFactsheetBuilder:
             morph_path (str or Path): Path to the morphology file.
         """
         self.morphology = nm.load_morphology(morph_path)
+        self.neurites = []
+        self.neurite_features = []
+        self.soma_features = []
 
     @staticmethod
     def get_neurites(morphology):
@@ -401,7 +409,11 @@ class MorphologyFactsheetBuilder:
         api = nm.get("total_length", morphology, neurite_type=nm.APICAL_DENDRITE)
         bas = nm.get("total_length", morphology, neurite_type=nm.BASAL_DENDRITE)
         if api and bas:
-            return [("axon", nm.AXON), ("apical", nm.APICAL_DENDRITE), ("basal", nm.BASAL_DENDRITE)]
+            return [
+                ("axon", nm.AXON),
+                ("apical", nm.APICAL_DENDRITE),
+                ("basal", nm.BASAL_DENDRITE),
+            ]
         elif api and not bas:
             return [("axon", nm.AXON), ("dendrite", nm.APICAL_DENDRITE)]
         elif bas and not api:
@@ -415,17 +427,25 @@ class MorphologyFactsheetBuilder:
         all_values = []
         for neurite_name, neurite_type in neurites:
             for feature in self.neurite_features:
-                feature_dict = feature(self.morphology, neurite_name, neurite_type).to_dict()
+                feature_dict = feature(
+                    self.morphology, neurite_name, neurite_type
+                ).to_dict()
                 all_values.append(feature_dict)
 
         for feature in self.soma_features:
             feature_dict = feature(self.morphology).to_dict()
             all_values.append(feature_dict)
-        
+
         return all_values
+
+    def factsheet_dict(self):
+        """Returns the factsheet as a dict."""
+        anatomy = self.get_feature_values()
+        return {"name": "Anatomy", "values": anatomy}
 
 
 class SSCXMorphologyFactsheetBuilder(MorphologyFactsheetBuilder):
+    """Morphology factsheet builder for SSCX packages."""
 
     def __init__(self, morph_path):
         """Load the morphology.
@@ -435,16 +455,17 @@ class SSCXMorphologyFactsheetBuilder(MorphologyFactsheetBuilder):
         """
         super(SSCXMorphologyFactsheetBuilder, self).__init__(morph_path)
         self.neurites = self.get_neurites(self.morphology)
-        self.neurite_features = [TotalLength, MeanNeuriteVolumes, MaxBranchOrder, MaxSectionLength]
+        self.neurite_features = [
+            TotalLength,
+            MeanNeuriteVolumes,
+            MaxBranchOrder,
+            MaxSectionLength,
+        ]
         self.soma_features = [SomaDiamater]
 
 
 class HippocampusMorphologyFactsheetBuilder(MorphologyFactsheetBuilder):
-    """Computes the factsheet values for a morphology.
-
-    Attributes:
-        morphology (neurom.core.morphology.Morphology): morphology of the neuron
-    """
+    """Morphology factsheet builder for Hippocampus packages."""
 
     def __init__(self, morph_path):
         """Load the morphology.
@@ -454,6 +475,14 @@ class HippocampusMorphologyFactsheetBuilder(MorphologyFactsheetBuilder):
         """
         super(HippocampusMorphologyFactsheetBuilder, self).__init__(morph_path)
         self.neurites = [("all", nm.ANY_NEURITE)] + self.get_neurites(self.morphology)
-        self.neurite_features = [TotalWidth, TotalHeight, TotalDepth, TotalLength, TotalArea,
-                                 TotalVolume, NumberOfSections, MaxBranchOrder]
+        self.neurite_features = [
+            TotalWidth,
+            TotalHeight,
+            TotalDepth,
+            TotalLength,
+            TotalArea,
+            TotalVolume,
+            NumberOfSections,
+            MaxBranchOrder,
+        ]
         self.soma_features = [SomaDiamater, SomaSurfaceArea, SomaVolume]
