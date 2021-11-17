@@ -48,7 +48,7 @@ def test_hippocampus_morphology_factsheet_builder():
         test_morph
     )
     morph_features = factsheet_builder.get_feature_values()
-    assert len(morph_features) == 35
+    assert len(morph_features) == 39
     for feature in morph_features:
         assert feature["value"] >= 0
     hipp_morphometrics_dict = factsheet_builder.factsheet_dict()
@@ -56,6 +56,16 @@ def test_hippocampus_morphology_factsheet_builder():
         morphometrics_gt = json.load(in_file)
 
     assert hipp_morphometrics_dict == morphometrics_gt
+
+
+def test_average_diameter():
+    """Test average diameter feature."""
+    morphology = nm.load_neuron(test_morph)
+    feature = morphology_features.AverageDiameter(morphology, "axon", NeuriteType.axon)
+    feature_dict = feature.to_dict()
+    assert feature_dict["name"] == "average diameter of axon"
+    assert abs(feature_dict["value"] - 0.41631537) <= 1e-3
+    assert feature_dict["unit"] == "\u00b5m"
 
 
 def test_total_length():

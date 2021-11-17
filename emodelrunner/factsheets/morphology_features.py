@@ -15,7 +15,12 @@
 # limitations under the License.
 
 import logging
+
+import numpy as np
 import neurom as nm
+from neurom.core.morphology import iter_neurites
+from neurom.core.types import tree_type_checker as is_type
+from neurom.features.neurite import segment_radii, segment_lengths
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +59,39 @@ class MorphologyFeature(object):
     def to_dict(self):
         """Returns a dictionary from the fields."""
         return self.__dict__
+
+
+def _seg_lengths(neurite):
+    """Syntactic sugar to retrieve segment_lengths as np.array."""
+    return np.array(segment_lengths(neurite))
+
+
+def _seg_radii(neurite):
+    """Syntactic sugar to retrieve segment_radii as np.array."""
+    return np.array(segment_radii(neurite))
+
+
+class AverageDiameter(MorphologyFeature):
+    """Average diameter (weighted by section length) feature for a neurite type."""
+
+    def __init__(self, morphology, neurite_name, neurite_type):
+        """Constructor.
+
+        Args:
+            morphology (neurom neuron object): morphology object
+            neurite_name (str): neurite name, e.g. axon
+            neurite_type (NeuriteType): enum for neurite type encoding
+        """
+        super(AverageDiameter, self).__init__()
+        self.name = f"average diameter of {neurite_name}"
+        self.unit = "\u00b5m"
+
+        neurites = list(iter_neurites(morphology, filt=is_type(neurite_type)))
+        radii = [
+            np.sum(_seg_radii(n) * _seg_lengths(n)) / np.sum(_seg_lengths(n))
+            for n in neurites
+        ]
+        self.value = np.mean(radii) * 2
 
 
 class TotalLength(MorphologyFeature):
@@ -482,6 +520,7 @@ class HippocampusMorphologyFactsheetBuilder(MorphologyFactsheetBuilder):
             TotalLength,
             TotalArea,
             TotalVolume,
+            AverageDiameter,
             NumberOfSections,
             MaxBranchOrder,
         ]

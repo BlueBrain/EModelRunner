@@ -32,6 +32,11 @@
             "unit": "\u00b5m\u00b3"
         },
         {
+            "name": "average diameter of all",
+            "value": 0.6461642384529114,
+            "unit": "\u00b5m"
+        },
+        {
             "name": "number of all sections",
             "value": 207,
             "unit": ""
@@ -70,6 +75,11 @@
             "name": "total axon volume",
             "value": 2298.9971235076514,
             "unit": "\u00b5m\u00b3"
+        },
+        {
+            "name": "average diameter of axon",
+            "value": 0.41631537675857544,
+            "unit": "\u00b5m"
         },
         {
             "name": "number of axon sections",
@@ -112,6 +122,11 @@
             "unit": "\u00b5m\u00b3"
         },
         {
+            "name": "average diameter of apical",
+            "value": 0.6904177069664001,
+            "unit": "\u00b5m"
+        },
+        {
             "name": "number of apical sections",
             "value": 43,
             "unit": ""
@@ -150,6 +165,11 @@
             "name": "total basal volume",
             "value": 1753.8109676267964,
             "unit": "\u00b5m\u00b3"
+        },
+        {
+            "name": "average diameter of basal",
+            "value": 0.6726778745651245,
+            "unit": "\u00b5m"
         },
         {
             "name": "number of basal sections",
