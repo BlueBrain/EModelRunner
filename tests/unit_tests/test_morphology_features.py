@@ -26,15 +26,21 @@ test_morph = os.path.join(
 )
 
 
-def test_morphology_factsheet_builder():
+def test_sscx_morphology_factsheet_builder():
     """Test morphology factsheet builder class."""
-    factsheet_builder = morphology_features.MorphologyFactsheetBuilder(test_morph)
-
-    morph_features = factsheet_builder.get_sscx_feature_values()
+    factsheet_builder = morphology_features.SSCXMorphologyFactsheetBuilder(test_morph)
+    morph_features = factsheet_builder.get_feature_values()
     assert len(morph_features) == 13
-
     for feature in morph_features:
-        print(feature)
+        assert feature["value"] >= 0
+
+
+def test_hippocampus_morphology_factsheet_builder():
+    """Test hippocampus morphology factsheet builder class."""
+    factsheet_builder = morphology_features.HippocampusMorphologyFactsheetBuilder(test_morph)
+    morph_features = factsheet_builder.get_feature_values()
+    assert len(morph_features) == 35
+    for feature in morph_features:
         assert feature["value"] >= 0
 
 

@@ -19,7 +19,7 @@ from pathlib import Path
 import numpy as np
 
 from emodelrunner.json_utilities import NpEncoder
-from emodelrunner.factsheets.morphology_features import MorphologyFactsheetBuilder
+from emodelrunner.factsheets.morphology_features import SSCXMorphologyFactsheetBuilder
 from emodelrunner.factsheets.physiology_features import physiology_factsheet_info
 from emodelrunner.factsheets.experimental_features import get_exp_features_data
 from emodelrunner.factsheets.ion_channel_mechanisms import get_mechanisms_data
@@ -51,8 +51,8 @@ def write_metype_json(
     # load time, voltage
     data = np.loadtxt(data_path)
 
-    morph_factsheet_builder = MorphologyFactsheetBuilder(morph_path=morphology_path)
-    anatomy = morph_factsheet_builder.get_sscx_feature_values()
+    morph_factsheet_builder = SSCXMorphologyFactsheetBuilder(morph_path=morphology_path)
+    anatomy = morph_factsheet_builder.get_feature_values()
     anatomy = {"name": "Anatomy", "values": anatomy}
 
     physiology = physiology_factsheet_info(
