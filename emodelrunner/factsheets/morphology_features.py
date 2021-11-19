@@ -87,11 +87,16 @@ class AverageDiameter(MorphologyFeature):
         self.unit = "\u00b5m"
 
         neurites = list(iter_neurites(morphology, filt=is_type(neurite_type)))
-        radii = [
-            np.sum(_seg_radii(n) * _seg_lengths(n)) / np.sum(_seg_lengths(n))
-            for n in neurites
-        ]
-        self.value = np.mean(radii) * 2
+
+        neurite_weighted_radii = [_seg_radii(n) * _seg_lengths(n) for n in neurites]
+        neurite_seg_lengths = [_seg_lengths(n) for n in neurites]
+
+        neurite_weighted_radii = np.concatenate(neurite_weighted_radii, axis=0)
+        neurite_seg_lengths = np.concatenate(neurite_seg_lengths, axis=0)
+
+        avg_radius = np.sum(neurite_weighted_radii) / np.sum(neurite_seg_lengths)
+        avg_diameter = avg_radius * 2
+        self.value = avg_diameter
 
 
 class TotalLength(MorphologyFeature):

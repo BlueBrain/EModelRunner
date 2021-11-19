@@ -61,10 +61,12 @@ def test_hippocampus_morphology_factsheet_builder():
 def test_average_diameter():
     """Test average diameter feature."""
     morphology = nm.load_neuron(test_morph)
-    feature = morphology_features.AverageDiameter(morphology, "axon", NeuriteType.axon)
+    feature = morphology_features.AverageDiameter(
+        morphology, "basal_dendrite", NeuriteType.basal_dendrite
+    )
     feature_dict = feature.to_dict()
-    assert feature_dict["name"] == "average diameter of axon"
-    assert abs(feature_dict["value"] - 0.41631537) <= 1e-3
+    assert feature_dict["name"] == "average diameter of basal_dendrite"
+    assert abs(feature_dict["value"] - 0.678256) <= 1e-4
     assert feature_dict["unit"] == "\u00b5m"
 
 
