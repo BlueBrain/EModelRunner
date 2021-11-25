@@ -1,0 +1,65 @@
+{
+    "name": "Anatomy",
+    "values": [
+        {
+            "name": "total axon length",
+            "value": 11316.388908624649,
+            "unit": "\u00b5m"
+        },
+        {
+            "name": "total axon volume",
+            "value": 2298.9971235076514,
+            "unit": "\u00b5m\u00b3"
+        },
+        {
+            "name": "axon maximum branch order",
+            "value": 12,
+            "unit": ""
+        },
+        {
+            "name": "total apical length",
+            "value": 3128.904561281204,
+            "unit": "\u00b5m"
+        },
+        {
+            "name": "total apical volume",
+            "value": 1432.2703356999643,
+            "unit": "\u00b5m\u00b3"
+        },
+        {
+            "name": "apical maximum branch order",
+            "value": 12,
+            "unit": ""
+        },
+        {
+            "name": "total basal length",
+            "value": 4209.233775377274,
+            "unit": "\u00b5m"
+        },
+        {
+            "name": "total basal volume",
+            "value": 1753.8109676267964,
+            "unit": "\u00b5m\u00b3"
+        },
+        {
+            "name": "basal maximum branch order",
+            "value": 5,
+            "unit": ""
+        },
+        {
+            "name": "soma diameter",
+            "value": 19.873456954956055,
+            "unit": "\u00b5m"
+        },
+        {
+            "name": "soma surface area",
+            "value": 1240.78550017905,
+            "unit": "\u00b5m\u00b2"
+        },
+        {
+            "name": "soma volume",
+            "value": 4109.782871356994,
+            "unit": "\u00b5m\u00b3"
+        }
+    ]
+}
