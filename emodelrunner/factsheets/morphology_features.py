@@ -530,3 +530,22 @@ class HippocampusMorphologyFactsheetBuilder(MorphologyFactsheetBuilder):
             MaxBranchOrder,
         ]
         self.soma_features = [SomaDiamater, SomaSurfaceArea, SomaVolume]
+
+
+class ThalamusMorphologyFactsheetBuilder(MorphologyFactsheetBuilder):
+    """Morphology factsheet builder for Thalamus packages."""
+
+    def __init__(self, morph_path):
+        """Load the morphology.
+
+        Args:
+            morph_path (str or Path): Path to the morphology file.
+        """
+        super(ThalamusMorphologyFactsheetBuilder, self).__init__(morph_path)
+        self.neurites = self.get_neurites(self.morphology)
+        self.neurite_features = [
+            TotalLength,
+            TotalVolume,
+            MaxBranchOrder,
+        ]
+        self.soma_features = [SomaDiamater, SomaSurfaceArea, SomaVolume]

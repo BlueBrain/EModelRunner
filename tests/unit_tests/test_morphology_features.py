@@ -58,6 +58,22 @@ def test_hippocampus_morphology_factsheet_builder():
     assert hipp_morphometrics_dict == morphometrics_gt
 
 
+def test_thalamus_morphology_factsheet_builder():
+    """Test thalamus morphology factsheet builder class."""
+    factsheet_builder = morphology_features.ThalamusMorphologyFactsheetBuilder(
+        test_morph
+    )
+    morph_features = factsheet_builder.get_feature_values()
+    assert len(morph_features) == 12
+    for feature in morph_features:
+        assert feature["value"] >= 0
+    thal_morphometrics_dict = factsheet_builder.factsheet_dict()
+    with open("tests/unit_tests/data/thalamus_morphometrics.json", "r") as in_file:
+        morphometrics_gt = json.load(in_file)
+
+    assert thal_morphometrics_dict == morphometrics_gt
+
+
 def test_average_diameter():
     """Test average diameter feature."""
     morphology = nm.load_neuron(test_morph)
