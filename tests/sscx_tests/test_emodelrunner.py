@@ -24,7 +24,7 @@ import subprocess
 import pytest
 
 from bluepyopt import ephys
-from emodelrunner.create_hoc import get_hoc, write_hocs
+from emodelrunner.create_hoc import get_hoc, write_hocs, copy_features_hoc
 from emodelrunner.load import (
     load_sscx_config,
     get_hoc_paths_args,
@@ -144,6 +144,7 @@ def test_recipe_protocols():
         config = load_sscx_config(config_path=config_path)
         cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
         hoc_paths = get_hoc_paths_args(config)
+        copy_features_hoc(config)
         write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
 
         subprocess.call(["sh", "./run_hoc.sh"])

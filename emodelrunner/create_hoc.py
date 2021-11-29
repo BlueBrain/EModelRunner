@@ -236,7 +236,8 @@ if __name__ == "__main__":
     )
 
     hoc_paths_ = get_hoc_paths_args(config_)
-    copy_features_hoc(config_)
+    if main_protocol_hoc_:
+        copy_features_hoc(config_)
     write_hocs(
         hoc_paths_,
         cell_hoc_,
