@@ -133,11 +133,11 @@ def test_anatomy_features():
         / "dend-C270999B-P3_axon-C060110A3_-_Scale_x1.000_y0.950_z1.000.asc"
     )
 
-    morph_factsheet_builder = morphology_features.MorphologyFactsheetBuilder(
+    morph_factsheet_builder = morphology_features.SSCXMorphologyFactsheetBuilder(
         morphology_path
     )
 
-    ana_dict = morph_factsheet_builder.get_all_feature_values()
+    ana_dict = morph_factsheet_builder.get_feature_values()
     ana_dict = {"values": ana_dict, "name": "Anatomy"}
     left_to_check_1 = [
         "total axon length",

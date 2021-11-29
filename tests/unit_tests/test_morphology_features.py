@@ -15,6 +15,7 @@
 # limitations under the License.
 
 import os
+import json
 import neurom as nm
 from neurom.core.types import NeuriteType
 from emodelrunner.factsheets import morphology_features
@@ -26,16 +27,63 @@ test_morph = os.path.join(
 )
 
 
-def test_morphology_factsheet_builder():
+def test_sscx_morphology_factsheet_builder():
     """Test morphology factsheet builder class."""
-    factsheet_builder = morphology_features.MorphologyFactsheetBuilder(test_morph)
-
-    morph_features = factsheet_builder.get_all_feature_values()
+    factsheet_builder = morphology_features.SSCXMorphologyFactsheetBuilder(test_morph)
+    morph_features = factsheet_builder.get_feature_values()
     assert len(morph_features) == 13
-
     for feature in morph_features:
-        print(feature)
         assert feature["value"] >= 0
+    sscx_morphometrics_dict = factsheet_builder.factsheet_dict()
+
+    with open("tests/unit_tests/data/sscx_morphometrics.json", "r") as in_file:
+        morphometrics_gt = json.load(in_file)
+
+    assert sscx_morphometrics_dict == morphometrics_gt
+
+
+def test_hippocampus_morphology_factsheet_builder():
+    """Test hippocampus morphology factsheet builder class."""
+    factsheet_builder = morphology_features.HippocampusMorphologyFactsheetBuilder(
+        test_morph
+    )
+    morph_features = factsheet_builder.get_feature_values()
+    assert len(morph_features) == 39
+    for feature in morph_features:
+        assert feature["value"] >= 0
+    hipp_morphometrics_dict = factsheet_builder.factsheet_dict()
+    with open("tests/unit_tests/data/hippocampus_morphometrics.json", "r") as in_file:
+        morphometrics_gt = json.load(in_file)
+
+    assert hipp_morphometrics_dict == morphometrics_gt
+
+
+def test_thalamus_morphology_factsheet_builder():
+    """Test thalamus morphology factsheet builder class."""
+    factsheet_builder = morphology_features.ThalamusMorphologyFactsheetBuilder(
+        test_morph
+    )
+    morph_features = factsheet_builder.get_feature_values()
+    assert len(morph_features) == 12
+    for feature in morph_features:
+        assert feature["value"] >= 0
+    thal_morphometrics_dict = factsheet_builder.factsheet_dict()
+    with open("tests/unit_tests/data/thalamus_morphometrics.json", "r") as in_file:
+        morphometrics_gt = json.load(in_file)
+
+    assert thal_morphometrics_dict == morphometrics_gt
+
+
+def test_average_diameter():
+    """Test average diameter feature."""
+    morphology = nm.load_neuron(test_morph)
+    feature = morphology_features.AverageDiameter(
+        morphology, "basal_dendrite", NeuriteType.basal_dendrite
+    )
+    feature_dict = feature.to_dict()
+    assert feature_dict["name"] == "average diameter of basal_dendrite"
+    assert abs(feature_dict["value"] - 0.678256) <= 1e-4
+    assert feature_dict["unit"] == "\u00b5m"
 
 
 def test_total_length():
@@ -43,15 +91,81 @@ def test_total_length():
     morphology = nm.load_neuron(test_morph)
     feature = morphology_features.TotalLength(morphology, "axon", NeuriteType.axon)
     feature_dict = feature.to_dict()
+    assert feature_dict["name"] == "total axon length"
     assert abs(feature_dict["value"] - 11316.388908624649) <= 1e-3
     assert feature_dict["unit"] == "\u00b5m"
 
 
-def test_neurite_volumes():
+def test_total_height():
+    """Test total height feature."""
+    morphology = nm.load_neuron(test_morph)
+    feature = morphology_features.TotalHeight(morphology, "axon", NeuriteType.axon)
+    feature_dict = feature.to_dict()
+    assert feature_dict["name"] == "total axon height"
+    assert abs(feature_dict["value"] - 965.4704) <= 1e-4
+    assert feature_dict["unit"] == "\u00b5m"
+
+
+def test_total_width():
+    """Test total width feature."""
+    morphology = nm.load_neuron(test_morph)
+    feature = morphology_features.TotalWidth(morphology, "axon", NeuriteType.axon)
+    feature_dict = feature.to_dict()
+    assert feature_dict["name"] == "total axon width"
+    assert abs(feature_dict["value"] - 768.3234) <= 1e-4
+    assert feature_dict["unit"] == "\u00b5m"
+
+
+def test_total_depth():
+    """Test total depth feature."""
+    morphology = nm.load_neuron(test_morph)
+    feature = morphology_features.TotalDepth(morphology, "axon", NeuriteType.axon)
+    feature_dict = feature.to_dict()
+    assert feature_dict["name"] == "total axon depth"
+    assert abs(feature_dict["value"] - 887.29956) <= 1e-4
+    assert feature_dict["unit"] == "\u00b5m"
+
+
+def test_total_area():
+    """Test the total area feature."""
+    morphology = nm.load_neuron(test_morph)
+    feature = morphology_features.TotalArea(morphology, "axon", NeuriteType.axon)
+    feature_dict = feature.to_dict()
+    assert feature_dict["name"] == "total axon area"
+    assert abs(feature_dict["value"] - 14800.92929) <= 1e-4
+    assert feature_dict["unit"] == "\u00b5m\u00b2"
+
+
+def test_total_volume():
+    """Test the total volume feature."""
+    morphology = nm.load_neuron(test_morph)
+    feature = morphology_features.TotalVolume(morphology, "axon", NeuriteType.axon)
+    feature_dict = feature.to_dict()
+    assert feature_dict["name"] == "total axon volume"
+    assert abs(feature_dict["value"] - 2298.997123) <= 1e-4
+    assert feature_dict["unit"] == "\u00b5m\u00b3"
+
+
+def test_number_of_sections():
+    """Test number of sections feature."""
+    morphology = nm.load_neuron(test_morph)
+    feature = morphology_features.NumberOfSections(
+        morphology, "basal_dendrite", NeuriteType.basal_dendrite
+    )
+    feature_dict = feature.to_dict()
+    assert feature_dict["name"] == "number of basal_dendrite sections"
+    assert feature_dict["value"] == 51
+    assert feature_dict["unit"] == ""
+
+
+def test_mean_neurite_volumes():
     """Test neurite volumes feature."""
     morphology = nm.load_neuron(test_morph)
-    feature = morphology_features.NeuriteVolumes(morphology, "axon", NeuriteType.axon)
+    feature = morphology_features.MeanNeuriteVolumes(
+        morphology, "axon", NeuriteType.axon
+    )
     feature_dict = feature.to_dict()
+    assert feature_dict["name"] == "mean axon volume"
     assert abs(feature_dict["value"] - 2298.9971235076514) <= 1e-3
     assert feature_dict["unit"] == "\u00b5m\u00b3"
 
@@ -63,6 +177,7 @@ def test_max_branch_order():
         morphology, "apical_dendrite", NeuriteType.apical_dendrite
     )
     feature_dict = feature.to_dict()
+    assert feature_dict["name"] == "apical_dendrite maximum branch order"
     assert feature_dict["value"] == 12
     assert feature_dict["unit"] == ""
 
@@ -74,6 +189,7 @@ def test_max_section_length():
         morphology, "basal_dendrite", NeuriteType.basal_dendrite
     )
     feature_dict = feature.to_dict()
+    assert feature_dict["name"] == "basal_dendrite maximum section length"
     assert abs(feature_dict["value"] - 314.51974) <= 1e-5
     assert feature_dict["unit"] == "\u00b5m"
 
@@ -83,5 +199,26 @@ def test_soma_diameter():
     morphology = nm.load_neuron(test_morph)
     feature = morphology_features.SomaDiamater(morphology)
     feature_dict = feature.to_dict()
+    assert feature_dict["name"] == "soma diameter"
     assert abs(feature_dict["value"] - 19.873456954956055) <= 1e-5
     assert feature_dict["unit"] == "\u00b5m"
+
+
+def test_soma_surface_area():
+    """Test the soma surface area feature."""
+    morphology = nm.load_neuron(test_morph)
+    feature = morphology_features.SomaSurfaceArea(morphology)
+    feature_dict = feature.to_dict()
+    assert feature_dict["name"] == "soma surface area"
+    assert abs(feature_dict["value"] - 1240.78550) <= 1e-5
+    assert feature_dict["unit"] == "\u00b5m\u00b2"
+
+
+def test_soma_volume():
+    """Test the soma volume feature."""
+    morphology = nm.load_neuron(test_morph)
+    feature = morphology_features.SomaVolume(morphology)
+    feature_dict = feature.to_dict()
+    assert feature_dict["name"] == "soma volume"
+    assert abs(feature_dict["value"] - 4109.782871) <= 1e-5
+    assert feature_dict["unit"] == "\u00b5m\u00b3"
