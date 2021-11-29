@@ -17,6 +17,7 @@
 import argparse
 import json
 import os
+import shutil
 
 from emodelrunner.load import (
     load_sscx_config,
@@ -210,6 +211,15 @@ def get_hoc(config):
     return cell_hoc, syn_hoc, simul_hoc, run_hoc, main_protocol_hoc
 
 
+def copy_features_hoc(config):
+    """Copy features hoc file into cell directory."""
+    features_original_path = config.get("Paths", "features_hoc_template_path")
+    features_new_path = os.path.join(
+        config.get("Paths", "memodel_dir"), config.get("Paths", "features_hoc_file")
+    )
+    shutil.copy(features_original_path, features_new_path)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -226,6 +236,7 @@ if __name__ == "__main__":
     )
 
     hoc_paths_ = get_hoc_paths_args(config_)
+    copy_features_hoc(config_)
     write_hocs(
         hoc_paths_,
         cell_hoc_,
