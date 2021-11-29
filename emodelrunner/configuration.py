@@ -195,7 +195,7 @@ class SSCXConfigValidator(ConfigValidator):
             "createsimulation_template_path": "%(templates_dir)s/createsimulation.jinja2",
             "synapses_template_path": "%(templates_dir)s/synapses.jinja2",
             "main_protocol_template_path": "%(templates_dir)s/main_protocol.jinja2",
-            "features_hoc_template_path": "features.hoc",
+            "features_hoc_template_path": "%(templates_dir)s/features.hoc",
             "replace_axon_hoc_path": "%(templates_dir)s/replace_axon_hoc.hoc",
             "syn_dir_for_hoc": "%(memodel_dir)s/synapses",
             "syn_dir": "%(memodel_dir)s/synapses",
