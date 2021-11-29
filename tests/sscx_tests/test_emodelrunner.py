@@ -52,7 +52,7 @@ def compare_hoc_and_py(filename, threshold):
 
     # check rms
     rms = np.sqrt(np.mean((hoc_voltage[:, 1] - py_voltage[:, 1]) ** 2))
-    print(filename)
+
     assert rms < threshold
 
 
