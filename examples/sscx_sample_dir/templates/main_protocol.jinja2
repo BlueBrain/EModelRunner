@@ -1,0 +1,304 @@
+/*                                                                               
+Copyright (c) BBP/EPFL 2018; All rights reserved.
+Do not distribute without further notice.
+*/
+load_file("nrngui.hoc")
+load_file("import3d.hoc")
+{load_file("stdrun.hoc")}
+load_file("features.hoc")
+load_file("createsimulation.hoc")
+
+
+/*
+    $o1: cell model
+*/
+proc main_prot_run(){ local rmp, rin
+
+    reset_stimuli()
+    rmp = run_rmp()
+
+    rin = run_rinhold_protocol(rmp)
+
+    thdetect_protocol(rin)
+}
+
+func run_rmp(){ local rmp localobj timevoltage, fpath
+    // Set simulation
+    step_stimulus_0 = new IClamp(0.5)
+
+    step_stimulus_0.dur = {{rmp_stimulus_dur}}
+    step_stimulus_0.del = {{rmp_stimulus_del}}
+    step_stimulus_0.amp = {{rmp_stimulus_amp}}
+    tstop = {{rmp_stimulus_totduration}}
+    
+    cell.soma step_stimulus_0
+
+    // simulate
+    simulate()
+
+    // save output
+    fpath = new String()
+    sprint(fpath.s, "{{rmp_output_path}}")
+    
+    timevoltage = new Matrix(time.size(), 2)
+    timevoltage.setcol(0, time)
+    timevoltage.setcol(1, voltage)
+    write_output_file(fpath, timevoltage)
+
+    // get rmp efeature
+    rmp = voltage_base(time, voltage, step_stimulus_0.del)
+
+    return rmp
+}
+
+
+proc create_rin_protocol(){
+    reset_stimuli()
+
+    // Set simulation
+    step_stimulus_0.dur = {{rin_stimulus_dur}}
+    step_stimulus_0.del = {{rin_stimulus_del}}
+    step_stimulus_0.amp = {{rin_stimulus_amp}}
+    tstop = {{rin_stimulus_totduration}}
+
+    cell.soma step_stimulus_0
+
+    holding_stimulus.dur = {{rin_holding_dur}}
+    holding_stimulus.del = {{rin_holding_del}}
+
+    cell.soma holding_stimulus
+}
+
+
+/*
+    run cell with given holding current and return voltage base
+    $1: holdi
+*/
+func get_rin_voltage_base(){
+    create_rin_protocol()
+    holding_stimulus.amp = $1
+    cell.soma holding_stimulus
+
+    simulate()
+
+    return voltage_base(time, voltage, step_stimulus_0.del)
+}
+
+/*
+    $1: voltagebase_exp_mean
+    $2: rin_noholding
+    $3: rmp
+*/
+func search_holdi(){ local holding_voltage, rin_noholding, rmp, holdi_estimate_multiplier, \
+                    holdi_estimate, upper_bound, lower_bound, middle_bound, middle_voltage, n
+
+    holding_voltage = $1
+    rin_noholding = $2
+    rmp = $3
+    holdi_estimate_multiplier = 2
+
+    holdi_estimate = (holding_voltage - rmp) / rin_noholding
+    upper_bound = 0.0
+    lower_bound = holdi_estimate_multiplier * holdi_estimate
+    middle_bound = upper_bound - abs(upper_bound - lower_bound) / 2.
+
+    middle_voltage = get_rin_voltage_base(middle_bound)
+
+    n = 0
+    while (abs(middle_voltage - holding_voltage) > {{holdi_precision}} && n < {{holdi_max_depth}}){
+
+        if (middle_voltage > holding_voltage){
+            upper_bound = middle_bound
+        } else{
+            lower_bound = middle_bound
+        }
+        middle_bound = upper_bound - abs(upper_bound - lower_bound) / 2
+        middle_voltage = get_rin_voltage_base(middle_bound)
+
+        n += 1
+    }
+
+    return middle_bound
+}
+/*
+    $1: rmp
+*/
+func run_rinhold_protocol(){ local rmp, rin_noholding, voltagebase_exp_mean, rin \
+                            localobj timevoltage, fpath
+    rmp=$1
+    // experimental mean of efeature.
+    voltagebase_exp_mean = {{voltagebase_exp_mean}}
+
+    // Rin no holding protocol
+    create_rin_protocol()
+    holding_stimulus.amp = 0.0
+    cell.soma holding_stimulus
+    simulate()
+    rin_noholding = ohmic_input_resistance_vb_ssse(time, voltage, step_stimulus_0.del, step_stimulus_0.del + step_stimulus_0.dur, step_stimulus_0.amp)
+
+    // get and set holding current
+    holding_current = search_holdi(voltagebase_exp_mean, rin_noholding, rmp)
+
+    // run responses with holding current and get Rin efeature
+    create_rin_protocol()
+    holding_stimulus.amp = holding_current
+    cell.soma holding_stimulus
+    simulate()
+
+    rin = ohmic_input_resistance_vb_ssse(time, voltage, step_stimulus_0.del, step_stimulus_0.del + step_stimulus_0.dur, step_stimulus_0.amp)
+
+    // save output
+    fpath = new String()
+    sprint(fpath.s, "{{rin_output_path}}")
+    
+    timevoltage = new Matrix(time.size(), 2)
+    timevoltage.setcol(0, time)
+    timevoltage.setcol(1, voltage)
+    write_output_file(fpath, timevoltage)
+
+    fpath = new String()
+    sprint(fpath.s, "{{holding_current_output_path}}")
+    write_float_output_file(fpath, holding_current)
+
+
+    return rin
+}
+
+
+/*
+    Attention! holding_current must have been set for this function to work
+    $1: step_current
+    $2: short
+*/
+proc run_threshold_protocol(){ local step_current, short, short_perc, del, dur, totdur, hold_dur
+    step_current = $1
+    short = $2
+    short_perc = 0.1
+
+    del = {{thdetect_stimulus_del}}
+    dur = {{thdetect_stimulus_dur}}
+    totdur = {{thdetect_stimulus_totduration}}
+    hold_dur = {{thdetect_holding_dur}}
+
+    if (short){
+        dur = dur * short_perc
+        totdur = del + dur
+        hold_dur = totdur
+    }
+
+    reset_stimuli()
+
+    // Set simulation
+    step_stimulus_0.dur = dur
+    step_stimulus_0.del = del
+    step_stimulus_0.amp = step_current
+    tstop = totdur
+
+    cell.soma step_stimulus_0
+
+    holding_stimulus.dur = hold_dur
+    holding_stimulus.del = {{thdetect_holding_del}}
+    holding_stimulus.amp = holding_current
+
+    cell.soma holding_stimulus
+
+    simulate()
+}
+
+/*
+    Attention! holding_current must have been set for this function to work
+    $1: step_current
+    $2: short
+*/
+func detect_spike(){ local step_current, short, spike_threshold
+    step_current = $1
+    short = $2
+    spike_threshold = -30 // from EFel
+
+    run_threshold_protocol(step_current, short)
+
+    // check if a spike occured
+    if (voltage.max() > spike_threshold){
+        return 1
+    } else{
+        return 0
+    }
+}
+
+/*
+    Attention! holding_current must have been set for this function to work
+    $1: lower_bound
+    $2: upper_bound
+*/
+func search_spike_threshold(){ local lower_bound, upper_bound, n_short_steps, step_size, step_current, \
+                                depth, max_depth, precision
+    lower_bound = $1
+    upper_bound = $2
+    n_short_steps = 20
+    max_depth = 5
+    precision = 0.01
+
+    // get upper bound with short protocols
+    step_size = (upper_bound - lower_bound) / (n_short_steps - 1)
+    // add (step_size / 2.) in condition to avoid rounding error to remove the last item to be run in the loop
+    for (step_current=lower_bound; step_current <= upper_bound + (step_size / 2.); step_current += step_size){
+        spike_detected = detect_spike(step_current, 1)
+
+        if (spike_detected){
+            upper_bound = step_current
+            break
+        }
+    }
+
+    // if no spike detected with short stim, try with regular stimulus
+    if (!(spike_detected)){
+        spike_detected = detect_spike(step_current, 0)
+
+        if (spike_detected){
+            upper_bound = step_current
+        } else{
+            execerror("No spike could be detected during the spike search for threshold current.")
+        }
+    }
+
+    // now that we have upper bound, search for threshold current
+    depth = 0
+    while (depth < max_depth && abs(upper_bound - lower_bound) >= precision){
+        middle_bound = upper_bound - abs(upper_bound - lower_bound) / 2.
+
+        spike_detected = detect_spike(middle_bound, 0)
+        if (spike_detected){
+            upper_bound = middle_bound
+        } else{
+            lower_bound = middle_bound
+        }
+        depth += 1
+    }
+
+    return upper_bound
+}
+
+/*
+    Attention! holding_current must have been set for this function to work
+    $1: rin
+*/
+proc thdetect_protocol(){ local rin, voltagebase_exp_mean, max_threshold_voltage localobj fpath
+    rin = $1
+    // experimental mean of efeature.
+    voltagebase_exp_mean = -82.9501
+    /*
+    voltagebase_exp_mean = {{voltagebase_exp_mean}}
+    */
+    max_threshold_voltage = -40
+
+    max_threshold_current = (max_threshold_voltage - voltagebase_exp_mean) / rin
+
+    // get and set threshold_current
+    threshold_current = search_spike_threshold(lower_bound=-holding_current, upper_bound=max_threshold_current)
+
+    // save output
+    fpath = new String()
+    sprint(fpath.s, "{{threshold_current_output_path}}")
+    write_float_output_file(fpath, threshold_current)
+
+}

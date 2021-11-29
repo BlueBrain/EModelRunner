@@ -160,17 +160,18 @@ proc reset_stimuli () {
     {{reset_step_stimuli}}
 }
 
-
-proc create_stimulus() { local stim_number
+proc reset_cell(){
     {%- if add_synapses %}
     // Reset the synapses if there are any from previous protocols
     cell.synapses.reset_netcons()
     {%- endif %}
     reset_stimuli()
+}
 
-    stim_number = $1
+proc run_simulation() { local stim_number localobj fpath, timevoltage
+    fpath = new String()
 
-    {{stims}}
+    {{run_simulation}}
 }
 
 //============================= simulation ================================
@@ -185,6 +186,17 @@ proc simulate() {
 
 //============================= saving results ============================
 
+proc write_float_output_file() {localobj fh, fpath
+    fpath = $o1
+
+    fh = new File()
+    fh.wopen(fpath.s)
+    fh.printf("%e ", $2)
+    fh.close()
+
+    print "Saved voltage trace to: ", fpath.s
+}
+
 proc write_output_file() { localobj timevoltage, fh, fpath
     fpath = $o1
     timevoltage = $o2
@@ -195,11 +207,4 @@ proc write_output_file() { localobj timevoltage, fh, fpath
     fh.close()
 
     print "Saved voltage trace to: ", fpath.s
-}
-
-proc save_recording() { localobj timevoltage, fpath
-    fpath = new String()
-    stim_number = $1
-
-    {{save_recordings}}
 }

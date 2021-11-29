@@ -22,15 +22,14 @@ from emodelrunner.load import (
     load_sscx_config,
     get_release_params,
     get_syn_mech_args,
-    # get_syn_prot_args,
     get_hoc_paths_args,
-    # get_step_prot_args,
 )
 from emodelrunner.create_cells import create_cell_using_config
 from emodelrunner.create_hoc_tools import (
     create_synapse_hoc,
     create_simul_hoc,
     create_run_hoc,
+    create_main_protocol_hoc,
 )
 
 
@@ -47,16 +46,19 @@ def write_hoc(hoc_dir, hoc_file_name, hoc):
         hoc_file.write(hoc)
 
 
-def write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc=None):
+def write_hocs(
+    hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc=None, main_protocol_hoc=None
+):
     """Write hoc files.
 
     Args:
         hoc_paths (dict): contains paths of the hoc files to be created
             See load.get_hoc_paths_args for details
-        cell_hoc (str): content of the cell template hoc file
+        cell_hoc (str): content of the cell hoc file
         simul_hoc (str): content of the 'create simulation' hoc file
         run_hoc (str): content of the hoc file meant to run the simulation
-        syn_hoc (str): content of the synapses template hoc file
+        syn_hoc (str): content of the synapses hoc file
+        main_protocol_hoc (str): content of the main protocol hoc file
     """
     # cell hoc
     write_hoc(hoc_paths["hoc_dir"], hoc_paths["cell_hoc_filename"], cell_hoc)
@@ -71,12 +73,21 @@ def write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc=None):
     if syn_hoc is not None:
         write_hoc(hoc_paths["syn_dir"], hoc_paths["syn_hoc_filename"], syn_hoc)
 
+    # main protocol hoc
+    if main_protocol_hoc is not None:
+        write_hoc(
+            hoc_paths["hoc_dir"], hoc_paths["main_protocol_filename"], main_protocol_hoc
+        )
+
 
 def get_hoc(config):
     """Return the hoc scripts as strings.
 
     Args:
         config (configparser.ConfigParser): configuration
+
+    Raises:
+        KeyError: If no voltage_base feature is found for Rin in feature file
 
     Returns:
         (str, str, str, str): cell_hoc, syn_hoc, simul_hoc, run_hoc
@@ -92,6 +103,7 @@ def get_hoc(config):
         "Paths", "createsimulation_template_path"
     )
     synapses_template_path = config.get("Paths", "synapses_template_path")
+    main_protocol_template_path = config.get("Paths", "main_protocol_template_path")
     add_synapses = config.getboolean("Synapses", "add_synapses")
     syn_temp_name = config.get("Synapses", "hoc_synapse_template_name")
     hoc_paths = get_hoc_paths_args(config)
@@ -114,6 +126,18 @@ def get_hoc(config):
     if "__comment" in protocol_definitions:
         del protocol_definitions["__comment"]
 
+    # handle MainProtocol case
+    if "Main" in protocol_definitions.keys():
+        main_protocol = True
+        new_prot_defs = {}
+        for prot in protocol_definitions["Main"]["pre_protocols"]:
+            new_prot_defs[prot] = protocol_definitions[prot]
+        for prot in protocol_definitions["Main"]["other_protocols"]:
+            new_prot_defs[prot] = protocol_definitions[prot]
+    else:
+        main_protocol = False
+        new_prot_defs = protocol_definitions
+
     # get cell
     cell = create_cell_using_config(config)
     release_params = get_release_params(config)
@@ -127,19 +151,44 @@ def get_hoc(config):
         syn_temp_name=syn_temp_name,
     )
 
-    simul_hoc, n_stims = create_simul_hoc(
+    simul_hoc = create_simul_hoc(
         template_path=createsimulation_template_path,
         add_synapses=add_synapses,
         hoc_paths=hoc_paths,
         constants_args=constants_args,
-        protocol_definitions=protocol_definitions,
+        protocol_definitions=new_prot_defs,
         apical_point_isec=apical_point_isec,
     )
 
     run_hoc = create_run_hoc(
         template_path=run_hoc_template_path,
-        n_stims=n_stims,
+        main_protocol=main_protocol,
     )
+
+    if main_protocol:
+        # get the features definitions
+        features_filename = config.get("Paths", "features_path")
+        with open(features_filename, "r", encoding="utf-8") as features_file:
+            feature_definitions = json.load(features_file)
+
+        rin_exp_voltage_base = None
+        for feature in feature_definitions["Rin"]["soma.v"]:
+            if feature["feature"] == "voltage_base":
+                rin_exp_voltage_base = feature["val"][0]
+
+        if rin_exp_voltage_base is None:
+            raise KeyError(
+                f"No voltage_base feature found for 'Rin' in {features_filename}"
+            )
+
+        main_protocol_hoc = create_main_protocol_hoc(
+            template_path=main_protocol_template_path,
+            protocol_definitions=protocol_definitions,
+            rin_exp_voltage_base=rin_exp_voltage_base,
+            mtype=constants_args["mtype"],
+        )
+    else:
+        main_protocol_hoc = None
 
     # get synapse hoc
     if cell.add_synapses:
@@ -158,7 +207,7 @@ def get_hoc(config):
     else:
         syn_hoc = None
 
-    return cell_hoc, syn_hoc, simul_hoc, run_hoc
+    return cell_hoc, syn_hoc, simul_hoc, run_hoc, main_protocol_hoc
 
 
 if __name__ == "__main__":
@@ -172,7 +221,9 @@ if __name__ == "__main__":
 
     config_ = load_sscx_config(config_path=args.config_path)
 
-    cell_hoc_, syn_hoc_, simul_hoc_, run_hoc_ = get_hoc(config=config_)
+    cell_hoc_, syn_hoc_, simul_hoc_, run_hoc_, main_protocol_hoc_ = get_hoc(
+        config=config_
+    )
 
     hoc_paths_ = get_hoc_paths_args(config_)
     write_hocs(
@@ -181,4 +232,5 @@ if __name__ == "__main__":
         simul_hoc_,
         run_hoc_,
         syn_hoc_,
+        main_protocol_hoc_,
     )
