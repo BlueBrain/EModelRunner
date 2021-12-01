@@ -271,6 +271,89 @@ class SSCXConfigValidator(ConfigValidator):
         )
 
 
+class ThalamusConfigValidator(ConfigValidator):
+    """Validates the Thalamus config through a validation schema."""
+
+    default_values = {
+        "Cell": {
+            "celsius": "34",
+            "v_init": "-80",
+            "gid": "0",
+        },
+        "Protocol": {
+            # -1 means there is no apical point
+            "apical_point_isec": "-1",
+        },
+        "Morphology": {
+            "do_replace_axon": "True",
+            # is only used for naming the output files
+            "mtype": "",
+        },
+        "Sim": {
+            "cvode_active": "False",
+            "dt": "0.025",
+        },
+        "Synapses": {
+            "add_synapses": "False",
+            "seed": "846515",
+            "rng_settings_mode": "Random123",  # can be "Random123" or "Compatibility"
+        },
+        "Paths": {
+            "memodel_dir": ".",
+            "output_dir": "%(memodel_dir)s/python_recordings",
+            "params_path": "%(memodel_dir)s/config/params/final.json",
+            "units_path": "%(memodel_dir)s/config/features/units.json",
+            "syn_dir": "%(memodel_dir)s/synapses",
+            "syn_data_file": "synapses.tsv",
+            "syn_conf_file": "synconf.txt",
+            "syn_mtype_map": "mtype_map.tsv",
+        },
+    }
+
+    def __init__(self):
+        """Define the schema through validation rules."""
+        self.config_validator_schema = Schema(
+            {
+                "Cell": {
+                    "celsius": self.float_or_int_expression,
+                    "v_init": self.float_or_int_expression,
+                    "gid": self.int_expression,
+                    "emodel": And(str, len),
+                },
+                "Protocol": {
+                    "apical_point_isec": self.int_expression,
+                },
+                "Morphology": {
+                    "mtype": And(str, len),
+                    "do_replace_axon": self.boolean_expression,
+                },
+                "Sim": {
+                    "cvode_active": self.boolean_expression,
+                    "dt": self.float_or_int_expression,
+                },
+                "Synapses": {
+                    "add_synapses": self.boolean_expression,
+                    "seed": self.int_expression,
+                    "rng_settings_mode": Or("Random123", "Compatibility"),
+                },
+                "Paths": {
+                    "morph_path": lambda n: Path(n).exists(),
+                    "prot_path": lambda n: Path(n).exists(),
+                    "features_path": lambda n: Path(n).exists(),
+                    "unoptimized_params_path": lambda n: Path(n).exists(),
+                    "memodel_dir": lambda n: Path(n).exists(),
+                    "output_dir": lambda n: Path(n).exists(),
+                    "params_path": lambda n: Path(n).exists(),
+                    "units_path": lambda n: Path(n).exists(),
+                    "syn_dir": lambda n: Path(n).exists(),
+                    "syn_data_file": And(str, len),
+                    "syn_conf_file": And(str, len),
+                    "syn_mtype_map": And(str, len),
+                },
+            }
+        )
+
+
 class SynplasConfigValidator(ConfigValidator):
     """Validates the Synplas config through a validation schema."""
 

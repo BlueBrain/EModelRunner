@@ -22,7 +22,7 @@ from bluepyopt import ephys
 
 from emodelrunner.synapses.mechanism import NrnMODPointProcessMechanismCustom
 from emodelrunner.locations import multi_locations
-from emodelrunner.configuration import SSCXConfigValidator, SynplasConfigValidator
+from emodelrunner.configuration import SSCXConfigValidator, ThalamusConfigValidator, SynplasConfigValidator
 
 
 def load_sscx_config(config_path):
@@ -35,6 +35,21 @@ def load_sscx_config(config_path):
         configparser.ConfigParser: loaded config object
     """
     conf_validator = SSCXConfigValidator()
+    validated_config = conf_validator.validate_from_file(config_path)
+
+    return validated_config
+
+
+def load_thalamus_config(config_path):
+    """Validates and returns the configuration file for the Thalamus packages.
+
+    Args:
+        config_path (str or Path): path to the configuration file.
+
+    Returns:
+        configparser.ConfigParser: loaded config object
+    """
+    conf_validator = ThalamusConfigValidator()
     validated_config = conf_validator.validate_from_file(config_path)
 
     return validated_config
