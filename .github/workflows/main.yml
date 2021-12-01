@@ -54,7 +54,7 @@ jobs:
         run:
             python setup.py sdist
 
-      Test publishing when emodelrunner becomes open sourced, then switch to PyPi
+      # Test publishing when emodelrunner becomes open sourced, then switch to PyPi
       - name: Publish package to TestPyPI
         uses: pypa/gh-action-pypi-publish@main
         with:
