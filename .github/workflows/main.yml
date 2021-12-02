@@ -30,12 +30,10 @@ jobs:
         pip install tox tox-gh-actions
     - name: Run tox
       run: tox
-    # Add codecov when emodelrunner becomes open sourced
-    # - name: "Upload coverage to Codecov"
-    #   uses: codecov/codecov-action@v1
-    #   with:
-    #     token: ${{ secrets.CODECOV_TOKEN }}
-    #     fail_ci_if_error: false
+    - name: "Upload coverage to Codecov"
+      uses: codecov/codecov-action@v1
+      with:
+        fail_ci_if_error: false
   
   build-n-publish:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
