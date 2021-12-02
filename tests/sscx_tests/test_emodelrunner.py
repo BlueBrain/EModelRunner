@@ -24,7 +24,7 @@ import subprocess
 import pytest
 
 from bluepyopt import ephys
-from emodelrunner.create_hoc import get_hoc, write_hocs
+from emodelrunner.create_hoc import get_hoc, write_hocs, copy_features_hoc
 from emodelrunner.load import (
     load_sscx_config,
     get_hoc_paths_args,
@@ -52,6 +52,7 @@ def compare_hoc_and_py(filename, threshold):
 
     # check rms
     rms = np.sqrt(np.mean((hoc_voltage[:, 1] - py_voltage[:, 1]) ** 2))
+
     assert rms < threshold
 
 
@@ -69,9 +70,9 @@ def test_voltages():
     with cwd(example_dir):
         # write hocs
         config = load_sscx_config(config_path=config_path)
-        cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(config=config)
+        cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
         hoc_paths = get_hoc_paths_args(config)
-        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc)
+        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
 
         subprocess.call(["sh", "./run_hoc.sh"])
         run_emodel(config_path=config_path)
@@ -120,9 +121,9 @@ def test_synapses_hoc_vs_py_script(config_path="config/config_synapses.ini"):
     with cwd(example_dir):
         # write hocs
         config = load_sscx_config(config_path=config_path)
-        cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(config=config)
+        cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
         hoc_paths = get_hoc_paths_args(config)
-        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc)
+        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
 
         subprocess.call(["sh", "./run_hoc.sh"])
         run_emodel(config_path=config_path)
@@ -131,13 +132,26 @@ def test_synapses_hoc_vs_py_script(config_path="config/config_synapses.ini"):
 
 
 def test_recipe_protocols():
-    """Verify that recipe protocols produce expected voltage and current outputs."""
+    """Verify that recipe protocols produce expected voltage and current outputs.
+
+    Also verify that hoc and py produce the same results.
+    """
     config_path = "config/config_recipe_protocols.ini"
+    threshold = 5e-5
 
     with cwd(example_dir):
+        # write hocs
+        config = load_sscx_config(config_path=config_path)
+        cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
+        hoc_paths = get_hoc_paths_args(config)
+        copy_features_hoc(config)
+        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
+
+        subprocess.call(["sh", "./run_hoc.sh"])
         run_emodel(config_path=config_path)
 
-    output_dir = os.path.join(example_dir, "python_recordings")
+    py_output_dir = os.path.join(example_dir, "python_recordings")
+    hoc_output_dir = os.path.join(example_dir, "hoc_recordings")
     output_files = [
         "L5TPCa.Step_150.soma.v.dat",
         "L5TPCa.Step_200.soma.v.dat",
@@ -156,6 +170,8 @@ def test_recipe_protocols():
         "L5TPCa.SpikeRec_600.soma.v.dat",
         "L5TPCa.bpo_holding_current.dat",
         "L5TPCa.bpo_threshold_current.dat",
+    ]
+    output_current_files = [
         "current_L5TPCa.Step_150.dat",
         "current_L5TPCa.Step_200.dat",
         "current_L5TPCa.Step_280.dat",
@@ -166,8 +182,22 @@ def test_recipe_protocols():
         "current_L5TPCa.SpikeRec_600.dat",
     ]
 
+    for fname in output_current_files:
+        assert os.path.isfile(os.path.join(py_output_dir, fname))
+
     for fname in output_files:
-        assert os.path.isfile(os.path.join(output_dir, fname))
+        assert os.path.isfile(os.path.join(py_output_dir, fname))
+        assert os.path.isfile(os.path.join(hoc_output_dir, fname))
+
+        # file contains float
+        if "bpo" in fname:
+            hoc_current = np.loadtxt(os.path.join(hoc_output_dir, fname))
+            py_current = np.loadtxt(os.path.join(py_output_dir, fname))
+            assert abs(float(hoc_current) - float(py_current)) < threshold
+
+        # file contains arrays
+        else:
+            compare_hoc_and_py(fname, threshold)
 
 
 def test_generate_current():
@@ -297,9 +327,9 @@ def test_multiprotocols_hoc_vs_py_script(
     with cwd(example_dir):
         # write hocs
         config = load_sscx_config(config_path=config_path)
-        cell_hoc, syn_hoc, simul_hoc, run_hoc = get_hoc(config=config)
+        cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
         hoc_paths = get_hoc_paths_args(config)
-        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc)
+        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
 
         subprocess.call(["sh", "./run_hoc.sh"])
         run_emodel(config_path=config_path)

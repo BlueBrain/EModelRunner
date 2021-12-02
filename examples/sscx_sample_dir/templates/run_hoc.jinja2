@@ -5,6 +5,9 @@ Do not distribute without further notice.
 
 load_file("nrngui.hoc")
 load_file("createsimulation.hoc")
+{%- if main_protocol %}
+load_file("main_protocol.hoc")
+{%- endif %}
 
 // By default, disable the step currents
 strdef stepcurrent
@@ -15,9 +18,9 @@ create_cell()
 access cell.soma
 create_recording()
 
-for i_stim=1,{{n_stims}} {
-    print "Simulation current stimulus ", i_stim
-    create_stimulus(i_stim)
-    simulate()
-    save_recording(i_stim)
-}
+{%- if main_protocol %}
+// run rmp, Rin and threshold detection
+main_prot_run()
+// run pre-protocols and other protocols
+{%- endif %}
+run_simulation()

@@ -72,6 +72,7 @@ def get_hoc_paths_args(config):
         "syn_dir": config.get("Paths", "syn_dir"),
         "syn_dir_for_hoc": config.get("Paths", "syn_dir_for_hoc"),
         "syn_hoc_filename": config.get("Paths", "syn_hoc_file"),
+        "main_protocol_filename": config.get("Paths", "main_protocol_file"),
     }
 
 

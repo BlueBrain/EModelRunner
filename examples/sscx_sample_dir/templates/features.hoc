@@ -1,0 +1,81 @@
+/*                                                                               
+Copyright (c) BBP/EPFL 2018; All rights reserved.
+Do not distribute without further notice.
+*/ 
+
+// no need to interpolate, since time and voltage are alredy sampled at 0.1 ms
+
+/*
+    $o1: time (ms)
+    $o2: voltage (mV)
+    $3: stim_start (ms)
+*/
+func voltage_base() {local stim_start, voltage_base_start_perc, voltage_base_end_perc, \
+                    begin_idx, end_idx \
+                    localobj t, v
+
+    t = $o1
+    v = $o2
+    voltage_base_start_perc = 0.9
+    voltage_base_end_perc = 1.0
+    stim_start = $3
+
+    // filter v to keep only time range of interest
+    t0 = stim_start * voltage_base_start_perc
+    t1 = stim_start * voltage_base_end_perc
+
+    begin_idx = t.indwhere(">=", t0)
+    end_idx = t.indwhere(">=", t1)
+
+    // return the mean value
+    return v.sum(begin_idx, end_idx -1) / (end_idx - begin_idx)
+}
+
+
+/*
+    $o1: time (ms)
+    $o2: voltage (mV)
+    $3: stim_start (ms)
+    $4: stim_end (ms)
+*/
+func steady_state_voltage_stimend() {local stim_start, stim_end, \
+                    begin_idx, end_idx \
+                    localobj t, v
+
+    t = $o1
+    v = $o2
+    stim_start = $3
+    stim_end = $4
+
+    // filter v to keep only time range of interest
+    t0 = stim_end - 0.1 * (stim_end - stim_start)
+    t1 = stim_end
+
+    begin_idx = t.indwhere(">=", t0)
+    end_idx = t.indwhere(">=", t1)
+
+    // return the mean value
+    return v.sum(begin_idx, end_idx -1) / (end_idx - begin_idx)
+}
+
+/*
+    $o1: time (ms)
+    $o2: voltage (mV)
+    $3: stim_start (ms)
+    $4: stim_end
+    $5: stimulus current (nA)
+*/
+func ohmic_input_resistance_vb_ssse() {local stim_start, stim_end, stimulus_current \
+                    localobj t, v
+
+    t = $o1
+    v = $o2
+    stim_start = $3
+    stim_end = $4
+    stimulus_current = $5
+
+    voltage_base_value = voltage_base(t, v, stim_start)
+    steady_state_voltage_stimend_value = steady_state_voltage_stimend(t, v, stim_start, stim_end)
+    voltage_deflection_vb_ssse = steady_state_voltage_stimend_value - voltage_base_value
+    return voltage_deflection_vb_ssse / stimulus_current
+}
