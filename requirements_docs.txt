@@ -1,5 +1,3 @@
-"""Package version."""
-
 # Copyright 2020-2021 Blue Brain Project / EPFL
 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-VERSION = "1.0.11"
-__version__ = VERSION
+sphinx>=2.0.0
+sphinx-bluebrain-theme
