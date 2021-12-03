@@ -40,6 +40,7 @@ setup(
     project_urls={
         "Tracker": "https://github.com/BlueBrain/EModelRunner/issues",
         "Source": "https://github.com/BlueBrain/EModelRunner",
+        "Documentation": "https://emodelrunner.readthedocs.io/en/latest",
     },
     license="Apache 2.0",
     install_requires=[
