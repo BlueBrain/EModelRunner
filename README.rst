@@ -224,15 +224,15 @@ Copyright (c) 2020-2021 Blue Brain Project/EPFL
                 :target: https://github.com/BlueBrain/EModelRunner/blob/main/LICENSE.txt
                 :alt: Build Status
 
-.. |docs| .. image:: https://readthedocs.org/projects/emodelrunner/badge/?version=latest
+.. |docs| image:: https://readthedocs.org/projects/emodelrunner/badge/?version=latest
                 :target: https://emodelrunner.readthedocs.io/en/latest/?badge=latest
                 :alt: Documentation Status
 
-.. |coverage| .. image:: https://codecov.io/gh/BlueBrain/EModelRunner/coverage.svg?branch=main
+.. |coverage| image:: https://codecov.io/gh/BlueBrain/EModelRunner/coverage.svg?branch=main
                 :target: https://codecov.io/gh/BlueBrain/EModelRunner?branch=main
                 :alt: Coverage
 
-.. |pypi| .. image:: https://img.shields.io/pypi/v/emodelrunner.svg
+.. |pypi| image:: https://img.shields.io/pypi/v/emodelrunner.svg
                 :target: https://pypi.org/project/EModelRunner/
                 :alt: Latest Release
 
