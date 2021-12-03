@@ -15,5 +15,5 @@
 # limitations under the License.
 
 
-VERSION = "1.0.12"
+VERSION = "1.0.13"
 __version__ = VERSION
