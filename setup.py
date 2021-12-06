@@ -46,7 +46,7 @@ setup(
     install_requires=[
         "numpy",
         "bluepyopt",
-        "neurom",
+        "neurom>=3.1.0",
         "h5py",
         "matplotlib",
         "schema",
