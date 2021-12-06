@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 class SSCXNrnFileMorphology(ephys.morphologies.NrnFileMorphology):
     """Custom Morphology.
+
     Attributes:
         name (str): name of this object
         comment (str): comment
@@ -46,6 +47,7 @@ class SSCXNrnFileMorphology(ephys.morphologies.NrnFileMorphology):
 
     def replace_axon(self, sim=None, icell=None):
         """Replace axon.
+
         Args:
             sim (bluepyopt.ephys.NrnSimulator): neuron simulator
             icell (neuron cell): cell instantiation in simulator
@@ -140,11 +142,11 @@ class ThalamusNrnFileMorphology(ephys.morphologies.NrnFileMorphology):
     @staticmethod
     def replace_axon(sim=None, icell=None):
         """Replace axon.
+
         Args:
             sim (bluepyopt.ephys.NrnSimulator): neuron simulator
             icell (neuron cell): cell instantiation in simulator
         """
-
         L_target = 60  # length of stub axon
         nseg0 = 5  # number of segments for each of the two axon sections
 
@@ -157,7 +159,7 @@ class ThalamusNrnFileMorphology(ephys.morphologies.NrnFileMorphology):
         count = 0
         for section in icell.axonal:
             L = section.L
-            nseg = 1 + int(L / chunkSize / 2.) * 2  # nseg to get diameter
+            nseg = 1 + int(L / chunkSize / 2.0) * 2  # nseg to get diameter
             section.nseg = nseg
 
             for seg in section:
@@ -169,19 +171,21 @@ class ThalamusNrnFileMorphology(ephys.morphologies.NrnFileMorphology):
                 break
 
         # Work-around if axon is too short
-        lasti = -2 # Last diam. may be bigger if axon cut
+        lasti = -2  # Last diam. may be bigger if axon cut
 
         if len(diams) < nseg_total:
-            diams = diams + [diams[lasti]]*(nseg_total - len(diams))
-            lens = lens + [lens[lasti]]*(nseg_total - len(lens))
+            diams = diams + [diams[lasti]] * (nseg_total - len(diams))
+            lens = lens + [lens[lasti]] * (nseg_total - len(lens))
             if nseg_total - len(diams) > 5:
-                logger.debug("Axon too short, adding more than 5 sections with fixed diam")
+                logger.debug(
+                    "Axon too short, adding more than 5 sections with fixed diam"
+                )
 
         for section in icell.axonal:
             sim.neuron.h.delete_section(sec=section)
 
         #  new axon array
-        sim.neuron.h.execute('create axon[2]', icell)
+        sim.neuron.h.execute("create axon[2]", icell)
 
         L_real = 0
         count = 0
@@ -202,5 +206,8 @@ class ThalamusNrnFileMorphology(ephys.morphologies.NrnFileMorphology):
         icell.axon[1].connect(icell.axon[0], 1.0, 0.0)
 
         logger.debug(
-            'Replace axon with tapered AIS of length %f, target length was %f, diameters are %s' %
-            (L_real, L_target, diams))
+            "Replace axon with tapered AIS of length %d, target length was %d, diameters are %s",
+            L_real,
+            L_target,
+            diams,
+        )

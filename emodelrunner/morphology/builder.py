@@ -1,7 +1,9 @@
 """Builds morphology objects."""
 
-from emodelrunner.morphology import SSCXNrnFileMorphology, ThalamusNrnFileMorphology
-
+from emodelrunner.morphology.morphology import (
+    SSCXNrnFileMorphology,
+    ThalamusNrnFileMorphology,
+)
 
 # Copyright 2020-2021 Blue Brain Project / EPFL
 

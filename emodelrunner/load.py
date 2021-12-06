@@ -22,7 +22,11 @@ from bluepyopt import ephys
 
 from emodelrunner.synapses.mechanism import NrnMODPointProcessMechanismCustom
 from emodelrunner.locations import multi_locations
-from emodelrunner.configuration import SSCXConfigValidator, ThalamusConfigValidator, SynplasConfigValidator
+from emodelrunner.configuration import (
+    SSCXConfigValidator,
+    ThalamusConfigValidator,
+    SynplasConfigValidator,
+)
 
 
 def load_sscx_config(config_path):
