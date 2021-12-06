@@ -146,6 +146,21 @@ def get_sscx_morph_args(config):
     }
 
 
+def get_thalamus_morph_args(config):
+    """Get morphology arguments for Thalamys from the configuration object.
+
+    Args:
+        config (configparser.ConfigParser): configuration object.
+
+    Returns:
+        dict: dictionary containing morphology arguments.
+    """
+    return {
+        "morph_path": config.get("Paths", "morph_path"),
+        "do_replace_axon": config.getboolean("Morphology", "do_replace_axon"),
+    }
+
+
 def get_synplas_morph_args(config, precell=False):
     """Get morphology arguments for Synplas from the configuration object.
 

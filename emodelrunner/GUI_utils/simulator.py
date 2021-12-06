@@ -31,7 +31,7 @@ from emodelrunner.load import (
     get_sscx_morph_args,
     get_release_params,
 )
-from emodelrunner.morphology import NrnFileMorphologyCustom, get_axon_hoc
+from emodelrunner.morphology import create_morphology
 from emodelrunner.synapses.create_locations import get_syn_locs
 
 
@@ -442,12 +442,7 @@ class NeuronSimulation:
 
         # load morphology
         morph_config = get_sscx_morph_args(self.config)
-        replace_axon_hoc = get_axon_hoc(morph_config["axon_hoc_path"])
-        morph = NrnFileMorphologyCustom(
-            morph_config["morph_path"],
-            do_replace_axon=morph_config["do_replace_axon"],
-            replace_axon_hoc=replace_axon_hoc,
-        )
+        morph = create_morphology(morph_config, "sscx")
 
         # create cell
         cell = CellModelCustom(

@@ -18,6 +18,7 @@ import os
 
 from emodelrunner.cell import CellModelCustom
 from emodelrunner.load import (
+    get_thalamus_morph_args,
     load_mechanisms,
     load_syn_mechs,
     load_unoptimized_parameters,
@@ -25,14 +26,14 @@ from emodelrunner.load import (
     get_synplas_morph_args,
     get_syn_mech_args,
 )
-from emodelrunner.morphology import NrnFileMorphologyCustom, get_axon_hoc
+from emodelrunner.morphology import create_morphology
 
 
 def create_cell(
     unopt_params_path,
     emodel,
     add_synapses,
-    morph_args,
+    morph,
     gid,
     syn_mech_args=None,
     use_glu_synapse=False,
@@ -47,7 +48,7 @@ def create_cell(
         unopt_params_path (str): path to the unoptimized parameters json file
         emodel (str): name to give to the cell model
         add_synapses (bool): whether to add synapses to the cell
-        morph_args (dict): morphology-related configuration
+        morph (ephys.morphologies.NrnFileMorphology): morphology object
         gid (int): cell model ID
         syn_mech_args (dict): synapse-related configuration
         use_glu_synapse (bool): whether to use GluSynapseCustom class for synapses
@@ -80,17 +81,6 @@ def create_cell(
     # load parameters
     params = load_unoptimized_parameters(unopt_params_path, v_init, celsius)
 
-    # load morphology
-    try:
-        replace_axon_hoc = get_axon_hoc(morph_args["axon_hoc_path"])
-    except KeyError:
-        replace_axon_hoc = None
-    morph = NrnFileMorphologyCustom(
-        morph_args["morph_path"],
-        do_replace_axon=morph_args["do_replace_axon"],
-        replace_axon_hoc=replace_axon_hoc,
-    )
-
     # create cell
     cell = CellModelCustom(
         name=emodel,
@@ -121,14 +111,19 @@ def create_cell_using_config(config):
     syn_mech_args = get_syn_mech_args(config)
 
     # get morphology config data
-    morph_args = get_sscx_morph_args(config)
+    if config.get("Package", "type") == "SSCX":
+        morph = create_morphology(get_sscx_morph_args(config), "sscx")
+    elif config.get("Package", "type") == "Thalamus":
+        morph = create_morphology(get_thalamus_morph_args(config), "thalamus")
+    else:
+        raise ValueError(f"unsupported config type: {config.get('Package', 'type')}")
 
     # create cell
     cell = create_cell(
         unopt_params_path,
         config.get("Cell", "emodel"),
         add_synapses,
-        morph_args,
+        morph,
         config.getint("Cell", "gid"),
         syn_mech_args,
         v_init=config.getfloat("Cell", "v_init"),
@@ -167,7 +162,7 @@ def get_postcell(
     syn_mech_args["seed"] = base_seed
     syn_mech_args["rng_settings_mode"] = "Compatibility"
 
-    morph_args = get_synplas_morph_args(config)
+    morph = create_morphology(get_synplas_morph_args(config), "sscx")
 
     add_synapses = True
 
@@ -175,7 +170,7 @@ def get_postcell(
         unopt_params_path,
         emodel,
         add_synapses,
-        morph_args,
+        morph,
         gid,
         syn_mech_args,
         use_glu_synapse=True,
@@ -207,7 +202,7 @@ def get_precell(
 
     unopt_params_path = config.get("Paths", "precell_unoptimized_params_path")
 
-    morph_args = get_synplas_morph_args(config, precell=True)
+    morph = create_morphology(get_synplas_morph_args(config), "sscx")
 
     add_synapses = False
 
@@ -215,7 +210,7 @@ def get_precell(
         unopt_params_path,
         emodel,
         add_synapses,
-        morph_args,
+        morph,
         gid,
         fixhp=fixhp,
         v_init=v_init,

@@ -159,6 +159,7 @@ class SSCXConfigValidator(ConfigValidator):
     """Validates the SSCX config through a validation schema."""
 
     default_values = {
+        "Package": {"type": "SSCX"},
         "Cell": {
             "celsius": "34",
             "v_init": "-80",
@@ -215,6 +216,7 @@ class SSCXConfigValidator(ConfigValidator):
         """Define the schema through validation rules."""
         self.config_validator_schema = Schema(
             {
+                "Package": {"type": "SSCX"},
                 "Cell": {
                     "celsius": self.float_or_int_expression,
                     "v_init": self.float_or_int_expression,
@@ -275,6 +277,7 @@ class ThalamusConfigValidator(ConfigValidator):
     """Validates the Thalamus config through a validation schema."""
 
     default_values = {
+        "Package": {"type": "Thalamus"},
         "Cell": {
             "celsius": "34",
             "v_init": "-80",
@@ -314,6 +317,7 @@ class ThalamusConfigValidator(ConfigValidator):
         """Define the schema through validation rules."""
         self.config_validator_schema = Schema(
             {
+                "Package": {"type": "Thalamus"},
                 "Cell": {
                     "celsius": self.float_or_int_expression,
                     "v_init": self.float_or_int_expression,
@@ -358,6 +362,7 @@ class SynplasConfigValidator(ConfigValidator):
     """Validates the Synplas config through a validation schema."""
 
     default_values = {
+        "Package": {"type": "Synplas"},
         "Paths": {
             "memodel_dir": ".",
             "params_path": "%(memodel_dir)s/config/params/final.json",
@@ -385,6 +390,7 @@ class SynplasConfigValidator(ConfigValidator):
         """Define the schema through validation rules."""
         self.config_validator_schema = Schema(
             {
+                "Package": {"type": "Synplas"},
                 "Cell": {
                     "celsius": self.float_or_int_expression,
                     "v_init": self.float_or_int_expression,
