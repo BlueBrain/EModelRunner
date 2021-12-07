@@ -1,8 +1,18 @@
-|pypi| |docs| |license| |build| |coverage|
-
 ############
 EModelRunner
 ############
+
++----------------+------------+
+| Latest Release | |pypi|     |
++----------------+------------+
+| Documentation  | |docs|     |
++----------------+------------+
+| License        | |license|  |
++----------------+------------+
+| Build Status 	 | |build|    |
++----------------+------------+
+| Coverage       | |coverage| |
++----------------+------------+
 
 Introduction
 ============
@@ -237,3 +247,11 @@ Copyright (c) 2020-2021 Blue Brain Project/EPFL
                 :alt: Latest Release
 
 .. |GUI_screenshot| image:: doc/source/images/GUI_screenshot.png
+
+.. |bannertable| list-table:: table
+                :Latest Release: |pypi| 
+                :Documentation: |docs|
+                :License: |license|
+                :Build status: |build|
+                :Coverage: |coverage|
+
