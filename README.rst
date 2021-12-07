@@ -31,7 +31,7 @@ Installing EModelRunner
 
 The usual way to install EModelRunner is using pip. In that case, you probably want to use a python virtual environment.
 
-Instll uing ``pip``::
+Install using ``pip``::
 
     pip install emodelrunner
 
@@ -102,7 +102,7 @@ Running the simulation should be as easy as::
 
     sh run.sh config_path
 
-Where config_path is the path to a specific config file. You will find the available config files in the config folder.
+Where ``config_path`` is the path to a specific config file. You will find the available config files in the config folder.
 It will run the post-synaptic cell using pre-defined spike train of the pre-synaptic cell to stimulate the synapses.
 
 You can also do a true pair simulation, where both the pre-synaptic and the post-synaptic cells. 
@@ -172,7 +172,7 @@ You can also run the simulation using hoc. In order to do that, you will have to
 
     python create_hoc.py --config_path config_path
 
-Where ``config_pat``h is the path to a specific config file. You will find the available config files in the config folder.
+Where ``config_path`` is the path to a specific config file. You will find the available config files in the config folder.
 Note that not all the protocols in the config files can be turned into hoc yet.
 
 Then run the simulation with::
