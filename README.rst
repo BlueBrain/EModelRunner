@@ -1,8 +1,18 @@
-|pypi| |docs| |license| |build| |coverage|
-
 ############
 EModelRunner
 ############
+
++----------------+------------+
+| Latest Release | |pypi|     |
++----------------+------------+
+| Documentation  | |docs|     |
++----------------+------------+
+| License        | |license|  |
++----------------+------------+
+| Build Status 	 | |build|    |
++----------------+------------+
+| Coverage       | |coverage| |
++----------------+------------+
 
 Introduction
 ============
