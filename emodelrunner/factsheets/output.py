@@ -70,7 +70,9 @@ def write_metype_json(
     print("me-type json file written.")
 
 
-def write_etype_factsheet(data_path, current_amplitude, stim_start, stim_duration, output_path):
+def write_etype_factsheet(
+    data_path, current_amplitude, stim_start, stim_duration, output_path
+):
     """Write the me-type factsheet json file.
 
     Args:

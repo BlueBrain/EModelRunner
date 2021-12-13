@@ -20,7 +20,6 @@ import numpy as np
 
 from bluepyopt import ephys
 
-from emodelrunner.configuration.configparser import PackageType
 from emodelrunner.recordings import RecordingCustom
 from emodelrunner.cell import CellModelCustom
 from emodelrunner.synapses.stimuli import NrnNetStimStimulusCustom

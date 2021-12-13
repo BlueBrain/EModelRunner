@@ -14,5 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from emodelrunner.configuration.validator import get_validated_config, ConfigValidator, SSCXConfigValidator, SynplasConfigValidator, ThalamusConfigValidator
+from emodelrunner.configuration.validator import (
+    get_validated_config,
+    ConfigValidator,
+    SSCXConfigValidator,
+    SynplasConfigValidator,
+    ThalamusConfigValidator,
+)
 from emodelrunner.configuration.configparser import PackageType

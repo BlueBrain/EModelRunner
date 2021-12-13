@@ -216,7 +216,7 @@ class SSCXConfigValidator(ConfigValidator):
         """Define the schema through validation rules."""
         self.config_validator_schema = Schema(
             {
-                "Package": {"type": lambda n: n.lower()=="sscx"},
+                "Package": {"type": lambda n: n.lower() == "sscx"},
                 "Cell": {
                     "celsius": self.float_or_int_expression,
                     "v_init": self.float_or_int_expression,
@@ -317,7 +317,7 @@ class ThalamusConfigValidator(ConfigValidator):
         """Define the schema through validation rules."""
         self.config_validator_schema = Schema(
             {
-                "Package": {"type": lambda n: n.lower()=="thalamus"},
+                "Package": {"type": lambda n: n.lower() == "thalamus"},
                 "Cell": {
                     "celsius": self.float_or_int_expression,
                     "v_init": self.float_or_int_expression,
@@ -390,7 +390,7 @@ class SynplasConfigValidator(ConfigValidator):
         """Define the schema through validation rules."""
         self.config_validator_schema = Schema(
             {
-                "Package": {"type": lambda n: n.lower()=="synplas"},
+                "Package": {"type": lambda n: n.lower() == "synplas"},
                 "Cell": {
                     "celsius": self.float_or_int_expression,
                     "v_init": self.float_or_int_expression,

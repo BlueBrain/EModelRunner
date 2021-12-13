@@ -21,6 +21,7 @@ from enum import Enum
 
 class PackageType(Enum):
     """Enumerator for the emodel package types."""
+
     sscx = "sscx"
     thalamus = "thalamus"
     synplas = "synplas"
@@ -28,7 +29,9 @@ class PackageType(Enum):
 
 class EModelConfigParser(ConfigParser):
     """Built-in ConfigParser annotated with package type."""
+
     def __init__(self):
+        """Constructor."""
         super().__init__()
 
     @property
