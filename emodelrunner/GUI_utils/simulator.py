@@ -20,15 +20,16 @@ import numpy as np
 
 from bluepyopt import ephys
 
+from emodelrunner.configuration.configparser import PackageType
 from emodelrunner.recordings import RecordingCustom
 from emodelrunner.cell import CellModelCustom
 from emodelrunner.synapses.stimuli import NrnNetStimStimulusCustom
 from emodelrunner.load import (
-    load_sscx_config,
+    load_config,
     load_syn_mechs,
     load_unoptimized_parameters,
     load_mechanisms,
-    get_sscx_morph_args,
+    get_morph_args,
     get_release_params,
 )
 from emodelrunner.morphology import create_morphology
@@ -217,7 +218,7 @@ class NeuronSimulation:
             config_path (str):path to the config file
         """
         # load config file
-        self.config = load_sscx_config(config_path=config_path)
+        self.config = load_config(config_path=config_path)
         self.cell_path = self.config.get("Paths", "memodel_dir")
 
         # get default params
@@ -441,8 +442,8 @@ class NeuronSimulation:
         )
 
         # load morphology
-        morph_config = get_sscx_morph_args(self.config)
-        morph = create_morphology(morph_config, "sscx")
+        morph_config = get_morph_args(self.config)
+        morph = create_morphology(morph_config, self.config.package_type)
 
         # create cell
         cell = CellModelCustom(

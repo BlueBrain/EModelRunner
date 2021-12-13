@@ -26,7 +26,7 @@ from emodelrunner.create_cells import get_postcell
 from emodelrunner.create_protocols import define_synapse_plasticity_protocols
 from emodelrunner.load import get_release_params
 from emodelrunner.load import get_syn_setup_params
-from emodelrunner.load import load_synplas_config
+from emodelrunner.load import load_config
 from emodelrunner.output import write_synplas_output
 
 # Configure logger
@@ -63,7 +63,7 @@ def run(
         protocol_name (str): name of the protocol
         fixhp (bool): to uninsert SK_E2 for hyperpolarization in cell model
     """
-    config = load_synplas_config(config_path=config_path)
+    config = load_config(config_path=config_path)
 
     # load extra_params
     syn_setup_params = get_syn_setup_params(

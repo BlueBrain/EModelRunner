@@ -25,7 +25,7 @@ from emodelrunner.create_protocols import define_pairsim_protocols
 from emodelrunner.load import get_presyn_stim_args
 from emodelrunner.load import get_release_params
 from emodelrunner.load import get_syn_setup_params
-from emodelrunner.load import load_synplas_config
+from emodelrunner.load import load_config
 from emodelrunner.output import write_synplas_output
 from emodelrunner.output import write_synplas_precell_output
 from emodelrunner.run_synplas import _set_global_params
@@ -51,7 +51,7 @@ def run(
         fixhp (bool): to uninsert SK_E2 for hyperpolarization in cell model
     """
     # pylint:disable=too-many-locals
-    config = load_synplas_config(config_path=config_path)
+    config = load_config(config_path=config_path)
 
     # load extra_params
     syn_setup_params = get_syn_setup_params(

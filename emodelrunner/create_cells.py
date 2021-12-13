@@ -18,15 +18,15 @@ import os
 
 from emodelrunner.cell import CellModelCustom
 from emodelrunner.load import (
-    get_thalamus_morph_args,
+    get_morph_args,
     load_mechanisms,
     load_syn_mechs,
     load_unoptimized_parameters,
-    get_sscx_morph_args,
     get_synplas_morph_args,
     get_syn_mech_args,
 )
 from emodelrunner.morphology import create_morphology
+from emodelrunner.configuration import PackageType
 
 
 def create_cell(
@@ -101,6 +101,9 @@ def create_cell_using_config(config):
     Args:
         config (configparser.ConfigParser): configuration
 
+    Raises:
+        ValueError: raised when package_type is not supported
+
     Returns:
         CellModelCustom: cell model
     """
@@ -111,12 +114,12 @@ def create_cell_using_config(config):
     syn_mech_args = get_syn_mech_args(config)
 
     # get morphology config data
-    if config.get("Package", "type") == "SSCX":
-        morph = create_morphology(get_sscx_morph_args(config), "sscx")
-    elif config.get("Package", "type") == "Thalamus":
-        morph = create_morphology(get_thalamus_morph_args(config), "thalamus")
+    if config.package_type == PackageType.sscx:
+        morph = create_morphology(get_morph_args(config), config.package_type)
+    elif config.package_type == PackageType.thalamus:
+        morph = create_morphology(get_morph_args(config), config.package_type)
     else:
-        raise ValueError(f"unsupported config type: {config.get('Package', 'type')}")
+        raise ValueError(f"unsupported package type: {config.package_type}")
 
     # create cell
     cell = create_cell(
@@ -162,7 +165,7 @@ def get_postcell(
     syn_mech_args["seed"] = base_seed
     syn_mech_args["rng_settings_mode"] = "Compatibility"
 
-    morph = create_morphology(get_synplas_morph_args(config), "sscx")
+    morph = create_morphology(get_synplas_morph_args(config), config.package_type)
 
     add_synapses = True
 
@@ -202,7 +205,7 @@ def get_precell(
 
     unopt_params_path = config.get("Paths", "precell_unoptimized_params_path")
 
-    morph = create_morphology(get_synplas_morph_args(config), "sscx")
+    morph = create_morphology(get_synplas_morph_args(config), config.package_type)
 
     add_synapses = False
 

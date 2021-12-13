@@ -4,6 +4,7 @@ from emodelrunner.morphology.morphology import (
     SSCXNrnFileMorphology,
     ThalamusNrnFileMorphology,
 )
+from emodelrunner.configuration import PackageType
 
 # Copyright 2020-2021 Blue Brain Project / EPFL
 
@@ -33,12 +34,15 @@ def get_axon_hoc(axon_hoc_path):
         return f.read()
 
 
-def create_morphology(morph_args, morph_type):
+def create_morphology(morph_args, package_type):
     """Creates the morphology object.
 
     Args:
         morph_args (dict): morphology-related configuration
-        morph_type (str): string denoting morphology type e.g. sscx, thalamus
+        morph_type (Enum): enum denoting the package type
+
+    Raises:
+        ValueError: raised when package_type is not supported
 
     Returns:
         ephys.morphologies.NrnFileMorphology: morphology object
@@ -47,16 +51,18 @@ def create_morphology(morph_args, morph_type):
         replace_axon_hoc = get_axon_hoc(morph_args["axon_hoc_path"])
     except KeyError:
         replace_axon_hoc = None
-    if morph_type == "sscx":
+    if package_type in [PackageType.sscx, PackageType.synplas]:
         morph = SSCXNrnFileMorphology(
             morph_args["morph_path"],
             do_replace_axon=morph_args["do_replace_axon"],
             replace_axon_hoc=replace_axon_hoc,
         )
-    elif morph_type == "thalamus":
+    elif package_type == PackageType.thalamus:
         morph = ThalamusNrnFileMorphology(
             morph_args["morph_path"],
             do_replace_axon=morph_args["do_replace_axon"],
             replace_axon_hoc=replace_axon_hoc,
         )
+    else:
+        raise ValueError(f"unsupported package type: {package_type}")
     return morph

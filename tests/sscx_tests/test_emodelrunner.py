@@ -26,7 +26,7 @@ import pytest
 from bluepyopt import ephys
 from emodelrunner.create_hoc import get_hoc, write_hocs, copy_features_hoc
 from emodelrunner.load import (
-    load_sscx_config,
+    load_config,
     get_hoc_paths_args,
 )
 from emodelrunner.protocols import (
@@ -69,7 +69,7 @@ def test_voltages():
 
     with cwd(example_dir):
         # write hocs
-        config = load_sscx_config(config_path=config_path)
+        config = load_config(config_path=config_path)
         cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
         hoc_paths = get_hoc_paths_args(config)
         write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
@@ -120,7 +120,7 @@ def test_synapses_hoc_vs_py_script(config_path="config/config_synapses.ini"):
     # start with hoc, to compile mechs
     with cwd(example_dir):
         # write hocs
-        config = load_sscx_config(config_path=config_path)
+        config = load_config(config_path=config_path)
         cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
         hoc_paths = get_hoc_paths_args(config)
         write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
@@ -141,7 +141,7 @@ def test_recipe_protocols():
 
     with cwd(example_dir):
         # write hocs
-        config = load_sscx_config(config_path=config_path)
+        config = load_config(config_path=config_path)
         cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
         hoc_paths = get_hoc_paths_args(config)
         copy_features_hoc(config)
@@ -326,7 +326,7 @@ def test_multiprotocols_hoc_vs_py_script(
     # start with hoc, to compile mechs
     with cwd(example_dir):
         # write hocs
-        config = load_sscx_config(config_path=config_path)
+        config = load_config(config_path=config_path)
         cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
         hoc_paths = get_hoc_paths_args(config)
         write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)

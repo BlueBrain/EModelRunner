@@ -1,4 +1,4 @@
-"""Configuration parsing and validation."""
+"""Configuration validation."""
 
 # Copyright 2020-2021 Blue Brain Project / EPFL
 
@@ -17,11 +17,12 @@
 import logging
 import pprint
 from pathlib import Path
-import configparser
 from abc import ABC
 from ast import literal_eval
 
 from schema import Schema, And, Or
+
+from emodelrunner.configuration.configparser import EModelConfigParser
 
 logger = logging.getLogger(__name__)
 
@@ -145,13 +146,12 @@ class ConfigValidator(ABC):
         """
         if not Path(config_path).exists():
             raise FileNotFoundError(f"config file at {config_path} is not found.")
-        config = configparser.ConfigParser()
+        config = EModelConfigParser()
 
         # set defaults
         config.read_dict(self.default_values)
 
         config.read(config_path)
-
         return config
 
 
@@ -159,7 +159,7 @@ class SSCXConfigValidator(ConfigValidator):
     """Validates the SSCX config through a validation schema."""
 
     default_values = {
-        "Package": {"type": "SSCX"},
+        "Package": {"type": "sscx"},
         "Cell": {
             "celsius": "34",
             "v_init": "-80",
@@ -216,7 +216,7 @@ class SSCXConfigValidator(ConfigValidator):
         """Define the schema through validation rules."""
         self.config_validator_schema = Schema(
             {
-                "Package": {"type": "SSCX"},
+                "Package": {"type": lambda n: n.lower()=="sscx"},
                 "Cell": {
                     "celsius": self.float_or_int_expression,
                     "v_init": self.float_or_int_expression,
@@ -277,7 +277,7 @@ class ThalamusConfigValidator(ConfigValidator):
     """Validates the Thalamus config through a validation schema."""
 
     default_values = {
-        "Package": {"type": "Thalamus"},
+        "Package": {"type": "thalamus"},
         "Cell": {
             "celsius": "34",
             "v_init": "-80",
@@ -317,7 +317,7 @@ class ThalamusConfigValidator(ConfigValidator):
         """Define the schema through validation rules."""
         self.config_validator_schema = Schema(
             {
-                "Package": {"type": "Thalamus"},
+                "Package": {"type": lambda n: n.lower()=="thalamus"},
                 "Cell": {
                     "celsius": self.float_or_int_expression,
                     "v_init": self.float_or_int_expression,
@@ -362,7 +362,7 @@ class SynplasConfigValidator(ConfigValidator):
     """Validates the Synplas config through a validation schema."""
 
     default_values = {
-        "Package": {"type": "Synplas"},
+        "Package": {"type": "synplas"},
         "Paths": {
             "memodel_dir": ".",
             "params_path": "%(memodel_dir)s/config/params/final.json",
@@ -390,7 +390,7 @@ class SynplasConfigValidator(ConfigValidator):
         """Define the schema through validation rules."""
         self.config_validator_schema = Schema(
             {
-                "Package": {"type": "Synplas"},
+                "Package": {"type": lambda n: n.lower()=="synplas"},
                 "Cell": {
                     "celsius": self.float_or_int_expression,
                     "v_init": self.float_or_int_expression,
@@ -442,3 +442,30 @@ class SynplasConfigValidator(ConfigValidator):
                 },
             }
         )
+
+
+def get_validated_config(config_path):
+    """Returns the validated config for the specified package type.
+
+    Args:
+        config_path (str or Path): path to the configuration file.
+
+    Returns:
+        configparser.ConfigParser: loaded config object
+    """
+    # pylint: disable=protected-access
+    unvalidated_config = ConfigValidator()._get_unvalidated_config(config_path)
+
+    package_type = unvalidated_config.get("Package", "type").lower()
+
+    if package_type == "sscx":
+        conf_validator = SSCXConfigValidator()
+    elif package_type == "thalamus":
+        conf_validator = ThalamusConfigValidator()
+    elif package_type == "synplas":
+        conf_validator = SynplasConfigValidator()
+    else:
+        raise ValueError(f"Unsupported config type: {package_type}")
+
+    validated_config = conf_validator.validate_from_file(config_path)
+    return validated_config

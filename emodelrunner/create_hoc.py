@@ -20,7 +20,7 @@ import os
 import shutil
 
 from emodelrunner.load import (
-    load_sscx_config,
+    load_config,
     get_release_params,
     get_syn_mech_args,
     get_hoc_paths_args,
@@ -229,7 +229,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    config_ = load_sscx_config(config_path=args.config_path)
+    config_ = load_config(config_path=args.config_path)
 
     cell_hoc_, syn_hoc_, simul_hoc_, run_hoc_, main_protocol_hoc_ = get_hoc(
         config=config_

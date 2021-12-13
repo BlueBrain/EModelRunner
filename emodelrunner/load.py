@@ -22,15 +22,11 @@ from bluepyopt import ephys
 
 from emodelrunner.synapses.mechanism import NrnMODPointProcessMechanismCustom
 from emodelrunner.locations import multi_locations
-from emodelrunner.configuration import (
-    SSCXConfigValidator,
-    ThalamusConfigValidator,
-    SynplasConfigValidator,
-)
+from emodelrunner.configuration import get_validated_config, PackageType
 
 
-def load_sscx_config(config_path):
-    """Validates and returns the configuration file for the SSCX packages.
+def load_config(config_path):
+    """Returns the validated configuration file.
 
     Args:
         config_path (str or Path): path to the configuration file.
@@ -38,40 +34,7 @@ def load_sscx_config(config_path):
     Returns:
         configparser.ConfigParser: loaded config object
     """
-    conf_validator = SSCXConfigValidator()
-    validated_config = conf_validator.validate_from_file(config_path)
-
-    return validated_config
-
-
-def load_thalamus_config(config_path):
-    """Validates and returns the configuration file for the Thalamus packages.
-
-    Args:
-        config_path (str or Path): path to the configuration file.
-
-    Returns:
-        configparser.ConfigParser: loaded config object
-    """
-    conf_validator = ThalamusConfigValidator()
-    validated_config = conf_validator.validate_from_file(config_path)
-
-    return validated_config
-
-
-def load_synplas_config(config_path):
-    """Validates and returns the configuration file for the Synplas packages.
-
-    Args:
-        config_path (str or Path): path to the configuration file.
-
-    Returns:
-        configparser.ConfigParser: loaded config object
-    """
-    conf_validator = SynplasConfigValidator()
-    validated_config = conf_validator.validate_from_file(config_path)
-
-    return validated_config
+    return get_validated_config(config_path)
 
 
 def get_hoc_paths_args(config):
@@ -131,7 +94,7 @@ def get_syn_mech_args(config):
     }
 
 
-def get_sscx_morph_args(config):
+def get_morph_args(config):
     """Get morphology arguments for SSCX from the configuration object.
 
     Args:
@@ -140,29 +103,14 @@ def get_sscx_morph_args(config):
     Returns:
         dict: dictionary containing morphology arguments.
     """
-    morph_path = config.get("Paths", "morph_path")
-    # load axon hoc path
-    axon_hoc_path = config.get("Paths", "replace_axon_hoc_path")
-    return {
-        "morph_path": morph_path,
-        "axon_hoc_path": axon_hoc_path,
-        "do_replace_axon": config.getboolean("Morphology", "do_replace_axon"),
-    }
+    morph_args = {}
+    morph_args["morph_path"] = config.get("Paths", "morph_path")
+    morph_args["do_replace_axon"] = config.getboolean("Morphology", "do_replace_axon")
 
+    if config.package_type in [PackageType.sscx, PackageType.synplas]:
+        morph_args["axon_hoc_path"] = config.get("Paths", "replace_axon_hoc_path")
 
-def get_thalamus_morph_args(config):
-    """Get morphology arguments for Thalamys from the configuration object.
-
-    Args:
-        config (configparser.ConfigParser): configuration object.
-
-    Returns:
-        dict: dictionary containing morphology arguments.
-    """
-    return {
-        "morph_path": config.get("Paths", "morph_path"),
-        "do_replace_axon": config.getboolean("Morphology", "do_replace_axon"),
-    }
+    return morph_args
 
 
 def get_synplas_morph_args(config, precell=False):
