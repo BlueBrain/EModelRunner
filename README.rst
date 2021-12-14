@@ -245,3 +245,8 @@ Copyright (c) 2020-2021 Blue Brain Project/EPFL
                 :alt: Latest Release
 
 .. |GUI_screenshot| image:: doc/source/images/GUI_screenshot.png
+
+
+.. image:: https://badges.gitter.im/BlueBrain/EmodelRunner.svg
+   :alt: Join the chat at https://gitter.im/BlueBrain/EmodelRunner
+   :target: https://gitter.im/BlueBrain/EmodelRunner?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
