@@ -29,12 +29,7 @@ from emodelrunner.load import (
     load_config,
     get_hoc_paths_args,
 )
-from emodelrunner.protocols.sscx_protocols import (
-    StepProtocol,
-    StepThresholdProtocol,
-    RampProtocol,
-    RampThresholdProtocol,
-)
+from emodelrunner.protocols import sscx_protocols
 from emodelrunner.run import main as run_emodel
 from tests.utils import compile_mechanisms, cwd
 
@@ -237,7 +232,7 @@ def test_generate_current():
     )
 
     # step stimulus
-    step_prot = StepProtocol(
+    step_prot = sscx_protocols.StepProtocol(
         name="step",
         step_stimuli=[step_stim],
         holding_stimulus=hold_stim,
@@ -249,7 +244,7 @@ def test_generate_current():
     assert np.all(step_curr[200:900] == np.full(700, pytest.approx(0.2)))
 
     # step threshold
-    step_prot_thres = StepThresholdProtocol(
+    step_prot_thres = sscx_protocols.StepThresholdProtocol(
         name="step_thres",
         step_stimuli=[step_stim],
         holding_stimulus=hold_stim,
@@ -264,7 +259,7 @@ def test_generate_current():
     assert np.all(step_thres_curr[200:900] == np.full(700, 0.3))
 
     # step stimulus vs 'flat' ramp
-    flat_ramp_prot = RampProtocol(
+    flat_ramp_prot = sscx_protocols.RampProtocol(
         name="flat_ramp",
         ramp_stimulus=flat_ramp,
         holding_stimulus=hold_stim,
@@ -274,7 +269,7 @@ def test_generate_current():
     assert np.all(step_curr == flat_ramp_curr)
 
     # threshold step stimulus vs threshold 'flat' ramp
-    flat_thres_ramp_prot = RampThresholdProtocol(
+    flat_thres_ramp_prot = sscx_protocols.RampThresholdProtocol(
         name="flat_thres_ramp",
         ramp_stimulus=flat_ramp,
         holding_stimulus=hold_stim,
@@ -288,7 +283,7 @@ def test_generate_current():
     assert np.all(step_thres_curr == flat_thres_ramp_curr)
 
     # no delay ramp
-    ramp_prot = RampProtocol(
+    ramp_prot = sscx_protocols.RampProtocol(
         name="no_delay_ramp",
         ramp_stimulus=no_delay_ramp,
         holding_stimulus=hold_stim,
@@ -298,7 +293,7 @@ def test_generate_current():
     assert np.all(ramp_curr == np.linspace(-0.1, 0.9, 1001)[:-1])
 
     # no delay thres ramp
-    ramp_thres_prot = RampThresholdProtocol(
+    ramp_thres_prot = sscx_protocols.RampThresholdProtocol(
         name="no_delay_thres_ramp",
         ramp_stimulus=no_delay_ramp,
         holding_stimulus=hold_stim,

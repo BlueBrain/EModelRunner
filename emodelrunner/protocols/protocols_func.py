@@ -19,16 +19,7 @@ import logging
 
 from bluepyopt import ephys
 
-from emodelrunner.protocols.sscx_protocols import (
-    RampProtocol,
-    RampThresholdProtocol,
-    StepProtocol,
-    StepThresholdProtocol,
-    RatSSCxThresholdDetectionProtocol,
-    RatSSCxRinHoldcurrentProtocol,
-    RatSSCxMainProtocol,
-    SweepProtocolCustom,
-)
+from emodelrunner.protocols import sscx_protocols
 from emodelrunner.recordings import RecordingCustom
 from emodelrunner.features import define_efeatures
 from emodelrunner.synapses.stimuli import (
@@ -76,7 +67,7 @@ def read_ramp_threshold_protocol(protocol_name, protocol_definition, recordings)
         total_duration=ramp_definition["totduration"],
     )
 
-    return RampThresholdProtocol(
+    return sscx_protocols.RampThresholdProtocol(
         name=protocol_name,
         ramp_stimulus=ramp_stimulus,
         holding_stimulus=holding_stimulus,
@@ -120,7 +111,7 @@ def read_ramp_protocol(protocol_name, protocol_definition, recordings):
     else:
         holding_stimulus = None
 
-    return RampProtocol(
+    return sscx_protocols.RampProtocol(
         name=protocol_name,
         ramp_stimulus=ramp_stimulus,
         holding_stimulus=holding_stimulus,
@@ -176,7 +167,7 @@ def read_step_protocol(
             step_definition["stochkv_det"] if "stochkv_det" in step_definition else None
         )
 
-    return StepProtocol(
+    return sscx_protocols.StepProtocol(
         name=protocol_name,
         step_stimuli=step_stimuli,
         holding_stimulus=holding_stimulus,
@@ -226,7 +217,7 @@ def read_step_threshold_protocol(
             step_definition["stochkv_det"] if "stochkv_det" in step_definition else None
         )
 
-    return StepThresholdProtocol(
+    return sscx_protocols.StepThresholdProtocol(
         name=protocol_name,
         step_stimuli=step_stimuli,
         holding_stimulus=holding_stimulus,
@@ -270,7 +261,7 @@ def read_vecstim_protocol(protocol_name, protocol_definition, recordings, syn_lo
         stim_definition["vecstim_random"],
     )
 
-    return SweepProtocolCustom(protocol_name, [stim], recordings)
+    return sscx_protocols.SweepProtocolCustom(protocol_name, [stim], recordings)
 
 
 def read_netstim_protocol(protocol_name, protocol_definition, recordings, syn_locs):
@@ -299,7 +290,7 @@ def read_netstim_protocol(protocol_name, protocol_definition, recordings, syn_lo
         stim_definition["syn_noise"],
     )
 
-    return SweepProtocolCustom(protocol_name, [stim], recordings)
+    return sscx_protocols.SweepProtocolCustom(protocol_name, [stim], recordings)
 
 
 def get_extra_recording_location(recording_definition, apical_point_isec=-1):
@@ -443,7 +434,9 @@ def add_protocol_to_dict(
         "type" in protocol_definition
         and protocol_definition["type"] == "RatSSCxThresholdDetectionProtocol"
     ):
-        protocols_dict["ThresholdDetection"] = RatSSCxThresholdDetectionProtocol(
+        protocols_dict[
+            "ThresholdDetection"
+        ] = sscx_protocols.RatSSCxThresholdDetectionProtocol(
             "IDRest",
             step_protocol_template=read_step_protocol(
                 "Threshold", protocol_definition["step_template"], recordings
@@ -552,7 +545,7 @@ def define_sscx_protocols(
             )
 
     if "Main" in protocol_definitions.keys():
-        protocols_dict["RinHoldcurrent"] = RatSSCxRinHoldcurrentProtocol(
+        protocols_dict["RinHoldcurrent"] = sscx_protocols.RatSSCxRinHoldcurrentProtocol(
             "RinHoldCurrent",
             rin_protocol_template=protocols_dict["Rin"],
             holdi_precision=protocol_definitions["RinHoldcurrent"]["holdi_precision"],
@@ -572,7 +565,7 @@ def define_sscx_protocols(
             for protocol_name in protocol_definitions["Main"]["pre_protocols"]:
                 pre_protocols.append(protocols_dict[protocol_name])
 
-        protocols_dict["Main"] = RatSSCxMainProtocol(
+        protocols_dict["Main"] = sscx_protocols.RatSSCxMainProtocol(
             "Main",
             rmp_protocol=protocols_dict["RMP"],
             rinhold_protocol=protocols_dict["RinHoldcurrent"],

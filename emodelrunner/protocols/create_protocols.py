@@ -21,8 +21,7 @@ from bluepyopt import ephys
 from emodelrunner.create_recordings import get_pairsim_recordings
 from emodelrunner.create_stimuli import load_pulses
 
-from emodelrunner.protocols.synplas_protocols import SweepProtocolCustom
-from emodelrunner.protocols.synplas_protocols import SweepProtocolPairSim
+from emodelrunner.protocols import synplas_protocols
 from emodelrunner.protocols.protocols_func import create_protocols
 
 from emodelrunner.synapses.recordings import SynapseRecordingCustom
@@ -172,7 +171,9 @@ def define_synapse_plasticity_protocols(
     stims.append(syn_stim)
 
     # create protocol
-    return SweepProtocolCustom(protocol_name, stims, recs, cvode_active, fastforward)
+    return synplas_protocols.SweepProtocolCustom(
+        protocol_name, stims, recs, cvode_active, fastforward
+    )
 
 
 def define_pairsim_protocols(
@@ -240,7 +241,7 @@ def define_pairsim_protocols(
         f"presynaptic protocol: {presyn_prot_name},"
         + f"postsynaptic protocol: {postsyn_prot_name}"
     )
-    return SweepProtocolPairSim(
+    return synplas_protocols.SweepProtocolPairSim(
         protocol_name,
         (presyn_stims, postsyn_stims),
         recs,
