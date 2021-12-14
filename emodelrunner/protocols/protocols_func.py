@@ -394,7 +394,7 @@ def get_recordings(protocol_name, protocol_definition, prefix, apical_point_isec
     return recordings
 
 
-def add_protocol(
+def add_protocol_to_dict(
     protocols_dict,
     protocol_name,
     protocol_definition,
@@ -541,7 +541,7 @@ def define_sscx_protocols(
             )
 
             # add protocol to protocol dict
-            add_protocol(
+            add_protocol_to_dict(
                 protocols_dict,
                 protocol_name,
                 protocol_definition,
