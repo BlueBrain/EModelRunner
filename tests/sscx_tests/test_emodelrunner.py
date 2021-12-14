@@ -29,7 +29,7 @@ from emodelrunner.load import (
     load_config,
     get_hoc_paths_args,
 )
-from emodelrunner.protocols import (
+from emodelrunner.protocols.sscx_protocols import (
     StepProtocol,
     StepThresholdProtocol,
     RampProtocol,

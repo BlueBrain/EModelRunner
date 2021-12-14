@@ -21,9 +21,9 @@ from bluepyopt import ephys
 from emodelrunner.create_recordings import get_pairsim_recordings
 from emodelrunner.create_stimuli import load_pulses
 
-from emodelrunner.synplas_protocols import SweepProtocolCustom
-from emodelrunner.synplas_protocols import SweepProtocolPairSim
-from emodelrunner.protocols_func import create_protocols
+from emodelrunner.protocols.synplas_protocols import SweepProtocolCustom
+from emodelrunner.protocols.synplas_protocols import SweepProtocolPairSim
+from emodelrunner.protocols.protocols_func import create_protocols
 
 from emodelrunner.synapses.recordings import SynapseRecordingCustom
 from emodelrunner.stimuli import MultipleSteps

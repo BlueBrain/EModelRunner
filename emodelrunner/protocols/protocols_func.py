@@ -19,7 +19,7 @@ import logging
 
 from bluepyopt import ephys
 
-from emodelrunner.protocols import (
+from emodelrunner.protocols.sscx_protocols import (
     RampProtocol,
     RampThresholdProtocol,
     StepProtocol,
@@ -503,7 +503,7 @@ def check_for_forbidden_protocol(protocols_dict):
             )
 
 
-def define_protocols(
+def define_sscx_protocols(
     protocols_filepath,
     stochkv_det=None,
     prefix="",
@@ -637,7 +637,7 @@ def create_protocols(
         ephys.protocols.SequenceProtocol: sequence protocol containing all the protocols
     """
     # pylint: disable=unbalanced-tuple-unpacking, too-many-locals
-    protocols_dict = define_protocols(
+    protocols_dict = define_sscx_protocols(
         prot_path,
         stochkv_det,
         mtype,

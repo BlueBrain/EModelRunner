@@ -21,7 +21,7 @@ import logging
 import numpy as np
 from bluepyopt import ephys
 from emodelrunner.create_cells import get_precell, get_postcell
-from emodelrunner.create_protocols import define_pairsim_protocols
+from emodelrunner.protocols.create_protocols import define_pairsim_protocols
 from emodelrunner.load import get_presyn_stim_args
 from emodelrunner.load import get_release_params
 from emodelrunner.load import get_syn_setup_params
