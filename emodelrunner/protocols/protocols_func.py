@@ -607,7 +607,7 @@ def set_main_protocol_efeatures(protocols_dict, efeatures, prefix):
     ].exp_mean
 
 
-def create_protocols(
+def create_protocols_dict(
     apical_point_isec,
     prot_path,
     features_path="",

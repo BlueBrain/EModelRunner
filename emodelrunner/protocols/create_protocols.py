@@ -22,7 +22,7 @@ from emodelrunner.create_recordings import get_pairsim_recordings
 from emodelrunner.create_stimuli import load_pulses
 
 from emodelrunner.protocols import synplas_protocols
-from emodelrunner.protocols.protocols_func import create_protocols
+from emodelrunner.protocols.protocols_func import create_protocols_dict
 
 from emodelrunner.synapses.recordings import SynapseRecordingCustom
 from emodelrunner.stimuli import MultipleSteps
@@ -66,7 +66,7 @@ class SSCXProtocols:
             else:
                 raise Exception("The cell is missing in the define_protocol function.")
 
-        self.protocols = create_protocols(
+        self.protocols = create_protocols_dict(
             prot_args["apical_point_isec"],
             mtype=prot_args["mtype"],
             syn_locs=syn_locs,
