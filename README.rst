@@ -13,6 +13,8 @@ EModelRunner
 +----------------+------------+
 | Coverage       | |coverage| |
 +----------------+------------+
+| Support        | |gitter|   |
++----------------+------------+
 
 Introduction
 ============
@@ -35,6 +37,11 @@ It consists of two main modules:
   - a GUI
 
 Note that EModelRunner is a convenience tool and does not aim to be a universal simulator.
+
+Support
+=======
+
+We are providing support using a chat channel on `Gitter <https://gitter.im/BlueBrain/EModelRunner>`_.
 
 Installing EModelRunner
 =======================
@@ -247,6 +254,6 @@ Copyright (c) 2020-2021 Blue Brain Project/EPFL
 .. |GUI_screenshot| image:: doc/source/images/GUI_screenshot.png
 
 
-.. image:: https://badges.gitter.im/BlueBrain/EmodelRunner.svg
+.. |gitter| image:: https://badges.gitter.im/BlueBrain/EmodelRunner.svg
    :alt: Join the chat at https://gitter.im/BlueBrain/EmodelRunner
    :target: https://gitter.im/BlueBrain/EmodelRunner?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
