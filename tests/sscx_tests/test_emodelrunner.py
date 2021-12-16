@@ -89,7 +89,7 @@ def test_synapses(config_path="config/config_synapses.ini"):
         configfile: the configuration file of the emodel.
     """
 
-    threshold = 0.05
+    threshold = 0.2
 
     # load bglibpy data
     bg_v = np.loadtxt(os.path.join(data_dir, "bglibpy_voltage.dat"))
@@ -108,7 +108,7 @@ def test_synapses(config_path="config/config_synapses.ini"):
     assert rms < threshold
 
 
-def test_synapses_hoc_vs_py_script(config_path="config/config_synapses.ini"):
+def test_synapses_hoc_vs_py_script(config_path="config/config_synapses_short.ini"):
     """Test to compare the voltages produced via python and hoc.
 
     Attributes:
@@ -198,6 +198,15 @@ def test_recipe_protocols():
         # file contains arrays
         else:
             compare_hoc_and_py(fname, threshold)
+
+    assert (
+        os.path.join(py_output_dir, "L5TPCa.bpo_holding_current.dat")
+        == -0.05056007939363992704
+    )
+    assert (
+        os.path.join(py_output_dir, "L5TPCa.bpo_threshold_current.dat")
+        == 0.1562334863970805954
+    )
 
 
 def test_generate_current():

@@ -60,7 +60,7 @@ class TestMETypeFactsheet:
         )
         morphology_path = (
             Path("morphology")
-            / "dend-C270999B-P3_axon-C060110A3_-_Scale_x1.000_y0.950_z1.000.asc"
+            / "dend-rp110119_L5-1_idC_axon-vd110315_idE_-_Scale_x1.000_y1.050_z1.000.asc"
         )
         assert (Path(example_dir) / morphology_path).is_file()
 
@@ -130,7 +130,7 @@ def test_anatomy_features():
     morphology_path = (
         Path(example_dir)
         / "morphology"
-        / "dend-C270999B-P3_axon-C060110A3_-_Scale_x1.000_y0.950_z1.000.asc"
+        / "dend-rp110119_L5-1_idC_axon-vd110315_idE_-_Scale_x1.000_y1.050_z1.000.asc"
     )
 
     morph_factsheet_builder = morphology_features.SSCXMorphologyFactsheetBuilder(
