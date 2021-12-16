@@ -3,62 +3,62 @@
     "values": [
         {
             "name": "total axon length",
-            "value": 11316.388908624649,
+            "value": 13197.911096096039,
             "unit": "\u00b5m"
         },
         {
             "name": "total axon volume",
-            "value": 2298.9971235076514,
+            "value": 233.38546170937053,
             "unit": "\u00b5m\u00b3"
         },
         {
             "name": "axon maximum branch order",
-            "value": 12,
+            "value": 13,
             "unit": ""
         },
         {
             "name": "total apical length",
-            "value": 3128.904561281204,
+            "value": 2775.9113960266113,
             "unit": "\u00b5m"
         },
         {
             "name": "total apical volume",
-            "value": 1432.2703356999643,
+            "value": 4338.868698159609,
             "unit": "\u00b5m\u00b3"
         },
         {
             "name": "apical maximum branch order",
-            "value": 12,
+            "value": 11,
             "unit": ""
         },
         {
             "name": "total basal length",
-            "value": 4209.233775377274,
+            "value": 1030.0147876739502,
             "unit": "\u00b5m"
         },
         {
             "name": "total basal volume",
-            "value": 1753.8109676267964,
+            "value": 1147.716375913137,
             "unit": "\u00b5m\u00b3"
         },
         {
             "name": "basal maximum branch order",
-            "value": 5,
+            "value": 3,
             "unit": ""
         },
         {
             "name": "soma diameter",
-            "value": 19.873456954956055,
+            "value": 21.000995635986328,
             "unit": "\u00b5m"
         },
         {
             "name": "soma surface area",
-            "value": 1240.78550017905,
+            "value": 1385.573734420744,
             "unit": "\u00b5m\u00b2"
         },
         {
             "name": "soma volume",
-            "value": 4109.782871356994,
+            "value": 4849.73799165122,
             "unit": "\u00b5m\u00b3"
         }
     ]

@@ -23,7 +23,8 @@ from emodelrunner.factsheets import morphology_features
 
 test_morph_dir = "examples/sscx_sample_dir/morphology"
 test_morph = os.path.join(
-    test_morph_dir, "dend-C270999B-P3_axon-C060110A3_-_Scale_x1.000_y0.950_z1.000.asc"
+    test_morph_dir,
+    "dend-rp110119_L5-1_idC_axon-vd110315_idE_-_Scale_x1.000_y1.050_z1.000.asc",
 )
 
 
@@ -82,7 +83,7 @@ def test_average_diameter():
     )
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "average diameter of basal_dendrite"
-    assert abs(feature_dict["value"] - 0.678256) <= 1e-4
+    assert abs(feature_dict["value"] - 1.0085792541503906) <= 1e-4
     assert feature_dict["unit"] == "\u00b5m"
 
 
@@ -92,7 +93,7 @@ def test_total_length():
     feature = morphology_features.TotalLength(morphology, "axon", NeuriteType.axon)
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "total axon length"
-    assert abs(feature_dict["value"] - 11316.388908624649) <= 1e-3
+    assert abs(feature_dict["value"] - 13197.911096096039) <= 1e-3
     assert feature_dict["unit"] == "\u00b5m"
 
 
@@ -102,7 +103,7 @@ def test_total_height():
     feature = morphology_features.TotalHeight(morphology, "axon", NeuriteType.axon)
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "total axon height"
-    assert abs(feature_dict["value"] - 965.4704) <= 1e-4
+    assert abs(feature_dict["value"] - 997.34906) <= 1e-4
     assert feature_dict["unit"] == "\u00b5m"
 
 
@@ -112,7 +113,7 @@ def test_total_width():
     feature = morphology_features.TotalWidth(morphology, "axon", NeuriteType.axon)
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "total axon width"
-    assert abs(feature_dict["value"] - 768.3234) <= 1e-4
+    assert abs(feature_dict["value"] - 1576.0303) <= 1e-4
     assert feature_dict["unit"] == "\u00b5m"
 
 
@@ -122,7 +123,7 @@ def test_total_depth():
     feature = morphology_features.TotalDepth(morphology, "axon", NeuriteType.axon)
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "total axon depth"
-    assert abs(feature_dict["value"] - 887.29956) <= 1e-4
+    assert abs(feature_dict["value"] - 638.7134) <= 1e-4
     assert feature_dict["unit"] == "\u00b5m"
 
 
@@ -132,7 +133,7 @@ def test_total_area():
     feature = morphology_features.TotalArea(morphology, "axon", NeuriteType.axon)
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "total axon area"
-    assert abs(feature_dict["value"] - 14800.92929) <= 1e-4
+    assert abs(feature_dict["value"] - 5345.164492370011) <= 1e-4
     assert feature_dict["unit"] == "\u00b5m\u00b2"
 
 
@@ -142,7 +143,7 @@ def test_total_volume():
     feature = morphology_features.TotalVolume(morphology, "axon", NeuriteType.axon)
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "total axon volume"
-    assert abs(feature_dict["value"] - 2298.997123) <= 1e-4
+    assert abs(feature_dict["value"] - 233.38546170937053) <= 1e-4
     assert feature_dict["unit"] == "\u00b5m\u00b3"
 
 
@@ -154,7 +155,7 @@ def test_number_of_sections():
     )
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "number of basal_dendrite sections"
-    assert feature_dict["value"] == 51
+    assert feature_dict["value"] == 11
     assert feature_dict["unit"] == ""
 
 
@@ -166,7 +167,7 @@ def test_mean_neurite_volumes():
     )
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "mean axon volume"
-    assert abs(feature_dict["value"] - 2298.9971235076514) <= 1e-3
+    assert abs(feature_dict["value"] - 233.38546170937053) <= 1e-3
     assert feature_dict["unit"] == "\u00b5m\u00b3"
 
 
@@ -178,7 +179,7 @@ def test_max_branch_order():
     )
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "apical_dendrite maximum branch order"
-    assert feature_dict["value"] == 12
+    assert feature_dict["value"] == 11
     assert feature_dict["unit"] == ""
 
 
@@ -190,7 +191,7 @@ def test_max_section_length():
     )
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "basal_dendrite maximum section length"
-    assert abs(feature_dict["value"] - 314.51974) <= 1e-5
+    assert abs(feature_dict["value"] - 195.74152) <= 1e-5
     assert feature_dict["unit"] == "\u00b5m"
 
 
@@ -200,7 +201,7 @@ def test_soma_diameter():
     feature = morphology_features.SomaDiamater(morphology)
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "soma diameter"
-    assert abs(feature_dict["value"] - 19.873456954956055) <= 1e-5
+    assert abs(feature_dict["value"] - 21.000995635986328) <= 1e-5
     assert feature_dict["unit"] == "\u00b5m"
 
 
@@ -210,7 +211,7 @@ def test_soma_surface_area():
     feature = morphology_features.SomaSurfaceArea(morphology)
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "soma surface area"
-    assert abs(feature_dict["value"] - 1240.78550) <= 1e-5
+    assert abs(feature_dict["value"] - 1385.573734420744) <= 1e-5
     assert feature_dict["unit"] == "\u00b5m\u00b2"
 
 
@@ -220,5 +221,5 @@ def test_soma_volume():
     feature = morphology_features.SomaVolume(morphology)
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "soma volume"
-    assert abs(feature_dict["value"] - 4109.782871) <= 1e-5
+    assert abs(feature_dict["value"] - 4849.73799165122) <= 1e-5
     assert feature_dict["unit"] == "\u00b5m\u00b3"

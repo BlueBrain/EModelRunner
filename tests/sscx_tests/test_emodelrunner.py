@@ -200,11 +200,11 @@ def test_recipe_protocols():
             compare_hoc_and_py(fname, threshold)
 
     assert (
-        os.path.join(py_output_dir, "L5TPCa.bpo_holding_current.dat")
+        np.loadtxt(os.path.join(py_output_dir, "L5TPCa.bpo_holding_current.dat"))
         == -0.05056007939363992704
     )
     assert (
-        os.path.join(py_output_dir, "L5TPCa.bpo_threshold_current.dat")
+        np.loadtxt(os.path.join(py_output_dir, "L5TPCa.bpo_threshold_current.dat"))
         == 0.1562334863970805954
     )
 
