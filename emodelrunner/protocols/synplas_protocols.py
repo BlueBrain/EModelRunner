@@ -1,4 +1,4 @@
-"""Protocol creation functions & custom protocol classes."""
+"""Protocol creation functions & custom protocol classes for Synplas packages."""
 
 # Copyright 2020-2021 Blue Brain Project / EPFL
 

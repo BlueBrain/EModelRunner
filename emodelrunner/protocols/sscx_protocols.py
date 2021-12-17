@@ -1,4 +1,4 @@
-"""Protocols."""
+"""Ephys protocols for the SSCX packages."""
 
 # Copyright 2020-2021 Blue Brain Project / EPFL
 
