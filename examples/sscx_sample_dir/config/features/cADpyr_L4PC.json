@@ -1,0 +1,122 @@
+{
+  "bAP": {
+    "soma.v": [
+      {"feature": "Spikecount", "val": [1.0, 0.01]}
+    ], 
+    "dend1.v": [
+      {"feature": "maximum_voltage_from_voltagebase", "val": [81.329833, 7.018952], "weight": 1, "__comment": "Stuart and Sakmann 1994"}
+    ], 
+    "dend2.v": [
+      {"feature": "maximum_voltage_from_voltagebase", "val": [72.468461, 5.381914], "weight": 1, "__comment": "Stuart and Sakmann 1994"}
+    ], 
+    "ca_prox_apic.cai": [
+      {"feature": "maximum_voltage_from_voltagebase", "val": [0.000262, 9.01e-05], "weight": 1, "__comment": "Helmchen et al. 1996 (P12-14, wistar): [Ca]i (proximal apical dendrite) = 262nM (SEM:25nM, N=13) = 262e-6mM (STD:90.1mM) (STD = SEM * sqrt(N)"}
+    ], 
+    "ca_prox_basal.cai": [
+      {"feature": "maximum_voltage_from_voltagebase", "val": [0.000524, 9.01e-05], "weight": 1, "__comment": "Schiller et al. 1995 (P13-17, wistar): [Ca]i (basal) = 2 * [Ca]i (proximal apical dendrite)"}
+    ], 
+    "ca_soma.cai": [
+      {"feature": "maximum_voltage_from_voltagebase", "val": [0.000131, 9.01e-05], "weight": 1, "__comment": "Schiller et al. 1995 (P13-17, wistar): [Ca]i (soma and ais) = 0.5 * [Ca]i (proximal apical dendrite)"}
+    ], 
+    "ca_ais.cai": [
+      {"feature": "maximum_voltage_from_voltagebase", "val": [0.000131, 9.01e-05], "weight": 1, "__comment": "Schiller et al. 1995 (P13-17, wistar): [Ca]i (soma and ais) = 0.5 * [Ca]i (proximal apical dendrite)"}
+    ]
+  }, 
+  "Step_140": {
+    "soma.v": [
+      {"feature": "voltage_base", "val": [-84.4698, 0.5767, -0.9882994324808502, 7.859385207188161e-05, 3.0, 0], "n": 3, "fid": 771, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "voltage_after_stim", "val": [-88.392, 2.649, -0.9888036740041346, 0.0003253128799868566, 3.0, 0], "n": 3, "fid": 786, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "AP_amplitude", "val": [67.757, 7.4309, 0.33333223896088837, 3.2026442569384026e-07, -3.0, 0], "n": 3, "fid": 636, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "APlast_amp", "val": [66.8054, 7.0429, 0.4166491672818595, 4.105084381038531e-06, -2.4, 0], "n": 3, "fid": 666, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "AHP_depth", "val": [20.4652, 4.3008, 0.33329246688994046, 1.768526909751849e-05, -3.0, 0], "n": 3, "fid": 696, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "mean_frequency", "val": [5.904, 3.2535, 0.7982966249453511, 0.06123479220526376, -1.05, 0], "n": 3, "fid": 403, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_time_to_first_spike", "val": [24.1584, 11.8134, 60.20418514764631, 34.05755192744989, 1.3499999999999996, 0], "n": 3, "fid": 525, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "time_to_last_spike", "val": [1807.081, 176.2767, 2025401997.3283832, 546171277.0899655, 3.0, 0], "n": 3, "fid": 509, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_first_ISI", "val": [7.7548, 6.4986, 0.7930885021498836, 0.08301770965960907, -1.05, 0], "n": 3, "fid": 541, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_second_ISI", "val": [6.8165, 4.8275, 0.7968856635883254, 0.07435158581038738, -1.05, 0], "n": 3, "fid": 557, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_third_ISI", "val": [6.0432, 4.0985, 1.1937254708203762, 0.2527575959935283, -0.4500000000000002, 0], "n": 3, "fid": 573, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_fourth_ISI", "val": [5.7909, 3.9856, 1.324088649654558, 0.34969402669030464, -0.30000000000000027, 0], "n": 3, "fid": 589, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_fifth_ISI", "val": [5.2598, 3.7633, 1.2648893166242032, 0.37389372667794174, -0.30000000000000027, 0], "n": 3, "fid": 605, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_last_ISI", "val": [5.0575, 2.9208, 1.3009395378536839, 0.2904385715713898, -0.30000000000000027, 0], "n": 3, "fid": 621, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}}
+    ]
+  }, 
+  "Step_200": {
+    "soma.v": [
+      {"feature": "voltage_base", "val": [-84.2738, 0.8808, -902751585.7448703, 46230632.61565336, -3.0, 0], "n": 3, "fid": 775, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "voltage_after_stim", "val": [-89.0286, 3.0064, -0.988880185495599, 0.0003665226380353599, 3.0, 0], "n": 3, "fid": 790, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "AP_amplitude", "val": [63.3766, 5.5284, 51090.5073903191, 12089.468180876465, 2.8499999999999996, 0], "n": 3, "fid": 640, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "APlast_amp", "val": [62.2596, 5.2814, 5064.585052443561, 935.21387112376, 2.25, 0], "n": 3, "fid": 670, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "AHP_depth", "val": [22.7183, 4.8772, 0.33330265051099023, 1.3902353944072876e-05, -3.0, 0], "n": 3, "fid": 700, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "mean_frequency", "val": [12.0427, 6.1682, 0.59325498164794, 0.0066648095166620255, -1.6500000000000001, 0], "n": 3, "fid": 407, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_time_to_first_spike", "val": [51.4689, 23.6556, 60.32130697569923, 28.64040319841522, 1.0499999999999998, 0], "n": 3, "fid": 529, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "time_to_last_spike", "val": [1919.32, 44.9405, 2364344287.911336, 164514491.36284533, 3.0, 0], "n": 3, "fid": 513, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_first_ISI", "val": [24.0806, 14.0744, 1.9836413043516867, 0.22509181838798278, -0.30000000000000027, 0], "n": 3, "fid": 545, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_second_ISI", "val": [17.1922, 9.3455, 1.5671874872172316, 0.14317997862213994, -0.4500000000000002, 0], "n": 3, "fid": 561, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_third_ISI", "val": [14.9741, 7.8598, 0.5089754684823727, 0.0021916440201227416, -1.95, 0], "n": 3, "fid": 577, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_fourth_ISI", "val": [13.0702, 8.2216, 0.646072822954832, 0.011226994604239458, -1.5, 0], "n": 3, "fid": 593, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_fifth_ISI", "val": [12.2744, 7.6688, 0.5458677505986325, 0.005600848914270643, -1.8, 0], "n": 3, "fid": 609, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_last_ISI", "val": [11.1107, 6.4367, 0.7040564770658281, 0.018440940417807743, -1.35, 0], "n": 3, "fid": 625, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}}
+    ]
+  }, 
+  "Step_280": {
+    "soma.v": [
+      {"feature": "voltage_base", "val": [-84.5901, 1.6722, -922107171.669758, 87434714.17915605, -3.0, 0], "n": 3, "fid": 780, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "voltage_after_stim", "val": [-89.5739, 3.0577, -0.9889469349133068, 0.0003659149461729709, 3.0, 0], "n": 3, "fid": 795, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "AP_amplitude", "val": [58.9691, 7.0347, 74775.0544388168, 23402.986201347874, 3.0, 0], "n": 3, "fid": 645, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "APlast_amp", "val": [55.7313, 6.9892, 63558.485453714886, 20859.884530868643, 3.0, 0], "n": 3, "fid": 675, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "AHP_depth", "val": [26.4514, 8.1338, 0.44411041648339467, 0.00016250059855083018, -2.25, 0], "n": 3, "fid": 705, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "mean_frequency", "val": [16.3243, 7.2294, 0.6545501596125595, 0.005682543177070098, -1.5, 0], "n": 3, "fid": 412, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_time_to_first_spike", "val": [76.9861, 31.5111, 157.7606142656002, 73.69318519794122, 1.2000000000000002, 0], "n": 3, "fid": 534, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "time_to_last_spike", "val": [1966.9417, 5.9309, 0.33333333328959464, 3.949390416403643e-13, -3.0, 0], "n": 3, "fid": 518, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_first_ISI", "val": [41.416, 22.2261, 2.1901969790554747, 0.17734058716060427, -0.30000000000000027, 0], "n": 3, "fid": 550, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_second_ISI", "val": [28.6894, 14.718, 2.0685971317392986, 0.18523185724194824, -0.30000000000000027, 0], "n": 3, "fid": 566, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_third_ISI", "val": [23.5847, 10.6045, 2.0100741339197263, 0.17086381659910843, -0.30000000000000027, 0], "n": 3, "fid": 582, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_fourth_ISI", "val": [21.052, 9.6735, 1.3820858211500482, 0.0697569978397634, -0.6000000000000001, 0], "n": 3, "fid": 598, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_fifth_ISI", "val": [19.7533, 9.4623, 0.9044285072020412, 0.01870403836548544, -1.05, 0], "n": 3, "fid": 614, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "inv_last_ISI", "val": [13.2507, 7.4883, 0.5477758167973307, 0.004388103575930959, -1.8, 0], "n": 3, "fid": 630, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}}
+    ]
+  }, 
+  "APWaveform_360": {
+    "soma.v": [
+      {"feature": "AP_amplitude", "val": [68.0133, 5.3315, 111499.92700471205, 24397.340340583556, 3.0, 0], "n": 3, "fid": 256, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "AP1_amp", "val": [80.478, 16.3642, 95.84660295062862, 20.36905525243294, 1.0499999999999998, 0], "n": 3, "fid": 233, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "AP2_amp", "val": [58.5662, 8.9397, 75100.63067866632, 30003.174353338738, 3.0, 0], "n": 3, "fid": 244, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "AP_duration_half_width", "val": [0.9622, 0.2762, 1.637131435975048, 0.6273081484319077, 2.25, 0], "n": 3, "fid": 279, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "AHP_depth", "val": [24.3107, 8.4726, 5.34640347304893, 0.903101992735079, 0.2999999999999998, 0], "n": 3, "fid": 84, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}}
+    ]
+  }, 
+  "Rin": {
+    "soma.v": [
+      {"feature": "ohmic_input_resistance_vb_ssse", "val": [224.7753, 87.7177, 0.39215622659426613, 3.662846718809703e-07, -2.55, 0], "n": 3, "fid": 291, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "voltage_base", "val": [-81.9855, 1.7786, -790695485.982452, 82438071.59764338, -3.0, 0], "n": 3, "fid": 283, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}}
+    ]
+  }, 
+  "RMP": {
+    "soma.v": [
+      {"feature": "voltage_base", "val": [-73.9134, 1.6714, -4.817202527918724, 0.027690237877764368, 1.9500000000000002, 0], "n": 2, "fid": 288, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "Spikecount", "val": [0.0, 0.001, 0.0, 0.001, -3.0, 0], "n": 2, "fid": 308, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}}
+    ]
+  }, 
+  "IV_-100": {
+    "soma.v": [
+      {"feature": "voltage_deflection", "val": [-16.9815, 3.9996, -0.9419012985456243, 0.011178935314462363, 3.0, 0], "n": 3, "fid": 294, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "voltage_deflection_begin", "val": [-19.1195, 5.4574, -0.9470214484089947, 0.012079523419890903, 3.0, 0], "n": 3, "fid": 298, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}}
+    ]
+  }, 
+  "SpikeRec_all": {
+    "soma.v": [
+      {"feature": "decay_time_constant_after_stim", "val": [10.7851, 5.4291, 1.2482834437198485, 0.10770157574729712, -0.6000000000000001, 0], "n": 3, "fid": 310, "strict_stim": false, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
+      {"feature": "voltage_after_stim", "val": [-76.7964, 3.4375, -650105.4357853684, 94947.81314138578, -1.35, 0], "n": 3, "fid": 311, "strict_stim": false, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}}
+    ]
+  }, 
+  "RinHoldCurrent": {
+    "soma.v": [
+      {"feature": "bpo_holding_current", "val": [-0.0538, 0.0172]}
+    ]
+  }, 
+  "Threshold": {
+    "soma.v": [
+      {"feature": "bpo_threshold_current", "val": [0.0887, 0.0301]}
+    ]
+  }
+}

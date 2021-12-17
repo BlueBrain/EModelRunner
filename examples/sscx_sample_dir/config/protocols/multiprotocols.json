@@ -5,13 +5,13 @@
             "ramp": {
                 "ramp_delay": 70.0,
                 "ramp_amplitude_start": 0.0,
-                "ramp_amplitude_end": 0.2728125,
+                "ramp_amplitude_end": 0.20915625,
                 "ramp_duration": 200.0,
                 "totduration": 300.0
             },
             "holding": {
                 "delay": 0.0,
-                "amp": -0.0699371509782054,
+                "amp": -0.0896244038173676,
                 "duration": 300.0,
                 "totduration": 300.0
             }
@@ -65,13 +65,13 @@
             "step": [
                 {
                     "delay": 70.0,
-                    "amp": 0.2728125,
+                    "amp": 0.20915625,
                     "duration": 200.0,
                     "totduration": 300.0
                 },
                 {
                     "delay": 140.0,
-                    "amp": 0.54,
+                    "amp": 0.4,
                     "duration": 60.0,
                     "totduration": 300.0
                 }

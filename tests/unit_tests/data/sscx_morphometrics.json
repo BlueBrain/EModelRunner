@@ -3,67 +3,67 @@
     "values": [
         {
             "name": "total axon length",
-            "value": 11316.388908624649,
+            "value": 6365.762633562088,
             "unit": "\u00b5m"
         },
         {
             "name": "mean axon volume",
-            "value": 2298.9971235076514,
+            "value": 900.0448369230417,
             "unit": "\u00b5m\u00b3"
         },
         {
             "name": "axon maximum branch order",
-            "value": 12,
+            "value": 11,
             "unit": ""
         },
         {
             "name": "axon maximum section length",
-            "value": 678.4542236328125,
+            "value": 1622.298583984375,
             "unit": "\u00b5m"
         },
         {
             "name": "total apical length",
-            "value": 3128.904561281204,
+            "value": 1745.9480376243591,
             "unit": "\u00b5m"
         },
         {
             "name": "mean apical volume",
-            "value": 1432.2703356999643,
+            "value": 1471.0559661664934,
             "unit": "\u00b5m\u00b3"
         },
         {
             "name": "apical maximum branch order",
-            "value": 12,
+            "value": 7,
             "unit": ""
         },
         {
             "name": "apical maximum section length",
-            "value": 287.22601318359375,
+            "value": 386.35589599609375,
             "unit": "\u00b5m"
         },
         {
             "name": "total basal length",
-            "value": 4209.233775377274,
+            "value": 1644.1507340669632,
             "unit": "\u00b5m"
         },
         {
             "name": "mean basal volume",
-            "value": 250.54442394668519,
+            "value": 157.99927730487929,
             "unit": "\u00b5m\u00b3"
         },
         {
             "name": "basal maximum branch order",
-            "value": 5,
+            "value": 3,
             "unit": ""
         },
         {
             "name": "basal maximum section length",
-            "value": 314.5197448730469,
+            "value": 130.0713348388672,
             "unit": "\u00b5m"
         },
         {
             "name": "soma diameter",
-            "value": 19.873456954956055,
+            "value": 18.222522735595703,
             "unit": "\u00b5m"
         }
     ]
