@@ -3,52 +3,52 @@
     "values": [
         {
             "name": "total axon length",
-            "value": 13197.911096096039,
+            "value": 6365.762633562088,
             "unit": "\u00b5m"
         },
         {
             "name": "mean axon volume",
-            "value": 233.38546170937053,
+            "value": 900.0448369230417,
             "unit": "\u00b5m\u00b3"
         },
         {
             "name": "axon maximum branch order",
-            "value": 13,
-            "unit": ""
-        },
-        {
-            "name": "axon maximum section length",
-            "value": 475.9225158691406,
-            "unit": "\u00b5m"
-        },
-        {
-            "name": "total apical length",
-            "value": 2775.9113960266113,
-            "unit": "\u00b5m"
-        },
-        {
-            "name": "mean apical volume",
-            "value": 4338.868698159609,
-            "unit": "\u00b5m\u00b3"
-        },
-        {
-            "name": "apical maximum branch order",
             "value": 11,
             "unit": ""
         },
         {
+            "name": "axon maximum section length",
+            "value": 1622.298583984375,
+            "unit": "\u00b5m"
+        },
+        {
+            "name": "total apical length",
+            "value": 1745.9480376243591,
+            "unit": "\u00b5m"
+        },
+        {
+            "name": "mean apical volume",
+            "value": 1471.0559661664934,
+            "unit": "\u00b5m\u00b3"
+        },
+        {
+            "name": "apical maximum branch order",
+            "value": 7,
+            "unit": ""
+        },
+        {
             "name": "apical maximum section length",
-            "value": 567.8009643554688,
+            "value": 386.35589599609375,
             "unit": "\u00b5m"
         },
         {
             "name": "total basal length",
-            "value": 1030.0147876739502,
+            "value": 1644.1507340669632,
             "unit": "\u00b5m"
         },
         {
             "name": "mean basal volume",
-            "value": 229.54327518262738,
+            "value": 157.99927730487929,
             "unit": "\u00b5m\u00b3"
         },
         {
@@ -58,12 +58,12 @@
         },
         {
             "name": "basal maximum section length",
-            "value": 195.74151611328125,
+            "value": 130.0713348388672,
             "unit": "\u00b5m"
         },
         {
             "name": "soma diameter",
-            "value": 21.000995635986328,
+            "value": 18.222522735595703,
             "unit": "\u00b5m"
         }
     ]

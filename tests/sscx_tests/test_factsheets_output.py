@@ -55,12 +55,10 @@ class TestMETypeFactsheet:
             config = load_sscx_config(config_path=config_path_in_memodel_dir)
             run_emodel(config_path=config_path_in_memodel_dir)
 
-        voltage_path = Path("python_recordings") / (
-            "L5TPCa." + protocol_key + ".soma.v.dat"
-        )
+        voltage_path = Path("python_recordings") / ("_." + protocol_key + ".soma.v.dat")
         morphology_path = (
             Path("morphology")
-            / "dend-rp110119_L5-1_idC_axon-vd110315_idE_-_Scale_x1.000_y1.050_z1.000.asc"
+            / "dend-C231296A-P4B2_axon-C200897C-P2_-_Scale_x1.000_y0.975_z1.000.asc"
         )
         assert (Path(example_dir) / morphology_path).is_file()
 
@@ -85,8 +83,8 @@ def test_emodel_factsheet_exists():
     """Tests if the emodel factsheet output file is created."""
 
     output_path = example_dir / "factsheets" / "e_model_factsheet.json"
-    emodel = "cADpyr_L5TPC"
-    mtype = "L5TPCa"
+    emodel = "cADpyr_L4UPC"
+    mtype = "_"
 
     unoptimized_params_path = Path(example_dir) / "config" / "params" / "pyr.json"
     with open(unoptimized_params_path) as json_file:
@@ -96,7 +94,7 @@ def test_emodel_factsheet_exists():
     with open(optimized_params_path) as json_file:
         optimized_params_dict = json.load(json_file)
 
-    features_path = Path(example_dir) / "config" / "features" / "cADpyr_L5PC.json"
+    features_path = Path(example_dir) / "config" / "features" / "cADpyr_L4PC.json"
     with open(features_path) as json_file:
         features_dict = json.load(json_file)
 
@@ -130,7 +128,7 @@ def test_anatomy_features():
     morphology_path = (
         Path(example_dir)
         / "morphology"
-        / "dend-rp110119_L5-1_idC_axon-vd110315_idE_-_Scale_x1.000_y1.050_z1.000.asc"
+        / "dend-C231296A-P4B2_axon-C200897C-P2_-_Scale_x1.000_y0.975_z1.000.asc"
     )
 
     morph_factsheet_builder = morphology_features.SSCXMorphologyFactsheetBuilder(
@@ -197,9 +195,7 @@ def test_physiology_features():
 
     # get data path from run.py output
     voltage_path = (
-        Path(example_dir)
-        / "python_recordings"
-        / ("L5TPCa." + protocol_key + ".soma.v.dat")
+        Path(example_dir) / "python_recordings" / ("_." + protocol_key + ".soma.v.dat")
     )
     data = np.loadtxt(voltage_path)
 
@@ -276,7 +272,7 @@ def test_mechanisms():
         return "", 0
 
     # original data
-    emodel = "cADpyr_L5TPC"
+    emodel = "cADpyr_L4UPC"
     optimized_params_path = example_dir / "config" / "params" / "final.json"
     with open(optimized_params_path) as json_file:
         optimized_params_dict = json.load(json_file)
@@ -367,8 +363,8 @@ def test_experimental_feature_values():
     with open(optimized_params_path) as json_file:
         optimized_params_dict = json.load(json_file)
 
-    emodel = "cADpyr_L5TPC"
-    features_path = example_dir / "config" / "features" / "cADpyr_L5PC.json"
+    emodel = "cADpyr_L4UPC"
+    features_path = example_dir / "config" / "features" / "cADpyr_L4PC.json"
     with open(features_path) as json_file:
         original_feat = json.load(json_file)
 
@@ -376,7 +372,7 @@ def test_experimental_feature_values():
     with open(feature_units_path) as json_file:
         feature_units_dict = json.load(json_file)
     fitness = optimized_params_dict[emodel]["fitness"]
-    morph_prefix = "L5TPCa"
+    morph_prefix = "_"
 
     # tested func
     feat_dict = get_exp_features_data(

@@ -3,177 +3,177 @@
     "values": [
         {
             "name": "total all width",
-            "value": 1576.0302734375,
+            "value": 1861.780517578125,
             "unit": "\u00b5m"
         },
         {
             "name": "total all height",
-            "value": 1593.8194580078125,
+            "value": 1895.6500244140625,
             "unit": "\u00b5m"
         },
         {
             "name": "total all depth",
-            "value": 638.71337890625,
+            "value": 482.4429931640625,
             "unit": "\u00b5m"
         },
         {
             "name": "total all length",
-            "value": 17003.8372797966,
+            "value": 9755.86140525341,
             "unit": "\u00b5m"
         },
         {
             "name": "total all area",
-            "value": 19072.659601867083,
+            "value": 16566.01207915532,
             "unit": "\u00b5m\u00b2"
         },
         {
             "name": "total all volume",
-            "value": 5719.970535782117,
+            "value": 3161.0971896139317,
             "unit": "\u00b5m\u00b3"
         },
         {
             "name": "average diameter of all",
-            "value": 0.35428565740585327,
+            "value": 0.5396965742111206,
             "unit": "\u00b5m"
         },
         {
             "name": "number of all sections",
-            "value": 173,
+            "value": 109,
             "unit": ""
         },
         {
             "name": "all maximum branch order",
-            "value": 13,
+            "value": 11,
             "unit": ""
         },
         {
             "name": "total axon width",
-            "value": 1576.0302734375,
+            "value": 1840.931640625,
             "unit": "\u00b5m"
         },
         {
             "name": "total axon height",
-            "value": 997.3490600585938,
+            "value": 1469.079345703125,
             "unit": "\u00b5m"
         },
         {
             "name": "total axon depth",
-            "value": 638.71337890625,
+            "value": 482.4429931640625,
             "unit": "\u00b5m"
         },
         {
             "name": "total axon length",
-            "value": 13197.911096096039,
+            "value": 6365.762633562088,
             "unit": "\u00b5m"
         },
         {
             "name": "total axon area",
-            "value": 5345.164492370011,
+            "value": 7975.952834655143,
             "unit": "\u00b5m\u00b2"
         },
         {
             "name": "total axon volume",
-            "value": 233.38546170937053,
+            "value": 900.0448369230417,
             "unit": "\u00b5m\u00b3"
         },
         {
             "name": "average diameter of axon",
-            "value": 0.12891438603401184,
+            "value": 0.398780882358551,
             "unit": "\u00b5m"
         },
         {
             "name": "number of axon sections",
-            "value": 121,
+            "value": 47,
             "unit": ""
         },
         {
             "name": "axon maximum branch order",
-            "value": 13,
+            "value": 11,
             "unit": ""
         },
         {
             "name": "total apical width",
-            "value": 196.28302001953125,
+            "value": 265.4986877441406,
             "unit": "\u00b5m"
         },
         {
             "name": "total apical height",
-            "value": 1335.0831298828125,
+            "value": 656.1939086914062,
             "unit": "\u00b5m"
         },
         {
             "name": "total apical depth",
-            "value": 396.5033264160156,
+            "value": 138.55718994140625,
             "unit": "\u00b5m"
         },
         {
             "name": "total apical length",
-            "value": 2775.9113960266113,
+            "value": 1745.9480376243591,
             "unit": "\u00b5m"
         },
         {
             "name": "total apical area",
-            "value": 10367.514890249044,
+            "value": 5072.048782169545,
             "unit": "\u00b5m\u00b2"
         },
         {
             "name": "total apical volume",
-            "value": 4338.868698159609,
+            "value": 1471.0559661664934,
             "unit": "\u00b5m\u00b3"
         },
         {
             "name": "average diameter of apical",
-            "value": 1.183021903038025,
+            "value": 0.9227972030639648,
             "unit": "\u00b5m"
         },
         {
             "name": "number of apical sections",
-            "value": 41,
+            "value": 29,
             "unit": ""
         },
         {
             "name": "apical maximum branch order",
-            "value": 11,
+            "value": 7,
             "unit": ""
         },
         {
             "name": "total basal width",
-            "value": 370.8799133300781,
+            "value": 269.4166259765625,
             "unit": "\u00b5m"
         },
         {
             "name": "total basal height",
-            "value": 147.061767578125,
+            "value": 213.6024169921875,
             "unit": "\u00b5m"
         },
         {
             "name": "total basal depth",
-            "value": 206.40655517578125,
+            "value": 169.44400024414062,
             "unit": "\u00b5m"
         },
         {
             "name": "total basal length",
-            "value": 1030.0147876739502,
+            "value": 1644.1507340669632,
             "unit": "\u00b5m"
         },
         {
             "name": "total basal area",
-            "value": 3359.9802192480297,
+            "value": 3518.0104623306333,
             "unit": "\u00b5m\u00b2"
         },
         {
             "name": "total basal volume",
-            "value": 1147.716375913137,
+            "value": 789.9963865243965,
             "unit": "\u00b5m\u00b3"
         },
         {
             "name": "average diameter of basal",
-            "value": 1.0085792541503906,
+            "value": 0.6784688234329224,
             "unit": "\u00b5m"
         },
         {
             "name": "number of basal sections",
-            "value": 11,
+            "value": 33,
             "unit": ""
         },
         {
@@ -183,17 +183,17 @@
         },
         {
             "name": "soma diameter",
-            "value": 21.000995635986328,
+            "value": 18.222522735595703,
             "unit": "\u00b5m"
         },
         {
             "name": "soma surface area",
-            "value": 1385.573734420744,
+            "value": 1043.1983085111349,
             "unit": "\u00b5m\u00b2"
         },
         {
             "name": "soma volume",
-            "value": 4849.73799165122,
+            "value": 3168.2841490965225,
             "unit": "\u00b5m\u00b3"
         }
     ]

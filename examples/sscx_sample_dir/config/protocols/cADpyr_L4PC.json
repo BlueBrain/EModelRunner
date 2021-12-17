@@ -1,0 +1,202 @@
+{
+    "Main": {
+        "type": "RatSSCxMainProtocol",
+        "rmp_score_threshold": 3,
+        "rin_score_threshold": 3,
+        "other_protocols": [
+            "bAP",
+            "Step_140",
+            "Step_200",
+            "Step_280",
+            "APWaveform_360",
+            "IV_-100",
+            "SpikeRec_all"
+        ],
+        "pre_protocols": [],
+        "preprot_score_threshold": 3
+    },
+    "RinHoldcurrent": {
+        "type": "RatSSCxRinHoldcurrentProtocol",
+        "holdi_precision": 0.1,
+        "holdi_max_depth": 7
+    },
+    "ThresholdDetection": {
+        "type": "RatSSCxThresholdDetectionProtocol",
+        "step_template": {
+            "type": "StepProtocol",
+            "stimuli": {
+                "step": {
+                    "delay": 700,
+                    "amp": null,
+                    "duration": 2000,
+                    "totduration": 3000
+                },
+                "holding": {
+                    "delay": 0,
+                    "amp": null,
+                    "duration": 3000,
+                    "totduration": 3000
+                }
+            }
+        }
+    },
+    "bAP": {
+        "type": "StepThresholdProtocol",
+        "stimuli": {
+            "step": {
+                "delay": 700,
+                "amp": null,
+                "thresh_perc": 1000.0,
+                "duration": 3.0,
+                "totduration": 1000
+            }
+        },
+        "extra_recordings": [
+            {
+                "var": "v",
+                "somadistance": 91,
+                "type": "somadistanceapic",
+                "name": "dend1",
+                "seclist_name": "apical"
+            },
+            {
+                "var": "v",
+                "somadistance": 208,
+                "type": "somadistanceapic",
+                "name": "dend2",
+                "seclist_name": "apical"
+            },
+            {
+                "var": "cai",
+                "somadistance": 50,
+                "type": "somadistanceapic",
+                "name": "ca_prox_apic",
+                "seclist_name": "apical"
+            },
+            {
+                "var": "cai",
+                "somadistance": 50,
+                "type": "somadistance",
+                "name": "ca_prox_basal",
+                "seclist_name": "basal"
+            },
+            {
+                "var": "cai",
+                "comp_x": 0.5,
+                "type": "nrnseclistcomp",
+                "name": "ca_soma",
+                "seclist_name": "soma",
+                "sec_index": 0
+            },
+            {
+                "var": "cai",
+                "comp_x": 0.5,
+                "type": "nrnseclistcomp",
+                "name": "ca_ais",
+                "seclist_name": "axon",
+                "sec_index": 0
+            }
+        ]
+    },
+    "Step_140": {
+        "type": "StepThresholdProtocol",
+        "stimuli": {
+            "step": {
+                "delay": 700.0,
+                "amp": null,
+                "thresh_perc": 139.7246,
+                "duration": 2000.0,
+                "totduration": 3000.0
+            }
+        }
+    },
+    "Step_200": {
+        "type": "StepThresholdProtocol",
+        "stimuli": {
+            "step": {
+                "delay": 700.0,
+                "amp": null,
+                "thresh_perc": 212.1597,
+                "duration": 2000.0,
+                "totduration": 3000.0
+            }
+        }
+    },
+    "Step_280": {
+        "type": "StepThresholdProtocol",
+        "stimuli": {
+            "step": {
+                "delay": 700.0,
+                "amp": null,
+                "thresh_perc": 274.1369,
+                "duration": 2000.0,
+                "totduration": 3000.0
+            }
+        }
+    },
+    "APWaveform_360": {
+        "type": "StepThresholdProtocol",
+        "stimuli": {
+            "step": {
+                "delay": 700.0,
+                "amp": null,
+                "thresh_perc": 355.7202,
+                "duration": 50.0,
+                "totduration": 755.0
+            }
+        }
+    },
+    "Rin": {
+        "type": "StepProtocol",
+        "stimuli": {
+            "step": {
+                "delay": 700.0,
+                "amp": -0.035458,
+                "thresh_perc": -42.1855,
+                "duration": 1000.0,
+                "totduration": 1900.0
+            },
+            "holding": {
+                "delay": 0.0,
+                "amp": null,
+                "duration": 1900.0,
+                "totduration": 1900.0
+            }
+        }
+    },
+    "RMP": {
+        "type": "StepProtocol",
+        "stimuli": {
+            "step": {
+                "delay": 700,
+                "amp": 0,
+                "duration": 1000,
+                "totduration": 1700
+            }
+        }
+    },
+    "IV_-100": {
+        "type": "StepThresholdProtocol",
+        "stimuli": {
+            "step": {
+                "delay": 700.0,
+                "amp": null,
+                "thresh_perc": -98.2085,
+                "duration": 1000.0,
+                "totduration": 1900.0
+            }
+        }
+    },
+    "SpikeRec_all": {
+        "type": "StepThresholdProtocol",
+        "stimuli": {
+            "step": {
+                "delay": 700.0,
+                "amp": null,
+                "thresh_perc": 1027.2421,
+                "duration": 4.0,
+                "totduration": 740.0
+            }
+        }
+    }
+}

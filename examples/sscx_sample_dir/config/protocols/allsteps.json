@@ -4,13 +4,13 @@
         "stimuli": {
             "step": {
                 "delay": 70.0,
-                "amp": 0.2432578125,
+                "amp": 0.20915625,
                 "duration": 200.0,
                 "totduration": 300.0
             },
             "holding": {
                 "delay": 0.0,
-                "amp": -0.0673500459640763,
+                "amp": -0.0896244038173676,
                 "duration": 300.0,
                 "totduration": 300.0
             }
@@ -21,13 +21,13 @@
         "stimuli": {
             "step": {
                 "delay": 70.0,
-                "amp": 0.32434375,
+                "amp": 0.278875,
                 "duration": 200.0,
                 "totduration": 300.0
             },
             "holding": {
                 "delay": 0.0,
-                "amp": -0.0673500459640763,
+                "amp": -0.0896244038173676,
                 "duration": 300.0,
                 "totduration": 300.0
             }
@@ -38,13 +38,13 @@
         "stimuli": {
             "step": {
                 "delay": 70.0,
-                "amp": 0.40542968749999997,
+                "amp": 0.34859375,
                 "duration": 200.0,
                 "totduration": 300.0
             },
             "holding": {
                 "delay": 0.0,
-                "amp": -0.0673500459640763,
+                "amp": -0.0896244038173676,
                 "duration": 300.0,
                 "totduration": 300.0
             }
