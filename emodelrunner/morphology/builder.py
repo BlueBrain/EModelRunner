@@ -39,7 +39,7 @@ def create_morphology(morph_args, package_type):
 
     Args:
         morph_args (dict): morphology-related configuration
-        morph_type (Enum): enum denoting the package type
+        package_type (Enum): enum denoting the package type
 
     Raises:
         ValueError: raised when package_type is not supported

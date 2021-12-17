@@ -20,7 +20,7 @@ from bluepyopt import ephys
 
 from emodelrunner.create_recordings import get_pairsim_recordings
 from emodelrunner.create_stimuli import load_pulses
-
+from emodelrunner.configuration import PackageType
 from emodelrunner.protocols import synplas_protocols
 from emodelrunner.protocols.protocols_func import create_protocols_object
 
@@ -65,11 +65,12 @@ class ProtocolBuilder:
                 raise Exception("The cell is missing in the define_protocol function.")
 
         protocols = create_protocols_object(
-            prot_args["apical_point_isec"],
+            apical_point_isec=prot_args["apical_point_isec"],
+            prot_path=prot_args["prot_path"],
+            package_type=PackageType.sscx,
+            features_path=prot_args["features_path"],
             mtype=prot_args["mtype"],
             syn_locs=syn_locs,
-            prot_path=prot_args["prot_path"],
-            features_path=prot_args["features_path"],
         )
         return cls(protocols)
 

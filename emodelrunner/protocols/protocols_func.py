@@ -18,6 +18,7 @@ import json
 import logging
 
 from bluepyopt import ephys
+from emodelrunner.configuration.configparser import PackageType
 
 from emodelrunner.protocols import sscx_protocols
 from emodelrunner.recordings import RecordingCustom
@@ -596,6 +597,16 @@ def define_sscx_protocols(
     return protocols_dict
 
 
+def define_thalamus_protocols(
+    protocols_filepath,
+    stochkv_det=None,
+    prefix="",
+    apical_point_isec=-1,
+    syn_locs=None,
+):
+    raise NotImplementedError("This function is not implemented yet.")
+
+
 def set_main_protocol_efeatures(protocols_dict, efeatures, prefix):
     """Set the efeatures of the main protocol.
 
@@ -627,6 +638,7 @@ def set_main_protocol_efeatures(protocols_dict, efeatures, prefix):
 def create_protocols_object(
     apical_point_isec,
     prot_path,
+    package_type,
     features_path="",
     mtype="",
     syn_locs=None,
@@ -638,6 +650,7 @@ def create_protocols_object(
         apical_point_isec (int): section index of the apical point
             Set to -1 no apical point is used in any extra recordings
         prot_path (str): path to the protocols file
+        package_type (Enum): enum denoting the package type
         features_path (str): path to the features file
         mtype (str): morphology name to be used as prefix in output filenames
         syn_locs (list): list of synapse locations
@@ -647,13 +660,24 @@ def create_protocols_object(
         ephys.protocols.SequenceProtocol: sequence protocol containing all the protocols
     """
     # pylint: disable=unbalanced-tuple-unpacking, too-many-locals
-    protocols_dict = define_sscx_protocols(
-        prot_path,
-        stochkv_det,
-        mtype,
-        apical_point_isec,
-        syn_locs,
-    )
+    if package_type == PackageType.sscx:
+        protocols_dict = define_sscx_protocols(
+            prot_path,
+            stochkv_det,
+            mtype,
+            apical_point_isec,
+            syn_locs,
+        )
+    elif package_type == PackageType.thalamus:
+        protocols_dict = define_thalamus_protocols(
+            prot_path,
+            stochkv_det,
+            mtype,
+            apical_point_isec,
+            syn_locs,
+        )
+    else:
+        raise ValueError(f"unsupported package type: {package_type}")
 
     if "Main" in protocols_dict:
         efeatures = define_efeatures(
