@@ -40,6 +40,23 @@ seclist_to_sec = {
 }
 
 
+class ProtocolMixin:
+    """Contains methods useful for multiple Protocol classes."""
+
+    def curr_output_key(self):
+        """Get the output key for current based on the one for voltage.
+
+        Returns:
+            str used as key in current dict
+        """
+        if self.recordings is not None:
+            # this gives 'prefix.name'
+            name = ".".join(self.recordings[0].name.split(".")[:2])
+        else:
+            name = ""
+        return "current_" + name
+
+
 def read_ramp_threshold_protocol(protocol_name, protocol_definition, recordings):
     """Read ramp threshold protocol from definition.
 
