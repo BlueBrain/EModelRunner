@@ -20,7 +20,7 @@ from bluepyopt import ephys
 
 from emodelrunner.configuration.configparser import PackageType
 from emodelrunner.create_cells import create_cell_using_config
-from emodelrunner.protocols.create_protocols import SSCXProtocols
+from emodelrunner.protocols.create_protocols import ProtocolBuilder
 from emodelrunner.load import (
     load_config,
     get_prot_args,
@@ -54,9 +54,9 @@ def main(config_path):
     prot_args = get_prot_args(config)
 
     if config.package_type == PackageType.sscx:
-        sscx_protocols = SSCXProtocols(add_synapses, prot_args, cell)
+        sscx_protocols = ProtocolBuilder.using_sscx_protocols(add_synapses, prot_args, cell)
     elif config.package_type == PackageType.thalamus:
-        sscx_protocols = SSCXProtocols(add_synapses, prot_args, cell)
+        sscx_protocols = ProtocolBuilder.using_sscx_protocols(add_synapses, prot_args, cell)
     else:
         raise ValueError(f"unsupported package type: {config.package_type}")
     ephys_protocols = sscx_protocols.get_ephys_protocols()

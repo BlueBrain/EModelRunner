@@ -35,20 +35,20 @@ from emodelrunner.synapses.stimuli import (
 logger = logging.getLogger(__name__)
 
 
-class SSCXProtocols:
+class ProtocolBuilder:
     """Class representing the protocols applied in SSCX.
 
     Attributes:
         protocols (bluepyopt.ephys.protocols.SequenceProtocol): the protocols to apply to the cell
     """
 
-    def __init__(
-        self,
-        add_synapses,
-        prot_args,
-        cell=None,
-    ):
-        """Define Protocols.
+    def __init__(self, protocols):
+        """Constructor to be called by the classmethod overloads."""
+        self.protocols = protocols
+
+    @classmethod
+    def using_sscx_protocols(cls, add_synapses, prot_args, cell=None):
+        """Creates the object with the sscx protocols.
 
         Args:
             add_synapses (bool): whether to add synapses to the cell
@@ -56,8 +56,6 @@ class SSCXProtocols:
                 See load.get_prot_args for details
             cell (CellModelCustom): cell model
         """
-        self.protocols = None
-
         syn_locs = None
         if add_synapses:
             if cell is not None:
@@ -66,13 +64,14 @@ class SSCXProtocols:
             else:
                 raise Exception("The cell is missing in the define_protocol function.")
 
-        self.protocols = create_protocols_object(
+        protocols = create_protocols_object(
             prot_args["apical_point_isec"],
             mtype=prot_args["mtype"],
             syn_locs=syn_locs,
             prot_path=prot_args["prot_path"],
             features_path=prot_args["features_path"],
         )
+        return cls(protocols)
 
     def get_ephys_protocols(self):
         """Returns the list of ephys protocol objects.
