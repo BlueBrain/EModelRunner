@@ -54,12 +54,12 @@ def main(config_path):
     prot_args = get_prot_args(config)
 
     if config.package_type == PackageType.sscx:
-        sscx_protocols = ProtocolBuilder.using_sscx_protocols(add_synapses, prot_args, cell)
+        protocols = ProtocolBuilder.using_sscx_protocols(add_synapses, prot_args, cell)
     elif config.package_type == PackageType.thalamus:
-        sscx_protocols = ProtocolBuilder.using_sscx_protocols(add_synapses, prot_args, cell)
+        protocols = ProtocolBuilder.using_sscx_protocols(add_synapses, prot_args, cell)
     else:
         raise ValueError(f"unsupported package type: {config.package_type}")
-    ephys_protocols = sscx_protocols.get_ephys_protocols()
+    ephys_protocols = protocols.get_ephys_protocols()
 
     # run
     print("Python Recordings Running...")
@@ -67,7 +67,7 @@ def main(config_path):
         cell_model=cell, param_values=release_params, sim=sim, isolate=False
     )
 
-    currents = sscx_protocols.get_stim_currents(responses)
+    currents = protocols.get_stim_currents(responses)
 
     # write responses
     output_dir = config.get("Paths", "output_dir")
