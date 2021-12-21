@@ -1,6 +1,6 @@
 /*                                                                               
-Copyright (c) BBP/EPFL 2018; All rights reserved.
-Do not distribute without further notice.
+Copyright (c) BBP/EPFL 2021.
+This work is licenced under Creative Common CC BY-NC-SA-4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/)
 */
 load_file("nrngui.hoc")
 load_file("import3d.hoc")
@@ -282,10 +282,7 @@ func search_spike_threshold(){ local lower_bound, upper_bound, n_short_steps, st
 proc thdetect_protocol(){ local rin, voltagebase_exp_mean, max_threshold_voltage localobj fpath
     rin = $1
     // experimental mean of efeature.
-    voltagebase_exp_mean = -82.9501
-    /*
     voltagebase_exp_mean = {{voltagebase_exp_mean}}
-    */
     max_threshold_voltage = -40
 
     max_threshold_current = (max_threshold_voltage - voltagebase_exp_mean) / rin

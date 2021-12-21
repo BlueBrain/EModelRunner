@@ -3,62 +3,62 @@
     "values": [
         {
             "name": "total axon length",
-            "value": 11316.388908624649,
+            "value": 6365.762633562088,
             "unit": "\u00b5m"
         },
         {
             "name": "total axon volume",
-            "value": 2298.9971235076514,
+            "value": 900.0448369230417,
             "unit": "\u00b5m\u00b3"
         },
         {
             "name": "axon maximum branch order",
-            "value": 12,
+            "value": 11,
             "unit": ""
         },
         {
             "name": "total apical length",
-            "value": 3128.904561281204,
+            "value": 1745.9480376243591,
             "unit": "\u00b5m"
         },
         {
             "name": "total apical volume",
-            "value": 1432.2703356999643,
+            "value": 1471.0559661664934,
             "unit": "\u00b5m\u00b3"
         },
         {
             "name": "apical maximum branch order",
-            "value": 12,
+            "value": 7,
             "unit": ""
         },
         {
             "name": "total basal length",
-            "value": 4209.233775377274,
+            "value": 1644.1507340669632,
             "unit": "\u00b5m"
         },
         {
             "name": "total basal volume",
-            "value": 1753.8109676267964,
+            "value": 789.9963865243965,
             "unit": "\u00b5m\u00b3"
         },
         {
             "name": "basal maximum branch order",
-            "value": 5,
+            "value": 3,
             "unit": ""
         },
         {
             "name": "soma diameter",
-            "value": 19.873456954956055,
+            "value": 18.222522735595703,
             "unit": "\u00b5m"
         },
         {
             "name": "soma surface area",
-            "value": 1240.78550017905,
+            "value": 1043.1983085111349,
             "unit": "\u00b5m\u00b2"
         },
         {
             "name": "soma volume",
-            "value": 4109.782871356994,
+            "value": 3168.2841490965225,
             "unit": "\u00b5m\u00b3"
         }
     ]

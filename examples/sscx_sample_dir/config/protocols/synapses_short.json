@@ -2,7 +2,7 @@
     "Synapses_Vecstim": {
         "type": "Vecstim",
         "stimuli": {
-            "syn_stop": 3000.0,
+            "syn_stop": 300.0,
             "syn_start": 50.0,
             "syn_stim_seed": 1,
             "vecstim_random": "neuron"

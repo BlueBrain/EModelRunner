@@ -73,7 +73,7 @@ def test_voltages():
         run_emodel(config_path=config_path)
 
     for idx in range(3):
-        filename = "L5TPCa.Step_{}.soma.v.dat".format(150 + idx * 50)
+        filename = "_.Step_{}.soma.v.dat".format(150 + idx * 50)
         compare_hoc_and_py(filename, threshold)
 
 
@@ -84,7 +84,7 @@ def test_synapses(config_path="config/config_synapses.ini"):
         configfile: the configuration file of the emodel.
     """
 
-    threshold = 0.05
+    threshold = 0.4
 
     # load bglibpy data
     bg_v = np.loadtxt(os.path.join(data_dir, "bglibpy_voltage.dat"))
@@ -94,7 +94,7 @@ def test_synapses(config_path="config/config_synapses.ini"):
         run_emodel(config_path=config_path)
 
     py_path = os.path.join(
-        example_dir, "python_recordings", "L5TPCa.Synapses_Vecstim.soma.v.dat"
+        example_dir, "python_recordings", "_.Synapses_Vecstim.soma.v.dat"
     )
     py_v = np.loadtxt(py_path)
 
@@ -103,7 +103,7 @@ def test_synapses(config_path="config/config_synapses.ini"):
     assert rms < threshold
 
 
-def test_synapses_hoc_vs_py_script(config_path="config/config_synapses.ini"):
+def test_synapses_hoc_vs_py_script(config_path="config/config_synapses_short.ini"):
     """Test to compare the voltages produced via python and hoc.
 
     Attributes:
@@ -123,7 +123,7 @@ def test_synapses_hoc_vs_py_script(config_path="config/config_synapses.ini"):
         subprocess.call(["sh", "./run_hoc.sh"])
         run_emodel(config_path=config_path)
 
-    compare_hoc_and_py("L5TPCa.Synapses_Vecstim.soma.v.dat", threshold)
+    compare_hoc_and_py("_.Synapses_Vecstim.soma.v.dat", threshold)
 
 
 def test_recipe_protocols():
@@ -148,33 +148,33 @@ def test_recipe_protocols():
     py_output_dir = os.path.join(example_dir, "python_recordings")
     hoc_output_dir = os.path.join(example_dir, "hoc_recordings")
     output_files = [
-        "L5TPCa.Step_150.soma.v.dat",
-        "L5TPCa.Step_200.soma.v.dat",
-        "L5TPCa.Step_280.soma.v.dat",
-        "L5TPCa.APWaveform_320.soma.v.dat",
-        "L5TPCa.bAP.soma.v.dat",
-        "L5TPCa.bAP.dend1.v.dat",
-        "L5TPCa.bAP.dend2.v.dat",
-        "L5TPCa.bAP.ca_soma.cai.dat",
-        "L5TPCa.bAP.ca_ais.cai.dat",
-        "L5TPCa.bAP.ca_prox_apic.cai.dat",
-        "L5TPCa.bAP.ca_prox_basal.cai.dat",
-        "L5TPCa.IV_-100.soma.v.dat",
-        "L5TPCa.Rin.soma.v.dat",
-        "L5TPCa.RMP.soma.v.dat",
-        "L5TPCa.SpikeRec_600.soma.v.dat",
-        "L5TPCa.bpo_holding_current.dat",
-        "L5TPCa.bpo_threshold_current.dat",
+        "_.Step_140.soma.v.dat",
+        "_.Step_200.soma.v.dat",
+        "_.Step_280.soma.v.dat",
+        "_.APWaveform_360.soma.v.dat",
+        "_.bAP.soma.v.dat",
+        "_.bAP.dend1.v.dat",
+        "_.bAP.dend2.v.dat",
+        "_.bAP.ca_soma.cai.dat",
+        "_.bAP.ca_ais.cai.dat",
+        "_.bAP.ca_prox_apic.cai.dat",
+        "_.bAP.ca_prox_basal.cai.dat",
+        "_.IV_-100.soma.v.dat",
+        "_.Rin.soma.v.dat",
+        "_.RMP.soma.v.dat",
+        "_.SpikeRec_all.soma.v.dat",
+        "_.bpo_holding_current.dat",
+        "_.bpo_threshold_current.dat",
     ]
     output_current_files = [
-        "current_L5TPCa.Step_150.dat",
-        "current_L5TPCa.Step_200.dat",
-        "current_L5TPCa.Step_280.dat",
-        "current_L5TPCa.APWaveform_320.dat",
-        "current_L5TPCa.bAP.dat",
-        "current_L5TPCa.IV_-100.dat",
-        "current_L5TPCa.RMP.dat",
-        "current_L5TPCa.SpikeRec_600.dat",
+        "current__.Step_140.dat",
+        "current__.Step_200.dat",
+        "current__.Step_280.dat",
+        "current__.APWaveform_360.dat",
+        "current__.bAP.dat",
+        "current__.IV_-100.dat",
+        "current__.RMP.dat",
+        "current__.SpikeRec_all.dat",
     ]
 
     for fname in output_current_files:
@@ -193,6 +193,15 @@ def test_recipe_protocols():
         # file contains arrays
         else:
             compare_hoc_and_py(fname, threshold)
+
+    assert (
+        np.loadtxt(os.path.join(py_output_dir, "_.bpo_holding_current.dat"))
+        == -0.05801859850038824928
+    )
+    assert (
+        np.loadtxt(os.path.join(py_output_dir, "_.bpo_threshold_current.dat"))
+        == 0.1199864538163320088
+    )
 
 
 def test_generate_current():
@@ -329,11 +338,11 @@ def test_multiprotocols_hoc_vs_py_script(
         subprocess.call(["sh", "./run_hoc.sh"])
         run_emodel(config_path=config_path)
 
-    compare_hoc_and_py("L5TPCa.Ramp.soma.v.dat", threshold)
-    compare_hoc_and_py("L5TPCa.Synapses_Netstim.soma.v.dat", threshold)
-    compare_hoc_and_py("L5TPCa.MultiStepProtocolNoHolding.soma.v.dat", threshold)
+    compare_hoc_and_py("_.Ramp.soma.v.dat", threshold)
+    compare_hoc_and_py("_.Synapses_Netstim.soma.v.dat", threshold)
+    compare_hoc_and_py("_.MultiStepProtocolNoHolding.soma.v.dat", threshold)
 
-    compare_hoc_and_py("L5TPCa.Ramp.ca_soma.cai.dat", threshold)
-    compare_hoc_and_py("L5TPCa.Ramp.ca_ais.cai.dat", threshold)
-    compare_hoc_and_py("L5TPCa.Ramp.ca_prox_basal.cai.dat", threshold)
-    compare_hoc_and_py("L5TPCa.Ramp.dend1.v.dat", threshold)
+    compare_hoc_and_py("_.Ramp.ca_soma.cai.dat", threshold)
+    compare_hoc_and_py("_.Ramp.ca_ais.cai.dat", threshold)
+    compare_hoc_and_py("_.Ramp.ca_prox_basal.cai.dat", threshold)
+    compare_hoc_and_py("_.Ramp.dend1.v.dat", threshold)

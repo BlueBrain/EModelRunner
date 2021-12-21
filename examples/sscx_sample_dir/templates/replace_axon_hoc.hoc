@@ -1,3 +1,8 @@
+/*
+Copyright (c) BBP/EPFL 2021.
+This work is licenced under Creative Common CC BY-NC-SA-4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/)
+*/
+
 proc replace_axon(){ local nSec, L_chunk, dist, i1, i2, count, L_target, chunkSize, L_real localobj diams, lens
 
     L_target = 60  // length of stub axon
