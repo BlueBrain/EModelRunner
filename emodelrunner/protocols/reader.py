@@ -4,7 +4,7 @@ import logging
 from bluepyopt import ephys
 
 from emodelrunner.protocols import sscx_protocols
-from emodelrunner.locations import soma_loc
+from emodelrunner.locations import SOMA_LOC
 from emodelrunner.synapses.stimuli import (
     NrnNetStimStimulusCustom,
     NrnVecStimStimulusCustom,
@@ -33,14 +33,14 @@ def read_ramp_threshold_protocol(
     ramp_stimulus = ephys.stimuli.NrnRampPulse(
         ramp_delay=ramp_definition["ramp_delay"],
         ramp_duration=ramp_definition["ramp_duration"],
-        location=soma_loc,
+        location=SOMA_LOC,
         total_duration=ramp_definition["totduration"],
     )
 
     holding_stimulus = ephys.stimuli.NrnSquarePulse(
         step_delay=0.0,
         step_duration=ramp_definition["totduration"],
-        location=soma_loc,
+        location=SOMA_LOC,
         total_duration=ramp_definition["totduration"],
     )
 
@@ -72,7 +72,7 @@ def read_ramp_protocol(protocol_name, protocol_definition, recordings):
         ramp_amplitude_end=ramp_definition["ramp_amplitude_end"],
         ramp_delay=ramp_definition["ramp_delay"],
         ramp_duration=ramp_definition["ramp_duration"],
-        location=soma_loc,
+        location=SOMA_LOC,
         total_duration=ramp_definition["totduration"],
     )
 
@@ -82,7 +82,7 @@ def read_ramp_protocol(protocol_name, protocol_definition, recordings):
             step_amplitude=holding_definition["amp"],
             step_delay=holding_definition["delay"],
             step_duration=holding_definition["duration"],
-            location=soma_loc,
+            location=SOMA_LOC,
             total_duration=holding_definition["totduration"],
         )
     else:
@@ -116,7 +116,7 @@ def read_ramp_protocol_from_thalamus_definition(
         ramp_amplitude_end=ramp_definition["ramp_amp_end"],
         ramp_delay=ramp_definition["ramp_delay"],
         ramp_duration=ramp_definition["ramp_duration"],
-        location=soma_loc,
+        location=SOMA_LOC,
         total_duration=ramp_definition["totduration"],
     )
 
@@ -126,7 +126,7 @@ def read_ramp_protocol_from_thalamus_definition(
             step_amplitude=holding_definition["amp"],
             step_delay=holding_definition["delay"],
             step_duration=holding_definition["duration"],
-            location=soma_loc,
+            location=SOMA_LOC,
             total_duration=holding_definition["totduration"],
         )
     else:
@@ -168,7 +168,7 @@ def read_step_protocol(
             step_amplitude=step_definition["amp"],
             step_delay=step_definition["delay"],
             step_duration=step_definition["duration"],
-            location=soma_loc,
+            location=SOMA_LOC,
             total_duration=step_definition["totduration"],
         )
         step_stimuli.append(step_stim)
@@ -179,7 +179,7 @@ def read_step_protocol(
             step_amplitude=holding_definition["amp"],
             step_delay=holding_definition["delay"],
             step_duration=holding_definition["duration"],
-            location=soma_loc,
+            location=SOMA_LOC,
             total_duration=holding_definition["totduration"],
         )
     else:
@@ -224,7 +224,7 @@ def read_step_threshold_protocol(
         step_stim = ephys.stimuli.NrnSquarePulse(
             step_delay=step_definition["delay"],
             step_duration=step_definition["duration"],
-            location=soma_loc,
+            location=SOMA_LOC,
             total_duration=step_definition["totduration"],
         )
         step_stimuli.append(step_stim)
@@ -232,7 +232,7 @@ def read_step_threshold_protocol(
     holding_stimulus = ephys.stimuli.NrnSquarePulse(
         step_delay=0.0,
         step_duration=step_definition["totduration"],
-        location=soma_loc,
+        location=SOMA_LOC,
         total_duration=step_definition["totduration"],
     )
 

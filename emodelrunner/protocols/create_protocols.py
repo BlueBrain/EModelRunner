@@ -28,7 +28,7 @@ from emodelrunner.protocols import synplas_protocols
 from emodelrunner.synapses.recordings import SynapseRecordingCustom
 from emodelrunner.stimuli import MultipleSteps
 from emodelrunner.features import define_efeatures
-from emodelrunner.locations import soma_loc
+from emodelrunner.locations import SOMA_LOC
 from emodelrunner.protocols.protocols_func import (
     check_for_forbidden_protocol,
     get_recordings,
@@ -421,7 +421,7 @@ def add_protocol_to_dict(
                     step_amplitude=stimulus_definition["amp"],
                     step_delay=stimulus_definition["delay"],
                     step_duration=stimulus_definition["duration"],
-                    location=soma_loc,
+                    location=SOMA_LOC,
                     total_duration=stimulus_definition["totduration"],
                 )
             )

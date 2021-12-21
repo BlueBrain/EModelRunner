@@ -19,7 +19,7 @@ import logging
 from bluepyopt import ephys
 
 from emodelrunner.recordings import RecordingCustom
-from emodelrunner.locations import soma_loc
+from emodelrunner.locations import SOMA_LOC
 
 
 logger = logging.getLogger(__name__)
@@ -118,7 +118,7 @@ def get_recordings(protocol_name, protocol_definition, prefix, apical_point_isec
     recordings.append(
         RecordingCustom(
             name=f"{prefix}.{protocol_name}.soma.v",
-            location=soma_loc,
+            location=SOMA_LOC,
             variable="v",
         )
     )
