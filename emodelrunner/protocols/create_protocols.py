@@ -61,6 +61,17 @@ class ProtocolBuilder:
         """Constructor to be called by the classmethod overloads."""
         self.protocols = protocols
 
+    @staticmethod
+    def _get_syn_locs(add_synapses, cell):
+        """Wraps get_syn_locs with exception raising."""
+        syn_locs = None
+        if add_synapses:
+            if cell is not None:
+                syn_locs = get_syn_locs(cell)
+            else:
+                raise RuntimeError("'None' value encountered in cell object.")
+        return syn_locs
+
     @classmethod
     def using_sscx_protocols(cls, add_synapses, prot_args, cell=None):
         """Creates the object with the sscx protocols.
@@ -71,13 +82,7 @@ class ProtocolBuilder:
                 See load.get_prot_args for details
             cell (CellModelCustom): cell model
         """
-        syn_locs = None
-        if add_synapses:
-            if cell is not None:
-                # locations
-                syn_locs = get_syn_locs(cell)
-            else:
-                raise Exception("The cell is missing in the define_protocol function.")
+        syn_locs = cls._get_syn_locs(add_synapses, cell)
 
         protocols = create_protocols_object(
             apical_point_isec=prot_args["apical_point_isec"],
@@ -99,13 +104,7 @@ class ProtocolBuilder:
                 See load.get_prot_args for details
             cell (CellModelCustom): cell model
         """
-        syn_locs = None
-        if add_synapses:
-            if cell is not None:
-                # locations
-                syn_locs = get_syn_locs(cell)
-            else:
-                raise Exception("The cell is missing in the define_protocol function.")
+        syn_locs = cls._get_syn_locs(add_synapses, cell)
 
         protocols = create_protocols_object(
             apical_point_isec=prot_args["apical_point_isec"],
