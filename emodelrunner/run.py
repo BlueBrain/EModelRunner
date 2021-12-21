@@ -56,7 +56,9 @@ def main(config_path):
     if config.package_type == PackageType.sscx:
         protocols = ProtocolBuilder.using_sscx_protocols(add_synapses, prot_args, cell)
     elif config.package_type == PackageType.thalamus:
-        protocols = ProtocolBuilder.using_thalamus_protocols(add_synapses, prot_args, cell)
+        protocols = ProtocolBuilder.using_thalamus_protocols(
+            add_synapses, prot_args, cell
+        )
     else:
         raise ValueError(f"unsupported package type: {config.package_type}")
     ephys_protocols = protocols.get_ephys_protocols()

@@ -21,6 +21,11 @@ from bluepyopt import ephys
 logger = logging.getLogger(__name__)
 
 
+soma_loc = ephys.locations.NrnSeclistCompLocation(
+    name="soma", seclist_name="somatic", sec_index=0, comp_x=0.5
+)
+
+
 def multi_locations(sectionlist):
     """Define locations.
 
