@@ -74,6 +74,34 @@ class ProtocolBuilder:
         )
         return cls(protocols)
 
+    @classmethod
+    def using_thalamus_protocols(cls, add_synapses, prot_args, cell=None):
+        """Creates the object with the thalamus protocols.
+
+        Args:
+            add_synapses (bool): whether to add synapses to the cell
+            prot_args (dict): config data relative to protocols
+                See load.get_prot_args for details
+            cell (CellModelCustom): cell model
+        """
+        syn_locs = None
+        if add_synapses:
+            if cell is not None:
+                # locations
+                syn_locs = get_syn_locs(cell)
+            else:
+                raise Exception("The cell is missing in the define_protocol function.")
+
+        protocols = create_protocols_object(
+            apical_point_isec=prot_args["apical_point_isec"],
+            prot_path=prot_args["prot_path"],
+            package_type=PackageType.thalamus,
+            features_path=prot_args["features_path"],
+            mtype=prot_args["mtype"],
+            syn_locs=syn_locs,
+        )
+        return cls(protocols)
+
     def get_ephys_protocols(self):
         """Returns the list of ephys protocol objects.
 
