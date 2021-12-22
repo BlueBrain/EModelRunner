@@ -178,12 +178,11 @@ def create_protocols_object(
             syn_locs,
         )
     elif package_type == PackageType.thalamus:
-        protocols_dict = define_thalamus_protocols(
+        protocols_dict = ProtocolParser().parse_thalamus_protocols(
             prot_path,
             stochkv_det,
             mtype,
             apical_point_isec,
-            syn_locs,
         )
     else:
         raise ValueError(f"unsupported package type: {package_type}")
@@ -205,17 +204,6 @@ def create_protocols_object(
         "all protocols",
         protocols=protocols,
     )
-
-
-def define_thalamus_protocols(
-    protocols_filepath,
-    stochkv_det=None,
-    prefix="",
-    apical_point_isec=-1,
-    syn_locs=None,
-):
-    """Return dict containing the protocols used in thalamus packages."""
-    raise NotImplementedError("This function is not implemented yet.")
 
 
 def set_main_protocol_efeatures(protocols_dict, efeatures, prefix):

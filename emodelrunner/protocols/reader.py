@@ -4,7 +4,7 @@ import logging
 import json
 from bluepyopt import ephys
 
-from emodelrunner.protocols import sscx_protocols
+from emodelrunner.protocols import sscx_protocols, thalamus_protocols
 from emodelrunner.locations import SOMA_LOC
 from emodelrunner.synapses.stimuli import (
     NrnNetStimStimulusCustom,
@@ -49,7 +49,12 @@ class ProtocolParser:
         return protocol_definitions
 
     def _parse_step_and_ramp(
-        self, protocol_definition, protocol_name, protocol_module, recordings, stochkv_det
+        self,
+        protocol_definition,
+        protocol_name,
+        protocol_module,
+        recordings,
+        stochkv_det,
     ):
         """Parses the step and ramp protocols into self.protocols_dict."""
         if protocol_definition["type"] == "StepProtocol":
@@ -76,9 +81,18 @@ class ProtocolParser:
                 recordings,
             )
         elif protocol_definition["type"] == "RampProtocol":
-            self.protocols_dict[protocol_name] = read_ramp_protocol(
-                protocol_name, protocol_definition, recordings
-            )
+            if protocol_module is sscx_protocols:
+                self.protocols_dict[protocol_name] = read_ramp_protocol(
+                    protocol_name, protocol_definition, recordings
+                )
+            elif protocol_module is thalamus_protocols:
+                self.protocols_dict[
+                    protocol_name
+                ] = read_ramp_protocol_from_thalamus_definition(
+                    protocol_name, protocol_definition, recordings
+                )
+            else:
+                raise ValueError(f"unsupported protocol module: {protocol_module}")
 
     def _parse_sscx_threshold_detection(self, protocol_definition, recordings, prefix):
         """Parses the sscx threshold detection protocol into self.protocols_dict."""
@@ -90,6 +104,36 @@ class ProtocolParser:
                 step_protocol_template=read_step_protocol(
                     "Threshold",
                     sscx_protocols,
+                    protocol_definition["step_template"],
+                    recordings,
+                ),
+                prefix=prefix,
+            )
+
+    def _parse_thalamus_threshold_detection(
+        self, protocol_definition, recordings, prefix
+    ):
+        """Parses the thalamus threshold detection protocol into self.protocols_dict."""
+        if protocol_definition["type"] == "RatSSCxThresholdDetectionProtocol":
+            self.protocols_dict[
+                "ThresholdDetection_dep"
+            ] = thalamus_protocols.RatSSCxThresholdDetectionProtocol(
+                "ThresholdDetection_dep",
+                step_protocol_template=read_step_protocol(
+                    "ThresholdDetection_dep",
+                    thalamus_protocols,
+                    protocol_definition["step_template"],
+                    recordings,
+                ),
+                prefix=prefix,
+            )
+            self.protocols_dict[
+                "ThresholdDetection_hyp"
+            ] = thalamus_protocols.RatSSCxThresholdDetectionProtocol(
+                "ThresholdDetection_hyp",
+                step_protocol_template=read_step_protocol(
+                    "ThresholdDetection_hyp",
+                    thalamus_protocols,
                     protocol_definition["step_template"],
                     recordings,
                 ),
@@ -142,6 +186,79 @@ class ProtocolParser:
             pre_protocols=pre_protocols,
         )
 
+    def _parse_thalamus_main(self, protocol_definitions, prefix):
+        """Parses the main thalamus protocol into self.protocols_dict."""
+        try:  # Only low-threshold bursting cells have thin protocol
+            self.protocols_dict[
+                "RinHoldcurrent_dep"
+            ] = thalamus_protocols.RatSSCxRinHoldcurrentProtocol(
+                "RinHoldCurrent_dep",
+                rin_protocol_template=self.protocols_dict["Rin_dep"],
+                holdi_estimate_multiplier=protocol_definitions["RinHoldcurrent_dep"][
+                    "holdi_estimate_multiplier"
+                ],
+                holdi_precision=protocol_definitions["RinHoldcurrent_dep"][
+                    "holdi_precision"
+                ],
+                holdi_max_depth=protocol_definitions["RinHoldcurrent_dep"][
+                    "holdi_max_depth"
+                ],
+                prefix=prefix,
+            )
+            rinhold_protocol_dep = self.protocols_dict["RinHoldcurrent_dep"]
+            thdetect_protocol_dep = self.protocols_dict["ThresholdDetection_dep"]
+        except KeyError:
+            rinhold_protocol_dep = None
+            thdetect_protocol_dep = None
+
+        self.protocols_dict[
+            "RinHoldcurrent_hyp"
+        ] = thalamus_protocols.RatSSCxRinHoldcurrentProtocol(
+            "RinHoldCurrent_hyp",
+            rin_protocol_template=self.protocols_dict["Rin_hyp"],
+            holdi_estimate_multiplier=protocol_definitions["RinHoldcurrent_hyp"][
+                "holdi_estimate_multiplier"
+            ],
+            holdi_precision=protocol_definitions["RinHoldcurrent_hyp"][
+                "holdi_precision"
+            ],
+            holdi_max_depth=protocol_definitions["RinHoldcurrent_hyp"][
+                "holdi_max_depth"
+            ],
+            prefix=prefix,
+        )
+
+        other_protocols = []
+
+        for protocol_name in protocol_definitions["Main"]["other_protocols"]:
+            other_protocols.append(self.protocols_dict[protocol_name])
+
+        pre_protocols = []
+        preprot_score_threshold = 1
+
+        if "pre_protocols" in protocol_definitions["Main"]:
+            for protocol_name in protocol_definitions["Main"]["pre_protocols"]:
+                pre_protocols.append(self.protocols_dict[protocol_name])
+            preprot_score_threshold = protocol_definitions["Main"][
+                "preprot_score_threshold"
+            ]
+
+        runopt = False
+        self.protocols_dict["Main"] = thalamus_protocols.RatSSCxMainProtocol(
+            "Main",
+            rmp_protocol=self.protocols_dict["RMP"],
+            rmp_score_threshold=protocol_definitions["Main"]["rmp_score_threshold"],
+            rinhold_protocol_dep=rinhold_protocol_dep,
+            rinhold_protocol_hyp=self.protocols_dict["RinHoldcurrent_hyp"],
+            rin_score_threshold=protocol_definitions["Main"]["rin_score_threshold"],
+            thdetect_protocol_dep=thdetect_protocol_dep,
+            thdetect_protocol_hyp=self.protocols_dict["ThresholdDetection_hyp"],
+            other_protocols=other_protocols,
+            pre_protocols=pre_protocols,
+            preprot_score_threshold=preprot_score_threshold,
+            use_rmp_rin_thresholds=runopt,
+        )
+
     def parse_sscx_protocols(
         self,
         protocols_filepath,
@@ -182,7 +299,11 @@ class ProtocolParser:
                 if "type" in protocol_definition:
                     # add protocol to protocol dict
                     self._parse_step_and_ramp(
-                        protocol_definition, protocol_name, sscx_protocols, recordings, stochkv_det
+                        protocol_definition,
+                        protocol_name,
+                        sscx_protocols,
+                        recordings,
+                        stochkv_det,
                     )
                     self._parse_sscx_threshold_detection(
                         protocol_definition, recordings, prefix
@@ -213,6 +334,80 @@ class ProtocolParser:
 
         if "Main" in protocol_definitions.keys():
             self._parse_sscx_main(protocol_definitions, prefix)
+        else:
+            check_for_forbidden_protocol(self.protocols_dict)
+
+        return self.protocols_dict
+
+    def parse_thalamus_protocols(
+        self,
+        protocols_filepath,
+        stochkv_det=None,
+        prefix="",
+        apical_point_isec=-1,
+    ):
+        """Parses the Thalamus protocols from the json file input.
+
+        Args:
+            protocols_filename (str): path to the protocols file
+            stochkv_det (bool): set if stochastic or deterministic
+            prefix (str): prefix used in naming responses, features, recordings, etc.
+            apical_point_isec (int): apical point section index
+                Should be given if there is "somadistanceapic" in "type"
+                of at least one of the extra recordings
+
+        Returns:
+            dict containing the protocols
+        """
+        protocol_definitions = self.load_protocol_json(protocols_filepath)
+
+        # fmt: off
+        protocols_with_type = [
+            "StepProtocol", "StepThresholdProtocol", "RampThresholdProtocol",
+            "RampProtocol", "RatSSCxThresholdDetectionProtocol"]
+        # fmt: on
+
+        for protocol_name, protocol_definition in protocol_definitions.items():
+            if protocol_name not in ["Main", "RinHoldcurrent"]:
+                recordings = get_recordings(
+                    protocol_name, protocol_definition, prefix, apical_point_isec
+                )
+
+                if "type" in protocol_definition:
+                    # add protocol to protocol dict
+                    self._parse_step_and_ramp(
+                        protocol_definition,
+                        protocol_name,
+                        thalamus_protocols,
+                        recordings,
+                        stochkv_det,
+                    )
+                    self._parse_thalamus_threshold_detection(
+                        protocol_definition, recordings, prefix
+                    )
+
+                elif (
+                    "type" not in protocol_definition
+                    or protocol_definition["type"] not in protocols_with_type
+                ):
+                    stimuli = []
+                    for stimulus_definition in protocol_definition["stimuli"]:
+                        stimuli.append(
+                            ephys.stimuli.NrnSquarePulse(
+                                step_amplitude=stimulus_definition["amp"],
+                                step_delay=stimulus_definition["delay"],
+                                step_duration=stimulus_definition["duration"],
+                                location=SOMA_LOC,
+                                total_duration=stimulus_definition["totduration"],
+                            )
+                        )
+
+                    self.protocols_dict[protocol_name] = ephys.protocols.SweepProtocol(
+                        name=protocol_name, stimuli=stimuli, recordings=recordings
+                    )
+
+        if "Main" in protocol_definitions.keys():
+            self._parse_thalamus_main(protocol_definitions, prefix)
         else:
             check_for_forbidden_protocol(self.protocols_dict)
 
