@@ -592,11 +592,11 @@ def read_step_protocol(
 
     if protocol_module is thalamus_protocols:
         return protocol_module.StepProtocolCustom(
-        name=protocol_name,
-        step_stimulus=step_stimuli[0],
-        holding_stimulus=holding_stimulus,
-        recordings=recordings,
-        stochkv_det=stochkv_det,
+            name=protocol_name,
+            step_stimulus=step_stimuli[0],
+            holding_stimulus=holding_stimulus,
+            recordings=recordings,
+            stochkv_det=stochkv_det,
         )
     elif protocol_module is sscx_protocols:
         return protocol_module.StepProtocol(

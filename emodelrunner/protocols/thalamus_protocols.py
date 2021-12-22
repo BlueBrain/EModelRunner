@@ -19,9 +19,12 @@ import numpy
 import warnings
 import collections
 import copy
+import numpy as np
 from bluepyopt import ephys
 
+
 from emodelrunner.protocols import sscx_protocols
+from emodelrunner.protocols.protocols_func import ProtocolMixin
 
 
 class RatSSCxMainProtocol(ephys.protocols.Protocol):
@@ -769,7 +772,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         return threshold_current
 
 
-class StepThresholdProtocol(ephys.protocols.StepProtocol):
+class StepThresholdProtocol(ephys.protocols.StepProtocol, ProtocolMixin):
     """Step protocol based on threshold."""
 
     def __init__(
@@ -840,7 +843,7 @@ class StepThresholdProtocol(ephys.protocols.StepProtocol):
         return responses
 
 
-class StepProtocolCustom(ephys.protocols.StepProtocol):
+class StepProtocolCustom(ephys.protocols.StepProtocol, ProtocolMixin):
     """Step protocol with custom options to turn stochkv_det on or off."""
 
     def __init__(
@@ -887,8 +890,38 @@ class StepProtocolCustom(ephys.protocols.StepProtocol):
 
         return responses
 
+    def generate_current(self, threshold_current=None, holding_current=None, dt=0.1):
+        """Return current time series.
 
-class RampThresholdProtocol(sscx_protocols.RampProtocol):
+        Args:
+            threshold_current (float): the threshold current (nA)
+            holding_current (float): the holding current (nA)
+            dt (float): timestep of the generated currents (ms)
+
+        Returns:
+            dict containing the generated current
+        """
+        # pylint: disable=unused-argument
+        holding_current = 0.0
+        if self.holding_stimulus is not None:
+            holding_current = self.holding_stimulus.step_amplitude
+        total_duration = self.step_stimulus.total_duration
+
+        t = np.arange(0.0, total_duration, dt)
+        current = np.full(t.shape, holding_current, dtype="float64")
+
+        ton = self.step_stimulus.step_delay
+        ton_idx = int(ton / dt)
+
+        toff = self.step_stimulus.step_delay + self.step_stimulus.step_duration
+        toff_idx = int(toff / dt)
+
+        current[ton_idx:toff_idx] += self.step_stimulus.step_amplitude
+
+        return {self.curr_output_key(): {"time": t, "current": current}}
+
+
+class RampThresholdProtocol(sscx_protocols.RampProtocol, ProtocolMixin):
     """Step protocol based on threshold."""
 
     def __init__(
