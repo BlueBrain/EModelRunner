@@ -15,11 +15,9 @@
 # limitations under the License.
 
 import logging
-import json
 
 from bluepyopt import ephys
 
-from emodelrunner.protocols import sscx_protocols
 from emodelrunner.create_recordings import get_pairsim_recordings
 from emodelrunner.create_stimuli import load_pulses
 from emodelrunner.configuration import PackageType
@@ -28,19 +26,7 @@ from emodelrunner.protocols import synplas_protocols
 from emodelrunner.synapses.recordings import SynapseRecordingCustom
 from emodelrunner.stimuli import MultipleSteps
 from emodelrunner.features import define_efeatures
-from emodelrunner.locations import SOMA_LOC
-from emodelrunner.protocols.protocols_func import (
-    check_for_forbidden_protocol,
-    get_recordings,
-)
-from emodelrunner.protocols.reader import (
-    read_step_protocol,
-    read_step_threshold_protocol,
-    read_ramp_protocol,
-    read_ramp_threshold_protocol,
-    read_vecstim_protocol,
-    read_netstim_protocol,
-)
+from emodelrunner.protocols.reader import ProtocolParser
 from emodelrunner.synapses.create_locations import get_syn_locs
 from emodelrunner.synapses.stimuli import (
     NrnVecStimStimulusCustom,
@@ -184,7 +170,7 @@ def create_protocols_object(
     """
     # pylint: disable=unbalanced-tuple-unpacking, too-many-locals
     if package_type == PackageType.sscx:
-        protocols_dict = define_sscx_protocols(
+        protocols_dict = ProtocolParser().parse_sscx_protocols(
             prot_path,
             stochkv_det,
             mtype,
@@ -219,89 +205,6 @@ def create_protocols_object(
         "all protocols",
         protocols=protocols,
     )
-
-
-def define_sscx_protocols(
-    protocols_filepath,
-    stochkv_det=None,
-    prefix="",
-    apical_point_isec=-1,
-    syn_locs=None,
-):
-    """Define protocols.
-
-    Args:
-        protocols_filename (str): path to the protocols file
-        stochkv_det (bool): set if stochastic or deterministic
-        prefix (str): prefix used in naming responses, features, recordings, etc.
-        apical_point_isec (int): apical point section index
-            Should be given if there is "somadistanceapic" in "type"
-            of at least one of the extra recordings
-        syn_locs (list of ephys.locations.NrnPointProcessLocation):
-            locations of the synapses (if any, else None)
-
-    Returns:
-        dict containing the protocols
-    """
-    with open(protocols_filepath, "r", encoding="utf-8") as protocol_file:
-        protocol_definitions = json.load(protocol_file)
-
-    if "__comment" in protocol_definitions:
-        del protocol_definitions["__comment"]
-
-    protocols_dict = {}
-
-    for protocol_name, protocol_definition in protocol_definitions.items():
-        if protocol_name not in ["Main", "RinHoldcurrent"]:
-
-            recordings = get_recordings(
-                protocol_name, protocol_definition, prefix, apical_point_isec
-            )
-
-            # add protocol to protocol dict
-            add_protocol_to_dict(
-                protocols_dict,
-                protocol_name,
-                protocol_definition,
-                recordings,
-                stochkv_det,
-                prefix,
-                syn_locs,
-            )
-
-    if "Main" in protocol_definitions.keys():
-        protocols_dict["RinHoldcurrent"] = sscx_protocols.RatSSCxRinHoldcurrentProtocol(
-            "RinHoldCurrent",
-            rin_protocol_template=protocols_dict["Rin"],
-            holdi_precision=protocol_definitions["RinHoldcurrent"]["holdi_precision"],
-            holdi_max_depth=protocol_definitions["RinHoldcurrent"]["holdi_max_depth"],
-            prefix=prefix,
-        )
-
-        other_protocols = []
-
-        for protocol_name in protocol_definitions["Main"]["other_protocols"]:
-            if protocol_name in protocols_dict:
-                other_protocols.append(protocols_dict[protocol_name])
-
-        pre_protocols = []
-
-        if "pre_protocols" in protocol_definitions["Main"]:
-            for protocol_name in protocol_definitions["Main"]["pre_protocols"]:
-                pre_protocols.append(protocols_dict[protocol_name])
-
-        protocols_dict["Main"] = sscx_protocols.RatSSCxMainProtocol(
-            "Main",
-            rmp_protocol=protocols_dict["RMP"],
-            rinhold_protocol=protocols_dict["RinHoldcurrent"],
-            thdetect_protocol=protocols_dict["ThresholdDetection"],
-            other_protocols=other_protocols,
-            pre_protocols=pre_protocols,
-        )
-    else:
-        check_for_forbidden_protocol(protocols_dict)
-
-    return protocols_dict
 
 
 def define_thalamus_protocols(
@@ -341,93 +244,6 @@ def set_main_protocol_efeatures(protocols_dict, efeatures, prefix):
     protocols_dict["ThresholdDetection"].holding_voltage = efeatures[
         f"{prefix}.Rin.soma.v.voltage_base"
     ].exp_mean
-
-
-def add_protocol_to_dict(
-    protocols_dict,
-    protocol_name,
-    protocol_definition,
-    recordings,
-    stochkv_det,
-    prefix,
-    syn_locs=None,
-):
-    """Add protocol from protocol definition to protocols dict.
-
-    Args:
-        protocols_dict (dict): the dict to which to append the protocol
-        protocol_name (str): name of the protocol
-        protocol_definition (dict): dict containing the protocol data
-        recordings (bluepyopt.ephys.recordings.CompRecording): recordings to use with this protocol
-        stochkv_det (bool): set if stochastic or deterministic
-        prefix (str): prefix used in naming responses, features, recordings, etc.
-        syn_locs (list of ephys.locations.NrnPointProcessLocation): locations of the synapses
-            (if any, else None)
-    """
-    if "type" in protocol_definition and protocol_definition["type"] == "StepProtocol":
-        protocols_dict[protocol_name] = read_step_protocol(
-            protocol_name, sscx_protocols, protocol_definition, recordings, stochkv_det
-        )
-    elif (
-        "type" in protocol_definition
-        and protocol_definition["type"] == "StepThresholdProtocol"
-    ):
-        protocols_dict[protocol_name] = read_step_threshold_protocol(
-            protocol_name, sscx_protocols, protocol_definition, recordings, stochkv_det
-        )
-    elif (
-        "type" in protocol_definition
-        and protocol_definition["type"] == "RampThresholdProtocol"
-    ):
-        protocols_dict[protocol_name] = read_ramp_threshold_protocol(
-            protocol_name, sscx_protocols, protocol_definition, recordings
-        )
-    elif (
-        "type" in protocol_definition and protocol_definition["type"] == "RampProtocol"
-    ):
-        protocols_dict[protocol_name] = read_ramp_protocol(
-            protocol_name, protocol_definition, recordings
-        )
-    elif (
-        "type" in protocol_definition
-        and protocol_definition["type"] == "RatSSCxThresholdDetectionProtocol"
-    ):
-        protocols_dict[
-            "ThresholdDetection"
-        ] = sscx_protocols.RatSSCxThresholdDetectionProtocol(
-            "IDRest",
-            step_protocol_template=read_step_protocol(
-                "Threshold",
-                sscx_protocols,
-                protocol_definition["step_template"],
-                recordings,
-            ),
-            prefix=prefix,
-        )
-    elif "type" in protocol_definition and protocol_definition["type"] == "Vecstim":
-        protocols_dict[protocol_name] = read_vecstim_protocol(
-            protocol_name, protocol_definition, recordings, syn_locs
-        )
-    elif "type" in protocol_definition and protocol_definition["type"] == "Netstim":
-        protocols_dict[protocol_name] = read_netstim_protocol(
-            protocol_name, protocol_definition, recordings, syn_locs
-        )
-    else:
-        stimuli = []
-        for stimulus_definition in protocol_definition["stimuli"]:
-            stimuli.append(
-                ephys.stimuli.NrnSquarePulse(
-                    step_amplitude=stimulus_definition["amp"],
-                    step_delay=stimulus_definition["delay"],
-                    step_duration=stimulus_definition["duration"],
-                    location=SOMA_LOC,
-                    total_duration=stimulus_definition["totduration"],
-                )
-            )
-
-        protocols_dict[protocol_name] = ephys.protocols.SweepProtocol(
-            name=protocol_name, stimuli=stimuli, recordings=recordings
-        )
 
 
 def define_synapse_plasticity_protocols(
