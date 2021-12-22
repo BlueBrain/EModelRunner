@@ -23,9 +23,15 @@ class ProtocolParser:
     """Parses the protocol json file."""
 
     def __init__(self) -> None:
-        pass
+        """Constructor.
 
-    def load_protocol_json(self, protocols_filepath):
+        Attributes:
+            protocols_dict (dict): protocols parsed into dict.
+        """
+        self.protocols_dict = {}
+
+    @staticmethod
+    def load_protocol_json(protocols_filepath):
         """Loads the protocol json file.
 
         Args:
@@ -41,6 +47,67 @@ class ProtocolParser:
             del protocol_definitions["__comment"]
 
         return protocol_definitions
+
+    def _parse_step_and_ramp(
+        self, protocol_definition, protocol_name, recordings, stochkv_det
+    ):
+        """Parses the step and ramp protocols into self.protocols_dict."""
+        if protocol_definition["type"] == "StepProtocol":
+            self.protocols_dict[protocol_name] = read_step_protocol(
+                protocol_name,
+                sscx_protocols,
+                protocol_definition,
+                recordings,
+                stochkv_det,
+            )
+        elif protocol_definition["type"] == "StepThresholdProtocol":
+            self.protocols_dict[protocol_name] = read_step_threshold_protocol(
+                protocol_name,
+                sscx_protocols,
+                protocol_definition,
+                recordings,
+                stochkv_det,
+            )
+        elif protocol_definition["type"] == "RampThresholdProtocol":
+            self.protocols_dict[protocol_name] = read_ramp_threshold_protocol(
+                protocol_name,
+                sscx_protocols,
+                protocol_definition,
+                recordings,
+            )
+        elif protocol_definition["type"] == "RampProtocol":
+            self.protocols_dict[protocol_name] = read_ramp_protocol(
+                protocol_name, protocol_definition, recordings
+            )
+
+    def _parse_sscx_threshold_detection(self, protocol_definition, recordings, prefix):
+        """Parses the sscx threshold detection protocol into self.protocols_dict."""
+        if protocol_definition["type"] == "RatSSCxThresholdDetectionProtocol":
+            self.protocols_dict[
+                "ThresholdDetection"
+            ] = sscx_protocols.RatSSCxThresholdDetectionProtocol(
+                "IDRest",
+                step_protocol_template=read_step_protocol(
+                    "Threshold",
+                    sscx_protocols,
+                    protocol_definition["step_template"],
+                    recordings,
+                ),
+                prefix=prefix,
+            )
+
+    def _parse_vecstim_netstim(
+        self, protocol_definition, protocol_name, recordings, syn_locs
+    ):
+        """Parses the vecstim netstim protocols into self.protocols_dict."""
+        if protocol_definition["type"] == "Vecstim":
+            self.protocols_dict[protocol_name] = read_vecstim_protocol(
+                protocol_name, protocol_definition, recordings, syn_locs
+            )
+        elif protocol_definition["type"] == "Netstim":
+            self.protocols_dict[protocol_name] = read_netstim_protocol(
+                protocol_name, protocol_definition, recordings, syn_locs
+            )
 
     def parse_sscx_protocols(
         self,
@@ -65,9 +132,7 @@ class ProtocolParser:
         Returns:
             dict containing the protocols
         """
-
         protocol_definitions = self.load_protocol_json(protocols_filepath)
-        protocols_dict = {}
 
         for protocol_name, protocol_definition in protocol_definitions.items():
             if protocol_name not in ["Main", "RinHoldcurrent"]:
@@ -77,57 +142,16 @@ class ProtocolParser:
 
                 if "type" in protocol_definition:
                     # add protocol to protocol dict
-                    if protocol_definition["type"] == "StepProtocol":
-                        protocols_dict[protocol_name] = read_step_protocol(
-                            protocol_name,
-                            sscx_protocols,
-                            protocol_definition,
-                            recordings,
-                            stochkv_det,
-                        )
-                    elif protocol_definition["type"] == "StepThresholdProtocol":
-                        protocols_dict[protocol_name] = read_step_threshold_protocol(
-                            protocol_name,
-                            sscx_protocols,
-                            protocol_definition,
-                            recordings,
-                            stochkv_det,
-                        )
-                    elif protocol_definition["type"] == "RampThresholdProtocol":
-                        protocols_dict[protocol_name] = read_ramp_threshold_protocol(
-                            protocol_name,
-                            sscx_protocols,
-                            protocol_definition,
-                            recordings,
-                        )
-                    elif protocol_definition["type"] == "RampProtocol":
-                        protocols_dict[protocol_name] = read_ramp_protocol(
-                            protocol_name, protocol_definition, recordings
-                        )
-                    elif (
-                        protocol_definition["type"]
-                        == "RatSSCxThresholdDetectionProtocol"
-                    ):
-                        protocols_dict[
-                            "ThresholdDetection"
-                        ] = sscx_protocols.RatSSCxThresholdDetectionProtocol(
-                            "IDRest",
-                            step_protocol_template=read_step_protocol(
-                                "Threshold",
-                                sscx_protocols,
-                                protocol_definition["step_template"],
-                                recordings,
-                            ),
-                            prefix=prefix,
-                        )
-                    elif protocol_definition["type"] == "Vecstim":
-                        protocols_dict[protocol_name] = read_vecstim_protocol(
-                            protocol_name, protocol_definition, recordings, syn_locs
-                        )
-                    elif protocol_definition["type"] == "Netstim":
-                        protocols_dict[protocol_name] = read_netstim_protocol(
-                            protocol_name, protocol_definition, recordings, syn_locs
-                        )
+                    self._parse_step_and_ramp(
+                        protocol_definition, protocol_name, recordings, stochkv_det
+                    )
+                    self._parse_sscx_threshold_detection(
+                        protocol_definition, recordings, prefix
+                    )
+                    self._parse_vecstim_netstim(
+                        protocol_definition, protocol_name, recordings, syn_locs
+                    )
+
                 elif "type" not in protocol_definition or protocol_definition[
                     "type"
                 ] not in [
@@ -151,16 +175,16 @@ class ProtocolParser:
                             )
                         )
 
-                    protocols_dict[protocol_name] = ephys.protocols.SweepProtocol(
+                    self.protocols_dict[protocol_name] = ephys.protocols.SweepProtocol(
                         name=protocol_name, stimuli=stimuli, recordings=recordings
                     )
 
         if "Main" in protocol_definitions.keys():
-            protocols_dict[
+            self.protocols_dict[
                 "RinHoldcurrent"
             ] = sscx_protocols.RatSSCxRinHoldcurrentProtocol(
                 "RinHoldCurrent",
-                rin_protocol_template=protocols_dict["Rin"],
+                rin_protocol_template=self.protocols_dict["Rin"],
                 holdi_precision=protocol_definitions["RinHoldcurrent"][
                     "holdi_precision"
                 ],
@@ -173,27 +197,27 @@ class ProtocolParser:
             other_protocols = []
 
             for protocol_name in protocol_definitions["Main"]["other_protocols"]:
-                if protocol_name in protocols_dict:
-                    other_protocols.append(protocols_dict[protocol_name])
+                if protocol_name in self.protocols_dict:
+                    other_protocols.append(self.protocols_dict[protocol_name])
 
             pre_protocols = []
 
             if "pre_protocols" in protocol_definitions["Main"]:
                 for protocol_name in protocol_definitions["Main"]["pre_protocols"]:
-                    pre_protocols.append(protocols_dict[protocol_name])
+                    pre_protocols.append(self.protocols_dict[protocol_name])
 
-            protocols_dict["Main"] = sscx_protocols.RatSSCxMainProtocol(
+            self.protocols_dict["Main"] = sscx_protocols.RatSSCxMainProtocol(
                 "Main",
-                rmp_protocol=protocols_dict["RMP"],
-                rinhold_protocol=protocols_dict["RinHoldcurrent"],
-                thdetect_protocol=protocols_dict["ThresholdDetection"],
+                rmp_protocol=self.protocols_dict["RMP"],
+                rinhold_protocol=self.protocols_dict["RinHoldcurrent"],
+                thdetect_protocol=self.protocols_dict["ThresholdDetection"],
                 other_protocols=other_protocols,
                 pre_protocols=pre_protocols,
             )
         else:
-            check_for_forbidden_protocol(protocols_dict)
+            check_for_forbidden_protocol(self.protocols_dict)
 
-        return protocols_dict
+        return self.protocols_dict
 
 
 def read_ramp_threshold_protocol(
