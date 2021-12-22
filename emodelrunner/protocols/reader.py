@@ -25,7 +25,6 @@ class ProtocolParser:
     def __init__(self) -> None:
         pass
 
-
     def load_protocol_json(self, protocols_filepath):
         """Loads the protocol json file.
 
@@ -42,7 +41,6 @@ class ProtocolParser:
             del protocol_definitions["__comment"]
 
         return protocol_definitions
-
 
     def parse_sscx_protocols(
         self,
@@ -77,56 +75,70 @@ class ProtocolParser:
                     protocol_name, protocol_definition, prefix, apical_point_isec
                 )
 
-                # add protocol to protocol dict
-                if "type" in protocol_definition and protocol_definition["type"] == "StepProtocol":
-                    protocols_dict[protocol_name] = read_step_protocol(
-                        protocol_name, sscx_protocols, protocol_definition, recordings, stochkv_det
-                    )
-                elif (
-                    "type" in protocol_definition
-                    and protocol_definition["type"] == "StepThresholdProtocol"
-                ):
-                    protocols_dict[protocol_name] = read_step_threshold_protocol(
-                        protocol_name, sscx_protocols, protocol_definition, recordings, stochkv_det
-                    )
-                elif (
-                    "type" in protocol_definition
-                    and protocol_definition["type"] == "RampThresholdProtocol"
-                ):
-                    protocols_dict[protocol_name] = read_ramp_threshold_protocol(
-                        protocol_name, sscx_protocols, protocol_definition, recordings
-                    )
-                elif (
-                    "type" in protocol_definition and protocol_definition["type"] == "RampProtocol"
-                ):
-                    protocols_dict[protocol_name] = read_ramp_protocol(
-                        protocol_name, protocol_definition, recordings
-                    )
-                elif (
-                    "type" in protocol_definition
-                    and protocol_definition["type"] == "RatSSCxThresholdDetectionProtocol"
-                ):
-                    protocols_dict[
-                        "ThresholdDetection"
-                    ] = sscx_protocols.RatSSCxThresholdDetectionProtocol(
-                        "IDRest",
-                        step_protocol_template=read_step_protocol(
-                            "Threshold",
+                if "type" in protocol_definition:
+                    # add protocol to protocol dict
+                    if protocol_definition["type"] == "StepProtocol":
+                        protocols_dict[protocol_name] = read_step_protocol(
+                            protocol_name,
                             sscx_protocols,
-                            protocol_definition["step_template"],
+                            protocol_definition,
                             recordings,
-                        ),
-                        prefix=prefix,
-                    )
-                elif "type" in protocol_definition and protocol_definition["type"] == "Vecstim":
-                    protocols_dict[protocol_name] = read_vecstim_protocol(
-                        protocol_name, protocol_definition, recordings, syn_locs
-                    )
-                elif "type" in protocol_definition and protocol_definition["type"] == "Netstim":
-                    protocols_dict[protocol_name] = read_netstim_protocol(
-                        protocol_name, protocol_definition, recordings, syn_locs
-                    )
-                else:
+                            stochkv_det,
+                        )
+                    elif protocol_definition["type"] == "StepThresholdProtocol":
+                        protocols_dict[protocol_name] = read_step_threshold_protocol(
+                            protocol_name,
+                            sscx_protocols,
+                            protocol_definition,
+                            recordings,
+                            stochkv_det,
+                        )
+                    elif protocol_definition["type"] == "RampThresholdProtocol":
+                        protocols_dict[protocol_name] = read_ramp_threshold_protocol(
+                            protocol_name,
+                            sscx_protocols,
+                            protocol_definition,
+                            recordings,
+                        )
+                    elif protocol_definition["type"] == "RampProtocol":
+                        protocols_dict[protocol_name] = read_ramp_protocol(
+                            protocol_name, protocol_definition, recordings
+                        )
+                    elif (
+                        protocol_definition["type"]
+                        == "RatSSCxThresholdDetectionProtocol"
+                    ):
+                        protocols_dict[
+                            "ThresholdDetection"
+                        ] = sscx_protocols.RatSSCxThresholdDetectionProtocol(
+                            "IDRest",
+                            step_protocol_template=read_step_protocol(
+                                "Threshold",
+                                sscx_protocols,
+                                protocol_definition["step_template"],
+                                recordings,
+                            ),
+                            prefix=prefix,
+                        )
+                    elif protocol_definition["type"] == "Vecstim":
+                        protocols_dict[protocol_name] = read_vecstim_protocol(
+                            protocol_name, protocol_definition, recordings, syn_locs
+                        )
+                    elif protocol_definition["type"] == "Netstim":
+                        protocols_dict[protocol_name] = read_netstim_protocol(
+                            protocol_name, protocol_definition, recordings, syn_locs
+                        )
+                elif "type" not in protocol_definition or protocol_definition[
+                    "type"
+                ] not in [
+                    "StepProtocol",
+                    "StepThresholdProtocol",
+                    "RampThresholdProtocol",
+                    "RampProtocol",
+                    "RatSSCxThresholdDetectionProtocol",
+                    "Vecstim",
+                    "Netstim",
+                ]:
                     stimuli = []
                     for stimulus_definition in protocol_definition["stimuli"]:
                         stimuli.append(
@@ -144,11 +156,17 @@ class ProtocolParser:
                     )
 
         if "Main" in protocol_definitions.keys():
-            protocols_dict["RinHoldcurrent"] = sscx_protocols.RatSSCxRinHoldcurrentProtocol(
+            protocols_dict[
+                "RinHoldcurrent"
+            ] = sscx_protocols.RatSSCxRinHoldcurrentProtocol(
                 "RinHoldCurrent",
                 rin_protocol_template=protocols_dict["Rin"],
-                holdi_precision=protocol_definitions["RinHoldcurrent"]["holdi_precision"],
-                holdi_max_depth=protocol_definitions["RinHoldcurrent"]["holdi_max_depth"],
+                holdi_precision=protocol_definitions["RinHoldcurrent"][
+                    "holdi_precision"
+                ],
+                holdi_max_depth=protocol_definitions["RinHoldcurrent"][
+                    "holdi_max_depth"
+                ],
                 prefix=prefix,
             )
 
