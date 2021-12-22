@@ -15,7 +15,6 @@
 # limitations under the License.
 
 
-import numpy
 import warnings
 import collections
 import copy
@@ -139,7 +138,7 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
         rmp = self.rmp_efeature.calculate_feature(rmp_response)
         rmp_score = self.rmp_efeature.calculate_score(rmp_response)
 
-        print("RMP is {}, score is {}".format(rmp, rmp_score))
+        print(f"RMP is {rmp}, score is {rmp_score}")
 
         if (rmp_score <= self.rmp_score_threshold) or (not self.use_rmp_rin_thresholds):
             # Find Rin and holding current
@@ -211,7 +210,7 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
                             )
 
                             preobj = fitcalc.calculate_scores(responses)
-                            preobj_val = numpy.array(preobj.values())
+                            preobj_val = np.array(preobj.values())
 
                             if any(preobj_val > self.preprot_score_threshold):
                                 continue_others = False
@@ -280,11 +279,9 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
                 rin_noholding_response
             )
 
-        print("Rin without holdi is {}".format(rin_noholding))
+        print(f"Rin without holdi is {rin_noholding}")
 
-        print(
-            "Searching holdi for vhold = {}".format(self.voltagebase_efeature.exp_mean)
-        )
+        print(f"Searching holdi for vhold = {self.voltagebase_efeature.exp_mean}")
         # Search holding current
         holdi = self.search_holdi(
             cell_model,
@@ -662,7 +659,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
             )
 
             spike_count = feature.calculate_feature(response)
-            print("{} spikes with I = {}".format(spike_count, step_current))
+            print(f"{spike_count} spikes with I = {step_current}")
         return spike_count >= 1
 
     def binsearch_spike_threshold(
@@ -724,7 +721,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         upper_bound=None,
     ):
         """Find the current step spiking threshold."""
-        step_currents = numpy.linspace(lower_bound, upper_bound, num=self.short_steps)
+        step_currents = np.linspace(lower_bound, upper_bound, num=self.short_steps)
 
         if len(step_currents) == 0:
             return None
@@ -768,7 +765,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
             lower_bound=lower_bound,
             upper_bound=upper_bound,
         )
-        print("Threshold current from {} is {}".format(holdi, threshold_current))
+        print(f"Threshold current from {holdi} is {threshold_current}")
         return threshold_current
 
 
@@ -799,7 +796,7 @@ class StepThresholdProtocol(ephys.protocols.StepProtocol, ProtocolMixin):
 
     def run(self, cell_model, param_values, sim=None, isolate=None):
         """Run protocol."""
-        print("Running protocol {}".format(self.name))
+        print(f"Running protocol {self.name}")
         responses = {}
         if not hasattr(cell_model, "threshold_current_hyp"):
             raise Exception(
