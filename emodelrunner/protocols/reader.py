@@ -49,13 +49,13 @@ class ProtocolParser:
         return protocol_definitions
 
     def _parse_step_and_ramp(
-        self, protocol_definition, protocol_name, recordings, stochkv_det
+        self, protocol_definition, protocol_name, protocol_module, recordings, stochkv_det
     ):
         """Parses the step and ramp protocols into self.protocols_dict."""
         if protocol_definition["type"] == "StepProtocol":
             self.protocols_dict[protocol_name] = read_step_protocol(
                 protocol_name,
-                sscx_protocols,
+                protocol_module,
                 protocol_definition,
                 recordings,
                 stochkv_det,
@@ -63,7 +63,7 @@ class ProtocolParser:
         elif protocol_definition["type"] == "StepThresholdProtocol":
             self.protocols_dict[protocol_name] = read_step_threshold_protocol(
                 protocol_name,
-                sscx_protocols,
+                protocol_module,
                 protocol_definition,
                 recordings,
                 stochkv_det,
@@ -71,7 +71,7 @@ class ProtocolParser:
         elif protocol_definition["type"] == "RampThresholdProtocol":
             self.protocols_dict[protocol_name] = read_ramp_threshold_protocol(
                 protocol_name,
-                sscx_protocols,
+                protocol_module,
                 protocol_definition,
                 recordings,
             )
@@ -182,7 +182,7 @@ class ProtocolParser:
                 if "type" in protocol_definition:
                     # add protocol to protocol dict
                     self._parse_step_and_ramp(
-                        protocol_definition, protocol_name, recordings, stochkv_det
+                        protocol_definition, protocol_name, sscx_protocols, recordings, stochkv_det
                     )
                     self._parse_sscx_threshold_detection(
                         protocol_definition, recordings, prefix
