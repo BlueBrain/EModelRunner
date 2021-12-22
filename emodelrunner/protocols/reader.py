@@ -109,6 +109,39 @@ class ProtocolParser:
                 protocol_name, protocol_definition, recordings, syn_locs
             )
 
+    def _parse_sscx_main(self, protocol_definitions, prefix):
+        """Parses the main sscx protocol into self.protocols_dict."""
+        self.protocols_dict[
+            "RinHoldcurrent"
+        ] = sscx_protocols.RatSSCxRinHoldcurrentProtocol(
+            "RinHoldCurrent",
+            rin_protocol_template=self.protocols_dict["Rin"],
+            holdi_precision=protocol_definitions["RinHoldcurrent"]["holdi_precision"],
+            holdi_max_depth=protocol_definitions["RinHoldcurrent"]["holdi_max_depth"],
+            prefix=prefix,
+        )
+
+        other_protocols = []
+
+        for protocol_name in protocol_definitions["Main"]["other_protocols"]:
+            if protocol_name in self.protocols_dict:
+                other_protocols.append(self.protocols_dict[protocol_name])
+
+        pre_protocols = []
+
+        if "pre_protocols" in protocol_definitions["Main"]:
+            for protocol_name in protocol_definitions["Main"]["pre_protocols"]:
+                pre_protocols.append(self.protocols_dict[protocol_name])
+
+        self.protocols_dict["Main"] = sscx_protocols.RatSSCxMainProtocol(
+            "Main",
+            rmp_protocol=self.protocols_dict["RMP"],
+            rinhold_protocol=self.protocols_dict["RinHoldcurrent"],
+            thdetect_protocol=self.protocols_dict["ThresholdDetection"],
+            other_protocols=other_protocols,
+            pre_protocols=pre_protocols,
+        )
+
     def parse_sscx_protocols(
         self,
         protocols_filepath,
@@ -134,6 +167,12 @@ class ProtocolParser:
         """
         protocol_definitions = self.load_protocol_json(protocols_filepath)
 
+        # fmt: off
+        protocols_with_type = [
+            "StepProtocol", "StepThresholdProtocol", "RampThresholdProtocol",
+            "RampProtocol", "RatSSCxThresholdDetectionProtocol", "Vecstim", "Netstim"]
+        # fmt: on
+
         for protocol_name, protocol_definition in protocol_definitions.items():
             if protocol_name not in ["Main", "RinHoldcurrent"]:
                 recordings = get_recordings(
@@ -152,17 +191,10 @@ class ProtocolParser:
                         protocol_definition, protocol_name, recordings, syn_locs
                     )
 
-                elif "type" not in protocol_definition or protocol_definition[
-                    "type"
-                ] not in [
-                    "StepProtocol",
-                    "StepThresholdProtocol",
-                    "RampThresholdProtocol",
-                    "RampProtocol",
-                    "RatSSCxThresholdDetectionProtocol",
-                    "Vecstim",
-                    "Netstim",
-                ]:
+                elif (
+                    "type" not in protocol_definition
+                    or protocol_definition["type"] not in protocols_with_type
+                ):
                     stimuli = []
                     for stimulus_definition in protocol_definition["stimuli"]:
                         stimuli.append(
@@ -180,40 +212,7 @@ class ProtocolParser:
                     )
 
         if "Main" in protocol_definitions.keys():
-            self.protocols_dict[
-                "RinHoldcurrent"
-            ] = sscx_protocols.RatSSCxRinHoldcurrentProtocol(
-                "RinHoldCurrent",
-                rin_protocol_template=self.protocols_dict["Rin"],
-                holdi_precision=protocol_definitions["RinHoldcurrent"][
-                    "holdi_precision"
-                ],
-                holdi_max_depth=protocol_definitions["RinHoldcurrent"][
-                    "holdi_max_depth"
-                ],
-                prefix=prefix,
-            )
-
-            other_protocols = []
-
-            for protocol_name in protocol_definitions["Main"]["other_protocols"]:
-                if protocol_name in self.protocols_dict:
-                    other_protocols.append(self.protocols_dict[protocol_name])
-
-            pre_protocols = []
-
-            if "pre_protocols" in protocol_definitions["Main"]:
-                for protocol_name in protocol_definitions["Main"]["pre_protocols"]:
-                    pre_protocols.append(self.protocols_dict[protocol_name])
-
-            self.protocols_dict["Main"] = sscx_protocols.RatSSCxMainProtocol(
-                "Main",
-                rmp_protocol=self.protocols_dict["RMP"],
-                rinhold_protocol=self.protocols_dict["RinHoldcurrent"],
-                thdetect_protocol=self.protocols_dict["ThresholdDetection"],
-                other_protocols=other_protocols,
-                pre_protocols=pre_protocols,
-            )
+            self._parse_sscx_main(protocol_definitions, prefix)
         else:
             check_for_forbidden_protocol(self.protocols_dict)
 
