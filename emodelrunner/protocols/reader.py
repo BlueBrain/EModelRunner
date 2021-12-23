@@ -652,14 +652,26 @@ def read_step_threshold_protocol(
             step_definition["stochkv_det"] if "stochkv_det" in step_definition else None
         )
 
-    return protocol_module.StepThresholdProtocol(
+    if protocol_module is thalamus_protocols:
+        return protocol_module.StepThresholdProtocol(
         name=protocol_name,
-        step_stimuli=step_stimuli,
+        step_stimulus=step_stimuli[0],
         holding_stimulus=holding_stimulus,
         thresh_perc=step_definition["thresh_perc"],
         recordings=recordings,
         stochkv_det=stochkv_det,
     )
+    elif protocol_module is sscx_protocols:
+        return protocol_module.StepThresholdProtocol(
+            name=protocol_name,
+            step_stimuli=step_stimuli,
+            holding_stimulus=holding_stimulus,
+            thresh_perc=step_definition["thresh_perc"],
+            recordings=recordings,
+            stochkv_det=stochkv_det,
+        )
+    else:
+        raise ValueError(f"unsupported protocol module: {protocol_module}")
 
 
 def read_vecstim_protocol(protocol_name, protocol_definition, recordings, syn_locs):
