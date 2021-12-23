@@ -356,11 +356,8 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         """Find the holding current to hold cell at holding_voltage."""
         holdi_estimate = float(holding_voltage - rmp) / rin_noholding
         # holdi_estimate = 0.11
-        print(
-            "Holdi estimate is {} with target vhold {}, rmp {}, Rin {}".format(
-                holdi_estimate, holding_voltage, rmp, rin_noholding
-            )
-        )
+        print(f"Holdi estimate is {holdi_estimate} with target vhold {holding_voltage}"
+              f", rmp {rmp}, Rin {rin_noholding}")
 
         holdi = self.binsearch_holdi(
             holding_voltage,
@@ -391,11 +388,7 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         middle_bound = upper_bound - abs(upper_bound - lower_bound) / 2
 
         if depth > max_depth:
-            print(
-                "Search holdi reached max depth, returning with ihold {}".format(
-                    middle_bound
-                )
-            )
+            print(f"Search holdi reached max depth, returning with ihold {middle_bound}")
             return middle_bound
         else:
             middle_voltage = self.voltage_base(
@@ -407,7 +400,7 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
                 return None
 
             if abs(middle_voltage - holding_voltage) < precision:
-                print("Holdi search reached precision of {}".format(precision))
+                print(f"Holdi search reached precision of {precision}")
                 return middle_bound
 
             elif middle_voltage > holding_voltage:
@@ -551,8 +544,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         )
 
         print(
-            "Max threshold current from vhold %d: %.6g"
-            % (self.holding_voltage, max_threshold_current)
+            f"Max threshold current from vhold {self.holding_voltage}: {max_threshold_current}"
         )
 
         return max_threshold_current
