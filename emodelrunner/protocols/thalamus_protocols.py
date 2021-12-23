@@ -917,6 +917,33 @@ class StepProtocolCustom(ephys.protocols.StepProtocol, ProtocolMixin):
 
         return {self.curr_output_key(): {"time": t, "current": current}}
 
+    @property
+    def stim_start(self):
+        """Time stimulus starts.
+
+        Returns:
+            the time at which the stimulus starts (ms)
+        """
+        return self.step_stimulus.step_delay
+
+    @property
+    def stim_end(self):
+        """Time stimulus ends.
+
+        Returns:
+            the time at which the stimulus ends (ms)
+        """
+        return self.step_stimulus.step_delay + self.step_stimulus.step_duration
+
+    @property
+    def step_amplitude(self):
+        """Stimuli amplitude.
+
+        Returns:
+            the amplitude of the step stimuli (nA)
+        """
+        return self.step_stimulus.step_amplitude
+
 
 class RampThresholdProtocol(sscx_protocols.RampProtocol, ProtocolMixin):
     """Step protocol based on threshold."""
