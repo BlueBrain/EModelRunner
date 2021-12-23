@@ -769,77 +769,6 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         return threshold_current
 
 
-class StepThresholdProtocol(ephys.protocols.StepProtocol, ProtocolMixin):
-    """Step protocol based on threshold."""
-
-    def __init__(
-        self,
-        name,
-        thresh_perc=None,
-        step_stimulus=None,
-        holding_stimulus=None,
-        recordings=None,
-        cvode_active=None,
-        stochkv_det=None,
-    ):
-        """Constructor."""
-        super(StepThresholdProtocol, self).__init__(
-            name,
-            step_stimulus=step_stimulus,
-            holding_stimulus=holding_stimulus,
-            recordings=recordings,
-            cvode_active=cvode_active,
-        )
-
-        self.thresh_perc = thresh_perc
-        self.stochkv_det = stochkv_det
-
-    def run(self, cell_model, param_values, sim=None, isolate=None):
-        """Run protocol."""
-        print(f"Running protocol {self.name}")
-        responses = {}
-        if not hasattr(cell_model, "threshold_current_hyp"):
-            raise Exception(
-                "StepThresholdProtocol: running on cell_model "
-                "that doesnt have threshold current value set: %s",
-                str(cell_model),
-            )
-
-        if "hyp" in self.name:
-            self.holding_stimulus.step_amplitude = cell_model.holding_current_hyp
-
-            self.step_stimulus.step_amplitude = cell_model.threshold_current_hyp * (
-                float(self.thresh_perc) / 100
-            )
-
-        else:
-            self.holding_stimulus.step_amplitude = cell_model.holding_current_dep
-
-            self.step_stimulus.step_amplitude = cell_model.threshold_current_dep * (
-                float(self.thresh_perc) / 100
-            )
-
-        if self.stochkv_det is not None and not self.stochkv_det:
-            for mechanism in cell_model.mechanisms:
-                if "Stoch" in mechanism.prefix:
-                    mechanism.deterministic = False
-            self.cvode_active = False
-
-        responses.update(
-            super(StepThresholdProtocol, self).run(
-                cell_model, param_values, sim=sim, isolate=isolate
-            )
-        )
-
-        if self.stochkv_det is not None and not self.stochkv_det:
-            for mechanism in cell_model.mechanisms:
-                if "Stoch" in mechanism.prefix:
-                    mechanism.deterministic = True
-            self.cvode_active = True
-
-        return responses
-
-
 class StepProtocolCustom(ephys.protocols.StepProtocol, ProtocolMixin):
     """Step protocol with custom options to turn stochkv_det on or off."""
 
@@ -943,6 +872,77 @@ class StepProtocolCustom(ephys.protocols.StepProtocol, ProtocolMixin):
             the amplitude of the step stimuli (nA)
         """
         return self.step_stimulus.step_amplitude
+
+
+class StepThresholdProtocol(StepProtocolCustom, ProtocolMixin):
+    """Step protocol based on threshold."""
+
+    def __init__(
+        self,
+        name,
+        thresh_perc=None,
+        step_stimulus=None,
+        holding_stimulus=None,
+        recordings=None,
+        cvode_active=None,
+        stochkv_det=None,
+    ):
+        """Constructor."""
+        super(StepThresholdProtocol, self).__init__(
+            name,
+            step_stimulus=step_stimulus,
+            holding_stimulus=holding_stimulus,
+            recordings=recordings,
+            cvode_active=cvode_active,
+        )
+
+        self.thresh_perc = thresh_perc
+        self.stochkv_det = stochkv_det
+
+    def run(self, cell_model, param_values, sim=None, isolate=None):
+        """Run protocol."""
+        print(f"Running protocol {self.name}")
+        responses = {}
+        if not hasattr(cell_model, "threshold_current_hyp"):
+            raise Exception(
+                "StepThresholdProtocol: running on cell_model "
+                "that doesnt have threshold current value set: %s",
+                str(cell_model),
+            )
+
+        if "hyp" in self.name:
+            self.holding_stimulus.step_amplitude = cell_model.holding_current_hyp
+
+            self.step_stimulus.step_amplitude = cell_model.threshold_current_hyp * (
+                float(self.thresh_perc) / 100
+            )
+
+        else:
+            self.holding_stimulus.step_amplitude = cell_model.holding_current_dep
+
+            self.step_stimulus.step_amplitude = cell_model.threshold_current_dep * (
+                float(self.thresh_perc) / 100
+            )
+
+        if self.stochkv_det is not None and not self.stochkv_det:
+            for mechanism in cell_model.mechanisms:
+                if "Stoch" in mechanism.prefix:
+                    mechanism.deterministic = False
+            self.cvode_active = False
+
+        responses.update(
+            super(StepThresholdProtocol, self).run(
+                cell_model, param_values, sim=sim, isolate=isolate
+            )
+        )
+
+        if self.stochkv_det is not None and not self.stochkv_det:
+            for mechanism in cell_model.mechanisms:
+                if "Stoch" in mechanism.prefix:
+                    mechanism.deterministic = True
+            self.cvode_active = True
+
+        return responses
 
 
 class RampThresholdProtocol(sscx_protocols.RampProtocol, ProtocolMixin):
