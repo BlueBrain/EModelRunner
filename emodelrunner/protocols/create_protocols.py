@@ -194,7 +194,10 @@ def create_protocols_object(
             mtype,
         )
 
-        set_main_protocol_efeatures(protocols_dict, efeatures, mtype)
+        if package_type == PackageType.sscx:
+            set_sscx_main_protocol_efeatures(protocols_dict, efeatures, prefix=mtype)
+        elif package_type == PackageType.thalamus:
+            set_thalamus_main_protocol_efeatures(protocols_dict, efeatures, prefix=mtype)
 
         protocols = [protocols_dict["Main"]]
     else:
@@ -206,7 +209,7 @@ def create_protocols_object(
     )
 
 
-def set_main_protocol_efeatures(protocols_dict, efeatures, prefix):
+def set_sscx_main_protocol_efeatures(protocols_dict, efeatures, prefix):
     """Set the efeatures of the main protocol.
 
     Args:
@@ -232,6 +235,47 @@ def set_main_protocol_efeatures(protocols_dict, efeatures, prefix):
     protocols_dict["ThresholdDetection"].holding_voltage = efeatures[
         f"{prefix}.Rin.soma.v.voltage_base"
     ].exp_mean
+
+
+def set_thalamus_main_protocol_efeatures(protocols_dict, efeatures, prefix):
+    """Set the efeatures of the main thalamus protocol.
+
+    Args:
+        protocols_dict (dict): contains all protocols to be run
+            If this function is called, should contain the MainProtocol
+            and the associated protocols (RinHoldCurrent, ThresholdDetection)
+        efeatures (dict): contains the efeatures
+        prefix (str): prefix used in naming responses, features, recordings, etc.
+    """
+    protocols_dict['Main'].rmp_efeature = efeatures[f'{prefix}.RMP.soma.v.steady_state_voltage_stimend']
+
+    try:
+        protocols_dict['Main'].rin_efeature_dep = \
+        efeatures[f'{prefix}.Rin_dep.soma.v.ohmic_input_resistance_vb_ssse']
+    except KeyError:
+        pass
+    try:
+        protocols_dict['Main'].rin_efeature_dep.stimulus_current = protocols_dict[
+        'Main'].rinhold_protocol_dep.rin_protocol_template.\
+        step_stimulus.step_amplitude
+    except AttributeError:
+        pass
+
+    protocols_dict['Main'].rin_efeature_hyp = \
+        efeatures[f'{prefix}.Rin_hyp.soma.v.ohmic_input_resistance_vb_ssse']
+
+    protocols_dict['Main'].rin_efeature_hyp.stimulus_current = protocols_dict[
+        'Main'].rinhold_protocol_hyp.rin_protocol_template.\
+        step_stimulus.step_amplitude
+
+    try:
+        protocols_dict['RinHoldcurrent_dep'].voltagebase_efeature = efeatures[f'{prefix}.Rin_dep.soma.v.voltage_base']
+        protocols_dict['ThresholdDetection_dep'].holding_voltage = efeatures[f'{prefix}.Rin_dep.soma.v.voltage_base'].exp_mean
+
+    except KeyError:
+        pass
+    protocols_dict['RinHoldcurrent_hyp'].voltagebase_efeature = efeatures[f'{prefix}.Rin_hyp.soma.v.voltage_base']
+    protocols_dict['ThresholdDetection_hyp'].holding_voltage = efeatures[f'{prefix}.Rin_hyp.soma.v.voltage_base'].exp_mean
 
 
 def define_synapse_plasticity_protocols(
