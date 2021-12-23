@@ -937,7 +937,7 @@ class StepThresholdProtocol(StepProtocolCustom, ProtocolMixin):
         return responses
 
 
-class RampThresholdProtocol(sscx_protocols.RampProtocol, ProtocolMixin):
+class RampThresholdProtocol(sscx_protocols.RampThresholdProtocol, ProtocolMixin):
     """Step protocol based on threshold."""
 
     def __init__(
