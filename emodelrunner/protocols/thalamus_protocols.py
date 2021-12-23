@@ -356,8 +356,10 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         """Find the holding current to hold cell at holding_voltage."""
         holdi_estimate = float(holding_voltage - rmp) / rin_noholding
         # holdi_estimate = 0.11
-        print(f"Holdi estimate is {holdi_estimate} with target vhold {holding_voltage}"
-              f", rmp {rmp}, Rin {rin_noholding}")
+        print(
+            f"Holdi estimate is {holdi_estimate} with target vhold {holding_voltage}"
+            f", rmp {rmp}, Rin {rin_noholding}"
+        )
 
         holdi = self.binsearch_holdi(
             holding_voltage,
@@ -388,7 +390,9 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         middle_bound = upper_bound - abs(upper_bound - lower_bound) / 2
 
         if depth > max_depth:
-            print(f"Search holdi reached max depth, returning with ihold {middle_bound}")
+            print(
+                f"Search holdi reached max depth, returning with ihold {middle_bound}"
+            )
             return middle_bound
         else:
             middle_voltage = self.voltage_base(
@@ -935,6 +939,35 @@ class StepThresholdProtocol(StepProtocolCustom, ProtocolMixin):
             self.cvode_active = True
 
         return responses
+
+    def generate_current(self, threshold_current, holding_current, dt=0.1):
+        """Return current time series.
+
+        Args:
+            threshold_current (float): the threshold current (nA)
+            holding_current (float): the holding current (nA)
+            dt (float): timestep of the generated currents (ms)
+
+        Returns:
+            dict containing the generated current
+        """
+        # pylint: disable=signature-differs
+        total_duration = self.step_stimulus.total_duration
+
+        t = np.arange(0.0, total_duration, dt)
+        current = np.full(t.shape, holding_current, dtype="float64")
+
+        ton = self.step_stimulus.step_delay
+        ton_idx = int(ton / dt)
+
+        toff = self.step_stimulus.step_delay + self.step_stimulus.step_duration
+        toff_idx = int(toff / dt)
+
+        current[ton_idx:toff_idx] += threshold_current * (
+            float(self.thresh_perc) / 100.0
+        )
+
+        return {self.curr_output_key(): {"time": t, "current": current}}
 
 
 class RampThresholdProtocol(sscx_protocols.RampThresholdProtocol, ProtocolMixin):
