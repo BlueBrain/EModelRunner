@@ -26,7 +26,7 @@ It consists of two main modules:
 - one module designed to show the synapse plasticity phenomenon. It has the following features:
 
   - ability to run post-synaptic cell with pre-recorded output of pre-synaptic cell
-  - ability to run 'true' pair simulations, where both the pre-synaptic and the post-synaptic cells are run at the same time
+  - ability to run 'full' pair simulations, where both the pre-synaptic and the post-synaptic cells are run at the same time
   - analysis tool to compute the change of EPSPs
 
 - one module designed to run the cells from the SomatoSensoryCortex portal, with the following features:
@@ -122,7 +122,7 @@ Running the simulation should be as easy as::
 Where ``config_path`` is the path to a specific config file. You will find the available config files in the config folder.
 It will run the post-synaptic cell using pre-defined spike train of the pre-synaptic cell to stimulate the synapses.
 
-You can also do a true pair simulation, where both the pre-synaptic and the post-synaptic cells. 
+You can also do a full pair simulation, where both the pre-synaptic and the post-synaptic cells are simulated. 
 This should be as easy as::
 
     sh run_pairsim.sh config_path
@@ -134,9 +134,9 @@ If the precell has been simulated too, its output is stored as ``output_precell_
 
 Please, bear in mind that, since it is difficult to make the pre-synaptic cell spike at exactly the same time as in the pre-recorded spike-train file
 (especially when the pre-synaptic cell has to spike multiple times in a row),
-the results of the 'true pair' simulation might differ slightly from those of the 'post-synaptic cell only' simulation.
+the results of the 'full pair' simulation might differ slightly from those of the 'post-synaptic cell only' simulation.
 
-All the config files are working for both the 'post-synaptic cell only' and the 'true pair' simulations.
+All the config files are working for both the 'post-synaptic cell only' and the 'full pair' simulations.
 
 
 Analyse the output
