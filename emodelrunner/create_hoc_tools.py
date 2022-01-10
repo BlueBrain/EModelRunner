@@ -16,15 +16,15 @@
 
 # pylint: disable=too-many-arguments
 from datetime import datetime
-
 import jinja2
 
-import bluepyopt
 from bluepyopt.ephys.create_hoc import (
     _generate_parameters,
     _generate_channels_by_location,
     _generate_reinitrng,
 )
+
+from emodelrunner import __version__
 
 
 class HocStimuliCreator:
@@ -561,7 +561,7 @@ def create_hoc(
             del global_params[ignored_global]
 
     if not disable_banner:
-        banner = f"Created by BluePyOpt({bluepyopt.__version__}) at {datetime.now()}"
+        banner = f"Created by EModelRunner({__version__}) at {datetime.now()}"
     else:
         banner = None
 
