@@ -224,6 +224,48 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
 
         return responses
 
+    def generate_current(self, threshold_current=None, holding_current=None, dt=0.1):
+        """Generate current for all protocols except rin and threshold detection.
+
+        Args:
+            threshold_current (float): the threshold current (nA)
+            holding_current (float): the holding current (nA)
+            dt (float): timestep of the generated currents (ms)
+
+        Returns:
+            dict containing the generated currents
+        """
+        currents = {}
+
+        # rmp is step protocol
+        currents.update(
+            self.rmp_protocol.generate_current(
+                threshold_current=threshold_current,
+                holding_current=holding_current,
+                dt=dt,
+            )
+        )
+
+        for pre_protocol in self.pre_protocols:
+            currents.update(
+                pre_protocol.generate_current(
+                    threshold_current=threshold_current,
+                    holding_current=holding_current,
+                    dt=dt,
+                )
+            )
+
+        for other_protocol in self.other_protocols:
+            currents.update(
+                other_protocol.generate_current(
+                    threshold_current=threshold_current,
+                    holding_current=holding_current,
+                    dt=dt,
+                )
+            )
+
+        return currents
+
 
 class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
     """IDRest protocol to fit RatSSCx neuron ephys parameters."""
@@ -643,7 +685,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
                 )
 
             response = protocol.run(cell_model, param_values, sim=sim)
-
+            print(protocol)
             feature = ephys.efeatures.eFELFeature(
                 name="ThresholdDetection_hyp.Spikecount",
                 efel_feature_name="Spikecount_stimint",
@@ -963,9 +1005,10 @@ class StepThresholdProtocol(StepProtocolCustom, ProtocolMixin):
         toff = self.step_stimulus.step_delay + self.step_stimulus.step_duration
         toff_idx = int(toff / dt)
 
-        current[ton_idx:toff_idx] += threshold_current * (
-            float(self.thresh_perc) / 100.0
-        )
+        if threshold_current is not None:
+            current[ton_idx:toff_idx] += threshold_current * (
+                float(self.thresh_perc) / 100.0
+            )
 
         return {self.curr_output_key(): {"time": t, "current": current}}
 
