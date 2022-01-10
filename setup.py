@@ -27,12 +27,11 @@ if sys.version_info < (3, 7):
 with open("README.rst", encoding="utf-8") as f:
     README = f.read()
 
-VERSION = imp.load_source("", "emodelrunner/version.py").__version__
-
 setup(
     name="EModelRunner",
     author="Blue Brain Project, EPFL",
-    version=VERSION,
+    use_scm_version=True,
+    setup_requires=["setuptools_scm"],
     description="Runs cells from Blue Brain Project cell packages, such as sscx, synapse plasticity, etc.",
     long_description=README,
     long_description_content_type="text/x-rst",
@@ -51,6 +50,7 @@ setup(
         "matplotlib",
         "schema",
         "Pebble>=4.3.10",
+        "importlib_metadata; python_version<'3.8'",
     ],
     packages=find_packages(),
     python_requires=">=3.7",

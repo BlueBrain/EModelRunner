@@ -15,7 +15,12 @@ import sys
 
 sys.path.insert(0, os.path.abspath("."))
 
-from pkg_resources import get_distribution
+try:
+    # available since py3.8+
+    from importlib.metadata import version as get_version
+except ModuleNotFoundError:
+    from importlib_metadata import version as get_version
+
 from pathlib import Path
 import shutil
 
@@ -29,11 +34,8 @@ shutil.copy("images/GUI_screenshot.png", "doc/source/images/GUI_screenshot.png")
 
 project = "EModelRunner"
 
-# The short X.Y version
-version = get_distribution("emodelrunner").version
-
-# The full version, including alpha/beta/rc tags
-release = version
+release = get_version("emodelrunner")
+version = release
 
 
 # -- General configuration ---------------------------------------------------
@@ -64,8 +66,9 @@ autodoc_default_options = {
     # once in Attributes, and once in a property method
     "exclude-members": "rin_efeature",
 }
-# so that we don't have to install neuron (imported in GUI) to do the docs
-autodoc_mock_imports = ["neuron"]
+# so that we don't have to install neuron matplotlib, tkinter
+# (imported in GUI) to do the docs
+autodoc_mock_imports = ["neuron", "matplotlib", "tkinter"]
 # to be able to put multiple return variables in the docstrings
 # napoleon_custom_sections = [("Returns", "params_style")]
 
