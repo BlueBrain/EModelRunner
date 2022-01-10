@@ -231,8 +231,8 @@ The development of this project was supported by funding to the Blue Brain Proje
 Copyright (c) 2020-2021 Blue Brain Project/EPFL
 
 
-.. |build| image:: https://github.com/BlueBrain/EModelRunner/actions/workflows/main.yml/badge.svg
-                :target: https://github.com/BlueBrain/EModelRunner/actions/workflows/main.yml
+.. |build| image:: https://github.com/BlueBrain/EModelRunner/actions/workflows/test.yml/badge.svg
+                :target: https://github.com/BlueBrain/EModelRunner/actions/workflows/test.yml
                 :alt: Build Status
 
 .. |license| image:: https://img.shields.io/badge/License-Apache_2.0-blue.svg
