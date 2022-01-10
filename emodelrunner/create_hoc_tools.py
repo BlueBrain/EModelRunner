@@ -16,15 +16,15 @@
 
 # pylint: disable=too-many-arguments
 from datetime import datetime
-
 import jinja2
 
-from emodelrunner import __version__
 from bluepyopt.ephys.create_hoc import (
     _generate_parameters,
     _generate_channels_by_location,
     _generate_reinitrng,
 )
+
+from emodelrunner import __version__
 
 
 class HocStimuliCreator:
@@ -86,7 +86,8 @@ class HocStimuliCreator:
             """
 
             if "type" in prot and (
-                prot["type"] == "StepProtocol" or prot["type"] == "StepThresholdProtocol"
+                prot["type"] == "StepProtocol"
+                or prot["type"] == "StepThresholdProtocol"
             ):
                 self.n_stims += 1
                 step_hoc = self.get_step_hoc(prot)
@@ -98,7 +99,8 @@ class HocStimuliCreator:
                 self.stims_hoc += self.add_save_recordings_hoc(mtype, prot_name, prot)
 
             elif "type" in prot and (
-                prot["type"] == "RampProtocol" or prot["type"] == "RampThresholdProtocol"
+                prot["type"] == "RampProtocol"
+                or prot["type"] == "RampThresholdProtocol"
             ):
                 self.n_stims += 1
                 ramp_hoc = self.get_ramp_hoc(prot)
@@ -287,7 +289,9 @@ class HocStimuliCreator:
         # create time and amplitude of stimulus vectors
 
         if ramp_definition["ramp_amplitude_start"] is None:
-            amp_start = f"{ramp_definition['thresh_perc_start'] / 100.} * threshold_current"
+            amp_start = (
+                f"{ramp_definition['thresh_perc_start'] / 100.} * threshold_current"
+            )
         else:
             amp_start = ramp_definition["ramp_amplitude_start"]
         if ramp_definition["ramp_amplitude_end"] is None:
@@ -377,7 +381,8 @@ class HocStimuliCreator:
         vecstim_hoc = f"tstop={stim['syn_stop']}\n"
 
         hoc_synapse_creation = (
-            "cell.synapses.create_netcons " + "({mode},{t0},{tf},{itv},{n_spike},{noise},{seed})"
+            "cell.synapses.create_netcons "
+            + "({mode},{t0},{tf},{itv},{n_spike},{noise},{seed})"
         )
         vecstim_hoc += hoc_synapse_creation.format(
             mode=0,
@@ -406,7 +411,8 @@ class HocStimuliCreator:
         netstim_hoc = f"tstop={stim['syn_stop']}\n"
 
         hoc_synapse_creation = (
-            "cell.synapses.create_netcons" + "({mode},{t0},{tf},{itv},{n_spike},{noise},{seed})"
+            "cell.synapses.create_netcons"
+            + "({mode},{t0},{tf},{itv},{n_spike},{noise},{seed})"
         )
         netstim_hoc += hoc_synapse_creation.format(
             mode=1,
@@ -543,7 +549,9 @@ def create_hoc(
         template = template_file.read()
         template = jinja2.Template(template)
 
-    global_params, section_params, range_params, location_order = _generate_parameters(parameters)
+    global_params, section_params, range_params, location_order = _generate_parameters(
+        parameters
+    )
     channels = _generate_channels_by_location(mechs, location_order)
 
     ignored_global_params = {}
@@ -636,7 +644,9 @@ def create_simul_hoc(
     )
 
 
-def create_main_protocol_hoc(template_path, protocol_definitions, rin_exp_voltage_base, mtype):
+def create_main_protocol_hoc(
+    template_path, protocol_definitions, rin_exp_voltage_base, mtype
+):
     """Create main_protocol.hoc file.
 
     Args:
