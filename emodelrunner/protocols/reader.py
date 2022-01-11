@@ -111,34 +111,36 @@ class ProtocolParser:
             )
 
     def _parse_thalamus_threshold_detection(
-        self, protocol_definition, recordings, prefix
+        self, protocol_definition, protocol_name, recordings, prefix
     ):
         """Parses the thalamus threshold detection protocol into self.protocols_dict."""
         if protocol_definition["type"] == "RatSSCxThresholdDetectionProtocol":
-            self.protocols_dict[
-                "ThresholdDetection_dep"
-            ] = thalamus_protocols.RatSSCxThresholdDetectionProtocol(
-                "ThresholdDetection_dep",
-                step_protocol_template=read_step_protocol(
+            if protocol_name == "ThresholdDetection_dep":
+                self.protocols_dict[
+                    "ThresholdDetection_dep"
+                ] = thalamus_protocols.RatSSCxThresholdDetectionProtocol(
                     "ThresholdDetection_dep",
-                    thalamus_protocols,
-                    protocol_definition["step_template"],
-                    recordings,
-                ),
-                prefix=prefix,
-            )
-            self.protocols_dict[
-                "ThresholdDetection_hyp"
-            ] = thalamus_protocols.RatSSCxThresholdDetectionProtocol(
-                "ThresholdDetection_hyp",
-                step_protocol_template=read_step_protocol(
+                    step_protocol_template=read_step_protocol(
+                        "ThresholdDetection_dep",
+                        thalamus_protocols,
+                        protocol_definition["step_template"],
+                        recordings,
+                    ),
+                    prefix=prefix,
+                )
+            elif protocol_name == "ThresholdDetection_hyp":
+                self.protocols_dict[
+                    "ThresholdDetection_hyp"
+                ] = thalamus_protocols.RatSSCxThresholdDetectionProtocol(
                     "ThresholdDetection_hyp",
-                    thalamus_protocols,
-                    protocol_definition["step_template"],
-                    recordings,
-                ),
-                prefix=prefix,
-            )
+                    step_protocol_template=read_step_protocol(
+                        "ThresholdDetection_hyp",
+                        thalamus_protocols,
+                        protocol_definition["step_template"],
+                        recordings,
+                    ),
+                    prefix=prefix,
+                )
 
     def _parse_vecstim_netstim(
         self, protocol_definition, protocol_name, recordings, syn_locs
@@ -422,7 +424,7 @@ class ProtocolParser:
                         stochkv_det,
                     )
                     self._parse_thalamus_threshold_detection(
-                        protocol_definition, recordings, prefix
+                        protocol_definition, protocol_name, recordings, prefix
                     )
 
                 elif (
