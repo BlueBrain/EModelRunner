@@ -193,32 +193,14 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
                     )
 
                     if cell_model.threshold_current_hyp is not None:
-                        continue_others = True
-                        # check objectives if pre protocols are given
                         if len(self.pre_protocols) > 0:
                             for pre_protocol in self.pre_protocols:
                                 response = pre_protocol.run(cell_model, {}, sim=sim)
                                 responses.update(response)
 
-                            # select only objectives correspondong to pre_protocols
-                            pre_objectives = []
-                            for objective in self.fitness_calculator.objectives:
-                                if pre_protocol.name in objective.name:
-                                    pre_objectives.append(objective)
-                            fitcalc = ephys.objectivescalculators.ObjectivesCalculator(
-                                pre_objectives
-                            )
-
-                            preobj = fitcalc.calculate_scores(responses)
-                            preobj_val = np.array(preobj.values())
-
-                            if any(preobj_val > self.preprot_score_threshold):
-                                continue_others = False
-
-                        if continue_others:
-                            for other_protocol in self.other_protocols:
-                                response = other_protocol.run(cell_model, {}, sim=sim)
-                                responses.update(response)
+                        for other_protocol in self.other_protocols:
+                            response = other_protocol.run(cell_model, {}, sim=sim)
+                            responses.update(response)
 
         cell_model.unfreeze(param_values.keys())
 
