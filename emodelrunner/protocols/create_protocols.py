@@ -182,7 +182,6 @@ def create_protocols_object(
             prot_path,
             stochkv_det,
             mtype,
-            apical_point_isec,
         )
     else:
         raise ValueError(f"unsupported package type: {package_type}")

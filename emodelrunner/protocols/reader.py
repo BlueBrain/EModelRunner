@@ -5,7 +5,7 @@ import json
 from bluepyopt import ephys
 
 from emodelrunner.protocols import sscx_protocols, thalamus_protocols
-from emodelrunner.locations import SOMA_LOC, NrnSomaDistanceCompLocationApical
+from emodelrunner.locations import SOMA_LOC
 from emodelrunner.synapses.stimuli import (
     NrnNetStimStimulusCustom,
     NrnVecStimStimulusCustom,
@@ -346,7 +346,6 @@ class ProtocolParser:
         protocols_filepath,
         stochkv_det=None,
         prefix="",
-        apical_point_isec=-1,
     ):
         """Parses the Thalamus protocols from the json file input.
 
@@ -354,9 +353,6 @@ class ProtocolParser:
             protocols_filename (str): path to the protocols file
             stochkv_det (bool): set if stochastic or deterministic
             prefix (str): prefix used in naming responses, features, recordings, etc.
-            apical_point_isec (int): apical point section index
-                Should be given if there is "somadistanceapic" in "type"
-                of at least one of the extra recordings
 
         Returns:
             dict containing the protocols
@@ -383,46 +379,6 @@ class ProtocolParser:
                 )
 
                 recordings = [somav_recording]
-
-                if "extra_recordings" in protocol_definition:
-                    for recording_definition in protocol_definition["extra_recordings"]:
-                        if recording_definition["type"] == "somadistance":
-                            location = ephys.locations.NrnSomaDistanceCompLocation(
-                                name=recording_definition["name"],
-                                soma_distance=recording_definition["somadistance"],
-                                seclist_name=recording_definition["seclist_name"],
-                            )
-
-                        elif recording_definition["type"] == "somadistanceapic":
-                            location = NrnSomaDistanceCompLocationApical(
-                                name=recording_definition["name"],
-                                soma_distance=recording_definition["somadistance"],
-                                seclist_name=recording_definition["seclist_name"],
-                                apical_sec=apical_point_isec,
-                            )
-
-                        elif recording_definition["type"] == "nrnseclistcomp":
-                            location = ephys.locations.NrnSeclistCompLocation(
-                                name=recording_definition["name"],
-                                comp_x=recording_definition["comp_x"],
-                                sec_index=recording_definition["sec_index"],
-                                seclist_name=recording_definition["seclist_name"],
-                            )
-
-                        else:
-                            raise Exception(
-                                "Recording type %s not supported"
-                                % recording_definition["type"]
-                            )
-
-                        var = recording_definition["var"]
-                        recording = ephys.recordings.CompRecording(
-                            name="%s.%s.%s.%s"
-                            % (prefix, protocol_name, location.name, var),
-                            location=location,
-                            variable=recording_definition["var"],
-                        )
-                        recordings.append(recording)
 
                 if "type" in protocol_definition:
                     # add protocol to protocol dict
