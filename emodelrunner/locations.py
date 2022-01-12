@@ -68,31 +68,29 @@ def multi_locations(sectionlist):
 
 
 class NrnSomaDistanceCompLocationApical(ephys.locations.NrnSomaDistanceCompLocation):
+    """Custom recording location."""
 
-
-    def __init__(self, name, soma_distance=None, seclist_name=None, comment='', apical_sec=None):
-
-        super(NrnSomaDistanceCompLocationApical, self).__init__(name, soma_distance, seclist_name, comment)
+    def __init__(
+        self, name, soma_distance=None, seclist_name=None, comment="", apical_sec=None
+    ):
+        """Constructor."""
+        super().__init__(name, soma_distance, seclist_name, comment)
         self.apical_sec = apical_sec
 
-
     def instantiate(self, sim=None, icell=None):
-        """Find the instantiate compartment"""
-
+        """Find the instantiate compartment."""
         apical_branch = []
         section = icell.apic[self.apical_sec]
         while True:
-            name = str(section.name()).split('.')[-1]
-            if "soma[0]" ==  name:
+            name = str(section.name()).rsplit(".", maxsplit=1)[-1]
+            if "soma[0]" == name:
                 break
             apical_branch.append(section)
 
             if sim.neuron.h.SectionRef(sec=section).has_parent():
                 section = sim.neuron.h.SectionRef(sec=section).parent
             else:
-                raise Exception(
-                    'soma[0] was not reached from apical point')
-
+                raise Exception("soma[0] was not reached from apical point")
 
         soma = icell.soma[0]
 
@@ -108,17 +106,17 @@ class NrnSomaDistanceCompLocationApical(ephys.locations.NrnSomaDistanceCompLocat
             max_distance = max(start_distance, end_distance)
 
             if min_distance <= self.soma_distance <= end_distance:
-                comp_x = float(self.soma_distance - min_distance) / \
-                    (max_distance - min_distance)
+                comp_x = float(self.soma_distance - min_distance) / (
+                    max_distance - min_distance
+                )
 
                 icomp = isec(comp_x)
                 seccomp = isec
 
-        print('Using %s at distance %f' % (icomp, sim.neuron.h.distance(1, comp_x, sec=seccomp)))
+        print(
+            f"Using {icomp} at distance {sim.neuron.h.distance(1, comp_x, sec=seccomp)}"
+        )
 
         if icomp is None:
-            raise Exception(
-                'No comp found at %s distance from soma' %
-                self.soma_distance)
-
+            raise Exception(f"No comp found at {self.soma_distance} distance from soma")
         return icomp
