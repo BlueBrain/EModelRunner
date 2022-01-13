@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  push:
+    tags:
+      - 'EModelRunner-v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  call-test-workflow:
+    uses: BlueBrain/EModelRunner/.github/workflows/test.yml@main
+
+  build-n-publish:
+    name: Build and publish on PyPI
+    runs-on: ubuntu-latest
+    needs: call-test-workflow
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Build a source tarball
+        run:
+            python setup.py sdist
+
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_PASSWORD }}

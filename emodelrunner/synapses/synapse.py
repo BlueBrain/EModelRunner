@@ -141,9 +141,8 @@ class SynapseCustom(SynapseMixin):
             self.hsynapse.tau_d_GABAA = synapse["tau_d"]
 
             self.set_tau_r(sim, icell, synapse["sid"])
-
         # the synapse is excitatory
-        elif synapse["synapse_type"] > 100:
+        else:
             self.hsynapse = sim.neuron.h.ProbAMPANMDA_EMS(
                 synapse["seg_x"], sec=self.section
             )

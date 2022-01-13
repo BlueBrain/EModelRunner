@@ -94,10 +94,10 @@ def get_pos_and_color(sec, seg_pos, syn_type):
     if pos is None:
         return None
 
-    if syn_type > 100:
-        syn_type_ = 1
-    else:
+    if syn_type < 100:
         syn_type_ = 0
+    else:
+        syn_type_ = 1
     pos.append(syn_type_)
 
     return pos
