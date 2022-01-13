@@ -73,7 +73,7 @@ def write_metype_json(
 def write_etype_factsheet(
     data_path, current_amplitude, stim_start, stim_duration, output_path
 ):
-    """Write the me-type factsheet json file.
+    """Write the e-type factsheet json file.
 
     Args:
         data_path (str): path to the trace data (usually output of emodelrunner run)
@@ -139,7 +139,7 @@ def get_stim_params_from_config_for_physiology_factsheet(prot_path, protocol_key
 def write_metype_json_from_config(
     config, voltage_path, morphology_path, output_path, protocol_key
 ):
-    """Write the me-type factsheet json file.
+    """Write the me-type factsheet json file from config input.
 
     Args:
         config (configparser.ConfigParser): configuration
