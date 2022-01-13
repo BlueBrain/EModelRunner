@@ -21,3 +21,4 @@ examples/sscx_sample_dir/run.hoc
 examples/sscx_sample_dir/createsimulation.hoc
 examples/sscx_sample_dir/synapses/synapses.hoc
 examples/synplas_sample_dir/*.h5
+examples/thalamus_sample_dir/python_recordings
