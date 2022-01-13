@@ -62,7 +62,7 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
         use_rmp_rin_thresholds=False,
     ):
         """Constructor."""
-        super(RatSSCxMainProtocol, self).__init__(name=name)
+        super().__init__(name=name)
 
         self.rmp_protocol = rmp_protocol
         self.rmp_efeature = rmp_efeature
@@ -264,7 +264,7 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         prefix=None,
     ):
         """Constructor."""
-        super(RatSSCxRinHoldcurrentProtocol, self).__init__(name=name)
+        super().__init__(name=name)
         self.rin_protocol_template = rin_protocol_template
         self.voltagebase_efeature = voltagebase_efeature
         self.voltagebase_score_threshold = voltagebase_score_threshold
@@ -458,7 +458,7 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
             else:
                 return None
 
-    def voltage_base(self, current, cell_model, param_values, sim=None, short=False):
+    def voltage_base(self, current, cell_model, param_values, sim=None):
         """Calculate voltage base for certain stimulus current."""
         if "dep" in self.name:
             protocol = self.create_rin_protocol_dep(holdi=current)
@@ -508,7 +508,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         prefix=None,
     ):
         """Constructor."""
-        super(RatSSCxThresholdDetectionProtocol, self).__init__(name=name)
+        super().__init__(name=name)
 
         self.step_protocol_template = step_protocol_template
 
@@ -598,7 +598,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         return threshold_protocol
 
     def create_short_threshold_protocol(
-        self, short=False, holdi=None, step_current=None
+        self, holdi=None, step_current=None
     ):
         """Create short threshold protocol."""
         short_protocol = self.create_step_protocol(
@@ -802,7 +802,7 @@ class StepProtocolCustom(ephys.protocols.StepProtocol, ProtocolMixin):
         stochkv_det=None,
     ):
         """Constructor."""
-        super(StepProtocolCustom, self).__init__(
+        super().__init__(
             name,
             step_stimulus=step_stimulus,
             holding_stimulus=holding_stimulus,
@@ -823,7 +823,7 @@ class StepProtocolCustom(ephys.protocols.StepProtocol, ProtocolMixin):
             self.cvode_active = False
 
         responses.update(
-            super(StepProtocolCustom, self).run(
+            super().run(
                 cell_model, param_values, sim=sim, isolate=isolate
             )
         )
@@ -908,7 +908,7 @@ class StepThresholdProtocol(StepProtocolCustom, ProtocolMixin):
         stochkv_det=None,
     ):
         """Constructor."""
-        super(StepThresholdProtocol, self).__init__(
+        super().__init__(
             name,
             step_stimulus=step_stimulus,
             holding_stimulus=holding_stimulus,
@@ -951,7 +951,7 @@ class StepThresholdProtocol(StepProtocolCustom, ProtocolMixin):
             self.cvode_active = False
 
         responses.update(
-            super(StepThresholdProtocol, self).run(
+            super().run(
                 cell_model, param_values, sim=sim, isolate=isolate
             )
         )
@@ -1009,7 +1009,7 @@ class RampThresholdProtocol(sscx_protocols.RampThresholdProtocol, ProtocolMixin)
         cvode_active=None,
     ):
         """Constructor."""
-        super(RampThresholdProtocol, self).__init__(
+        super().__init__(
             name,
             ramp_stimulus=ramp_stimulus,
             holding_stimulus=holding_stimulus,
@@ -1028,9 +1028,8 @@ class RampThresholdProtocol(sscx_protocols.RampThresholdProtocol, ProtocolMixin)
             cell_model, "threshold_current_hyp"
         ):
             raise Exception(
-                "StepThresholdProtocol: running on cell_model "
-                "that doesnt have threshold current value set: %s",
-                str(cell_model),
+                f"StepThresholdProtocol: running on cell_model "
+                f"that doesnt have threshold current value set: {str(cell_model)}"
             )
 
         if "hyp" in self.name:
@@ -1053,7 +1052,7 @@ class RampThresholdProtocol(sscx_protocols.RampThresholdProtocol, ProtocolMixin)
             self.holding_stimulus.step_amplitude = cell_model.holding_current_dep
 
         responses.update(
-            super(RampThresholdProtocol, self).run(
+            super().run(
                 cell_model, param_values, sim=sim, isolate=isolate
             )
         )

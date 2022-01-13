@@ -373,7 +373,7 @@ class ProtocolParser:
             ]:
                 # By default include somatic recording
                 somav_recording = ephys.recordings.CompRecording(
-                    name="%s.%s.soma.v" % (prefix, protocol_name),
+                    name=f"{prefix}.{protocol_name}.soma.v",
                     location=SOMA_LOC,
                     variable="v",
                 )
