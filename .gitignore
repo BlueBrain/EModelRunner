@@ -1,6 +1,7 @@
 *.pyc
 *.swp
 coverage.xml
+coverage.json
 *.egg-info
 .coverage
 doc/build
