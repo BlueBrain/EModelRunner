@@ -73,26 +73,17 @@ class ProtocolParser:
                 recordings,
                 stochkv_det,
             )
-        elif protocol_definition["type"] == "RampThresholdProtocol":
-            self.protocols_dict[protocol_name] = read_ramp_threshold_protocol(
-                protocol_name,
-                protocol_module,
-                protocol_definition,
-                recordings,
-            )
-        elif protocol_definition["type"] == "RampProtocol":
-            if protocol_module is sscx_protocols:
+        if protocol_module is sscx_protocols:
+            if protocol_definition["type"] == "RampThresholdProtocol":
+                self.protocols_dict[protocol_name] = read_ramp_threshold_protocol(
+                    protocol_name,
+                    protocol_definition,
+                    recordings,
+                )
+            elif protocol_definition["type"] == "RampProtocol":
                 self.protocols_dict[protocol_name] = read_ramp_protocol(
                     protocol_name, protocol_definition, recordings
                 )
-            elif protocol_module is thalamus_protocols:
-                self.protocols_dict[
-                    protocol_name
-                ] = read_ramp_protocol_from_thalamus_definition(
-                    protocol_name, protocol_definition, recordings
-                )
-            else:
-                raise ValueError(f"unsupported protocol module: {protocol_module}")
 
     def _parse_sscx_threshold_detection(self, protocol_definition, recordings, prefix):
         """Parses the sscx threshold detection protocol into self.protocols_dict."""
@@ -361,8 +352,7 @@ class ProtocolParser:
 
         # fmt: off
         protocols_with_type = [
-            "StepProtocol", "StepThresholdProtocol", "RampThresholdProtocol",
-            "RampProtocol", "RatSSCxThresholdDetectionProtocol"]
+            "StepProtocol", "StepThresholdProtocol", "RatSSCxThresholdDetectionProtocol"]
         # fmt: on
 
         for protocol_name, protocol_definition in protocol_definitions.items():
@@ -422,13 +412,12 @@ class ProtocolParser:
 
 
 def read_ramp_threshold_protocol(
-    protocol_name, protocol_module, protocol_definition, recordings
+    protocol_name, protocol_definition, recordings
 ):
     """Read ramp threshold protocol from definition.
 
     Args:
         protocol_name (str): name of the protocol
-        protocol_module (module): module that contains the protocol
         protocol_definition (dict): contains the protocol configuration data
         recordings (bluepyopt.ephys.recordings.CompRecording):
             recordings to use with this protocol
@@ -451,7 +440,7 @@ def read_ramp_threshold_protocol(
         total_duration=ramp_definition["totduration"],
     )
 
-    return protocol_module.RampThresholdProtocol(
+    return sscx_protocols.RampThresholdProtocol(
         name=protocol_name,
         ramp_stimulus=ramp_stimulus,
         holding_stimulus=holding_stimulus,
@@ -477,50 +466,6 @@ def read_ramp_protocol(protocol_name, protocol_definition, recordings):
     ramp_stimulus = ephys.stimuli.NrnRampPulse(
         ramp_amplitude_start=ramp_definition["ramp_amplitude_start"],
         ramp_amplitude_end=ramp_definition["ramp_amplitude_end"],
-        ramp_delay=ramp_definition["ramp_delay"],
-        ramp_duration=ramp_definition["ramp_duration"],
-        location=SOMA_LOC,
-        total_duration=ramp_definition["totduration"],
-    )
-
-    if "holding" in protocol_definition["stimuli"]:
-        holding_definition = protocol_definition["stimuli"]["holding"]
-        holding_stimulus = ephys.stimuli.NrnSquarePulse(
-            step_amplitude=holding_definition["amp"],
-            step_delay=holding_definition["delay"],
-            step_duration=holding_definition["duration"],
-            location=SOMA_LOC,
-            total_duration=holding_definition["totduration"],
-        )
-    else:
-        holding_stimulus = None
-
-    return sscx_protocols.RampProtocol(
-        name=protocol_name,
-        ramp_stimulus=ramp_stimulus,
-        holding_stimulus=holding_stimulus,
-        recordings=recordings,
-    )
-
-
-def read_ramp_protocol_from_thalamus_definition(
-    protocol_name, protocol_definition, recordings
-):
-    """Read sscx_protocols.RampProtocol from the thalamus definitions.
-
-    Args:
-        protocol_name (str): name of the protocol
-        protocol_definition (dict): contains the protocol configuration data
-        recordings (bluepyopt.ephys.recordings.CompRecording):
-            recordings to use with this protocol
-
-    Returns:
-        RampProtocol: Ramp Protocol
-    """
-    ramp_definition = protocol_definition["stimuli"]["ramp"]
-    ramp_stimulus = ephys.stimuli.NrnRampPulse(
-        ramp_amplitude_start=ramp_definition["ramp_amp_start"],
-        ramp_amplitude_end=ramp_definition["ramp_amp_end"],
         ramp_delay=ramp_definition["ramp_delay"],
         ramp_duration=ramp_definition["ramp_duration"],
         location=SOMA_LOC,
