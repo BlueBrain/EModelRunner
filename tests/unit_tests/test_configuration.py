@@ -17,14 +17,15 @@
 from pathlib import Path
 import pytest
 from schema import SchemaError
-from emodelrunner.configuration.validator import ThalamusConfigValidator
 
 from tests.utils import cwd
 from emodelrunner.configuration import (
     ConfigValidator,
     SSCXConfigValidator,
     SynplasConfigValidator,
+    ThalamusConfigValidator,
     PackageType,
+    get_validated_config,
 )
 
 sscx_sample_dir = Path("examples") / "sscx_sample_dir"
@@ -117,3 +118,15 @@ def test_valid_thalamus_config():
         for config in configs:
             conf_obj = ThalamusConfigValidator().validate_from_file(config)
             assert conf_obj.package_type == PackageType.thalamus
+
+
+def test_get_validated_config():
+    """Test the get_validated_config function."""
+    with cwd(sscx_sample_dir):
+        config_path = Path(".") / "config" / "config_allsteps.ini"
+        conf_obj = get_validated_config(config_path)
+        assert conf_obj.package_type == PackageType.sscx
+
+    invalid_conf = Path("tests") / "static_files" / "invalid_config.ini"
+    with pytest.raises(ValueError):
+        get_validated_config(invalid_conf)
