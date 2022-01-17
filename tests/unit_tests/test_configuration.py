@@ -17,16 +17,19 @@
 from pathlib import Path
 import pytest
 from schema import SchemaError
+from emodelrunner.configuration.validator import ThalamusConfigValidator
 
 from tests.utils import cwd
 from emodelrunner.configuration import (
     ConfigValidator,
     SSCXConfigValidator,
     SynplasConfigValidator,
+    PackageType,
 )
 
 sscx_sample_dir = Path("examples") / "sscx_sample_dir"
 synplas_sample_dir = Path("examples") / "synplas_sample_dir"
+thalamus_sample_dir = Path("examples") / "thalamus_sample_dir"
 
 
 def test_evaluates_to():
@@ -88,19 +91,29 @@ def test_invalid_synplas_config():
 
 def test_valid_sscx_config():
     """Test the validity of the example SSCX configs."""
-
     with cwd(sscx_sample_dir):
         configs_dir = Path("config")
         configs = list(configs_dir.glob("*.ini"))
         for config in configs:
-            SSCXConfigValidator().validate_from_file(config)
+            conf_obj = SSCXConfigValidator().validate_from_file(config)
+            assert conf_obj.package_type == PackageType.sscx
 
 
 def test_valid_synplas_config():
     """Test the validity of the example Synplas configs."""
-
     with cwd(synplas_sample_dir):
         configs_dir = Path("config")
         configs = list(configs_dir.glob("*.ini"))
         for config in configs:
-            SynplasConfigValidator().validate_from_file(config)
+            conf_obj = SynplasConfigValidator().validate_from_file(config)
+            assert conf_obj.package_type == PackageType.synplas
+
+
+def test_valid_thalamus_config():
+    """Test the validity of the example Thalamus configs."""
+    with cwd(thalamus_sample_dir):
+        configs_dir = Path("config")
+        configs = list(configs_dir.glob("*.ini"))
+        for config in configs:
+            conf_obj = ThalamusConfigValidator().validate_from_file(config)
+            assert conf_obj.package_type == PackageType.thalamus
