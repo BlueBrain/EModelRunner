@@ -110,11 +110,12 @@ class ProtocolBuilder:
         """
         return self.protocols
 
-    def get_stim_currents(self, responses):
+    def get_stim_currents(self, responses, dt):
         """Generates the currents injected by protocols.
 
         Args:
             responses (dict): the responses to the protocols run
+            dt (float): timestep of the generated currents (ms)
 
         Returns:
             dict: the currents of the protocols.
@@ -137,7 +138,7 @@ class ProtocolBuilder:
         for protocol in self.protocols.protocols:
             currents.update(
                 protocol.generate_current(
-                    threshold_current=thres_i, holding_current=hold_i
+                    threshold_current=thres_i, holding_current=hold_i, dt=dt
                 )
             )
 
