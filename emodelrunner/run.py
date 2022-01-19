@@ -62,7 +62,6 @@ def main(config_path):
     else:
         raise ValueError(f"unsupported package type: {config.package_type}")
     ephys_protocols = protocols.get_ephys_protocols()
-
     # run
     print("Python Recordings Running...")
     responses = ephys_protocols.run(
