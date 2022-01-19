@@ -123,8 +123,6 @@ class ProtocolBuilder:
             If the MainProtocol was used, only the RMP protocol,
             'pre-protocols' and 'other protocols' currents are returned
         """
-        currents = {}
-
         # find threshold and holding currents
         thres_i = None
         hold_i = None
