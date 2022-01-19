@@ -15,3 +15,4 @@
 # limitations under the License.
 
 from emodelrunner.morphology.builder import create_morphology
+from emodelrunner.morphology.morphology import SSCXNrnFileMorphology, ThalamusNrnFileMorphology

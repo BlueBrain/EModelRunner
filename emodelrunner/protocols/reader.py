@@ -185,7 +185,7 @@ class ProtocolParser:
             self.protocols_dict[
                 "RinHoldcurrent_dep"
             ] = thalamus_protocols.RatSSCxRinHoldcurrentProtocol(
-                "RinHoldCurrent_dep",
+                "RinHoldcurrent_dep",
                 rin_protocol_template=self.protocols_dict["Rin_dep"],
                 holdi_estimate_multiplier=protocol_definitions["RinHoldcurrent_dep"][
                     "holdi_estimate_multiplier"
@@ -207,7 +207,7 @@ class ProtocolParser:
         self.protocols_dict[
             "RinHoldcurrent_hyp"
         ] = thalamus_protocols.RatSSCxRinHoldcurrentProtocol(
-            "RinHoldCurrent_hyp",
+            "RinHoldcurrent_hyp",
             rin_protocol_template=self.protocols_dict["Rin_hyp"],
             holdi_estimate_multiplier=protocol_definitions["RinHoldcurrent_hyp"][
                 "holdi_estimate_multiplier"

@@ -68,7 +68,7 @@ def main(config_path):
         cell_model=cell, param_values=release_params, sim=sim, isolate=False
     )
 
-    currents = protocols.get_stim_currents(responses)
+    currents = protocols.get_stim_currents(responses, dt)
 
     # write responses
     output_dir = config.get("Paths", "output_dir")

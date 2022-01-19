@@ -23,10 +23,14 @@ from emodelrunner.configuration import (
     ConfigValidator,
     SSCXConfigValidator,
     SynplasConfigValidator,
+    ThalamusConfigValidator,
+    PackageType,
+    get_validated_config,
 )
 
 sscx_sample_dir = Path("examples") / "sscx_sample_dir"
 synplas_sample_dir = Path("examples") / "synplas_sample_dir"
+thalamus_sample_dir = Path("examples") / "thalamus_sample_dir"
 
 
 def test_evaluates_to():
@@ -88,19 +92,41 @@ def test_invalid_synplas_config():
 
 def test_valid_sscx_config():
     """Test the validity of the example SSCX configs."""
-
     with cwd(sscx_sample_dir):
         configs_dir = Path("config")
         configs = list(configs_dir.glob("*.ini"))
         for config in configs:
-            SSCXConfigValidator().validate_from_file(config)
+            conf_obj = SSCXConfigValidator().validate_from_file(config)
+            assert conf_obj.package_type == PackageType.sscx
 
 
 def test_valid_synplas_config():
     """Test the validity of the example Synplas configs."""
-
     with cwd(synplas_sample_dir):
         configs_dir = Path("config")
         configs = list(configs_dir.glob("*.ini"))
         for config in configs:
-            SynplasConfigValidator().validate_from_file(config)
+            conf_obj = SynplasConfigValidator().validate_from_file(config)
+            assert conf_obj.package_type == PackageType.synplas
+
+
+def test_valid_thalamus_config():
+    """Test the validity of the example Thalamus configs."""
+    with cwd(thalamus_sample_dir):
+        configs_dir = Path("config")
+        configs = list(configs_dir.glob("*.ini"))
+        for config in configs:
+            conf_obj = ThalamusConfigValidator().validate_from_file(config)
+            assert conf_obj.package_type == PackageType.thalamus
+
+
+def test_get_validated_config():
+    """Test the get_validated_config function."""
+    with cwd(sscx_sample_dir):
+        config_path = Path(".") / "config" / "config_allsteps.ini"
+        conf_obj = get_validated_config(config_path)
+        assert conf_obj.package_type == PackageType.sscx
+
+    invalid_conf = Path("tests") / "static_files" / "invalid_config.ini"
+    with pytest.raises(ValueError):
+        get_validated_config(invalid_conf)
