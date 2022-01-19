@@ -39,3 +39,14 @@ class TestMainProtocol:
 
         threshold = 1e-7
         assert rms < threshold
+
+    def test_hyp_dep_currents(self):
+        """Test to assure hyperpolarization and depolarization currents are different."""
+        step_200 = np.loadtxt(
+            self.example_dir / "python_recordings" / "current_VPL_TC.Step_200.dat"
+        )[:, 1]
+        step_200_hyp = np.loadtxt(
+            self.example_dir / "python_recordings" / "current_VPL_TC.Step_200_hyp.dat"
+        )[:, 1]
+
+        assert [f(step_200) != f(step_200_hyp) for f in [np.min, np.max, np.mean]]

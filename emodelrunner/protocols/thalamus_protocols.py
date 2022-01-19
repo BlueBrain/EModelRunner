@@ -207,12 +207,16 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
             response = other_protocol.run(cell_model, {}, sim=sim)
             responses.update(response)
 
-    def generate_current(self, threshold_current=None, holding_current=None, dt=0.1):
+    def generate_current(
+        self, thres_i_hyp, thres_i_dep, holding_i_hyp, holding_i_dep, dt
+    ):
         """Generate current for all protocols except rin and threshold detection.
 
         Args:
-            threshold_current (float): the threshold current (nA)
-            holding_current (float): the holding current (nA)
+            thres_i_hyp (float): hyperpolarization threshold current (nA)
+            thres_i_dep (float): depolarization threshold current (nA)
+            holding_i_hyp (float): hyperpolarization holding current (nA)
+            holding_i_dep (float): depolarization holding current (nA)
             dt (float): timestep of the generated currents (ms)
 
         Returns:
@@ -223,26 +227,38 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
         # rmp is step protocol
         currents.update(
             self.rmp_protocol.generate_current(
-                threshold_current=threshold_current,
-                holding_current=holding_current,
+                threshold_current=thres_i_dep,
+                holding_current=holding_i_dep,
                 dt=dt,
             )
         )
 
         for pre_protocol in self.pre_protocols:
+            if "_hyp" in pre_protocol.name:
+                pre_prot_threshold_current = thres_i_hyp
+                pre_prot_holding_current = holding_i_hyp
+            else:
+                pre_prot_threshold_current = thres_i_dep
+                pre_prot_holding_current = holding_i_dep
             currents.update(
                 pre_protocol.generate_current(
-                    threshold_current=threshold_current,
-                    holding_current=holding_current,
+                    threshold_current=pre_prot_threshold_current,
+                    holding_current=pre_prot_holding_current,
                     dt=dt,
                 )
             )
 
         for other_protocol in self.other_protocols:
+            if "_hyp" in other_protocol.name:
+                other_prot_threshold_current = thres_i_hyp
+                other_prot_holding_current = holding_i_hyp
+            else:
+                other_prot_threshold_current = thres_i_dep
+                other_prot_holding_current = holding_i_dep
             currents.update(
                 other_protocol.generate_current(
-                    threshold_current=threshold_current,
-                    holding_current=holding_current,
+                    threshold_current=other_prot_threshold_current,
+                    holding_current=other_prot_holding_current,
                     dt=dt,
                 )
             )

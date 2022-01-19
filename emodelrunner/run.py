@@ -68,7 +68,11 @@ def main(config_path):
         cell_model=cell, param_values=release_params, sim=sim, isolate=False
     )
 
-    currents = protocols.get_stim_currents(responses, dt)
+    mtype = config.get("Morphology", "mtype")
+    if config.package_type == PackageType.sscx:
+        currents = protocols.get_stim_currents(responses, dt)
+    elif config.package_type == PackageType.thalamus:
+        currents = protocols.get_thalamus_stim_currents(responses, mtype, dt)
 
     # write responses
     output_dir = config.get("Paths", "output_dir")
