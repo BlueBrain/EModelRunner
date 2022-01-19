@@ -411,9 +411,7 @@ class ProtocolParser:
         return self.protocols_dict
 
 
-def read_ramp_threshold_protocol(
-    protocol_name, protocol_definition, recordings
-):
+def read_ramp_threshold_protocol(protocol_name, protocol_definition, recordings):
     """Read ramp threshold protocol from definition.
 
     Args:

@@ -10,6 +10,7 @@ from tests.utils import cwd
 
 
 class TestMainProtocol:
+    """Tests for the main thalamus protocol."""
 
     @classmethod
     def setup_class(cls):
@@ -21,19 +22,23 @@ class TestMainProtocol:
         with cwd(cls.example_dir):
             run_emodel(config_path=config_path)
 
-    @pytest.mark.parametrize('volt_fname', ["VPL_TC.Step_150.soma.v.dat", "VPL_TC.RMP.soma.v.dat"])
+    @pytest.mark.parametrize(
+        "volt_fname", ["VPL_TC.Step_150.soma.v.dat", "VPL_TC.RMP.soma.v.dat"]
+    )
     def test_protocol_voltage(self, volt_fname):
         """Test to reproduce StepProtocol and StepThresholdProtocol voltages.
 
-            VPL_TC.Step_150.soma.v.dat -> StepThresholdProtocol
-            VPL_TC.RMP.soma.v.dat -> StepProtocol
+        VPL_TC.Step_150.soma.v.dat -> StepThresholdProtocol
+        VPL_TC.RMP.soma.v.dat -> StepProtocol
         """
         volt_fname = "VPL_TC.Step_150.soma.v.dat"
         ground_truth_dir = Path("tests") / "thalamus_tests" / "data"
 
         gt_voltage = np.loadtxt(ground_truth_dir / volt_fname)
 
-        reproduced_voltage = np.loadtxt(self.example_dir / "python_recordings" / volt_fname)
+        reproduced_voltage = np.loadtxt(
+            self.example_dir / "python_recordings" / volt_fname
+        )
 
         rms = np.sqrt(np.mean((gt_voltage[:, 1] - reproduced_voltage[:, 1]) ** 2))
 

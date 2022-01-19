@@ -14,13 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import warnings
 import collections
 import copy
 import numpy as np
 from bluepyopt import ephys
-
 
 from emodelrunner.protocols.protocols_func import ProtocolMixin
 
