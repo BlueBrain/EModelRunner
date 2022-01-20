@@ -22,7 +22,7 @@ import logging
 import numpy as np
 from bluepyopt import ephys
 
-from emodelrunner.protocols.protocols_func import ProtocolMixin
+from emodelrunner.protocols.protocols_func import CurrentOutputKeyMixin
 
 logger = logging.getLogger(__name__)
 
@@ -759,7 +759,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         return threshold_current
 
 
-class StepProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
+class StepProtocol(ephys.protocols.SweepProtocol, CurrentOutputKeyMixin):
     """Protocol consisting of step and holding current.
 
     Attributes:
@@ -1069,7 +1069,7 @@ class StepThresholdProtocol(StepProtocol):
         return {self.curr_output_key(): {"time": t, "current": current}}
 
 
-class RampProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
+class RampProtocol(ephys.protocols.SweepProtocol, CurrentOutputKeyMixin):
     """Protocol consisting of ramp and holding current.
 
     Attributes:

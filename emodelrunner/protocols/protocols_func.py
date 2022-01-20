@@ -32,7 +32,7 @@ seclist_to_sec = {
 }
 
 
-class ProtocolMixin:
+class CurrentOutputKeyMixin:
     """Contains methods useful for multiple Protocol classes."""
 
     def curr_output_key(self):

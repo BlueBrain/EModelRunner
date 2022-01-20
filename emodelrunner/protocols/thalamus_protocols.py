@@ -20,7 +20,7 @@ import copy
 import numpy as np
 from bluepyopt import ephys
 
-from emodelrunner.protocols.protocols_func import ProtocolMixin
+from emodelrunner.protocols.protocols_func import CurrentOutputKeyMixin
 
 
 class RatSSCxMainProtocol(ephys.protocols.Protocol):
@@ -794,7 +794,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         return threshold_current
 
 
-class StepProtocolCustom(ephys.protocols.StepProtocol, ProtocolMixin):
+class StepProtocolCustom(ephys.protocols.StepProtocol, CurrentOutputKeyMixin):
     """Step protocol with custom options to turn stochkv_det on or off."""
 
     def __init__(
