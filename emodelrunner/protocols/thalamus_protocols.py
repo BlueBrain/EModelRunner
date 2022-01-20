@@ -30,13 +30,12 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
         Find resting membrane potential
         Find input resistance
         If both of these scores are within bounds, run other protocols:
-            Find holding current
-            Find rheobase
-            Run IDRest
-            Possibly run other protocols (based on constructor arguments)
-            Return all the responses
+        - Find holding current
+        - Find rheobase
+        - Run IDRest
+        - Possibly run other protocols (based on constructor arguments)
+        - Return all the responses
         Otherwise return return Rin and RMP protocol responses
-
     """
 
     def __init__(
