@@ -505,7 +505,7 @@ def read_step_protocol(
         stochkv_det (bool): set if stochastic or deterministic
 
     Returns:
-        StepProtocol: Step Protocol
+        sscx_protocols.StepProtocol or thalamus_protocols.StepProtocolCustom: Step Protocol
     """
     # pylint: disable=undefined-loop-variable
     step_definitions = protocol_definition["stimuli"]["step"]
@@ -573,7 +573,8 @@ def read_step_threshold_protocol(
         stochkv_det (bool): set if stochastic or deterministic
 
     Returns:
-        StepThresholdProtocol: Step Protocol depending on cell's threshold currentd
+        sscx_protocols.StepThresholdProtocol
+         or thalamus_protocols.StepThresholdProtocol: StepProtocol with cell's threshold current
     """
     # pylint: disable=undefined-loop-variable
     step_definitions = protocol_definition["stimuli"]["step"]
