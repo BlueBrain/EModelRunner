@@ -949,7 +949,7 @@ class StepProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
             return np.mean(amplitudes)
 
 
-class StepThresholdProtocol(StepProtocol, ProtocolMixin):
+class StepThresholdProtocol(StepProtocol):
     """Step protocol based on threshold.
 
     Attributes:
@@ -1159,7 +1159,7 @@ class RampProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
         return self.ramp_stimulus.ramp_duration
 
 
-class RampThresholdProtocol(RampProtocol, ProtocolMixin):
+class RampThresholdProtocol(RampProtocol):
     """Step protocol based on threshold.
 
     Attributes:

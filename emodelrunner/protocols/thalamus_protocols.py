@@ -899,7 +899,7 @@ class StepProtocolCustom(ephys.protocols.StepProtocol, ProtocolMixin):
         return self.step_stimulus.step_amplitude
 
 
-class StepThresholdProtocol(StepProtocolCustom, ProtocolMixin):
+class StepThresholdProtocol(StepProtocolCustom):
     """Step protocol based on threshold."""
 
     def __init__(
