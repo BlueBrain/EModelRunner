@@ -23,7 +23,7 @@ sscx_recipe_protocol_keys = {
 
 thalamus_recipe_protocol_keys = {
     "ThresholdDetection_hyp", "Rin_dep", "ThresholdDetection_dep", "Rin_hyp", "Main",
-    "RinHoldcurrent_hyp", "RMP", "Step_150", "RinHoldcurrent_dep"}
+    "RinHoldcurrent_hyp", "RMP", "Step_150", "Step_200", "Step_200_hyp", "RinHoldcurrent_dep"}
 # fmt: on
 
 
