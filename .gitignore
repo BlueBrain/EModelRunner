@@ -2,10 +2,12 @@
 *.swp
 coverage.xml
 coverage.json
+coverage.html
 *.egg-info
 .coverage
 doc/build
 doc/source/generated
+doc/source/_autosummary
 .tox
 build
 dist
