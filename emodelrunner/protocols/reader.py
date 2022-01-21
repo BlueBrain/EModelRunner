@@ -221,35 +221,25 @@ class ProtocolParser:
             prefix=prefix,
         )
 
-        other_protocols = []
-
-        for protocol_name in protocol_definitions["Main"]["other_protocols"]:
-            other_protocols.append(self.protocols_dict[protocol_name])
+        other_protocols = [
+            self.protocols_dict[protocol_name]
+            for protocol_name in protocol_definitions["Main"]["other_protocols"]
+        ]
 
         pre_protocols = []
-        preprot_score_threshold = 1
-
         if "pre_protocols" in protocol_definitions["Main"]:
             for protocol_name in protocol_definitions["Main"]["pre_protocols"]:
                 pre_protocols.append(self.protocols_dict[protocol_name])
-            preprot_score_threshold = protocol_definitions["Main"][
-                "preprot_score_threshold"
-            ]
 
-        runopt = False
         self.protocols_dict["Main"] = thalamus_protocols.RatSSCxMainProtocol(
             "Main",
             rmp_protocol=self.protocols_dict["RMP"],
-            rmp_score_threshold=protocol_definitions["Main"]["rmp_score_threshold"],
             rinhold_protocol_dep=rinhold_protocol_dep,
             rinhold_protocol_hyp=self.protocols_dict["RinHoldcurrent_hyp"],
-            rin_score_threshold=protocol_definitions["Main"]["rin_score_threshold"],
             thdetect_protocol_dep=thdetect_protocol_dep,
             thdetect_protocol_hyp=self.protocols_dict["ThresholdDetection_hyp"],
             other_protocols=other_protocols,
             pre_protocols=pre_protocols,
-            preprot_score_threshold=preprot_score_threshold,
-            use_rmp_rin_thresholds=runopt,
         )
 
     def parse_sscx_protocols(

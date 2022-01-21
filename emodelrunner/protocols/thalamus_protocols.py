@@ -43,32 +43,26 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
         name,
         rmp_protocol=None,
         rmp_efeature=None,
-        rmp_score_threshold=None,
         rinhold_protocol_dep=None,
         rinhold_protocol_hyp=None,
         rin_efeature_dep=None,
         rin_efeature_hyp=None,
-        rin_score_threshold=None,
         thdetect_protocol_dep=None,
         thdetect_protocol_hyp=None,
         other_protocols=None,
         pre_protocols=None,
-        preprot_score_threshold=None,
         fitness_calculator=None,
-        use_rmp_rin_thresholds=False,
     ):
         """Constructor."""
-        # pylint: disable=too-many-arguments,too-many-locals
+        # pylint: disable=too-many-arguments
         super().__init__(name=name)
 
         self.rmp_protocol = rmp_protocol
         self.rmp_efeature = rmp_efeature
-        self.rmp_score_threshold = rmp_score_threshold
 
         if rinhold_protocol_dep is not None:
             self.rinhold_protocol_dep = rinhold_protocol_dep
             self.rin_efeature_dep = rin_efeature_dep
-        self.rin_score_threshold = rin_score_threshold
 
         self.rinhold_protocol_hyp = rinhold_protocol_hyp
         self.rin_efeature_hyp = rin_efeature_hyp
@@ -81,9 +75,7 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
         self.other_protocols = other_protocols
 
         self.pre_protocols = pre_protocols
-        self.preprot_score_threshold = preprot_score_threshold
 
-        self.use_rmp_rin_thresholds = use_rmp_rin_thresholds
         self.fitness_calculator = fitness_calculator
 
     def subprotocols(self):
@@ -134,59 +126,52 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
         rmp_response = self.rmp_protocol.run(cell_model, {}, sim=sim)
         responses.update(rmp_response)
         rmp = self.rmp_efeature.calculate_feature(rmp_response)
-        rmp_score = self.rmp_efeature.calculate_score(rmp_response)
 
-        print(f"RMP is {rmp}, score is {rmp_score}")
-
-        if (rmp_score <= self.rmp_score_threshold) or (not self.use_rmp_rin_thresholds):
-            # Find Rin and holding current
-            if hasattr(self, "rinhold_protocol_dep"):
-                rinhold_response_dep = self.rinhold_protocol_dep.run(
-                    cell_model, {}, sim=sim, rmp=rmp
-                )
-                holding_current_dep = cell_model.holding_current_dep
-
-                rin_dep = self.rin_efeature_dep.calculate_feature(rinhold_response_dep)
-                responses.update(rinhold_response_dep)
-
-            rinhold_response_hyp = self.rinhold_protocol_hyp.run(
+        # Find Rin and holding current
+        if hasattr(self, "rinhold_protocol_dep"):
+            rinhold_response_dep = self.rinhold_protocol_dep.run(
                 cell_model, {}, sim=sim, rmp=rmp
             )
+            holding_current_dep = cell_model.holding_current_dep
 
-            if rinhold_response_hyp is not None:
-                rin_hyp = self.rin_efeature_hyp.calculate_feature(rinhold_response_hyp)
-                rin_score = self.rin_efeature_hyp.calculate_score(rinhold_response_hyp)
+            rin_dep = self.rin_efeature_dep.calculate_feature(rinhold_response_dep)
+            responses.update(rinhold_response_dep)
 
-                responses.update(rinhold_response_hyp)
-                if (rin_score <= self.rin_score_threshold) or (
-                    not self.use_rmp_rin_thresholds
-                ):
-                    if hasattr(self, "thdetect_protocol_dep"):
-                        responses.update(
-                            self.thdetect_protocol_dep.run(
-                                cell_model,
-                                {},
-                                sim=sim,
-                                holdi=holding_current_dep,
-                                rmp=rmp,
-                                rin=rin_dep,
-                            )
-                        )
+        rinhold_response_hyp = self.rinhold_protocol_hyp.run(
+            cell_model, {}, sim=sim, rmp=rmp
+        )
 
-                    responses.update(
-                        self.thdetect_protocol_hyp.run(
-                            cell_model,
-                            {},
-                            sim=sim,
-                            holdi=cell_model.holding_current_hyp,
-                            rmp=rmp,
-                            rin=rin_hyp,
-                        )
+        if rinhold_response_hyp is not None:
+            rin_hyp = self.rin_efeature_hyp.calculate_feature(rinhold_response_hyp)
+
+            responses.update(rinhold_response_hyp)
+
+            if hasattr(self, "thdetect_protocol_dep"):
+                responses.update(
+                    self.thdetect_protocol_dep.run(
+                        cell_model,
+                        {},
+                        sim=sim,
+                        holdi=holding_current_dep,
+                        rmp=rmp,
+                        rin=rin_dep,
                     )
+                )
 
-                    if cell_model.threshold_current_hyp is not None:
-                        self._run_pre_protocols(cell_model, sim, responses)
-                        self._run_other_protocols(cell_model, sim, responses)
+            responses.update(
+                self.thdetect_protocol_hyp.run(
+                    cell_model,
+                    {},
+                    sim=sim,
+                    holdi=cell_model.holding_current_hyp,
+                    rmp=rmp,
+                    rin=rin_hyp,
+                )
+            )
+
+            if cell_model.threshold_current_hyp is not None:
+                self._run_pre_protocols(cell_model, sim, responses)
+                self._run_other_protocols(cell_model, sim, responses)
 
         cell_model.unfreeze(param_values.keys())
 
@@ -271,7 +256,6 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         name,
         rin_protocol_template=None,
         voltagebase_efeature=None,
-        voltagebase_score_threshold=None,
         holdi_estimate_multiplier=2,
         holdi_precision=0.1,
         holdi_max_depth=5,
@@ -282,7 +266,6 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         super().__init__(name=name)
         self.rin_protocol_template = rin_protocol_template
         self.voltagebase_efeature = voltagebase_efeature
-        self.voltagebase_score_threshold = voltagebase_score_threshold
         self.holdi_estimate_multiplier = holdi_estimate_multiplier
         self.holdi_precision = holdi_precision
         self.holdi_max_depth = holdi_max_depth
