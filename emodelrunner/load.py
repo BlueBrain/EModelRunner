@@ -107,7 +107,7 @@ def get_morph_args(config):
     morph_args["morph_path"] = config.get("Paths", "morph_path")
     morph_args["do_replace_axon"] = config.getboolean("Morphology", "do_replace_axon")
 
-    if config.package_type in [PackageType.sscx, PackageType.synplas]:
+    if config.package_type == PackageType.sscx:
         morph_args["axon_hoc_path"] = config.get("Paths", "replace_axon_hoc_path")
 
     return morph_args
