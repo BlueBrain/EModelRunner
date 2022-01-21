@@ -633,7 +633,6 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
                 exp_std=0.1,
             )
 
-            spike_count = feature.calculate_feature(response)
         elif "hyp" in self.name:
             feature = ephys.efeatures.eFELFeature(
                 name="ThresholdDetection_hyp.Spikecount",
@@ -645,8 +644,8 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
                 exp_std=0.1,
             )
 
-            spike_count = feature.calculate_feature(response)
-            print(f"{spike_count} spikes with I = {step_current}")
+        spike_count = feature.calculate_feature(response)
+        print(f"{spike_count} spikes with I = {step_current}")
         return spike_count >= 1
 
     def binsearch_spike_threshold(
