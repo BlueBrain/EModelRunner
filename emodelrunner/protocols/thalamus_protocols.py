@@ -319,7 +319,7 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         # Set up Rin protocol
         if "dep" in self.name:
             self.rin_protocol = self.create_rin_protocol_dep(holdi=holdi)
-        if "hyp" in self.name:
+        elif "hyp" in self.name:
             self.rin_protocol = self.create_rin_protocol_hyp(holdi=holdi)
 
         # Return response
@@ -374,7 +374,7 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
             f", rmp {rmp}, Rin {rin_noholding}"
         )
 
-        holdi = self.binsearch_holdi(
+        return self.binsearch_holdi(
             holding_voltage,
             cell_model,
             param_values,
@@ -384,8 +384,6 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
             precision=self.holdi_precision,
             max_depth=self.holdi_max_depth,
         )
-
-        return holdi
 
     def binsearch_holdi(
         self,
@@ -614,20 +612,17 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         short=False,
     ):
         """Detect if spike is present at current level."""
+        # Only run short pulse if percentage set smaller than 100%
+        if short and self.short_perc < 1.0:
+            protocol = self.create_short_threshold_protocol(
+                holdi=holdi, step_current=step_current
+            )
+        else:
+            protocol = self.create_step_protocol(holdi=holdi, step_current=step_current)
+
+        response = protocol.run(cell_model, param_values, sim=sim)
+        print(protocol)
         if "dep" in self.name:
-
-            # Only run short pulse if percentage set smaller than 100%
-            if short and self.short_perc < 1.0:
-                protocol = self.create_short_threshold_protocol(
-                    holdi=holdi, step_current=step_current
-                )
-            else:
-                protocol = self.create_step_protocol(
-                    holdi=holdi, step_current=step_current
-                )
-
-            response = protocol.run(cell_model, param_values, sim=sim)
-
             feature = ephys.efeatures.eFELFeature(
                 name="ThresholdDetection_dep.Spikecount",
                 efel_feature_name="Spikecount_stimint",
@@ -640,19 +635,6 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
 
             spike_count = feature.calculate_feature(response)
         elif "hyp" in self.name:
-
-            # Only run short pulse if percentage set smaller than 100%
-            if short and self.short_perc < 1.0:
-                protocol = self.create_short_threshold_protocol(
-                    holdi=holdi, step_current=step_current
-                )
-            else:
-                protocol = self.create_step_protocol(
-                    holdi=holdi, step_current=step_current
-                )
-
-            response = protocol.run(cell_model, param_values, sim=sim)
-            print(protocol)
             feature = ephys.efeatures.eFELFeature(
                 name="ThresholdDetection_hyp.Spikecount",
                 efel_feature_name="Spikecount_stimint",
