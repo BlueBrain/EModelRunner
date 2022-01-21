@@ -35,7 +35,7 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
         - Run IDRest
         - Possibly run other protocols (based on constructor arguments)
         - Return all the responses
-        Otherwise return return Rin and RMP protocol responses
+        Otherwise return Rin and RMP protocol responses
     """
 
     def __init__(
@@ -386,7 +386,6 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
     ):
         """Find the holding current to hold cell at holding_voltage."""
         holdi_estimate = float(holding_voltage - rmp) / rin_noholding
-        # holdi_estimate = 0.11
         print(
             f"Holdi estimate is {holdi_estimate} with target vhold {holding_voltage}"
             f", rmp {rmp}, Rin {rin_noholding}"
@@ -397,7 +396,7 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
             cell_model,
             param_values,
             sim,
-            upper_bound=0.22,  # it was 0.2
+            upper_bound=0.22,
             lower_bound=self.holdi_estimate_multiplier * holdi_estimate,
             precision=self.holdi_precision,
             max_depth=self.holdi_max_depth,
@@ -529,7 +528,6 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         self.max_threshold_voltage = max_threshold_voltage
 
         self.short_perc = 0.1
-        # self.short_steps = 20
         self.short_steps = 5
         self.holding_voltage = holding_voltage
 

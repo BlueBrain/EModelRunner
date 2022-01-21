@@ -80,7 +80,7 @@ def write_etype_factsheet(
         current_amplitude (float): current amplitude of the stimulus (nA)
         stim_start (float): time at which the stimulus begins (ms)
         stim_duration (float): stimulus duration (ms)
-        output_path (str): path to the metype factsheet output
+        output_path (str): path to the etype factsheet output
     """
     data = np.loadtxt(data_path)
 

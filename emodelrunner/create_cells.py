@@ -114,15 +114,12 @@ def create_cell_using_config(config):
     syn_mech_args = get_syn_mech_args(config)
 
     # get morphology config data
-    if config.package_type == PackageType.sscx:
-        morph = create_morphology(get_morph_args(config), config.package_type)
-    elif config.package_type == PackageType.thalamus:
+    if config.package_type in [PackageType.sscx, PackageType.thalamus]:
         morph = create_morphology(get_morph_args(config), config.package_type)
     else:
         raise ValueError(f"unsupported package type: {config.package_type}")
 
-    # create cell
-    cell = create_cell(
+    return create_cell(
         unopt_params_path,
         config.get("Cell", "emodel"),
         add_synapses,
@@ -132,8 +129,6 @@ def create_cell_using_config(config):
         v_init=config.getfloat("Cell", "v_init"),
         celsius=config.getfloat("Cell", "celsius"),
     )
-
-    return cell
 
 
 def get_postcell(
