@@ -200,7 +200,9 @@ def get_precell(
 
     unopt_params_path = config.get("Paths", "precell_unoptimized_params_path")
 
-    morph = create_morphology(get_synplas_morph_args(config, precell=True), config.package_type)
+    morph = create_morphology(
+        get_synplas_morph_args(config, precell=True), config.package_type
+    )
 
     add_synapses = False
 
