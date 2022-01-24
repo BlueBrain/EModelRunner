@@ -44,7 +44,11 @@ class ProtocolBuilder:
     """
 
     def __init__(self, protocols):
-        """Constructor to be called by the classmethod overloads."""
+        """Constructor to be called by the classmethod overloads.
+
+        Args:
+            protocols (bluepyopt.ephys.protocols.SequenceProtocol): the protocols to apply to the cell
+        """
         self.protocols = protocols
 
     @staticmethod
