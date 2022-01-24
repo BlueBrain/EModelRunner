@@ -346,14 +346,15 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         return subprotocols
 
     def create_rin_protocol_dep(self, holdi=None):
-        """Create threshold protocol."""
+        """Create Rin_dep protocol."""
         return self._create_rin_protocol("Rin_dep", holdi)
 
     def create_rin_protocol_hyp(self, holdi=None):
-        """Create threshold protocol."""
+        """Create rin_hyp protocol."""
         return self._create_rin_protocol("Rin_hyp", holdi)
 
     def _create_rin_protocol(self, protocol_name, holdi):
+        """Create rin protocol from self.rin_protocol_template."""
         rin_protocol = copy.deepcopy(self.rin_protocol_template)
         rin_protocol.name = protocol_name
         for recording in rin_protocol.recordings:
