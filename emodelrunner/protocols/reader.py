@@ -267,12 +267,6 @@ class ProtocolParser:
         """
         protocol_definitions = self.load_protocol_json(protocols_filepath)
 
-        # fmt: off
-        protocols_with_type = [
-            "StepProtocol", "StepThresholdProtocol", "RampThresholdProtocol",
-            "RampProtocol", "RatSSCxThresholdDetectionProtocol", "Vecstim", "Netstim"]
-        # fmt: on
-
         for protocol_name, protocol_definition in protocol_definitions.items():
             if protocol_name not in ["Main", "RinHoldcurrent"]:
                 recordings = get_recordings(
@@ -295,22 +289,17 @@ class ProtocolParser:
                         protocol_definition, protocol_name, recordings, syn_locs
                     )
 
-                elif (
-                    "type" not in protocol_definition
-                    or protocol_definition["type"] not in protocols_with_type
-                ):
-                    stimuli = []
-                    for stimulus_definition in protocol_definition["stimuli"]:
-                        stimuli.append(
-                            ephys.stimuli.NrnSquarePulse(
-                                step_amplitude=stimulus_definition["amp"],
-                                step_delay=stimulus_definition["delay"],
-                                step_duration=stimulus_definition["duration"],
-                                location=SOMA_LOC,
-                                total_duration=stimulus_definition["totduration"],
-                            )
+                else:
+                    stimuli = [
+                        ephys.stimuli.NrnSquarePulse(
+                            step_amplitude=stimulus_definition["amp"],
+                            step_delay=stimulus_definition["delay"],
+                            step_duration=stimulus_definition["duration"],
+                            location=SOMA_LOC,
+                            total_duration=stimulus_definition["totduration"],
                         )
-
+                        for stimulus_definition in protocol_definition["stimuli"]
+                    ]
                     self.protocols_dict[protocol_name] = ephys.protocols.SweepProtocol(
                         name=protocol_name, stimuli=stimuli, recordings=recordings
                     )
@@ -340,11 +329,6 @@ class ProtocolParser:
         """
         protocol_definitions = self.load_protocol_json(protocols_filepath)
 
-        # fmt: off
-        protocols_with_type = [
-            "StepProtocol", "StepThresholdProtocol", "RatSSCxThresholdDetectionProtocol"]
-        # fmt: on
-
         for protocol_name, protocol_definition in protocol_definitions.items():
             if protocol_name not in [
                 "Main",
@@ -373,22 +357,17 @@ class ProtocolParser:
                         protocol_definition, protocol_name, recordings, prefix
                     )
 
-                elif (
-                    "type" not in protocol_definition
-                    or protocol_definition["type"] not in protocols_with_type
-                ):
-                    stimuli = []
-                    for stimulus_definition in protocol_definition["stimuli"]:
-                        stimuli.append(
-                            ephys.stimuli.NrnSquarePulse(
-                                step_amplitude=stimulus_definition["amp"],
-                                step_delay=stimulus_definition["delay"],
-                                step_duration=stimulus_definition["duration"],
-                                location=SOMA_LOC,
-                                total_duration=stimulus_definition["totduration"],
-                            )
+                else:
+                    stimuli = [
+                        ephys.stimuli.NrnSquarePulse(
+                            step_amplitude=stimulus_definition["amp"],
+                            step_delay=stimulus_definition["delay"],
+                            step_duration=stimulus_definition["duration"],
+                            location=SOMA_LOC,
+                            total_duration=stimulus_definition["totduration"],
                         )
-
+                        for stimulus_definition in protocol_definition["stimuli"]
+                    ]
                     self.protocols_dict[protocol_name] = ephys.protocols.SweepProtocol(
                         name=protocol_name, stimuli=stimuli, recordings=recordings
                     )
