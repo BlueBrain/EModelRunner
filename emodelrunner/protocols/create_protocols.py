@@ -47,7 +47,7 @@ class ProtocolBuilder:
         """Constructor to be called by the classmethod overloads.
 
         Args:
-            protocols (bluepyopt.ephys.protocols.SequenceProtocol): the protocols to apply to the cell
+            protocols (bluepyopt.ephys.protocols.SequenceProtocol): protocols to apply to the cell
         """
         self.protocols = protocols
 
