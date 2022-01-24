@@ -67,6 +67,8 @@ class ProtocolBuilder:
             prot_args (dict): config data relative to protocols
                 See load.get_prot_args for details
             cell (CellModelCustom): cell model
+        Returns:
+            ProtocolBuilder: the object with the sscx protocols
         """
         syn_locs = cls._get_syn_locs(add_synapses, cell)
 
@@ -89,6 +91,8 @@ class ProtocolBuilder:
             prot_args (dict): config data relative to protocols
                 See load.get_prot_args for details
             cell (CellModelCustom): cell model
+        Returns:
+            ProtocolBuilder: the object with the thalamus protocols
         """
         syn_locs = cls._get_syn_locs(add_synapses, cell)
 
