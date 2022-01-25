@@ -196,6 +196,9 @@ def create_protocols_object(
         syn_locs (list): list of synapse locations
         stochkv_det (bool): set if stochastic or deterministic
 
+    Raises:
+        ValueError: if the package type is not supported
+
     Returns:
         ephys.protocols.SequenceProtocol: sequence protocol containing all the protocols
     """
