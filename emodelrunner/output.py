@@ -34,7 +34,9 @@ def write_responses(responses, output_dir):
     for key, resp in responses.items():
         output_path = os.path.join(output_dir, key + ".dat")
 
-        # holding & threshold current cases for recipe protocols
+        # Some resp are None when spike is not found
+        if resp is None:
+            continue
         if isinstance(resp, (float, np.float)):
             np.savetxt(output_path, np.array([resp]))
         else:

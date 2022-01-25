@@ -20,7 +20,7 @@ import json
 import numpy as np
 import pytest
 
-from emodelrunner.load import load_sscx_config
+from emodelrunner.load import load_config
 from emodelrunner.run import main as run_emodel
 from emodelrunner.factsheets import morphology_features
 from emodelrunner.factsheets.output import (
@@ -52,7 +52,7 @@ class TestMETypeFactsheet:
         output_path = Path("factsheets") / "me_type_factsheet.json"
 
         with cwd(example_dir):
-            config = load_sscx_config(config_path=config_path_in_memodel_dir)
+            config = load_config(config_path=config_path_in_memodel_dir)
             run_emodel(config_path=config_path_in_memodel_dir)
 
         voltage_path = Path("python_recordings") / ("_." + protocol_key + ".soma.v.dat")

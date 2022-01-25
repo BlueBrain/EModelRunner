@@ -78,7 +78,7 @@ def test_pairsim_voltages():
         compile_mechanisms()
         run_pairsim(config_path="config/config_1Hz_10ms.ini")
 
-    check_output(threshold_v=1.0)
+    check_output(threshold_v=0.07)
 
 
 def test_analysis():

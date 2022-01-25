@@ -18,10 +18,11 @@ import argparse
 
 from bluepyopt import ephys
 
+from emodelrunner.configuration.configparser import PackageType
 from emodelrunner.create_cells import create_cell_using_config
-from emodelrunner.create_protocols import SSCXProtocols
+from emodelrunner.protocols.create_protocols import ProtocolBuilder
 from emodelrunner.load import (
-    load_sscx_config,
+    load_config,
     get_prot_args,
     get_release_params,
 )
@@ -37,7 +38,7 @@ def main(config_path):
             The config file should have '.ini' suffix
     """
     # pylint: disable=too-many-locals
-    config = load_sscx_config(config_path=config_path)
+    config = load_config(config_path=config_path)
 
     cell = create_cell_using_config(config)
     release_params = get_release_params(config)
@@ -52,16 +53,26 @@ def main(config_path):
     add_synapses = config.getboolean("Synapses", "add_synapses")
     prot_args = get_prot_args(config)
 
-    sscx_protocols = SSCXProtocols(add_synapses, prot_args, cell)
-    ephys_protocols = sscx_protocols.get_ephys_protocols()
-
+    if config.package_type == PackageType.sscx:
+        protocols = ProtocolBuilder.using_sscx_protocols(add_synapses, prot_args, cell)
+    elif config.package_type == PackageType.thalamus:
+        protocols = ProtocolBuilder.using_thalamus_protocols(
+            add_synapses, prot_args, cell
+        )
+    else:
+        raise ValueError(f"unsupported package type: {config.package_type}")
+    ephys_protocols = protocols.get_ephys_protocols()
     # run
     print("Python Recordings Running...")
     responses = ephys_protocols.run(
         cell_model=cell, param_values=release_params, sim=sim, isolate=False
     )
 
-    currents = sscx_protocols.get_stim_currents(responses)
+    mtype = config.get("Morphology", "mtype")
+    if config.package_type == PackageType.sscx:
+        currents = protocols.get_stim_currents(responses, dt)
+    elif config.package_type == PackageType.thalamus:
+        currents = protocols.get_thalamus_stim_currents(responses, mtype, dt)
 
     # write responses
     output_dir = config.get("Paths", "output_dir")

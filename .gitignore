@@ -1,10 +1,13 @@
 *.pyc
 *.swp
 coverage.xml
+coverage.json
+coverage.html
 *.egg-info
 .coverage
 doc/build
 doc/source/generated
+doc/source/_autosummary
 .tox
 build
 dist
@@ -20,3 +23,5 @@ examples/sscx_sample_dir/cell.hoc
 examples/sscx_sample_dir/run.hoc
 examples/sscx_sample_dir/createsimulation.hoc
 examples/sscx_sample_dir/synapses/synapses.hoc
+examples/synplas_sample_dir/*.h5
+examples/thalamus_sample_dir/python_recordings

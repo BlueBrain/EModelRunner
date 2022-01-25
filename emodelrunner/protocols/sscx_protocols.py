@@ -1,4 +1,4 @@
-"""Protocols."""
+"""Ephys protocols for the SSCX packages."""
 
 # Copyright 2020-2021 Blue Brain Project / EPFL
 
@@ -20,27 +20,11 @@ import collections
 import copy
 import logging
 import numpy as np
-
 from bluepyopt import ephys
 
+from emodelrunner.protocols.protocols_func import CurrentOutputKeyMixin
+
 logger = logging.getLogger(__name__)
-
-
-class ProtocolMixin:
-    """Contains methods useful for multiple Protocol classes."""
-
-    def curr_output_key(self):
-        """Get the output key for current based on the one for voltage.
-
-        Returns:
-            str used as key in current dict
-        """
-        if self.recordings is not None:
-            # this gives 'prefix.name'
-            name = ".".join(self.recordings[0].name.split(".")[:2])
-        else:
-            name = ""
-        return "current_" + name
 
 
 class RatSSCxMainProtocol(ephys.protocols.Protocol):
@@ -775,7 +759,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         return threshold_current
 
 
-class StepProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
+class StepProtocol(ephys.protocols.SweepProtocol, CurrentOutputKeyMixin):
     """Protocol consisting of step and holding current.
 
     Attributes:
@@ -965,7 +949,7 @@ class StepProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
             return np.mean(amplitudes)
 
 
-class StepThresholdProtocol(StepProtocol, ProtocolMixin):
+class StepThresholdProtocol(StepProtocol):
     """Step protocol based on threshold.
 
     Attributes:
@@ -1085,7 +1069,7 @@ class StepThresholdProtocol(StepProtocol, ProtocolMixin):
         return {self.curr_output_key(): {"time": t, "current": current}}
 
 
-class RampProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
+class RampProtocol(ephys.protocols.SweepProtocol, CurrentOutputKeyMixin):
     """Protocol consisting of ramp and holding current.
 
     Attributes:
@@ -1175,7 +1159,7 @@ class RampProtocol(ephys.protocols.SweepProtocol, ProtocolMixin):
         return self.ramp_stimulus.ramp_duration
 
 
-class RampThresholdProtocol(RampProtocol, ProtocolMixin):
+class RampThresholdProtocol(RampProtocol):
     """Step protocol based on threshold.
 
     Attributes:

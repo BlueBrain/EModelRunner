@@ -33,7 +33,7 @@ def write_metype_json(
     morphology_path,
     output_path,
 ):
-    """Write the me-type factsheet json file.
+    """Write the me-type factsheet json file of SSCX packages.
 
     The output metype factsheet contains anatomy, physiology and morphology data.
 
@@ -68,6 +68,34 @@ def write_metype_json(
     with open(output_path, "w", encoding="utf-8") as out_file:
         json.dump(output, out_file, indent=4, cls=NpEncoder)
     print("me-type json file written.")
+
+
+def write_etype_factsheet(
+    data_path, current_amplitude, stim_start, stim_duration, output_path
+):
+    """Write the e-type factsheet json file.
+
+    Args:
+        data_path (str): path to the trace data (usually output of emodelrunner run)
+        current_amplitude (float): current amplitude of the stimulus (nA)
+        stim_start (float): time at which the stimulus begins (ms)
+        stim_duration (float): stimulus duration (ms)
+        output_path (str): path to the etype factsheet output
+    """
+    data = np.loadtxt(data_path)
+
+    physiology = physiology_factsheet_info(
+        time=data[:, 0],
+        voltage=data[:, 1],
+        current_amplitude=current_amplitude,
+        stim_start=stim_start,
+        stim_duration=stim_duration,
+    )
+
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, "w", encoding="utf-8") as out_file:
+        json.dump(physiology, out_file, indent=4, cls=NpEncoder)
 
 
 def get_stim_params_from_config_for_physiology_factsheet(prot_path, protocol_key):
@@ -111,7 +139,7 @@ def get_stim_params_from_config_for_physiology_factsheet(prot_path, protocol_key
 def write_metype_json_from_config(
     config, voltage_path, morphology_path, output_path, protocol_key
 ):
-    """Write the me-type factsheet json file.
+    """Write the me-type factsheet json file from config input.
 
     Args:
         config (configparser.ConfigParser): configuration

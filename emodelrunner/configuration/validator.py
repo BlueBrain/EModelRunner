@@ -1,4 +1,4 @@
-"""Configuration parsing and validation."""
+"""Configuration validation."""
 
 # Copyright 2020-2021 Blue Brain Project / EPFL
 
@@ -17,11 +17,12 @@
 import logging
 import pprint
 from pathlib import Path
-import configparser
 from abc import ABC
 from ast import literal_eval
 
 from schema import Schema, And, Or
+
+from emodelrunner.configuration.configparser import EModelConfigParser
 
 logger = logging.getLogger(__name__)
 
@@ -145,13 +146,12 @@ class ConfigValidator(ABC):
         """
         if not Path(config_path).exists():
             raise FileNotFoundError(f"config file at {config_path} is not found.")
-        config = configparser.ConfigParser()
+        config = EModelConfigParser()
 
         # set defaults
         config.read_dict(self.default_values)
 
         config.read(config_path)
-
         return config
 
 
@@ -159,6 +159,7 @@ class SSCXConfigValidator(ConfigValidator):
     """Validates the SSCX config through a validation schema."""
 
     default_values = {
+        "Package": {"type": "sscx"},
         "Cell": {
             "celsius": "34",
             "v_init": "-80",
@@ -215,6 +216,7 @@ class SSCXConfigValidator(ConfigValidator):
         """Define the schema through validation rules."""
         self.config_validator_schema = Schema(
             {
+                "Package": {"type": lambda n: n.lower() == "sscx"},
                 "Cell": {
                     "celsius": self.float_or_int_expression,
                     "v_init": self.float_or_int_expression,
@@ -271,10 +273,96 @@ class SSCXConfigValidator(ConfigValidator):
         )
 
 
+class ThalamusConfigValidator(ConfigValidator):
+    """Validates the Thalamus config through a validation schema."""
+
+    default_values = {
+        "Package": {"type": "thalamus"},
+        "Cell": {
+            "celsius": "34",
+            "v_init": "-80",
+            "gid": "0",
+        },
+        "Protocol": {
+            # -1 means there is no apical point
+            "apical_point_isec": "-1",
+        },
+        "Morphology": {
+            "do_replace_axon": "True",
+            # is only used for naming the output files
+            "mtype": "",
+        },
+        "Sim": {
+            "cvode_active": "False",
+            "dt": "0.025",
+        },
+        "Synapses": {
+            "add_synapses": "False",
+            "seed": "846515",
+            "rng_settings_mode": "Random123",  # can be "Random123" or "Compatibility"
+        },
+        "Paths": {
+            "memodel_dir": ".",
+            "output_dir": "%(memodel_dir)s/python_recordings",
+            "params_path": "%(memodel_dir)s/config/params/final.json",
+            "units_path": "%(memodel_dir)s/config/features/units.json",
+            "syn_dir": "%(memodel_dir)s/synapses",
+            "syn_data_file": "synapses.tsv",
+            "syn_conf_file": "synconf.txt",
+            "syn_mtype_map": "mtype_map.tsv",
+        },
+    }
+
+    def __init__(self):
+        """Define the schema through validation rules."""
+        self.config_validator_schema = Schema(
+            {
+                "Package": {"type": lambda n: n.lower() == "thalamus"},
+                "Cell": {
+                    "celsius": self.float_or_int_expression,
+                    "v_init": self.float_or_int_expression,
+                    "gid": self.int_expression,
+                    "emodel": And(str, len),
+                },
+                "Protocol": {
+                    "apical_point_isec": self.int_expression,
+                },
+                "Morphology": {
+                    "mtype": And(str, len),
+                    "do_replace_axon": self.boolean_expression,
+                },
+                "Sim": {
+                    "cvode_active": self.boolean_expression,
+                    "dt": self.float_or_int_expression,
+                },
+                "Synapses": {
+                    "add_synapses": self.boolean_expression,
+                    "seed": self.int_expression,
+                    "rng_settings_mode": Or("Random123", "Compatibility"),
+                },
+                "Paths": {
+                    "morph_path": lambda n: Path(n).exists(),
+                    "prot_path": lambda n: Path(n).exists(),
+                    "features_path": lambda n: Path(n).exists(),
+                    "unoptimized_params_path": lambda n: Path(n).exists(),
+                    "memodel_dir": lambda n: Path(n).exists(),
+                    "output_dir": lambda n: Path(n).exists(),
+                    "params_path": lambda n: Path(n).exists(),
+                    "units_path": lambda n: Path(n).exists(),
+                    "syn_dir": lambda n: Path(n).exists(),
+                    "syn_data_file": And(str, len),
+                    "syn_conf_file": And(str, len),
+                    "syn_mtype_map": And(str, len),
+                },
+            }
+        )
+
+
 class SynplasConfigValidator(ConfigValidator):
     """Validates the Synplas config through a validation schema."""
 
     default_values = {
+        "Package": {"type": "synplas"},
         "Paths": {
             "memodel_dir": ".",
             "params_path": "%(memodel_dir)s/config/params/final.json",
@@ -302,6 +390,7 @@ class SynplasConfigValidator(ConfigValidator):
         """Define the schema through validation rules."""
         self.config_validator_schema = Schema(
             {
+                "Package": {"type": lambda n: n.lower() == "synplas"},
                 "Cell": {
                     "celsius": self.float_or_int_expression,
                     "v_init": self.float_or_int_expression,
@@ -353,3 +442,30 @@ class SynplasConfigValidator(ConfigValidator):
                 },
             }
         )
+
+
+def get_validated_config(config_path):
+    """Returns the validated config for the specified package type.
+
+    Args:
+        config_path (str or Path): path to the configuration file.
+
+    Returns:
+        configparser.ConfigParser: loaded config object
+    """
+    # pylint: disable=protected-access
+    unvalidated_config = ConfigValidator()._get_unvalidated_config(config_path)
+
+    package_type = unvalidated_config.get("Package", "type").lower()
+
+    if package_type == "sscx":
+        conf_validator = SSCXConfigValidator()
+    elif package_type == "thalamus":
+        conf_validator = ThalamusConfigValidator()
+    elif package_type == "synplas":
+        conf_validator = SynplasConfigValidator()
+    else:
+        raise ValueError(f"Unsupported config type: {package_type}")
+
+    validated_config = conf_validator.validate_from_file(config_path)
+    return validated_config

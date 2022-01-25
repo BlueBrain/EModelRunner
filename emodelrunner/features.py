@@ -33,7 +33,7 @@ def get_feature(
 
     Args:
         feature_config (dict): contains the feature-related config data
-        main_protocol (RatSSCxMainProtocol): Main Protocol containing all the protocols
+        main_protocol (ephys.protocols.Protocol): Main Protocol containing all the protocols
         protocol_name (str): name of the protocol used
         recording_name (str): name of the recording. used to get the trace
         prefix (str): prefix used in naming responses, features, recordings, etc.
@@ -103,7 +103,7 @@ def define_efeatures(main_protocol, features_path, prefix=""):
     """Define the efeatures.
 
     Args:
-        main_protocol (RatSSCxMainProtocol): Main Protocol containing all the protocols
+        main_protocol (ephys.protocols.Protocol): Main Protocol containing all the protocols
         features_path (str): path to features file
         prefix (str): prefix used in naming responses, features, recordings, etc.
 
