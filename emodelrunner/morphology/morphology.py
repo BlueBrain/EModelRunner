@@ -163,6 +163,7 @@ class ThalamusNrnFileMorphology(ephys.morphologies.NrnFileMorphology):
             section.nseg = nseg
 
             for seg in section:
+                count = count + 1
                 diams.append(seg.diam)
                 lens.append(L / nseg)
                 if count == nseg_total:
