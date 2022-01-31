@@ -457,9 +457,9 @@ class MorphologyFactsheetBuilder:
                 ("apical", nm.APICAL_DENDRITE),
                 ("basal", nm.BASAL_DENDRITE),
             ]
-        elif api and not bas:
+        elif api:
             return [("axon", nm.AXON), ("dendrite", nm.APICAL_DENDRITE)]
-        elif bas and not api:
+        elif bas:
             return [("axon", nm.AXON), ("dendrite", nm.BASAL_DENDRITE)]
         logger.warning("No dendrite found!")
         return [("axon", nm.AXON)]
