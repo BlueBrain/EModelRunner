@@ -437,20 +437,17 @@ class MorphologyFactsheetBuilder:
         self.neurite_features = []
         self.soma_features = []
 
-    @staticmethod
-    def get_neurites(morphology):
+    def get_neurites(self):
         """Return neurite names (str) and types (neurom type).
 
         If basal or apical are not present, name them 'dendrite'.
 
-        Args:
-            morphology (neurom.core.morphology.Morphology): morphology of the neuron.
 
         Returns:
             list of tuple: (neurite_names, neurite_types)
         """
-        api = nm.get("total_length", morphology, neurite_type=nm.APICAL_DENDRITE)
-        bas = nm.get("total_length", morphology, neurite_type=nm.BASAL_DENDRITE)
+        api = nm.get("total_length", self.morphology, neurite_type=nm.APICAL_DENDRITE)
+        bas = nm.get("total_length", self.morphology, neurite_type=nm.BASAL_DENDRITE)
         if api and bas:
             return [
                 ("axon", nm.AXON),
@@ -497,7 +494,7 @@ class SSCXMorphologyFactsheetBuilder(MorphologyFactsheetBuilder):
             morph_path (str or Path): Path to the morphology file.
         """
         super(SSCXMorphologyFactsheetBuilder, self).__init__(morph_path)
-        self.neurites = self.get_neurites(self.morphology)
+        self.neurites = self.get_neurites()
         self.neurite_features = [
             TotalLength,
             MeanNeuriteVolumes,
@@ -517,7 +514,7 @@ class HippocampusMorphologyFactsheetBuilder(MorphologyFactsheetBuilder):
             morph_path (str or Path): Path to the morphology file.
         """
         super(HippocampusMorphologyFactsheetBuilder, self).__init__(morph_path)
-        self.neurites = [("all", nm.ANY_NEURITE)] + self.get_neurites(self.morphology)
+        self.neurites = [("all", nm.ANY_NEURITE)] + self.get_neurites()
         self.neurite_features = [
             TotalWidth,
             TotalHeight,
@@ -542,7 +539,7 @@ class ThalamusMorphologyFactsheetBuilder(MorphologyFactsheetBuilder):
             morph_path (str or Path): Path to the morphology file.
         """
         super(ThalamusMorphologyFactsheetBuilder, self).__init__(morph_path)
-        self.neurites = self.get_neurites(self.morphology)
+        self.neurites = self.get_neurites()
         self.neurite_features = [
             TotalLength,
             TotalVolume,
