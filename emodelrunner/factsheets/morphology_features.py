@@ -269,8 +269,34 @@ class NumberOfSections(MorphologyFeature):
         self.value = self.replace_empty_value(feature_value)
 
 
+class NumberOfSegments(MorphologyFeature):
+    """Number of segments feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (float): value of the feature
+        unit (str): unit of the feature
+    """
+
+    def __init__(self, morphology, neurite_name, neurite_type):
+        """Constructor.
+
+        Args:
+            morphology (neurom neuron object): morphology object
+            neurite_name (str): neurite name, e.g. axon
+            neurite_type (NeuriteType): enum for neurite type encoding
+        """
+        super().__init__()
+        self.name = f"number of {neurite_name} segments"
+        self.unit = ""
+        feature_values = nm.get(
+            "number_of_segments", morphology, neurite_type=neurite_type
+        )
+        self.value = self.replace_empty_value(feature_values)
+
+
 class MeanNeuriteVolumes(MorphologyFeature):
-    """Total neurite volume feature.
+    """Mean neurite volume feature.
 
     Attributes:
         name (str): name of the feature
@@ -291,6 +317,60 @@ class MeanNeuriteVolumes(MorphologyFeature):
         self.unit = "\u00b5m\u00b3"
         feature_values = nm.get(
             "total_volume_per_neurite", morphology, neurite_type=neurite_type
+        )
+        feature_values = self.replace_empty_value(feature_values)
+        self.value = sum(feature_values) / len(feature_values)
+
+
+class AverageSectionLength(MorphologyFeature):
+    """Average section length feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (float): value of the feature
+        unit (str): unit of the feature
+    """
+
+    def __init__(self, morphology, neurite_name, neurite_type):
+        """Constructor.
+
+        Args:
+            morphology (neurom neuron object): morphology object
+            neurite_name (str): neurite name, e.g. axon
+            neurite_type (NeuriteType): enum for neurite type encoding
+        """
+        super().__init__()
+        self.name = f"average {neurite_name} section length"
+        self.unit = "\u00b5m"
+        feature_values = nm.get(
+            "section_lengths", morphology, neurite_type=neurite_type
+        )
+        feature_values = self.replace_empty_value(feature_values)
+        self.value = sum(feature_values) / len(feature_values)
+
+
+class AverageSegmentLength(MorphologyFeature):
+    """Average segment length feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (float): value of the feature
+        unit (str): unit of the feature
+    """
+
+    def __init__(self, morphology, neurite_name, neurite_type):
+        """Constructor.
+
+        Args:
+            morphology (neurom neuron object): morphology object
+            neurite_name (str): neurite name, e.g. axon
+            neurite_type (NeuriteType): enum for neurite type encoding
+        """
+        super().__init__()
+        self.name = f"average {neurite_name} segment length"
+        self.unit = "\u00b5m"
+        feature_values = nm.get(
+            "segment_lengths", morphology, neurite_type=neurite_type
         )
         feature_values = self.replace_empty_value(feature_values)
         self.value = sum(feature_values) / len(feature_values)
@@ -524,6 +604,9 @@ class HippocampusMorphologyFactsheetBuilder(MorphologyFactsheetBuilder):
             TotalVolume,
             AverageDiameter,
             NumberOfSections,
+            NumberOfSegments,
+            AverageSectionLength,
+            AverageSegmentLength,
             MaxBranchOrder,
         ]
         self.soma_features = [SomaDiamater, SomaSurfaceArea, SomaVolume]

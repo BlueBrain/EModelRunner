@@ -16,6 +16,7 @@
 
 import os
 import json
+from emodelrunner.json_utilities import NpEncoder
 import neurom as nm
 from neurom.core.types import NeuriteType
 from emodelrunner.factsheets import morphology_features
@@ -49,10 +50,11 @@ def test_hippocampus_morphology_factsheet_builder():
         test_morph
     )
     morph_features = factsheet_builder.get_feature_values()
-    assert len(morph_features) == 39
+    assert len(morph_features) == 51
     for feature in morph_features:
         assert feature["value"] >= 0
     hipp_morphometrics_dict = factsheet_builder.factsheet_dict()
+
     with open("tests/unit_tests/data/hippocampus_morphometrics.json", "r") as in_file:
         morphometrics_gt = json.load(in_file)
 
