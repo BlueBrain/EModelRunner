@@ -42,6 +42,21 @@
             "unit": ""
         },
         {
+            "name": "number of all segments",
+            "value": 1861,
+            "unit": ""
+        },
+        {
+            "name": "average all section length",
+            "value": 89.5033156445267,
+            "unit": "\u00b5m"
+        },
+        {
+            "name": "average all segment length",
+            "value": 5.242268301254316,
+            "unit": "\u00b5m"
+        },
+        {
             "name": "all maximum branch order",
             "value": 11,
             "unit": ""
@@ -85,6 +100,21 @@
             "name": "number of axon sections",
             "value": 47,
             "unit": ""
+        },
+        {
+            "name": "number of axon segments",
+            "value": 1160,
+            "unit": ""
+        },
+        {
+            "name": "average axon section length",
+            "value": 135.4417581608955,
+            "unit": "\u00b5m"
+        },
+        {
+            "name": "average axon segment length",
+            "value": 5.4877262925536465,
+            "unit": "\u00b5m"
         },
         {
             "name": "axon maximum branch order",
@@ -132,6 +162,21 @@
             "unit": ""
         },
         {
+            "name": "number of apical segments",
+            "value": 400,
+            "unit": ""
+        },
+        {
+            "name": "average apical section length",
+            "value": 60.205104745667555,
+            "unit": "\u00b5m"
+        },
+        {
+            "name": "average apical segment length",
+            "value": 4.364870185703039,
+            "unit": "\u00b5m"
+        },
+        {
             "name": "apical maximum branch order",
             "value": 7,
             "unit": ""
@@ -175,6 +220,21 @@
             "name": "number of basal sections",
             "value": 33,
             "unit": ""
+        },
+        {
+            "name": "number of basal segments",
+            "value": 301,
+            "unit": ""
+        },
+        {
+            "name": "average basal section length",
+            "value": 49.8227495171807,
+            "unit": "\u00b5m"
+        },
+        {
+            "name": "average basal segment length",
+            "value": 5.4622948006340035,
+            "unit": "\u00b5m"
         },
         {
             "name": "basal maximum branch order",

@@ -269,8 +269,34 @@ class NumberOfSections(MorphologyFeature):
         self.value = self.replace_empty_value(feature_value)
 
 
+class NumberOfSegments(MorphologyFeature):
+    """Number of segments feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (float): value of the feature
+        unit (str): unit of the feature
+    """
+
+    def __init__(self, morphology, neurite_name, neurite_type):
+        """Constructor.
+
+        Args:
+            morphology (neurom neuron object): morphology object
+            neurite_name (str): neurite name, e.g. axon
+            neurite_type (NeuriteType): enum for neurite type encoding
+        """
+        super().__init__()
+        self.name = f"number of {neurite_name} segments"
+        self.unit = ""
+        feature_values = nm.get(
+            "number_of_segments", morphology, neurite_type=neurite_type
+        )
+        self.value = self.replace_empty_value(feature_values)
+
+
 class MeanNeuriteVolumes(MorphologyFeature):
-    """Total neurite volume feature.
+    """Mean neurite volume feature.
 
     Attributes:
         name (str): name of the feature
@@ -291,6 +317,60 @@ class MeanNeuriteVolumes(MorphologyFeature):
         self.unit = "\u00b5m\u00b3"
         feature_values = nm.get(
             "total_volume_per_neurite", morphology, neurite_type=neurite_type
+        )
+        feature_values = self.replace_empty_value(feature_values)
+        self.value = sum(feature_values) / len(feature_values)
+
+
+class AverageSectionLength(MorphologyFeature):
+    """Average section length feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (float): value of the feature
+        unit (str): unit of the feature
+    """
+
+    def __init__(self, morphology, neurite_name, neurite_type):
+        """Constructor.
+
+        Args:
+            morphology (neurom neuron object): morphology object
+            neurite_name (str): neurite name, e.g. axon
+            neurite_type (NeuriteType): enum for neurite type encoding
+        """
+        super().__init__()
+        self.name = f"average {neurite_name} section length"
+        self.unit = "\u00b5m"
+        feature_values = nm.get(
+            "section_lengths", morphology, neurite_type=neurite_type
+        )
+        feature_values = self.replace_empty_value(feature_values)
+        self.value = sum(feature_values) / len(feature_values)
+
+
+class AverageSegmentLength(MorphologyFeature):
+    """Average segment length feature.
+
+    Attributes:
+        name (str): name of the feature
+        value (float): value of the feature
+        unit (str): unit of the feature
+    """
+
+    def __init__(self, morphology, neurite_name, neurite_type):
+        """Constructor.
+
+        Args:
+            morphology (neurom neuron object): morphology object
+            neurite_name (str): neurite name, e.g. axon
+            neurite_type (NeuriteType): enum for neurite type encoding
+        """
+        super().__init__()
+        self.name = f"average {neurite_name} segment length"
+        self.unit = "\u00b5m"
+        feature_values = nm.get(
+            "segment_lengths", morphology, neurite_type=neurite_type
         )
         feature_values = self.replace_empty_value(feature_values)
         self.value = sum(feature_values) / len(feature_values)
@@ -437,29 +517,26 @@ class MorphologyFactsheetBuilder:
         self.neurite_features = []
         self.soma_features = []
 
-    @staticmethod
-    def get_neurites(morphology):
+    def get_neurites(self):
         """Return neurite names (str) and types (neurom type).
 
         If basal or apical are not present, name them 'dendrite'.
 
-        Args:
-            morphology (neurom.core.morphology.Morphology): morphology of the neuron.
 
         Returns:
             list of tuple: (neurite_names, neurite_types)
         """
-        api = nm.get("total_length", morphology, neurite_type=nm.APICAL_DENDRITE)
-        bas = nm.get("total_length", morphology, neurite_type=nm.BASAL_DENDRITE)
+        api = nm.get("total_length", self.morphology, neurite_type=nm.APICAL_DENDRITE)
+        bas = nm.get("total_length", self.morphology, neurite_type=nm.BASAL_DENDRITE)
         if api and bas:
             return [
                 ("axon", nm.AXON),
                 ("apical", nm.APICAL_DENDRITE),
                 ("basal", nm.BASAL_DENDRITE),
             ]
-        elif api and not bas:
+        elif api:
             return [("axon", nm.AXON), ("dendrite", nm.APICAL_DENDRITE)]
-        elif bas and not api:
+        elif bas:
             return [("axon", nm.AXON), ("dendrite", nm.BASAL_DENDRITE)]
         logger.warning("No dendrite found!")
         return [("axon", nm.AXON)]
@@ -497,7 +574,7 @@ class SSCXMorphologyFactsheetBuilder(MorphologyFactsheetBuilder):
             morph_path (str or Path): Path to the morphology file.
         """
         super(SSCXMorphologyFactsheetBuilder, self).__init__(morph_path)
-        self.neurites = self.get_neurites(self.morphology)
+        self.neurites = self.get_neurites()
         self.neurite_features = [
             TotalLength,
             MeanNeuriteVolumes,
@@ -517,7 +594,7 @@ class HippocampusMorphologyFactsheetBuilder(MorphologyFactsheetBuilder):
             morph_path (str or Path): Path to the morphology file.
         """
         super(HippocampusMorphologyFactsheetBuilder, self).__init__(morph_path)
-        self.neurites = [("all", nm.ANY_NEURITE)] + self.get_neurites(self.morphology)
+        self.neurites = [("all", nm.ANY_NEURITE)] + self.get_neurites()
         self.neurite_features = [
             TotalWidth,
             TotalHeight,
@@ -527,6 +604,9 @@ class HippocampusMorphologyFactsheetBuilder(MorphologyFactsheetBuilder):
             TotalVolume,
             AverageDiameter,
             NumberOfSections,
+            NumberOfSegments,
+            AverageSectionLength,
+            AverageSegmentLength,
             MaxBranchOrder,
         ]
         self.soma_features = [SomaDiamater, SomaSurfaceArea, SomaVolume]
@@ -542,7 +622,7 @@ class ThalamusMorphologyFactsheetBuilder(MorphologyFactsheetBuilder):
             morph_path (str or Path): Path to the morphology file.
         """
         super(ThalamusMorphologyFactsheetBuilder, self).__init__(morph_path)
-        self.neurites = self.get_neurites(self.morphology)
+        self.neurites = self.get_neurites()
         self.neurite_features = [
             TotalLength,
             TotalVolume,
