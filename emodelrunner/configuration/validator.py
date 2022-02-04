@@ -366,9 +366,7 @@ class SynplasConfigValidator(ConfigValidator):
         "Paths": {
             "memodel_dir": ".",
             "params_path": "%(memodel_dir)s/config/params/final.json",
-            "templates_dir": "%(memodel_dir)s/templates",
             "synplas_fit_params_path": "%(memodel_dir)s/config/fit_params.json",
-            "replace_axon_hoc_path": "%(templates_dir)s/replace_axon_hoc.hoc",
             "syn_dir": "%(memodel_dir)s/synapses",
             "syn_data_file": "synapses.tsv",
             "syn_conf_file": "synconf.txt",
@@ -410,8 +408,6 @@ class SynplasConfigValidator(ConfigValidator):
                     "params_path": lambda n: Path(n).exists(),
                     "precell_unoptimized_params_path": lambda n: Path(n).exists(),
                     "synplas_fit_params_path": lambda n: Path(n).exists(),
-                    "templates_dir": lambda n: Path(n).exists(),
-                    "replace_axon_hoc_path": lambda n: Path(n).exists(),
                     "syn_dir": lambda n: Path(n).exists(),
                     "syn_data_file": And(str, len),
                     "syn_conf_file": And(str, len),
