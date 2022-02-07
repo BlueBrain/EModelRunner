@@ -1,3 +1,5 @@
+.. image:: logo/BBP-eModelRunner.jpg
+
 ############
 EModelRunner
 ############
