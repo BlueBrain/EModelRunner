@@ -1,12 +1,6 @@
 """Builds morphology objects."""
 
-from emodelrunner.morphology.morphology import (
-    SSCXNrnFileMorphology,
-    ThalamusNrnFileMorphology,
-)
-from emodelrunner.configuration import PackageType
-
-# Copyright 2020-2021 Blue Brain Project / EPFL
+# Copyright 2020-2022 Blue Brain Project / EPFL
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,6 +14,11 @@ from emodelrunner.configuration import PackageType
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from emodelrunner.morphology.morphology import (
+    SSCXNrnFileMorphology,
+    ThalamusNrnFileMorphology,
+)
+from emodelrunner.configuration import PackageType
 
 def get_axon_hoc(axon_hoc_path):
     """Returns string containing axon hoc to use as replacement.
