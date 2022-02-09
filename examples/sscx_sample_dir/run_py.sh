@@ -1,5 +1,5 @@
-# Copyright (c) BBP/EPFL 2018; All rights reserved.                         
-# Do not distribute without further notice.   
+# Copyright (c) BBP/EPFL 2020-2022.
+# This work is licenced under Creative Common CC BY-NC-SA-4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 # preloaded=False not implemented yet in BluePyOpt mechanisms
 if [ ! -f "x86_64/special" ]; then
