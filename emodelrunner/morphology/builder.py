@@ -20,6 +20,7 @@ from emodelrunner.morphology.morphology import (
 )
 from emodelrunner.configuration import PackageType
 
+
 def get_axon_hoc(axon_hoc_path):
     """Returns string containing axon hoc to use as replacement.
 
