@@ -68,3 +68,21 @@ class TestMainProtocol:
         )[:, 1]
 
         assert [f(step_200) != f(step_200_hyp) for f in [np.min, np.max, np.mean]]
+
+    def test_current_traces_produced(self):
+        """Test to check all produced voltage traces have corresponding current traces."""
+        voltage_paths = list(
+            Path(self.example_dir / "python_recordings").glob("*v.dat")
+        )
+        mtypes = [x.name.split(".")[0] for x in voltage_paths]
+        prot_names = [x.name.split(".")[1] for x in voltage_paths]
+
+        current_paths = list(
+            Path(self.example_dir / "python_recordings").glob("current*.dat")
+        )
+        current_names = [x.name for x in current_paths]
+        matching_current_names = [
+            f"current_{mtype}.{prot}.dat" for (mtype, prot) in zip(mtypes, prot_names)
+        ]
+
+        assert set(matching_current_names) == set(current_names)

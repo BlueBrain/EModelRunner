@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# pylint: disable=too-many-lines
+
 import warnings
 import collections
 import copy
@@ -215,17 +217,15 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
         if self.rinhold_protocol_dep is not None:
             currents.update(
                 self.rinhold_protocol_dep.generate_current(
-                    threshold_current=thres_i_dep,
-                    holding_current=holding_i_dep,
-                    dt=dt
-                ))
+                    threshold_current=thres_i_dep, holding_current=holding_i_dep, dt=dt
+                )
+            )
 
         currents.update(
             self.rinhold_protocol_hyp.generate_current(
-                threshold_current=thres_i_hyp,
-                holding_current=holding_i_hyp,
-                dt=dt
-            ))
+                threshold_current=thres_i_hyp, holding_current=holding_i_hyp, dt=dt
+            )
+        )
 
         for pre_protocol in self.pre_protocols:
             if "_hyp" in pre_protocol.name:
@@ -519,7 +519,10 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         ton = self.rin_protocol.step_stimulus.step_delay
         ton_idx = int(ton / dt)
 
-        toff = self.rin_protocol.step_stimulus.step_delay + self.rin_protocol.step_stimulus.step_duration
+        toff = (
+            self.rin_protocol.step_stimulus.step_delay
+            + self.rin_protocol.step_stimulus.step_duration
+        )
         toff_idx = int(toff / dt)
 
         current[ton_idx:toff_idx] += self.rin_protocol.step_stimulus.step_amplitude
