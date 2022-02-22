@@ -158,6 +158,9 @@ class ProtocolBuilder:
             mtype (str): mtype to index the responses
             dt (float): timestep of the generated currents (ms)
 
+        Raises:
+            KeyError: when "dep" holding or threshold current is missing
+
         Returns:
             dict: the generated currents in a dict.
         """
