@@ -115,15 +115,17 @@ class TestProtocolBuilder:
         responses = {
             f"{mtype}.bpo_threshold_current_hyp": 0.1,
             f"{mtype}.bpo_holding_current_hyp": 0.3,
-            f"{mtype}.bpo_threshold_current_dep": 0.4
+            f"{mtype}.bpo_threshold_current_dep": 0.4,
         }
 
         mock_obj = SimpleNamespace(
-            protocols=[SimpleNamespace(generate_current=(lambda *args: {"args": args}))])
+            protocols=[SimpleNamespace(generate_current=(lambda *args: {"args": args}))]
+        )
 
         thal_protocols = ProtocolBuilder(protocols=mock_obj)
         currents = thal_protocols.get_thalamus_stim_currents(responses, mtype, dt=0.025)
         assert currents["args"] == (0.1, None, 0.3, None, 0.025)
+
 
 class TestProtocolParser:
     """Tests for the ProtocolParser class."""
