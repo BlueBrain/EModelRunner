@@ -158,13 +158,19 @@ class ProtocolBuilder:
             mtype (str): mtype to index the responses
             dt (float): timestep of the generated currents (ms)
 
+        Raises:
+            KeyError: when "dep" holding or threshold current is missing
+
         Returns:
             dict: the generated currents in a dict.
         """
         thres_i_hyp = responses[f"{mtype}.bpo_threshold_current_hyp"]
-        thres_i_dep = responses[f"{mtype}.bpo_threshold_current_dep"]
         holding_i_hyp = responses[f"{mtype}.bpo_holding_current_hyp"]
-        holding_i_dep = responses[f"{mtype}.bpo_holding_current_dep"]
+        try:
+            thres_i_dep = responses[f"{mtype}.bpo_threshold_current_dep"]
+            holding_i_dep = responses[f"{mtype}.bpo_holding_current_dep"]
+        except KeyError:
+            thres_i_dep = holding_i_dep = None
         currents = {}
         for protocol in self.protocols.protocols:
             currents.update(

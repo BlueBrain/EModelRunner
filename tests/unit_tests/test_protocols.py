@@ -15,6 +15,7 @@
 # limitations under the License.
 
 from pathlib import Path
+from types import SimpleNamespace
 
 from emodelrunner.load import (
     load_config,
@@ -107,6 +108,23 @@ class TestProtocolBuilder:
                 "Rin_dep",
             }
             assert prot_obj_names - thalamus_recipe_protocol_keys == set()
+
+    def test_thalamus_stim_currents_exception(self):
+        """Tests the exception case in get_thalamus_stim_currents."""
+        mtype = "test_mtype"
+        responses = {
+            f"{mtype}.bpo_threshold_current_hyp": 0.1,
+            f"{mtype}.bpo_holding_current_hyp": 0.3,
+            f"{mtype}.bpo_threshold_current_dep": 0.4,
+        }
+
+        mock_obj = SimpleNamespace(
+            protocols=[SimpleNamespace(generate_current=(lambda *args: {"args": args}))]
+        )
+
+        thal_protocols = ProtocolBuilder(protocols=mock_obj)
+        currents = thal_protocols.get_thalamus_stim_currents(responses, mtype, dt=0.025)
+        assert currents["args"] == (0.1, None, 0.3, None, 0.025)
 
 
 class TestProtocolParser:

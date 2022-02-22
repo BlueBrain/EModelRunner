@@ -51,7 +51,6 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
         thdetect_protocol_hyp=None,
         other_protocols=None,
         pre_protocols=None,
-        fitness_calculator=None,
     ):
         """Constructor."""
         # pylint: disable=too-many-arguments
@@ -75,8 +74,6 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
         self.other_protocols = other_protocols
 
         self.pre_protocols = pre_protocols
-
-        self.fitness_calculator = fitness_calculator
 
     def subprotocols(self):
         """Return all the subprotocols contained in this protocol, is recursive."""
