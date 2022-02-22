@@ -45,7 +45,6 @@ class TestMainProtocol:
         VPL_TC.Step_150.soma.v.dat -> StepThresholdProtocol
         VPL_TC.RMP.soma.v.dat -> StepProtocol
         """
-        volt_fname = "VPL_TC.Step_150.soma.v.dat"
         ground_truth_dir = Path("tests") / "thalamus_tests" / "data"
 
         gt_voltage = np.loadtxt(ground_truth_dir / volt_fname)
