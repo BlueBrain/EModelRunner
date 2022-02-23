@@ -69,20 +69,39 @@ class TestMainProtocol:
 
         assert [f(step_200) != f(step_200_hyp) for f in [np.min, np.max, np.mean]]
 
+    @staticmethod
+    def get_corresponding_current_files(voltage_paths):
+        """Returns a list of current files for a list of voltage paths."""
+        mtypes = [x.name.split(".")[0] for x in voltage_paths]
+        prot_names = [x.name.split(".")[1] for x in voltage_paths]
+        return [
+            f"current_{mtype}.{prot}.dat" for (mtype, prot) in zip(mtypes, prot_names)
+        ]
+
     def test_current_traces_produced(self):
         """Test to check all produced voltage traces have corresponding current traces."""
         voltage_paths = list(
             Path(self.example_dir / "python_recordings").glob("*v.dat")
         )
-        mtypes = [x.name.split(".")[0] for x in voltage_paths]
-        prot_names = [x.name.split(".")[1] for x in voltage_paths]
+        matching_current_names = self.get_corresponding_current_files(voltage_paths)
 
         current_paths = list(
             Path(self.example_dir / "python_recordings").glob("current*.dat")
         )
         current_names = [x.name for x in current_paths]
-        matching_current_names = [
-            f"current_{mtype}.{prot}.dat" for (mtype, prot) in zip(mtypes, prot_names)
-        ]
-
         assert set(matching_current_names) == set(current_names)
+
+    def test_voltage_current_size(self):
+        """Test to assure the produced voltage and current have the same size."""
+        voltage_paths = list(
+            Path(self.example_dir / "python_recordings").glob("*v.dat")
+        )
+        matching_current_fnames = self.get_corresponding_current_files(voltage_paths)
+        voltage_fnames = [x.name for x in voltage_paths]
+
+        for voltage_fname, current_fname in zip(
+            voltage_fnames, matching_current_fnames
+        ):
+            voltage = np.loadtxt(self.example_dir / "python_recordings" / voltage_fname)
+            current = np.loadtxt(self.example_dir / "python_recordings" / current_fname)
+            assert voltage.shape == current.shape
