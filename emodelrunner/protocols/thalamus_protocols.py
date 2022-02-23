@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# pylint: disable=too-many-lines
+
 import warnings
 import collections
 import copy
@@ -209,6 +211,19 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
                 threshold_current=thres_i_dep,
                 holding_current=holding_i_dep,
                 dt=dt,
+            )
+        )
+
+        if self.rinhold_protocol_dep is not None:
+            currents.update(
+                self.rinhold_protocol_dep.generate_current(
+                    threshold_current=thres_i_dep, holding_current=holding_i_dep, dt=dt
+                )
+            )
+
+        currents.update(
+            self.rinhold_protocol_hyp.generate_current(
+                threshold_current=thres_i_hyp, holding_current=holding_i_hyp, dt=dt
             )
         )
 
@@ -480,6 +495,39 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
 
             voltage_base = feature.calculate_feature(response)
         return voltage_base
+
+    def generate_current(self, threshold_current=None, holding_current=None, dt=0.1):
+        """Return current time series.
+
+        Args:
+            threshold_current (float): the threshold current (nA)
+            holding_current (float): the holding current (nA)
+            dt (float): timestep of the generated currents (ms)
+
+        Returns:
+            dict containing the generated current
+        """
+        # pylint: disable=unused-argument
+        holding_current = 0.0
+        if self.rin_protocol.holding_stimulus is not None:
+            holding_current = self.rin_protocol.holding_stimulus.step_amplitude
+        total_duration = self.rin_protocol.step_stimulus.total_duration
+
+        t = np.arange(0.0, total_duration, dt)
+        current = np.full(t.shape, holding_current, dtype="float64")
+
+        ton = self.rin_protocol.step_stimulus.step_delay
+        ton_idx = int(ton / dt)
+
+        toff = (
+            self.rin_protocol.step_stimulus.step_delay
+            + self.rin_protocol.step_stimulus.step_duration
+        )
+        toff_idx = int(toff / dt)
+
+        current[ton_idx:toff_idx] += self.rin_protocol.step_stimulus.step_amplitude
+
+        return {self.rin_protocol.curr_output_key(): {"time": t, "current": current}}
 
 
 class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
