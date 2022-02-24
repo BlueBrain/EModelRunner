@@ -1,4 +1,4 @@
-.. image:: logo/BBP-eModelRunner.jpg
+.. image:: doc/source/logo/BBP-eModelRunner.jpg
 
 ############
 EModelRunner
