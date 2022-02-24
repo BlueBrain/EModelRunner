@@ -513,7 +513,7 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
             holding_current = self.rin_protocol.holding_stimulus.step_amplitude
         total_duration = self.rin_protocol.step_stimulus.total_duration
 
-        t = np.arange(0.0, total_duration, dt)
+        t = np.arange(0.0, total_duration + dt, dt)
         current = np.full(t.shape, holding_current, dtype="float64")
 
         ton = self.rin_protocol.step_stimulus.step_delay
@@ -866,7 +866,7 @@ class StepProtocolCustom(ephys.protocols.StepProtocol, CurrentOutputKeyMixin):
             holding_current = self.holding_stimulus.step_amplitude
         total_duration = self.step_stimulus.total_duration
 
-        t = np.arange(0.0, total_duration, dt)
+        t = np.arange(0.0, total_duration + dt, dt)
         current = np.full(t.shape, holding_current, dtype="float64")
 
         ton = self.step_stimulus.step_delay
@@ -990,7 +990,7 @@ class StepThresholdProtocol(StepProtocolCustom):
         # pylint: disable=signature-differs
         total_duration = self.step_stimulus.total_duration
 
-        t = np.arange(0.0, total_duration, dt)
+        t = np.arange(0.0, total_duration + dt, dt)
         current = np.full(t.shape, holding_current, dtype="float64")
 
         ton = self.step_stimulus.step_delay
