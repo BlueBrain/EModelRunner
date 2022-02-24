@@ -1,7 +1,4 @@
-.. raw:: html
-
-    <img src="https://github.com/BlueBrain/EModelRunner/raw/main/doc/source/logo/BBP-eModelRunner.jpg"/>
-
+|banner|
 
 ############
 EModelRunner
@@ -258,6 +255,7 @@ Copyright (c) 2020-2022 Blue Brain Project/EPFL
 
 .. |GUI_screenshot| image:: doc/source/images/GUI_screenshot.png
 
+.. |banner| image:: doc/source/logo/BBP-eModelRunner.jpg
 
 .. |gitter| image:: https://badges.gitter.im/BlueBrain/EmodelRunner.svg
    :alt: Join the chat at https://gitter.im/BlueBrain/EmodelRunner

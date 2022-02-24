@@ -28,6 +28,8 @@ import shutil
 
 Path("doc/source/images").mkdir(parents=True, exist_ok=True)
 shutil.copy("images/GUI_screenshot.png", "doc/source/images/GUI_screenshot.png")
+Path("doc/source/logo").mkdir(parents=True, exist_ok=True)
+shutil.copy("logo/BBP-eModelRunner.jpg", "doc/source/logo/BBP-eModelRunner.jpg")
 
 
 # -- Project information -----------------------------------------------------
