@@ -1,4 +1,7 @@
-.. image:: doc/source/logo/BBP-eModelRunner.jpg
+.. raw:: html
+
+    <img src="https://github.com/BlueBrain/EModelRunner/raw/main/doc/source/logo/BBP-eModelRunner.jpg"/>
+
 
 ############
 EModelRunner
