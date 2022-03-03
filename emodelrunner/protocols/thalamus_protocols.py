@@ -228,7 +228,7 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
         )
 
         for pre_protocol in self.pre_protocols:
-            if "_hyp" in pre_protocol.name:
+            if pre_protocol.name.endswith("_hyp"):
                 pre_prot_threshold_current = thres_i_hyp
                 pre_prot_holding_current = holding_i_hyp
             else:
@@ -243,7 +243,7 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
             )
 
         for other_protocol in self.other_protocols:
-            if "_hyp" in other_protocol.name:
+            if other_protocol.name.endswith("_hyp"):
                 other_prot_threshold_current = thres_i_hyp
                 other_prot_holding_current = holding_i_hyp
             else:
@@ -294,7 +294,7 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         responses = collections.OrderedDict()
 
         # Calculate Rin without holding current
-        if "dep" in self.name:
+        if self.name.endswith("_dep"):
             rin_noholding_protocol = self.create_rin_protocol_dep(holdi=0)
             rin_noholding_response = rin_noholding_protocol.run(
                 cell_model, param_values, sim=sim
@@ -303,7 +303,7 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
                 rin_noholding_response
             )
 
-        elif "hyp" in self.name:
+        elif self.name.endswith("_hyp"):
             rin_noholding_protocol = self.create_rin_protocol_hyp(holdi=0)
             rin_noholding_response = rin_noholding_protocol.run(
                 cell_model, param_values, sim=sim
@@ -329,19 +329,19 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
             return None
 
         # Set up Rin protocol
-        if "dep" in self.name:
+        if self.name.endswith("_dep"):
             self.rin_protocol = self.create_rin_protocol_dep(holdi=holdi)
-        elif "hyp" in self.name:
+        elif self.name.endswith("_hyp"):
             self.rin_protocol = self.create_rin_protocol_hyp(holdi=holdi)
 
         # Return response
         responses = self.rin_protocol.run(cell_model, param_values, sim)
 
-        if "dep" in self.name:
+        if self.name.endswith("_dep"):
             responses[self.prefix + "bpo_holding_current_dep"] = holdi
             cell_model.holding_current_dep = holdi
 
-        elif "hyp" in self.name:
+        elif self.name.endswith("_hyp"):
             responses[self.prefix + "bpo_holding_current_hyp"] = holdi
             cell_model.holding_current_hyp = holdi
 
@@ -461,7 +461,7 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
 
     def voltage_base(self, current, cell_model, param_values, sim=None):
         """Calculate voltage base for certain stimulus current."""
-        if "dep" in self.name:
+        if self.name.endswith("_dep"):
             protocol = self.create_rin_protocol_dep(holdi=current)
 
             response = protocol.run(cell_model, param_values, sim=sim)
@@ -478,7 +478,7 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
 
             voltage_base = feature.calculate_feature(response)
 
-        elif "hyp" in self.name:
+        elif self.name.endswith("_hyp"):
             protocol = self.create_rin_protocol_hyp(holdi=current)
 
             response = protocol.run(cell_model, param_values, sim=sim)
@@ -547,9 +547,9 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         self.step_protocol_template = step_protocol_template
 
         if max_threshold_voltage is None:
-            if "dep" in self.name:
+            if self.name.endswith("_dep"):
                 max_threshold_voltage = -40
-            elif "hyp" in self.name:
+            elif self.name.endswith("_hyp"):
                 max_threshold_voltage = -50
 
         self.max_threshold_voltage = max_threshold_voltage
@@ -586,11 +586,11 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
             sim=sim,
         )
 
-        if "dep" in self.name:
+        if self.name.endswith("_dep"):
             cell_model.threshold_current_dep = threshold_current
             responses[self.prefix + "bpo_threshold_current_dep"] = threshold_current
 
-        if "hyp" in self.name:
+        if self.name.endswith("_hyp"):
             cell_model.threshold_current_hyp = threshold_current
             responses[self.prefix + "bpo_threshold_current_hyp"] = threshold_current
 
@@ -612,9 +612,9 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         """Create threshold protocol."""
         threshold_protocol = copy.deepcopy(self.step_protocol_template)
 
-        if "dep" in self.name:
+        if self.name.endswith("_dep"):
             threshold_protocol.name = "ThresholdDetection_dep"
-        elif "hyp" in self.name:
+        elif self.name.endswith("_hyp"):
             threshold_protocol.name = "ThresholdDetection_hyp"
 
         for recording in threshold_protocol.recordings:
@@ -668,7 +668,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
 
         response = protocol.run(cell_model, param_values, sim=sim)
         print(protocol)
-        if "dep" in self.name:
+        if self.name.endswith("_dep"):
             feature = ephys.efeatures.eFELFeature(
                 name="ThresholdDetection_dep.Spikecount",
                 efel_feature_name="Spikecount_stimint",
@@ -679,7 +679,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
                 exp_std=0.1,
             )
 
-        elif "hyp" in self.name:
+        elif self.name.endswith("_hyp"):
             feature = ephys.efeatures.eFELFeature(
                 name="ThresholdDetection_hyp.Spikecount",
                 efel_feature_name="Spikecount_stimint",
@@ -942,7 +942,7 @@ class StepThresholdProtocol(StepProtocolCustom):
                 f"that doesnt have threshold current value set: {str(cell_model)}",
             )
 
-        if "hyp" in self.name:
+        if self.name.endswith("_hyp"):
             self.holding_stimulus.step_amplitude = cell_model.holding_current_hyp
 
             self.step_stimulus.step_amplitude = cell_model.threshold_current_hyp * (
