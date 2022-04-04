@@ -208,9 +208,7 @@ class CellModelCustom(ephys.models.CellModel):
         secarrays_str = ""
         if secarray_names:
             secarrays_str = "create "
-            secarrays_str += ", ".join(
-                f"{secarray_name}[1]" for secarray_name in secarray_names
-            )
+            secarrays_str += ", ".join(f"{secarray_name}[1]" for secarray_name in secarray_names)
             secarrays_str += "\n"
 
         template = """\
@@ -257,7 +255,8 @@ class CellModelCustom(ephys.models.CellModel):
         )
         return template
 
-    def create_empty_cell(self, name, sim, seclist_names=None, secarray_names=None):
+    @staticmethod
+    def create_empty_cell(name, sim, seclist_names=None, secarray_names=None):
         """Create an empty cell in Neuron.
 
         Args:
@@ -269,7 +268,7 @@ class CellModelCustom(ephys.models.CellModel):
         Returns:
             Cell instantiation in simulator
         """
-        hoc_template = self.connectable_empty_cell_template(
+        hoc_template = CellModelCustom.connectable_empty_cell_template(
             name, seclist_names, secarray_names
         )
         sim.neuron.h(hoc_template)

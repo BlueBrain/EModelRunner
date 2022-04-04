@@ -45,7 +45,8 @@ class SSCXNrnFileMorphology(ephys.morphologies.NrnFileMorphology):
             to morph_modifiers
     """
 
-    def replace_axon(self, sim=None, icell=None):
+    @staticmethod
+    def replace_axon(sim=None, icell=None):
         """Replace axon.
 
         Args:
@@ -178,9 +179,7 @@ class ThalamusNrnFileMorphology(ephys.morphologies.NrnFileMorphology):
             diams = diams + [diams[lasti]] * (nseg_total - len(diams))
             lens = lens + [lens[lasti]] * (nseg_total - len(lens))
             if nseg_total - len(diams) > 5:
-                logger.debug(
-                    "Axon too short, adding more than 5 sections with fixed diam"
-                )
+                logger.debug("Axon too short, adding more than 5 sections with fixed diam")
 
         for section in icell.axonal:
             sim.neuron.h.delete_section(sec=section)
