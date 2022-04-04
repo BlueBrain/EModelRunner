@@ -208,7 +208,9 @@ class CellModelCustom(ephys.models.CellModel):
         secarrays_str = ""
         if secarray_names:
             secarrays_str = "create "
-            secarrays_str += ", ".join(f"{secarray_name}[1]" for secarray_name in secarray_names)
+            secarrays_str += ", ".join(
+                f"{secarray_name}[1]" for secarray_name in secarray_names
+            )
             secarrays_str += "\n"
 
         template = """\
