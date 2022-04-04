@@ -45,7 +45,8 @@ class SSCXNrnFileMorphology(ephys.morphologies.NrnFileMorphology):
             to morph_modifiers
     """
 
-    def replace_axon(self, sim=None, icell=None):
+    @staticmethod
+    def replace_axon(sim=None, icell=None):
         """Replace axon.
 
         Args:
