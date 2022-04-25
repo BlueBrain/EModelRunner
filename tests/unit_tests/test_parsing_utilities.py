@@ -52,17 +52,13 @@ def test_get_parser_args():
 @patch("logging.basicConfig")
 def test_set_verbosity(patch_basicConfig):
     """Test setting verbosity."""
-    with patch("logging.StreamHandler", return_value="mock_val")as stream_handler:
+    with patch("logging.StreamHandler", return_value="mock_val") as stream_handler:
         set_verbosity(0)
         patch_basicConfig.assert_called_with(
             level=logging.WARNING, handlers=["mock_val"]
         )
         set_verbosity(1)
-        patch_basicConfig.assert_called_with(
-            level=logging.INFO, handlers=["mock_val"]
-        )
+        patch_basicConfig.assert_called_with(level=logging.INFO, handlers=["mock_val"])
         set_verbosity(2)
-        patch_basicConfig.assert_called_with(
-            level=logging.DEBUG, handlers=["mock_val"]
-        )
+        patch_basicConfig.assert_called_with(level=logging.DEBUG, handlers=["mock_val"])
         assert stream_handler.call_count == 3
