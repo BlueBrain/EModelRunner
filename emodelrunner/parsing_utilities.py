@@ -38,7 +38,7 @@ def set_verbosity(verbosity):
     """Set verbosity level.
 
     Args:
-        verbosity (int): verbosity level. 0 for warning, 1 fro info and 2 or more for debug
+        verbosity (int): verbosity level. 0 for warning, 1 for info and 2 or more for debug
     """
     if verbosity > 2:
         verbosity = 2
