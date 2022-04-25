@@ -130,13 +130,17 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
 
         # Find Rin and holding current
         if hasattr(self, "rinhold_protocol_dep"):
-            rinhold_response_dep = self.rinhold_protocol_dep.run(cell_model, {}, sim=sim, rmp=rmp)
+            rinhold_response_dep = self.rinhold_protocol_dep.run(
+                cell_model, {}, sim=sim, rmp=rmp
+            )
             holding_current_dep = cell_model.holding_current_dep
 
             rin_dep = self.rin_efeature_dep.calculate_feature(rinhold_response_dep)
             responses.update(rinhold_response_dep)
 
-        rinhold_response_hyp = self.rinhold_protocol_hyp.run(cell_model, {}, sim=sim, rmp=rmp)
+        rinhold_response_hyp = self.rinhold_protocol_hyp.run(
+            cell_model, {}, sim=sim, rmp=rmp
+        )
 
         if rinhold_response_hyp is not None:
             rin_hyp = self.rin_efeature_hyp.calculate_feature(rinhold_response_hyp)
@@ -186,7 +190,9 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
             response = other_protocol.run(cell_model, {}, sim=sim)
             responses.update(response)
 
-    def generate_current(self, thres_i_hyp, thres_i_dep, holding_i_hyp, holding_i_dep, dt):
+    def generate_current(
+        self, thres_i_hyp, thres_i_dep, holding_i_hyp, holding_i_dep, dt
+    ):
         """Generate current for all protocols except rin and threshold detection.
 
         Args:
@@ -292,17 +298,27 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         # Calculate Rin without holding current
         if self.name.endswith("_dep"):
             rin_noholding_protocol = self.create_rin_protocol_dep(holdi=0)
-            rin_noholding_response = rin_noholding_protocol.run(cell_model, param_values, sim=sim)
-            rin_noholding = self.rin_efeature_dep.calculate_feature(rin_noholding_response)
+            rin_noholding_response = rin_noholding_protocol.run(
+                cell_model, param_values, sim=sim
+            )
+            rin_noholding = self.rin_efeature_dep.calculate_feature(
+                rin_noholding_response
+            )
 
         elif self.name.endswith("_hyp"):
             rin_noholding_protocol = self.create_rin_protocol_hyp(holdi=0)
-            rin_noholding_response = rin_noholding_protocol.run(cell_model, param_values, sim=sim)
-            rin_noholding = self.rin_efeature_hyp.calculate_feature(rin_noholding_response)
+            rin_noholding_response = rin_noholding_protocol.run(
+                cell_model, param_values, sim=sim
+            )
+            rin_noholding = self.rin_efeature_hyp.calculate_feature(
+                rin_noholding_response
+            )
 
         logger.info("Rin without holdi is %s", rin_noholding)
 
-        logger.info("Searching holdi for vhold = %s", self.voltagebase_efeature.exp_mean)
+        logger.info(
+            "Searching holdi for vhold = %s", self.voltagebase_efeature.exp_mean
+        )
         # Search holding current
         holdi = self.search_holdi(
             cell_model,
@@ -339,7 +355,9 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         """Return subprotocols."""
         subprotocols = collections.OrderedDict({self.name: self})
 
-        subprotocols.update({self.rin_protocol_template.name: self.rin_protocol_template})
+        subprotocols.update(
+            {self.rin_protocol_template.name: self.rin_protocol_template}
+        )
 
         return subprotocols
 
@@ -363,7 +381,9 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         rin_protocol.holding_stimulus.step_amplitude = holdi
         return rin_protocol
 
-    def search_holdi(self, cell_model, param_values, sim, holding_voltage, rin_noholding, rmp):
+    def search_holdi(
+        self, cell_model, param_values, sim, holding_voltage, rin_noholding, rmp
+    ):
         """Find the holding current to hold cell at holding_voltage."""
         holdi_estimate = float(holding_voltage - rmp) / rin_noholding
         logger.info(
@@ -402,10 +422,14 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         middle_bound = upper_bound - abs(upper_bound - lower_bound) / 2
 
         if depth > max_depth:
-            logger.info("Search holdi reached max depth, returning with ihold %s", middle_bound)
+            logger.info(
+                "Search holdi reached max depth, returning with ihold %s", middle_bound
+            )
             return middle_bound
         else:
-            middle_voltage = self.voltage_base(middle_bound, cell_model, param_values, sim=sim)
+            middle_voltage = self.voltage_base(
+                middle_bound, cell_model, param_values, sim=sim
+            )
 
             if middle_voltage is None:
                 logger.warning("Holdi current search failed")
@@ -585,10 +609,14 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
 
     def search_max_threshold_current(self, rin=None):
         """Find the current necessary to get to max_threshold_voltage."""
-        max_threshold_current = float(self.max_threshold_voltage - self.holding_voltage) / rin
+        max_threshold_current = (
+            float(self.max_threshold_voltage - self.holding_voltage) / rin
+        )
 
         logger.info(
-            "Max threshold current from vhold %s: %s", self.holding_voltage, max_threshold_current
+            "Max threshold current from vhold %s: %s",
+            self.holding_voltage,
+            max_threshold_current,
         )
 
         return max_threshold_current
@@ -615,7 +643,9 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
 
     def create_short_threshold_protocol(self, holdi=None, step_current=None):
         """Create short threshold protocol."""
-        short_protocol = self.create_step_protocol(holdi=holdi, step_current=step_current)
+        short_protocol = self.create_step_protocol(
+            holdi=holdi, step_current=step_current
+        )
         origin_step_duration = short_protocol.step_stimulus.step_duration
         origin_step_delay = short_protocol.step_stimulus.step_delay
 
@@ -643,7 +673,9 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         """Detect if spike is present at current level."""
         # Only run short pulse if percentage set smaller than 100%
         if short and self.short_perc < 1.0:
-            protocol = self.create_short_threshold_protocol(holdi=holdi, step_current=step_current)
+            protocol = self.create_short_threshold_protocol(
+                holdi=holdi, step_current=step_current
+            )
         else:
             protocol = self.create_step_protocol(holdi=holdi, step_current=step_current)
 
@@ -817,7 +849,9 @@ class StepProtocolCustom(ephys.protocols.StepProtocol, CurrentOutputKeyMixin):
             self.cvode_active = False
 
         responses.update(
-            super().run(cell_model, param_values, sim=sim, isolate=isolate, timeout=timeout)
+            super().run(
+                cell_model, param_values, sim=sim, isolate=isolate, timeout=timeout
+            )
         )
 
         if self.stochkv_det is not None and not self.stochkv_det:
@@ -942,7 +976,9 @@ class StepThresholdProtocol(StepProtocolCustom):
             self.cvode_active = False
 
         responses.update(
-            super().run(cell_model, param_values, sim=sim, isolate=isolate, timeout=timeout)
+            super().run(
+                cell_model, param_values, sim=sim, isolate=isolate, timeout=timeout
+            )
         )
 
         if self.stochkv_det is not None and not self.stochkv_det:
@@ -977,6 +1013,8 @@ class StepThresholdProtocol(StepProtocolCustom):
         toff_idx = int(toff / dt)
 
         if threshold_current is not None:
-            current[ton_idx:toff_idx] += threshold_current * (float(self.thresh_perc) / 100.0)
+            current[ton_idx:toff_idx] += threshold_current * (
+                float(self.thresh_perc) / 100.0
+            )
 
         return {self.curr_output_key(): {"time": t, "current": current}}

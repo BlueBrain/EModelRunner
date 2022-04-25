@@ -47,7 +47,9 @@ def write_hoc(hoc_dir, hoc_file_name, hoc):
         hoc_file.write(hoc)
 
 
-def write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc=None, main_protocol_hoc=None):
+def write_hocs(
+    hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc=None, main_protocol_hoc=None
+):
     """Write hoc files.
 
     Args:
@@ -74,7 +76,9 @@ def write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc=None, main_proto
 
     # main protocol hoc
     if main_protocol_hoc is not None:
-        write_hoc(hoc_paths["hoc_dir"], hoc_paths["main_protocol_filename"], main_protocol_hoc)
+        write_hoc(
+            hoc_paths["hoc_dir"], hoc_paths["main_protocol_filename"], main_protocol_hoc
+        )
 
 
 def get_hoc(config):
@@ -96,7 +100,9 @@ def get_hoc(config):
     # get directories and filenames from config
     cell_template_path = config.get("Paths", "cell_template_path")
     run_hoc_template_path = config.get("Paths", "run_hoc_template_path")
-    createsimulation_template_path = config.get("Paths", "createsimulation_template_path")
+    createsimulation_template_path = config.get(
+        "Paths", "createsimulation_template_path"
+    )
     synapses_template_path = config.get("Paths", "synapses_template_path")
     main_protocol_template_path = config.get("Paths", "main_protocol_template_path")
     add_synapses = config.getboolean("Synapses", "add_synapses")
@@ -172,7 +178,9 @@ def get_hoc(config):
                 rin_exp_voltage_base = feature["val"][0]
 
         if rin_exp_voltage_base is None:
-            raise KeyError(f"No voltage_base feature found for 'Rin' in {features_filename}")
+            raise KeyError(
+                f"No voltage_base feature found for 'Rin' in {features_filename}"
+            )
 
         main_protocol_hoc = create_main_protocol_hoc(
             template_path=main_protocol_template_path,
@@ -218,7 +226,9 @@ if __name__ == "__main__":
 
     config_ = load_config(config_path=args.config_path)
 
-    cell_hoc_, syn_hoc_, simul_hoc_, run_hoc_, main_protocol_hoc_ = get_hoc(config=config_)
+    cell_hoc_, syn_hoc_, simul_hoc_, run_hoc_, main_protocol_hoc_ = get_hoc(
+        config=config_
+    )
 
     hoc_paths_ = get_hoc_paths_args(config_)
     if main_protocol_hoc_:
