@@ -14,19 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import argparse
+import logging
 
 from emodelrunner.GUI_utils.interface import GUI
+from emodelrunner.parsing_utilities import get_parser_args, set_verbosity
 
+logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--config_path",
-        default=None,
-        help="the path to the config file.",
-    )
-    args = parser.parse_args()
+    args = get_parser_args()
+    set_verbosity(args.verbosity)
 
     gui = GUI(config_path=args.config_path)
     gui.root.mainloop()

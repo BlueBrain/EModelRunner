@@ -15,6 +15,7 @@
 # limitations under the License.
 
 import json
+import logging
 from pathlib import Path
 import numpy as np
 
@@ -23,6 +24,8 @@ from emodelrunner.factsheets.morphology_features import SSCXMorphologyFactsheetB
 from emodelrunner.factsheets.physiology_features import physiology_factsheet_info
 from emodelrunner.factsheets.experimental_features import get_exp_features_data
 from emodelrunner.factsheets.ion_channel_mechanisms import get_mechanisms_data
+
+logger = logging.getLogger(__name__)
 
 
 def write_metype_json(
@@ -67,12 +70,10 @@ def write_metype_json(
 
     with open(output_path, "w", encoding="utf-8") as out_file:
         json.dump(output, out_file, indent=4, cls=NpEncoder)
-    print("me-type json file written.")
+    logging.info("me-type json file written.")
 
 
-def write_etype_factsheet(
-    data_path, current_amplitude, stim_start, stim_duration, output_path
-):
+def write_etype_factsheet(data_path, current_amplitude, stim_start, stim_duration, output_path):
     """Write the e-type factsheet json file.
 
     Args:
@@ -123,8 +124,7 @@ def get_stim_params_from_config_for_physiology_factsheet(prot_path, protocol_key
 
     if isinstance(step_stim, list):
         exception_message = (
-            "ME-type factsheet expects only one step stimulus "
-            + "for protocol {key} at {filepath}"
+            "ME-type factsheet expects only one step stimulus " + "for protocol {key} at {filepath}"
         )
         raise Exception(exception_message.format(key=protocol_key, filepath=prot_path))
 
@@ -136,9 +136,7 @@ def get_stim_params_from_config_for_physiology_factsheet(prot_path, protocol_key
     return current_amplitude, stim_start, stim_duration
 
 
-def write_metype_json_from_config(
-    config, voltage_path, morphology_path, output_path, protocol_key
-):
+def write_metype_json_from_config(config, voltage_path, morphology_path, output_path, protocol_key):
     """Write the me-type factsheet json file from config input.
 
     Args:
@@ -151,9 +149,7 @@ def write_metype_json_from_config(
     # get protocol data
     prot_path = config.get("Paths", "prot_path")
 
-    stim_params = get_stim_params_from_config_for_physiology_factsheet(
-        prot_path, protocol_key
-    )
+    stim_params = get_stim_params_from_config_for_physiology_factsheet(prot_path, protocol_key)
     current_amplitude, stim_start, stim_duration = stim_params
 
     write_metype_json(
@@ -199,9 +195,7 @@ def write_emodel_json(
         feature_units_dict,
         optimized_params_dict,
     )
-    channel_mechanisms = get_mechanisms_data(
-        emodel, optimized_params_dict, unoptimized_params_dict
-    )
+    channel_mechanisms = get_mechanisms_data(emodel, optimized_params_dict, unoptimized_params_dict)
 
     output = [
         exp_features,
@@ -210,4 +204,4 @@ def write_emodel_json(
 
     with open(output_path, "w", encoding="utf-8") as out_file:
         json.dump(output, out_file, indent=4, cls=NpEncoder)
-    print("e-model json file is written.")
+    logging.info("e-model json file is written.")
