@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import argparse
 import json
 import logging
 import re
@@ -23,6 +22,7 @@ import numpy as np
 
 from bluepyopt import ephys
 from emodelrunner.create_cells import get_postcell
+from emodelrunner.parsing_utilities import get_parser_args, set_verbosity
 from emodelrunner.protocols.create_protocols import define_synapse_plasticity_protocols
 from emodelrunner.load import get_release_params
 from emodelrunner.load import get_syn_setup_params
@@ -127,12 +127,7 @@ def run(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--config_path",
-        default=None,
-        help="the path to the config file.",
-    )
-    args = parser.parse_args()
+    args = get_parser_args()
+    set_verbosity(args.verbosity)
 
     run(config_path=args.config_path)

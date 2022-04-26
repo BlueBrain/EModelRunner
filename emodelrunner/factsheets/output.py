@@ -15,6 +15,7 @@
 # limitations under the License.
 
 import json
+import logging
 from pathlib import Path
 import numpy as np
 
@@ -23,6 +24,8 @@ from emodelrunner.factsheets.morphology_features import SSCXMorphologyFactsheetB
 from emodelrunner.factsheets.physiology_features import physiology_factsheet_info
 from emodelrunner.factsheets.experimental_features import get_exp_features_data
 from emodelrunner.factsheets.ion_channel_mechanisms import get_mechanisms_data
+
+logger = logging.getLogger(__name__)
 
 
 def write_metype_json(
@@ -67,7 +70,7 @@ def write_metype_json(
 
     with open(output_path, "w", encoding="utf-8") as out_file:
         json.dump(output, out_file, indent=4, cls=NpEncoder)
-    print("me-type json file written.")
+    logger.info("me-type json file written.")
 
 
 def write_etype_factsheet(
@@ -210,4 +213,4 @@ def write_emodel_json(
 
     with open(output_path, "w", encoding="utf-8") as out_file:
         json.dump(output, out_file, indent=4, cls=NpEncoder)
-    print("e-model json file is written.")
+    logger.info("e-model json file is written.")

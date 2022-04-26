@@ -16,13 +16,15 @@
 
 # pylint: disable=too-many-lines
 
-import warnings
 import collections
 import copy
+import logging
 import numpy as np
 from bluepyopt import ephys
 
 from emodelrunner.protocols.protocols_func import CurrentOutputKeyMixin
+
+logger = logging.getLogger(__name__)
 
 
 class RatSSCxMainProtocol(ephys.protocols.Protocol):
@@ -312,9 +314,11 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
                 rin_noholding_response
             )
 
-        print(f"Rin without holdi is {rin_noholding}")
+        logger.info("Rin without holdi is %s", rin_noholding)
 
-        print(f"Searching holdi for vhold = {self.voltagebase_efeature.exp_mean}")
+        logger.info(
+            "Searching holdi for vhold = %s", self.voltagebase_efeature.exp_mean
+        )
         # Search holding current
         holdi = self.search_holdi(
             cell_model,
@@ -382,9 +386,12 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
     ):
         """Find the holding current to hold cell at holding_voltage."""
         holdi_estimate = float(holding_voltage - rmp) / rin_noholding
-        print(
-            f"Holdi estimate is {holdi_estimate} with target vhold {holding_voltage}"
-            f", rmp {rmp}, Rin {rin_noholding}"
+        logger.info(
+            "Holdi estimate is %s with target vhold %s, rmp %s, Rin %s",
+            holdi_estimate,
+            holding_voltage,
+            rmp,
+            rin_noholding,
         )
 
         return self.binsearch_holdi(
@@ -415,8 +422,8 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         middle_bound = upper_bound - abs(upper_bound - lower_bound) / 2
 
         if depth > max_depth:
-            print(
-                f"Search holdi reached max depth, returning with ihold {middle_bound}"
+            logger.info(
+                "Search holdi reached max depth, returning with ihold %s", middle_bound
             )
             return middle_bound
         else:
@@ -425,11 +432,15 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
             )
 
             if middle_voltage is None:
-                warnings.warn("Holdi current search failed")
+                logger.warning("Holdi current search failed")
                 return None
 
             if abs(middle_voltage - holding_voltage) < precision:
-                print(f"Holdi search reached precision of {precision}")
+                logger.info(
+                    "Holdi search reached precision of %s, returning with ihold %s",
+                    precision,
+                    middle_bound,
+                )
                 return middle_bound
 
             elif middle_voltage > holding_voltage:
@@ -602,8 +613,10 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
             float(self.max_threshold_voltage - self.holding_voltage) / rin
         )
 
-        print(
-            f"Max threshold current from vhold {self.holding_voltage}: {max_threshold_current}"
+        logger.info(
+            "Max threshold current from vhold %s: %s",
+            self.holding_voltage,
+            max_threshold_current,
         )
 
         return max_threshold_current
@@ -667,7 +680,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
             protocol = self.create_step_protocol(holdi=holdi, step_current=step_current)
 
         response = protocol.run(cell_model, param_values, sim=sim)
-        print(protocol)
+
         if self.name.endswith("_dep"):
             feature = ephys.efeatures.eFELFeature(
                 name="ThresholdDetection_dep.Spikecount",
@@ -691,7 +704,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
             )
 
         spike_count = feature.calculate_feature(response)
-        print(f"{spike_count} spikes with I = {step_current}")
+        logger.debug("%s spikes with I = %s", spike_count, step_current)
         return spike_count >= 1
 
     def binsearch_spike_threshold(
@@ -798,7 +811,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
             lower_bound=lower_bound,
             upper_bound=upper_bound,
         )
-        print(f"Threshold current from {holdi} is {threshold_current}")
+        logger.info("Threshold current from %s is %s", holdi, threshold_current)
         return threshold_current
 
 
@@ -934,7 +947,7 @@ class StepThresholdProtocol(StepProtocolCustom):
 
     def run(self, cell_model, param_values, sim=None, isolate=None, timeout=None):
         """Run protocol."""
-        print(f"Running protocol {self.name}")
+        logger.info("Running protocol %s", self.name)
         responses = {}
         if not hasattr(cell_model, "threshold_current_hyp"):
             raise Exception(

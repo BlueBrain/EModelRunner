@@ -14,12 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import argparse
+import logging
 
 from bluepyopt import ephys
 
 from emodelrunner.configuration.configparser import PackageType
 from emodelrunner.create_cells import create_cell_using_config
+from emodelrunner.parsing_utilities import get_parser_args, set_verbosity
 from emodelrunner.protocols.create_protocols import ProtocolBuilder
 from emodelrunner.load import (
     load_config,
@@ -28,6 +29,8 @@ from emodelrunner.load import (
 )
 from emodelrunner.output import write_current
 from emodelrunner.output import write_responses
+
+logger = logging.getLogger(__name__)
 
 
 def main(config_path):
@@ -62,8 +65,9 @@ def main(config_path):
     else:
         raise ValueError(f"unsupported package type: {config.package_type}")
     ephys_protocols = protocols.get_ephys_protocols()
+
     # run
-    print("Python Recordings Running...")
+    logger.info("Python Recordings Running...")
     responses = ephys_protocols.run(
         cell_model=cell, param_values=release_params, sim=sim, isolate=False
     )
@@ -79,15 +83,11 @@ def main(config_path):
     write_responses(responses, output_dir)
     write_current(currents, output_dir)
 
-    print("Python Recordings Done")
+    logger.info("Python Recordings Done")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--config_path",
-        default=None,
-        help="the path to the config file.",
-    )
-    args = parser.parse_args()
+    args = get_parser_args()
+    set_verbosity(args.verbosity)
+
     main(config_path=args.config_path)

@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import argparse
 import json
 import os
 import shutil
@@ -32,6 +31,7 @@ from emodelrunner.create_hoc_tools import (
     create_run_hoc,
     create_main_protocol_hoc,
 )
+from emodelrunner.parsing_utilities import get_parser_args, set_verbosity
 
 
 def write_hoc(hoc_dir, hoc_file_name, hoc):
@@ -221,13 +221,8 @@ def copy_features_hoc(config):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--config_path",
-        default=None,
-        help="the path to the config file.",
-    )
-    args = parser.parse_args()
+    args = get_parser_args()
+    set_verbosity(args.verbosity)
 
     config_ = load_config(config_path=args.config_path)
 
