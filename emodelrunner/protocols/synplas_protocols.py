@@ -86,7 +86,9 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
             fastforward (float): Time after which the synapses are fasforwarded.
                 Leave None for no fastforward.
         """
-        super(SweepProtocolCustom, self).__init__(name, stimuli, recordings, cvode_active)
+        super(SweepProtocolCustom, self).__init__(
+            name, stimuli, recordings, cvode_active
+        )
 
         self.fastforward = fastforward
 
@@ -127,7 +129,9 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
                 )
                 responses = {recording.name: None for recording in self.recordings}
             else:
-                responses = {recording.name: recording.response for recording in self.recordings}
+                responses = {
+                    recording.name: recording.response for recording in self.recordings
+                }
 
             self.destroy(sim=sim)
 
