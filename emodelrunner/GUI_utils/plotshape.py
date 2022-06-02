@@ -29,7 +29,7 @@ def auto_aspect(ax):
         ax (matplotlib.axes.Axes): axis
     """
     bounds = [ax.get_xlim(), ax.get_ylim()]
-    half_delta_max = max([(item[1] - item[0]) / 2 for item in bounds])
+    half_delta_max = max((item[1] - item[0]) / 2 for item in bounds)
     xmid = sum(bounds[0]) / 2
     ymid = sum(bounds[1]) / 2
 
