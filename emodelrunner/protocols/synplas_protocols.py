@@ -86,9 +86,7 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
             fastforward (float): Time after which the synapses are fasforwarded.
                 Leave None for no fastforward.
         """
-        super(SweepProtocolCustom, self).__init__(
-            name, stimuli, recordings, cvode_active
-        )
+        super(SweepProtocolCustom, self).__init__(name, stimuli, recordings, cvode_active)
 
         self.fastforward = fastforward
 
@@ -129,9 +127,7 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
                 )
                 responses = {recording.name: None for recording in self.recordings}
             else:
-                responses = {
-                    recording.name: recording.response for recording in self.recordings
-                }
+                responses = {recording.name: recording.response for recording in self.recordings}
 
             self.destroy(sim=sim)
 
@@ -214,11 +210,9 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
             float: total duration
         """
         return max(
-            [
-                stimulus.total_duration
-                for stimulus_sublist in self.stimuli
-                for stimulus in stimulus_sublist
-            ]
+            stimulus.total_duration
+            for stimulus_sublist in self.stimuli
+            for stimulus in stimulus_sublist
         )
 
     def subprotocols(self):
@@ -396,14 +390,14 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
         """
         icells = [pre_icell, post_icell]
 
-        for i, _ in enumerate(icells):
+        for i, icell in enumerate(icells):
 
             for stimulus in self.stimuli[i]:
-                stimulus.instantiate(sim=sim, icell=icells[i])
+                stimulus.instantiate(sim=sim, icell=icell)
 
             for recording in self.recordings[i]:
                 try:
-                    recording.instantiate(sim=sim, icell=icells[i])
+                    recording.instantiate(sim=sim, icell=icell)
                 except ephys.locations.EPhysLocInstantiateException:
                     logger.debug(
                         "SweepProtocol: Instantiating recording generated "
