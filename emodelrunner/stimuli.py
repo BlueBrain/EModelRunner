@@ -58,7 +58,7 @@ class Pulse(Stimulus):
         self.current_vec = None
         self.time_vec = None
 
-        super(Pulse, self).__init__()
+        super().__init__()
 
     def instantiate(self, sim=None, icell=None):
         """Instantiate stimulus.
@@ -182,7 +182,7 @@ class MultipleSteps(Stimulus):
         self.current_vec = None
         self.time_vec = None
 
-        super(MultipleSteps, self).__init__()
+        super().__init__()
 
     def instantiate(self, sim=None, icell=None):
         """Instantiate stimulus.

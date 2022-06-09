@@ -80,7 +80,7 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
                 before the 'other protocols'
         """
         # pylint: disable=too-many-arguments
-        super(RatSSCxMainProtocol, self).__init__(name=name)
+        super().__init__(name=name)
 
         self.rmp_protocol = rmp_protocol
         self.rmp_efeature = rmp_efeature
@@ -286,7 +286,7 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
             prefix (str): prefix used in naming responses, features, recordings, etc.
         """
         # pylint: disable=too-many-arguments
-        super(RatSSCxRinHoldcurrentProtocol, self).__init__(name=name)
+        super().__init__(name=name)
         self.rin_protocol_template = rin_protocol_template
         self.voltagebase_efeature = voltagebase_efeature
         self.holdi_estimate_multiplier = holdi_estimate_multiplier
@@ -497,7 +497,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
                 of the Rin protocol
             prefix (str): prefix used in naming responses, features, recordings, etc.
         """
-        super(RatSSCxThresholdDetectionProtocol, self).__init__(name=name)
+        super().__init__(name=name)
 
         self.step_protocol_template = step_protocol_template
         self.max_threshold_voltage = max_threshold_voltage
@@ -792,7 +792,7 @@ class StepProtocol(ephys.protocols.SweepProtocol, CurrentOutputKeyMixin):
             cvode_active (bool): whether to use variable time step
             stochkv_det (bool): set if stochastic or deterministic
         """
-        super(StepProtocol, self).__init__(
+        super().__init__(
             name,
             stimuli=step_stimuli + [holding_stimulus]
             if holding_stimulus is not None
@@ -850,7 +850,7 @@ class StepProtocol(ephys.protocols.SweepProtocol, CurrentOutputKeyMixin):
             self.cvode_active = False
 
         responses.update(
-            super(StepProtocol, self).run(
+            super().run(
                 cell_model, param_values, sim=sim, isolate=isolate, timeout=timeout
             )
         )
@@ -987,7 +987,7 @@ class StepThresholdProtocol(StepProtocol):
             cvode_active (bool): whether to use variable time step
             stochkv_det (bool): set if stochastic or deterministic
         """
-        super(StepThresholdProtocol, self).__init__(
+        super().__init__(
             name,
             step_stimuli=step_stimuli,
             holding_stimulus=holding_stimulus,
@@ -1031,7 +1031,7 @@ class StepThresholdProtocol(StepProtocol):
         self.holding_stimulus.step_amplitude = cell_model.holding_current
 
         responses.update(
-            super(StepThresholdProtocol, self).run(
+            super().run(
                 cell_model, param_values, sim=sim, isolate=isolate, timeout=timeout
             )
         )
@@ -1099,7 +1099,7 @@ class RampProtocol(ephys.protocols.SweepProtocol, CurrentOutputKeyMixin):
                 protocol
             cvode_active (bool): whether to use variable time step
         """
-        super(RampProtocol, self).__init__(
+        super().__init__(
             name,
             stimuli=[ramp_stimulus, holding_stimulus]
             if holding_stimulus is not None
@@ -1199,7 +1199,7 @@ class RampThresholdProtocol(RampProtocol):
                protocol
            cvode_active (bool): whether to use variable time step
         """
-        super(RampThresholdProtocol, self).__init__(
+        super().__init__(
             name,
             ramp_stimulus=ramp_stimulus,
             holding_stimulus=holding_stimulus,
@@ -1245,7 +1245,7 @@ class RampThresholdProtocol(RampProtocol):
         self.holding_stimulus.step_amplitude = cell_model.holding_current
 
         responses.update(
-            super(RampThresholdProtocol, self).run(
+            super().run(
                 cell_model, param_values, sim=sim, isolate=isolate, timeout=timeout
             )
         )

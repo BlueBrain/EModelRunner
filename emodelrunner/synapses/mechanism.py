@@ -74,7 +74,7 @@ class NrnMODPointProcessMechanismCustom(ephys.mechanisms.Mechanism):
                 when using GluSynapseCustom
         """
         # pylint: disable=too-many-arguments
-        super(NrnMODPointProcessMechanismCustom, self).__init__(name, comment)
+        super().__init__(name, comment)
         self.synapses_data = synapses_data
         self.synconf_dict = synconf_dict
         self.seed = seed

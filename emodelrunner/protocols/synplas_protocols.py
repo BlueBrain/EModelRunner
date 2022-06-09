@@ -86,9 +86,7 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
             fastforward (float): Time after which the synapses are fasforwarded.
                 Leave None for no fastforward.
         """
-        super(SweepProtocolCustom, self).__init__(
-            name, stimuli, recordings, cvode_active
-        )
+        super().__init__(name, stimuli, recordings, cvode_active)
 
         self.fastforward = fastforward
 
@@ -190,7 +188,7 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
             Exception: if stimuli is not of size 2 and is not None
             Exception: if recordings is not of size 2 and is not None
         """
-        super(SweepProtocolPairSim, self).__init__(name)
+        super().__init__(name)
         if stimuli is not None and len(stimuli) != 2:
             raise Exception(
                 "Stimuli should be of size 2 and contain"

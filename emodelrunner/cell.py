@@ -64,7 +64,7 @@ class CellModelCustom(ephys.models.CellModel):
             add_synapses (bool): set to True to add synapses to the cell
             fixhp (bool): to uninsert SK_E2 for hyperpolarization
         """
-        super(CellModelCustom, self).__init__(name, morph, mechs, params, gid)
+        super().__init__(name, morph, mechs, params, gid)
         self.add_synapses = add_synapses
         self.fixhp = fixhp
 
@@ -286,7 +286,7 @@ class CellModelCustom(ephys.models.CellModel):
             sim (bluepyopt.ephys.NrnSimulator): neuron simulator
         """
         # pylint: disable=unnecessary-comprehension
-        super(CellModelCustom, self).instantiate(sim)
+        super().instantiate(sim)
 
         # Hyperpolarization workaround
         somatic = [x for x in self.icell.somatic]

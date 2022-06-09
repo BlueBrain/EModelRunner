@@ -38,4 +38,4 @@ class NpEncoder(json.JSONEncoder):
         elif isinstance(o, np.ndarray):
             return o.tolist()
         else:
-            return super(NpEncoder, self).default(o)
+            return super().default(o)
