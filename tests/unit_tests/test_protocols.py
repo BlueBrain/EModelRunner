@@ -17,6 +17,8 @@
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 from emodelrunner.load import (
     load_config,
     get_prot_args,
@@ -77,6 +79,15 @@ class TestProtocolBuilder:
                 "RinHoldCurrent",
                 "IDRest",
             }
+
+    def test_using_sscx_protocols_none_cell_exception(self):
+        """Test building sscx protocols with a None cell to raise exception."""
+        cell = None
+        add_synapses = True
+        prot_args = {}
+
+        with pytest.raises(RuntimeError):
+            ProtocolBuilder.using_sscx_protocols(add_synapses, prot_args, cell)
 
     def test_using_thalamus_protocols(self):
         """Test building thalamus protocols object."""

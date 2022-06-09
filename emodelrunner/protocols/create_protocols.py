@@ -1,6 +1,7 @@
 """Protocol creation functions & custom protocol classes."""
 
 import contextlib
+
 # Copyright 2020-2022 Blue Brain Project / EPFL
 
 # Licensed under the Apache License, Version 2.0 (the "License");

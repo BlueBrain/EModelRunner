@@ -16,7 +16,6 @@
 
 import os
 import json
-from emodelrunner.json_utilities import NpEncoder
 import neurom as nm
 from neurom.core.types import NeuriteType
 from emodelrunner.factsheets import morphology_features
