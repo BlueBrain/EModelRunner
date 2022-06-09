@@ -1,5 +1,6 @@
 """Protocol creation functions & custom protocol classes."""
 
+import contextlib
 # Copyright 2020-2022 Blue Brain Project / EPFL
 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -292,19 +293,14 @@ def set_thalamus_main_protocol_efeatures(protocols_dict, efeatures, prefix):
         f"{prefix}.RMP.soma.v.steady_state_voltage_stimend"
     ]
 
-    try:
+    with contextlib.suppress(KeyError):
         protocols_dict["Main"].rin_efeature_dep = efeatures[
             f"{prefix}.Rin_dep.soma.v.ohmic_input_resistance_vb_ssse"
         ]
-    except KeyError:
-        pass
-    try:
+    with contextlib.suppress(AttributeError):
         protocols_dict["Main"].rin_efeature_dep.stimulus_current = protocols_dict[
             "Main"
         ].rinhold_protocol_dep.rin_protocol_template.step_stimulus.step_amplitude
-    except AttributeError:
-        pass
-
     protocols_dict["Main"].rin_efeature_hyp = efeatures[
         f"{prefix}.Rin_hyp.soma.v.ohmic_input_resistance_vb_ssse"
     ]
@@ -313,7 +309,7 @@ def set_thalamus_main_protocol_efeatures(protocols_dict, efeatures, prefix):
         "Main"
     ].rinhold_protocol_hyp.rin_protocol_template.step_stimulus.step_amplitude
 
-    try:
+    with contextlib.suppress(KeyError):
         protocols_dict["RinHoldcurrent_dep"].voltagebase_efeature = efeatures[
             f"{prefix}.Rin_dep.soma.v.voltage_base"
         ]
@@ -321,8 +317,6 @@ def set_thalamus_main_protocol_efeatures(protocols_dict, efeatures, prefix):
             f"{prefix}.Rin_dep.soma.v.voltage_base"
         ].exp_mean
 
-    except KeyError:
-        pass
     protocols_dict["RinHoldcurrent_hyp"].voltagebase_efeature = efeatures[
         f"{prefix}.Rin_hyp.soma.v.voltage_base"
     ]
