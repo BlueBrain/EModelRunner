@@ -1,4 +1,4 @@
-"""Unit tests for the protocols module."""
+"""Unit tests for the create_protocols module."""
 
 # Copyright 2020-2022 Blue Brain Project / EPFL
 
@@ -17,14 +17,14 @@
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 from emodelrunner.load import (
     load_config,
     get_prot_args,
 )
 from emodelrunner.create_cells import create_cell_using_config
 from emodelrunner.protocols.create_protocols import ProtocolBuilder
-from emodelrunner.protocols.reader import ProtocolParser
-from emodelrunner.synapses.create_locations import get_syn_locs
 
 from tests.utils import cwd
 
@@ -78,6 +78,15 @@ class TestProtocolBuilder:
                 "IDRest",
             }
 
+    def test_using_sscx_protocols_none_cell_exception(self):
+        """Test building sscx protocols with a None cell to raise exception."""
+        cell = None
+        add_synapses = True
+        prot_args = {}
+
+        with pytest.raises(RuntimeError):
+            ProtocolBuilder.using_sscx_protocols(add_synapses, prot_args, cell)
+
     def test_using_thalamus_protocols(self):
         """Test building thalamus protocols object."""
         with cwd(thalamus_sample_dir):
@@ -125,43 +134,3 @@ class TestProtocolBuilder:
         thal_protocols = ProtocolBuilder(protocols=mock_obj)
         currents = thal_protocols.get_thalamus_stim_currents(responses, mtype, dt=0.025)
         assert currents["args"] == (0.1, None, 0.3, None, 0.025)
-
-
-class TestProtocolParser:
-    """Tests for the ProtocolParser class."""
-
-    def test_sscx_protocols_parser(self):
-        """Test to assure all sscx protocols are parsed."""
-        with cwd(sscx_sample_dir):
-            config = load_config(
-                config_path=Path("config") / "config_recipe_protocols.ini"
-            )
-            cell = create_cell_using_config(config)
-            syn_locs = get_syn_locs(cell)
-            prot_args = get_prot_args(config)
-
-            protocols_dict = ProtocolParser().parse_sscx_protocols(
-                protocols_filepath=prot_args["prot_path"],
-                prefix=prot_args["mtype"],
-                apical_point_isec=prot_args["apical_point_isec"],
-                syn_locs=syn_locs,
-            )
-
-            assert set(protocols_dict.keys()) == sscx_recipe_protocol_keys
-            assert all(x is not None for x in protocols_dict)
-
-    def test_thalamus_protocols_parser(self):
-        """Test to assure all thalamus protocols are parsed."""
-        with cwd(thalamus_sample_dir):
-            config = load_config(
-                config_path=Path("config") / "config_recipe_prots_short.ini"
-            )
-            prot_args = get_prot_args(config)
-
-            protocols_dict = ProtocolParser().parse_thalamus_protocols(
-                protocols_filepath=prot_args["prot_path"],
-                prefix=prot_args["mtype"],
-            )
-
-            assert set(protocols_dict.keys()) == thalamus_recipe_protocol_keys
-            assert all(x is not None for x in protocols_dict)
