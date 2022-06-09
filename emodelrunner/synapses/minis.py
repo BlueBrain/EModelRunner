@@ -35,7 +35,7 @@ class Minis(ephys.stimuli.Stimulus):
     ):
         """Constructor."""
         # pylint: disable=too-many-arguments
-        super(Minis, self).__init__()
+        super().__init__()
         self.gid = gid
         if stop is None:
             raise ValueError("NrnVecStimStimulus: Need to specify a stop time")

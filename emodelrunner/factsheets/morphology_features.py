@@ -25,7 +25,7 @@ from neurom.features.neurite import segment_radii, segment_lengths
 logger = logging.getLogger(__name__)
 
 
-class MorphologyFeature(object):
+class MorphologyFeature:
     """Morphology feature representation.
 
     Attributes:
@@ -82,7 +82,7 @@ class AverageDiameter(MorphologyFeature):
             neurite_name (str): neurite name, e.g. axon
             neurite_type (NeuriteType): enum for neurite type encoding
         """
-        super(AverageDiameter, self).__init__()
+        super().__init__()
         self.name = f"average diameter of {neurite_name}"
         self.unit = "\u00b5m"
 
@@ -116,7 +116,7 @@ class TotalLength(MorphologyFeature):
             neurite_name (str): neurite name, e.g. axon
             neurite_type (NeuriteType): enum for neurite type encoding
         """
-        super(TotalLength, self).__init__()
+        super().__init__()
         self.name = f"total {neurite_name} length"
         self.unit = "\u00b5m"
         feature_value = nm.get("total_length", morphology, neurite_type=neurite_type)
@@ -140,7 +140,7 @@ class TotalHeight(MorphologyFeature):
             neurite_name (str): neurite name, e.g. axon
             neurite_type (NeuriteType): enum for neurite type encoding
         """
-        super(TotalHeight, self).__init__()
+        super().__init__()
         self.name = f"total {neurite_name} height"
         self.unit = "\u00b5m"
         feature_value = nm.get("total_height", morphology, neurite_type=neurite_type)
@@ -164,7 +164,7 @@ class TotalWidth(MorphologyFeature):
             neurite_name (str): neurite name, e.g. axon
             neurite_type (NeuriteType): enum for neurite type encoding
         """
-        super(TotalWidth, self).__init__()
+        super().__init__()
         self.name = f"total {neurite_name} width"
         self.unit = "\u00b5m"
         feature_value = nm.get("total_width", morphology, neurite_type=neurite_type)
@@ -188,7 +188,7 @@ class TotalDepth(MorphologyFeature):
             neurite_name (str): neurite name, e.g. axon
             neurite_type (NeuriteType): enum for neurite type encoding
         """
-        super(TotalDepth, self).__init__()
+        super().__init__()
         self.name = f"total {neurite_name} depth"
         self.unit = "\u00b5m"
         feature_value = nm.get("total_depth", morphology, neurite_type=neurite_type)
@@ -212,7 +212,7 @@ class TotalArea(MorphologyFeature):
             neurite_name (str): neurite name, e.g. axon
             neurite_type (NeuriteType): enum for neurite type encoding
         """
-        super(TotalArea, self).__init__()
+        super().__init__()
         self.name = f"total {neurite_name} area"
         self.unit = "\u00b5m\u00b2"
         feature_value = nm.get("total_area", morphology, neurite_type=neurite_type)
@@ -236,7 +236,7 @@ class TotalVolume(MorphologyFeature):
             neurite_name (str): neurite name, e.g. axon
             neurite_type (NeuriteType): enum for neurite type encoding
         """
-        super(TotalVolume, self).__init__()
+        super().__init__()
         self.name = f"total {neurite_name} volume"
         self.unit = "\u00b5m\u00b3"
         feature_value = nm.get("total_volume", morphology, neurite_type=neurite_type)
@@ -260,7 +260,7 @@ class NumberOfSections(MorphologyFeature):
             neurite_name (str): neurite name, e.g. axon
             neurite_type (NeuriteType): enum for neurite type encoding
         """
-        super(NumberOfSections, self).__init__()
+        super().__init__()
         self.name = f"number of {neurite_name} sections"
         self.unit = ""
         feature_value = nm.get(
@@ -312,7 +312,7 @@ class MeanNeuriteVolumes(MorphologyFeature):
             neurite_name (str): neurite name, e.g. axon
             neurite_type (NeuriteType): enum for neurite type encoding
         """
-        super(MeanNeuriteVolumes, self).__init__()
+        super().__init__()
         self.name = f"mean {neurite_name} volume"
         self.unit = "\u00b5m\u00b3"
         feature_values = nm.get(
@@ -393,7 +393,7 @@ class MaxBranchOrder(MorphologyFeature):
             neurite_name (str): neurite name, e.g. axon
             neurite_type (NeuriteType): enum for neurite type encoding
         """
-        super(MaxBranchOrder, self).__init__()
+        super().__init__()
         self.name = f"{neurite_name} maximum branch order"
         self.unit = ""
         feature_values = nm.get(
@@ -420,7 +420,7 @@ class MaxSectionLength(MorphologyFeature):
             neurite_name (str): neurite name, e.g. axon
             neurite_type (NeuriteType): enum for neurite type encoding
         """
-        super(MaxSectionLength, self).__init__()
+        super().__init__()
         self.name = f"{neurite_name} maximum section length"
         self.unit = "\u00b5m"
         feature_values = nm.get(
@@ -445,7 +445,7 @@ class SomaDiamater(MorphologyFeature):
         Args:
             morphology (neurom neuron object): morphology object
         """
-        super(SomaDiamater, self).__init__()
+        super().__init__()
         self.name = "soma diameter"
         self.unit = "\u00b5m"
         feature_value = nm.get("soma_radius", morphology)
@@ -467,7 +467,7 @@ class SomaSurfaceArea(MorphologyFeature):
         Args:
             morphology (neurom neuron object): morphology object
         """
-        super(SomaSurfaceArea, self).__init__()
+        super().__init__()
         self.name = "soma surface area"
         self.unit = "\u00b5m\u00b2"
         feature_value = nm.get("soma_surface_area", morphology)
@@ -489,7 +489,7 @@ class SomaVolume(MorphologyFeature):
         Args:
             morphology (neurom neuron object): morphology object
         """
-        super(SomaVolume, self).__init__()
+        super().__init__()
         self.name = "soma volume"
         self.unit = "\u00b5m\u00b3"
         feature_value = nm.get("soma_volume", morphology)
@@ -573,7 +573,7 @@ class SSCXMorphologyFactsheetBuilder(MorphologyFactsheetBuilder):
         Args:
             morph_path (str or Path): Path to the morphology file.
         """
-        super(SSCXMorphologyFactsheetBuilder, self).__init__(morph_path)
+        super().__init__(morph_path)
         self.neurites = self.get_neurites()
         self.neurite_features = [
             TotalLength,
@@ -593,7 +593,7 @@ class HippocampusMorphologyFactsheetBuilder(MorphologyFactsheetBuilder):
         Args:
             morph_path (str or Path): Path to the morphology file.
         """
-        super(HippocampusMorphologyFactsheetBuilder, self).__init__(morph_path)
+        super().__init__(morph_path)
         self.neurites = [("all", nm.ANY_NEURITE)] + self.get_neurites()
         self.neurite_features = [
             TotalWidth,
@@ -621,7 +621,7 @@ class ThalamusMorphologyFactsheetBuilder(MorphologyFactsheetBuilder):
         Args:
             morph_path (str or Path): Path to the morphology file.
         """
-        super(ThalamusMorphologyFactsheetBuilder, self).__init__(morph_path)
+        super().__init__(morph_path)
         self.neurites = self.get_neurites()
         self.neurite_features = [
             TotalLength,

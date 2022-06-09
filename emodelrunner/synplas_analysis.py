@@ -82,7 +82,7 @@ def epsp_slope(vtrace):
     return m
 
 
-class Experiment(object):
+class Experiment:
     """A full STDP induction experiment.
 
     The experiment consists of two connectivity tests (C01 and C02), separed

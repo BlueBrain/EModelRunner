@@ -41,7 +41,7 @@ class SynapseRecordingCustom(ephys.recordings.Recording):
             location (Location): location in the model of the recording
             variable (str): which variable to record from (e.g. 'v')
         """
-        super(SynapseRecordingCustom, self).__init__(name=name)
+        super().__init__(name=name)
         self.location = location
         self.variable = variable
 
