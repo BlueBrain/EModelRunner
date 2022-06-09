@@ -21,6 +21,14 @@ def test_np_encoder_integer():
     assert test_np_integer_decoded == test_np_integer
 
 
+def test_np_encoder_float():
+    """Unit test for the NpEncoder on float."""
+    test_np_float = np.float32(1.0)
+    test_np_float_encoded = json.dumps(test_np_float, cls=NpEncoder)
+    test_np_float_decoded = json.loads(test_np_float_encoded)
+    assert test_np_float_decoded == test_np_float
+
+
 def test_np_encoder_none():
     """Unit test for the NpEncoder on None."""
     test_np_none = None
