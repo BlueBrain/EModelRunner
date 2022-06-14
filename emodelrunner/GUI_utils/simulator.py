@@ -84,7 +84,7 @@ def get_pos_and_color(sec, seg_pos, syn_type):
         sec: neuron section
         seg_pos (float): postion of the segment os the section
             (should be between 0 and 1)
-        syn_type (int): synaptic type. excitatory if >100,
+        syn_type (int): synaptic type. excitatory if >=100,
             inhibitory if <100
 
     Returns:
