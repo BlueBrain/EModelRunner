@@ -66,11 +66,12 @@ def section_coordinate_3d(sec, seg_pos):
         return [local_x, local_y, local_z]
     else:
         for i, arc in enumerate(arc3d[1:]):
-            if arc > seg_pos > arc3d[i - 1] and arc - arc3d[i - 1] != 0:
-                proportion = (seg_pos - arc3d[i - 1]) / (arc - arc3d[i - 1])
-                local_x = x3d[i - 1] + proportion * (x3d[i] - x3d[i - 1])
-                local_y = y3d[i - 1] + proportion * (y3d[i] - y3d[i - 1])
-                local_z = z3d[i - 1] + proportion * (z3d[i] - z3d[i - 1])
+            # here, arc is arc3d[i + 1]
+            if arc > seg_pos > arc3d[i] and arc - arc3d[i] != 0:
+                proportion = (seg_pos - arc3d[i]) / (arc - arc3d[i])
+                local_x = x3d[i] + proportion * (x3d[i + 1] - x3d[i])
+                local_y = y3d[i] + proportion * (y3d[i + 1] - y3d[i])
+                local_z = z3d[i] + proportion * (z3d[i + 1] - z3d[i])
                 return [local_x, local_y, local_z]
 
     return None
