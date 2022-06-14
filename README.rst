@@ -208,7 +208,7 @@ GUI
 
 There is also a GUI available for the sscx cells. To launch it, you have to go in a sscx-compatible cell package, and then type::
 
-    python -m emodelrunner.GUI
+    python -m emodelrunner.GUI --config_path config_path
 
 The usage of the GUI is pretty much self-explanatory.
 
