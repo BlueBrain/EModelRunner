@@ -296,9 +296,7 @@ class NeuronSimulation:
         self.hold_step_delay = hold_step_delay
         self.hold_step_duration = hold_step_duration
 
-    def load_synapse_params(
-        self, syn_start=0, syn_interval=0, syn_nmb_of_spikes=0, syn_noise=0
-    ):
+    def load_synapse_params(self, syn_start=0, syn_interval=0, syn_nmb_of_spikes=0, syn_noise=0):
         """Load default synapse params.
 
         Args:
@@ -343,7 +341,7 @@ class NeuronSimulation:
         return mtypes
 
     def get_syn_stim(self):
-        """Create syanpse stimuli.
+        """Create synapse stimuli.
 
         Returns:
             emodelrunner.synapses.stimuli.NrnNetStimStimulusCustom: synapse stimuli
@@ -392,9 +390,7 @@ class NeuronSimulation:
         if syn_stim is not None:
             stims.append(syn_stim)
 
-        self.protocol = ephys.protocols.SweepProtocol(
-            protocol_name, stims, [rec], False
-        )
+        self.protocol = ephys.protocols.SweepProtocol(protocol_name, stims, [rec], False)
 
     def create_cell_custom(self):
         """Create a cell.
@@ -478,12 +474,8 @@ class NeuronSimulation:
                     seg_pos = syn["seg_x"]
                     # check if a synapse of the same mtype has already the same position
                     # and add synapse only if a new position has to be displayed
-                    syn_section = mech.get_cell_section_for_synapse(
-                        syn, self.cell.icell
-                    )
-                    syn_display_data = get_pos_and_color(
-                        syn_section, seg_pos, syn["synapse_type"]
-                    )
+                    syn_section = mech.get_cell_section_for_synapse(syn, self.cell.icell)
+                    syn_display_data = get_pos_and_color(syn_section, seg_pos, syn["synapse_type"])
                     if (
                         syn_display_data is not None
                         and syn_display_data not in self.syn_display_data[pre_mtype]
@@ -513,9 +505,7 @@ class NeuronSimulation:
             - ndarray: the time response
             - ndarray: the voltage response
         """
-        responses = {
-            recording.name: recording.response for recording in self.protocol.recordings
-        }
+        responses = {recording.name: recording.response for recording in self.protocol.recordings}
         key = list(responses.keys())[0]
         resp = responses[key]
         return np.array(resp["time"]), np.array(resp["voltage"])
