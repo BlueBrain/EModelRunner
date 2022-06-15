@@ -15,9 +15,10 @@
 # limitations under the License.
 
 import os
+import subprocess
 
 from emodelrunner.GUI_utils.simulator import NeuronSimulation
-from tests.utils import compile_mechanisms, cwd
+from tests.utils import cwd
 
 
 example_dir = os.path.join("examples", "sscx_sample_dir")
@@ -95,8 +96,8 @@ class TestNeuronSimulation(object):
     def test_load_synapse_display_data(self):
         """Test load_synapse_display_data method."""
         # instantiate cell
+        subprocess.call(["nrnivmodl", os.path.join(example_dir, "mechanisms")])
         with cwd(example_dir):
-            compile_mechanisms()
             self.simulator.load_cell_sim()
             self.simulator.cell.freeze(self.simulator.release_params)
             self.simulator.cell.instantiate(sim=self.simulator.sim)
