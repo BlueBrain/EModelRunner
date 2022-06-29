@@ -97,6 +97,7 @@ class TestNeuronSimulation(object):
         # instantiate cell
         with cwd(example_dir):
             self.simulator.load_cell_sim()
+            self.simulator.sim.mechanisms_directory = "./"
             self.simulator.cell.freeze(self.simulator.release_params)
             self.simulator.cell.instantiate(sim=self.simulator.sim)
 

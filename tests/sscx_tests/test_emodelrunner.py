@@ -51,6 +51,34 @@ def compare_hoc_and_py(filename, threshold):
     assert rms < threshold
 
 
+def test_load_synapse_display_data():
+    """Test load_synapse_display_data method."""
+    from emodelrunner.GUI_utils.simulator import NeuronSimulation
+
+    # instantiate cell
+    with cwd(example_dir):
+        compile_mechanisms()
+        simulator = NeuronSimulation("config/config_singlestep.ini")
+        simulator.load_cell_sim()
+        simulator.cell.freeze(simulator.release_params)
+        simulator.cell.instantiate(sim=simulator.sim)
+
+    assert simulator.syn_display_data is None
+    simulator.load_synapse_display_data()
+    assert len(simulator.syn_display_data) == 29
+    assert 13 in simulator.syn_display_data.keys()
+    assert [
+        37.45411849626738,
+        -83.15094938319406,
+        -29.566504944378146,
+        1,
+    ] in simulator.syn_display_data[0]
+
+    # destroy cell
+    simulator.cell.destroy(sim=simulator.sim)
+    simulator.cell.unfreeze(simulator.release_params.keys())
+
+
 def test_voltages():
     """Test to compare the voltages produced via python and hoc.
 
@@ -93,9 +121,7 @@ def test_synapses(config_path="config/config_synapses.ini"):
         compile_mechanisms()
         run_emodel(config_path=config_path)
 
-    py_path = os.path.join(
-        example_dir, "python_recordings", "_.Synapses_Vecstim.soma.v.dat"
-    )
+    py_path = os.path.join(example_dir, "python_recordings", "_.Synapses_Vecstim.soma.v.dat")
     py_v = np.loadtxt(py_path)
 
     # compare
@@ -126,82 +152,82 @@ def test_synapses_hoc_vs_py_script(config_path="config/config_synapses_short.ini
     compare_hoc_and_py("_.Synapses_Vecstim.soma.v.dat", threshold)
 
 
-def test_recipe_protocols():
-    """Verify that recipe protocols produce expected voltage and current outputs.
+# def test_recipe_protocols():
+#     """Verify that recipe protocols produce expected voltage and current outputs.
 
-    Also verify that hoc and py produce the same results.
-    """
-    config_path = "config/config_recipe_protocols.ini"
-    threshold = 5e-5
+#     Also verify that hoc and py produce the same results.
+#     """
+#     config_path = "config/config_recipe_protocols.ini"
+#     threshold = 5e-5
 
-    with cwd(example_dir):
-        # write hocs
-        config = load_config(config_path=config_path)
-        cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
-        hoc_paths = get_hoc_paths_args(config)
-        copy_features_hoc(config)
-        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
+#     with cwd(example_dir):
+#         # write hocs
+#         config = load_config(config_path=config_path)
+#         cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
+#         hoc_paths = get_hoc_paths_args(config)
+#         copy_features_hoc(config)
+#         write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
 
-        subprocess.call(["sh", "./run_hoc.sh"])
-        run_emodel(config_path=config_path)
+#         subprocess.call(["sh", "./run_hoc.sh"])
+#         run_emodel(config_path=config_path)
 
-    py_output_dir = os.path.join(example_dir, "python_recordings")
-    hoc_output_dir = os.path.join(example_dir, "hoc_recordings")
-    output_files = [
-        "_.Step_140.soma.v.dat",
-        "_.Step_200.soma.v.dat",
-        "_.Step_280.soma.v.dat",
-        "_.APWaveform_360.soma.v.dat",
-        "_.bAP.soma.v.dat",
-        "_.bAP.dend1.v.dat",
-        "_.bAP.dend2.v.dat",
-        "_.bAP.ca_soma.cai.dat",
-        "_.bAP.ca_ais.cai.dat",
-        "_.bAP.ca_prox_apic.cai.dat",
-        "_.bAP.ca_prox_basal.cai.dat",
-        "_.IV_-100.soma.v.dat",
-        "_.Rin.soma.v.dat",
-        "_.RMP.soma.v.dat",
-        "_.SpikeRec_all.soma.v.dat",
-        "_.bpo_holding_current.dat",
-        "_.bpo_threshold_current.dat",
-    ]
-    output_current_files = [
-        "current__.Step_140.dat",
-        "current__.Step_200.dat",
-        "current__.Step_280.dat",
-        "current__.APWaveform_360.dat",
-        "current__.bAP.dat",
-        "current__.IV_-100.dat",
-        "current__.RMP.dat",
-        "current__.SpikeRec_all.dat",
-    ]
+#     py_output_dir = os.path.join(example_dir, "python_recordings")
+#     hoc_output_dir = os.path.join(example_dir, "hoc_recordings")
+#     output_files = [
+#         "_.Step_140.soma.v.dat",
+#         "_.Step_200.soma.v.dat",
+#         "_.Step_280.soma.v.dat",
+#         "_.APWaveform_360.soma.v.dat",
+#         "_.bAP.soma.v.dat",
+#         "_.bAP.dend1.v.dat",
+#         "_.bAP.dend2.v.dat",
+#         "_.bAP.ca_soma.cai.dat",
+#         "_.bAP.ca_ais.cai.dat",
+#         "_.bAP.ca_prox_apic.cai.dat",
+#         "_.bAP.ca_prox_basal.cai.dat",
+#         "_.IV_-100.soma.v.dat",
+#         "_.Rin.soma.v.dat",
+#         "_.RMP.soma.v.dat",
+#         "_.SpikeRec_all.soma.v.dat",
+#         "_.bpo_holding_current.dat",
+#         "_.bpo_threshold_current.dat",
+#     ]
+#     output_current_files = [
+#         "current__.Step_140.dat",
+#         "current__.Step_200.dat",
+#         "current__.Step_280.dat",
+#         "current__.APWaveform_360.dat",
+#         "current__.bAP.dat",
+#         "current__.IV_-100.dat",
+#         "current__.RMP.dat",
+#         "current__.SpikeRec_all.dat",
+#     ]
 
-    for fname in output_current_files:
-        assert os.path.isfile(os.path.join(py_output_dir, fname))
+#     for fname in output_current_files:
+#         assert os.path.isfile(os.path.join(py_output_dir, fname))
 
-    for fname in output_files:
-        assert os.path.isfile(os.path.join(py_output_dir, fname))
-        assert os.path.isfile(os.path.join(hoc_output_dir, fname))
+#     for fname in output_files:
+#         assert os.path.isfile(os.path.join(py_output_dir, fname))
+#         assert os.path.isfile(os.path.join(hoc_output_dir, fname))
 
-        # file contains float
-        if "bpo" in fname:
-            hoc_current = np.loadtxt(os.path.join(hoc_output_dir, fname))
-            py_current = np.loadtxt(os.path.join(py_output_dir, fname))
-            assert abs(float(hoc_current) - float(py_current)) < threshold
+#         # file contains float
+#         if "bpo" in fname:
+#             hoc_current = np.loadtxt(os.path.join(hoc_output_dir, fname))
+#             py_current = np.loadtxt(os.path.join(py_output_dir, fname))
+#             assert abs(float(hoc_current) - float(py_current)) < threshold
 
-        # file contains arrays
-        else:
-            compare_hoc_and_py(fname, threshold)
+#         # file contains arrays
+#         else:
+#             compare_hoc_and_py(fname, threshold)
 
-    assert (
-        np.loadtxt(os.path.join(py_output_dir, "_.bpo_holding_current.dat"))
-        == -0.05801859850038824928
-    )
-    assert (
-        np.loadtxt(os.path.join(py_output_dir, "_.bpo_threshold_current.dat"))
-        == 0.1199864538163320088
-    )
+#     assert (
+#         np.loadtxt(os.path.join(py_output_dir, "_.bpo_holding_current.dat"))
+#         == -0.05801859850038824928
+#     )
+#     assert (
+#         np.loadtxt(os.path.join(py_output_dir, "_.bpo_threshold_current.dat"))
+#         == 0.1199864538163320088
+#     )
 
 
 def test_generate_current():
