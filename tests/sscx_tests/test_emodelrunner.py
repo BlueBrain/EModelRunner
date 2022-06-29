@@ -93,7 +93,9 @@ def test_synapses(config_path="config/config_synapses.ini"):
         compile_mechanisms()
         run_emodel(config_path=config_path)
 
-    py_path = os.path.join(example_dir, "python_recordings", "_.Synapses_Vecstim.soma.v.dat")
+    py_path = os.path.join(
+        example_dir, "python_recordings", "_.Synapses_Vecstim.soma.v.dat"
+    )
     py_v = np.loadtxt(py_path)
 
     # compare
