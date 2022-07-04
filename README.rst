@@ -30,6 +30,7 @@ It consists of two main modules:
   - ability to run post-synaptic cell with pre-recorded output of pre-synaptic cell
   - ability to run 'full' pair simulations, where both the pre-synaptic and the post-synaptic cells are run at the same time
   - analysis tool to compute the change of EPSPs
+  - this module is designed to run the `cells <https://zenodo.org/record/6352774>`_ and reproduce the results from the paper `'A calcium-based plasticity model for predicting long-term potentiation and depression in the neocortex' <https://www.nature.com/articles/s41467-022-30214-w>`_.
 
 - one module designed to run the cells from the SomatoSensoryCortex portal, with the following features:
 
