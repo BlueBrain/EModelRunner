@@ -37,7 +37,9 @@ def test_multi_locations():
     locs = multi_locations("allact")
     assert len(locs) == 4
     assert {"axonal", "somatic", "basal", "apical"} == {loc.name for loc in locs}
-    assert {"axonal", "somatic", "basal", "apical"} == {loc.seclist_name for loc in locs}
+    assert {"axonal", "somatic", "basal", "apical"} == {
+        loc.seclist_name for loc in locs
+    }
 
     locs = multi_locations("custom")
     assert len(locs) == 1
