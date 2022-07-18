@@ -316,8 +316,6 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         Returns:
             dict containing the responses for the Rin protocol using holding current
         """
-        responses = collections.OrderedDict()
-
         # Calculate Rin without holding current
         rin_noholding_protocol = self.create_rin_protocol(holdi=0)
         rin_noholding_response = rin_noholding_protocol.run(
