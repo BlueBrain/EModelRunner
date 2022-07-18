@@ -293,8 +293,6 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
 
     def run(self, cell_model, param_values, sim, rmp=None):
         """Run protocol."""
-        responses = collections.OrderedDict()
-
         # Calculate Rin without holding current
         if self.name.endswith("_dep"):
             rin_noholding_protocol = self.create_rin_protocol_dep(holdi=0)
