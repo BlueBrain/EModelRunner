@@ -62,7 +62,7 @@ def load_pulses(soma_loc, stim_path="protocols/stimuli.json"):
         if "Pattern" in stim and stim["Pattern"] == "Pulse":
             pulse_stims.append(add_pulse(stim, soma_loc))
         else:
-            NotImplementedError(
+            raise NotImplementedError(
                 "Stimulus other than Pulse in stimuli file. Not implemented yet."
             )
     return pulse_stims
