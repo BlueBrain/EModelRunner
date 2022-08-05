@@ -2,7 +2,16 @@
 
 import json
 import numpy as np
+from hypothesis.extra import numpy as hp_numpy
+from hypothesis import given, strategies as st
 from emodelrunner.json_utilities import NpEncoder
+
+
+json_serializable_np_dtypes = (
+    hp_numpy.integer_dtypes(),
+    hp_numpy.unsigned_integer_dtypes(),
+    hp_numpy.floating_dtypes(),
+)
 
 
 def test_np_encoder_array():
@@ -43,3 +52,22 @@ def test_np_encoder_bool():
     test_np_bool_encoded = json.dumps(test_np_bool, cls=NpEncoder)
     test_np_bool_decoded = json.loads(test_np_bool_encoded)
     assert test_np_bool_decoded == test_np_bool
+
+
+@given(
+    hp_numpy.arrays(
+        st.one_of(
+            *json_serializable_np_dtypes,
+            hp_numpy.array_dtypes(
+                subtype_strategy=st.one_of(*json_serializable_np_dtypes)
+            ),
+        ),
+        # limit array size to avoid memory error and long testing time
+        st.integers(min_value=0, max_value=1000),
+    )
+)
+def test_np_encoder_array_with_hp(test_np_array):
+    """Unit test for the NpEncoder on np.array."""
+    test_np_array_encoded = json.dumps(test_np_array, cls=NpEncoder)
+    test_np_array_decoded = json.loads(test_np_array_encoded)
+    assert np.array_equal(test_np_array_decoded, test_np_array.tolist(), equal_nan=True)
