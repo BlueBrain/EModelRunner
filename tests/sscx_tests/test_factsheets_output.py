@@ -47,6 +47,9 @@ class TestMETypeFactsheet:
         """setup any state specific to the execution of the given class (which
         usually contains tests).
         """
+        import logging
+
+        logging.warning("IN SETUP CLASS")
         protocol_key = "RmpRiTau"
         config_path_in_memodel_dir = Path("config") / "config_factsheets.ini"
         output_path = Path("factsheets") / "me_type_factsheet.json"
@@ -74,9 +77,55 @@ class TestMETypeFactsheet:
 
         cls.output_path = Path(example_dir) / output_path
 
+    @pytest.mark.xdist_group(name="TestMETypeFactsheet")
     def test_metype_factsheet_exists(self):
         """Test if the factsheet file is created."""
         assert self.output_path.is_file()
+
+    @pytest.mark.xdist_group(name="TestMETypeFactsheet")
+    def test_physiology_features(self):
+        """Checks that all physiology values exist.
+
+        Checks that there is no empty list or dict.
+        Checks that data exists and is a float and is positive (except for membrane pot.).
+        Checks that there is no physiology field missing.
+        """
+        protocol_key = "RmpRiTau"
+        # get stimulus amp, delay and duration
+        prot_path = Path(example_dir) / "config" / "protocols" / "RmpRiTau.json"
+
+        stim_params = get_stim_params_from_config_for_physiology_factsheet(
+            prot_path, protocol_key
+        )
+        current_amplitude, stim_start, stim_duration = stim_params
+
+        # get data path from run.py output
+        voltage_path = (
+            Path(example_dir) / "python_recordings" / ("_." + protocol_key + ".soma.v.dat")
+        )
+        data = np.loadtxt(voltage_path)
+
+        phys_dict = physiology_factsheet_info(
+            time=data[:, 0],
+            voltage=data[:, 1],
+            current_amplitude=current_amplitude,
+            stim_start=stim_start,
+            stim_duration=stim_duration,
+        )
+        left_to_check = [
+            "input resistance",
+            "membrane time constant",
+            "resting membrane potential",
+        ]
+
+        assert phys_dict["values"]
+        for item in phys_dict["values"]:
+            assert isinstance(item["value"], float)
+            if item["name"] in ["input resistance", "membrane time constant"]:
+                assert item["value"] >= 0
+            left_to_check.remove(item["name"])
+
+        assert len(left_to_check) == 0
 
 
 def test_emodel_factsheet_exists():
@@ -175,51 +224,6 @@ def test_anatomy_features():
                 l.remove(item["name"])
 
     assert len(lists_to_check[0]) == 0 or len(lists_to_check[1]) == 0
-
-
-def test_physiology_features():
-    """Checks that all physiology values exist.
-
-    Checks that there is no empty list or dict.
-    Checks that data exists and is a float and is positive (except for membrane pot.).
-    Checks that there is no physiology field missing.
-    """
-    protocol_key = "RmpRiTau"
-    # get stimulus amp, delay and duration
-    prot_path = Path(example_dir) / "config" / "protocols" / "RmpRiTau.json"
-
-    stim_params = get_stim_params_from_config_for_physiology_factsheet(
-        prot_path, protocol_key
-    )
-    current_amplitude, stim_start, stim_duration = stim_params
-
-    # get data path from run.py output
-    voltage_path = (
-        Path(example_dir) / "python_recordings" / ("_." + protocol_key + ".soma.v.dat")
-    )
-    data = np.loadtxt(voltage_path)
-
-    phys_dict = physiology_factsheet_info(
-        time=data[:, 0],
-        voltage=data[:, 1],
-        current_amplitude=current_amplitude,
-        stim_start=stim_start,
-        stim_duration=stim_duration,
-    )
-    left_to_check = [
-        "input resistance",
-        "membrane time constant",
-        "resting membrane potential",
-    ]
-
-    assert phys_dict["values"]
-    for item in phys_dict["values"]:
-        assert isinstance(item["value"], float)
-        if item["name"] in ["input resistance", "membrane time constant"]:
-            assert item["value"] >= 0
-        left_to_check.remove(item["name"])
-
-    assert len(left_to_check) == 0
 
 
 def test_mechanisms():
