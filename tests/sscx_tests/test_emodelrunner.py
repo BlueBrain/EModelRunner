@@ -69,7 +69,9 @@ def test_voltages():
         config = load_config(config_path=config_path)
         lock = FileLock("hoc.lock")
         with lock:
-            cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
+            cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(
+                config=config
+            )
             hoc_paths = get_hoc_paths_args(config)
             write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
 
@@ -122,7 +124,9 @@ def test_synapses_hoc_vs_py_script(config_path="config/config_synapses_short.ini
         config = load_config(config_path=config_path)
         lock = FileLock("hoc.lock")
         with lock:
-            cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
+            cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(
+                config=config
+            )
             hoc_paths = get_hoc_paths_args(config)
             write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
 
@@ -146,7 +150,9 @@ def test_recipe_protocols():
         config = load_config(config_path=config_path)
         lock = FileLock("hoc.lock")
         with lock:
-            cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
+            cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(
+                config=config
+            )
             hoc_paths = get_hoc_paths_args(config)
             copy_features_hoc(config)
             write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
@@ -342,7 +348,9 @@ def test_multiprotocols_hoc_vs_py_script(
         config = load_config(config_path=config_path)
         lock = FileLock("hoc.lock")
         with lock:
-            cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
+            cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(
+                config=config
+            )
             hoc_paths = get_hoc_paths_args(config)
             write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
 

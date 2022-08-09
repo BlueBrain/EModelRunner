@@ -101,7 +101,9 @@ class TestMETypeFactsheet:
 
         # get data path from run.py output
         voltage_path = (
-            Path(example_dir) / "python_recordings" / ("_." + protocol_key + ".soma.v.dat")
+            Path(example_dir)
+            / "python_recordings"
+            / ("_." + protocol_key + ".soma.v.dat")
         )
         data = np.loadtxt(voltage_path)
 
