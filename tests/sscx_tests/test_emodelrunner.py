@@ -23,6 +23,7 @@ import subprocess
 
 import pytest
 
+from filelock import FileLock
 from bluepyopt import ephys
 from emodelrunner.create_hoc import get_hoc, write_hocs, copy_features_hoc
 from emodelrunner.load import (
@@ -51,6 +52,7 @@ def compare_hoc_and_py(filename, threshold):
     assert rms < threshold
 
 
+@pytest.mark.xdist_group(name="contains_Step200")
 def test_voltages():
     """Test to compare the voltages produced via python and hoc.
 
@@ -65,11 +67,15 @@ def test_voltages():
     with cwd(example_dir):
         # write hocs
         config = load_config(config_path=config_path)
-        cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
-        hoc_paths = get_hoc_paths_args(config)
-        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
+        lock = FileLock("hoc.lock")
+        with lock:
+            cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(
+                config=config
+            )
+            hoc_paths = get_hoc_paths_args(config)
+            write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
 
-        subprocess.call(["sh", "./run_hoc.sh"])
+            subprocess.call(["sh", "./run_hoc.sh"])
         run_emodel(config_path=config_path)
 
     for idx in range(3):
@@ -116,16 +122,21 @@ def test_synapses_hoc_vs_py_script(config_path="config/config_synapses_short.ini
     with cwd(example_dir):
         # write hocs
         config = load_config(config_path=config_path)
-        cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
-        hoc_paths = get_hoc_paths_args(config)
-        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
+        lock = FileLock("hoc.lock")
+        with lock:
+            cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(
+                config=config
+            )
+            hoc_paths = get_hoc_paths_args(config)
+            write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
 
-        subprocess.call(["sh", "./run_hoc.sh"])
+            subprocess.call(["sh", "./run_hoc.sh"])
         run_emodel(config_path=config_path)
 
     compare_hoc_and_py("_.Synapses_Vecstim.soma.v.dat", threshold)
 
 
+@pytest.mark.xdist_group(name="contains_Step200")
 def test_recipe_protocols():
     """Verify that recipe protocols produce expected voltage and current outputs.
 
@@ -137,12 +148,16 @@ def test_recipe_protocols():
     with cwd(example_dir):
         # write hocs
         config = load_config(config_path=config_path)
-        cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
-        hoc_paths = get_hoc_paths_args(config)
-        copy_features_hoc(config)
-        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
+        lock = FileLock("hoc.lock")
+        with lock:
+            cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(
+                config=config
+            )
+            hoc_paths = get_hoc_paths_args(config)
+            copy_features_hoc(config)
+            write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
 
-        subprocess.call(["sh", "./run_hoc.sh"])
+            subprocess.call(["sh", "./run_hoc.sh"])
         run_emodel(config_path=config_path)
 
     py_output_dir = os.path.join(example_dir, "python_recordings")
@@ -331,11 +346,15 @@ def test_multiprotocols_hoc_vs_py_script(
     with cwd(example_dir):
         # write hocs
         config = load_config(config_path=config_path)
-        cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(config=config)
-        hoc_paths = get_hoc_paths_args(config)
-        write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
+        lock = FileLock("hoc.lock")
+        with lock:
+            cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(
+                config=config
+            )
+            hoc_paths = get_hoc_paths_args(config)
+            write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
 
-        subprocess.call(["sh", "./run_hoc.sh"])
+            subprocess.call(["sh", "./run_hoc.sh"])
         run_emodel(config_path=config_path)
 
     compare_hoc_and_py("_.Ramp.soma.v.dat", threshold)
