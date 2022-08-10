@@ -47,9 +47,6 @@ class TestMETypeFactsheet:
         """setup any state specific to the execution of the given class (which
         usually contains tests).
         """
-        import logging
-
-        logging.warning("IN SETUP CLASS")
         protocol_key = "RmpRiTau"
         config_path_in_memodel_dir = Path("config") / "config_factsheets.ini"
         output_path = Path("factsheets") / "me_type_factsheet.json"
