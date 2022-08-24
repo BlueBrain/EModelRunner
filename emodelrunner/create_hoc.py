@@ -105,7 +105,7 @@ def get_hoc(config):
     main_protocol_template_path = config.get("Paths", "main_protocol_template_path")
     add_synapses = config.getboolean("Synapses", "add_synapses")
     syn_temp_name = config.get("Synapses", "hoc_synapse_template_name")
-    hoc_paths = config.get_hoc_paths_args()
+    hoc_paths = config.hoc_paths_args()
     apical_point_isec = config.get("Protocol", "apical_point_isec")
 
     constants_args = {
@@ -165,7 +165,9 @@ def get_hoc(config):
     )
 
     if main_protocol:
-        rin_exp_voltage_base = get_rin_exp_voltage_base(config.get("Paths", "features_path"))
+        rin_exp_voltage_base = get_rin_exp_voltage_base(
+            config.get("Paths", "features_path")
+        )
 
         main_protocol_hoc = create_main_protocol_hoc(
             template_path=main_protocol_template_path,
@@ -215,7 +217,7 @@ if __name__ == "__main__":
         config=config_
     )
 
-    hoc_paths_ = config_.get_hoc_paths_args()
+    hoc_paths_ = config_.hoc_paths_args()
     if main_protocol_hoc_:
         copy_features_hoc(config_)
     write_hocs(

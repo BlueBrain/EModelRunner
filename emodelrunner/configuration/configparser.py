@@ -18,7 +18,13 @@
 from configparser import ConfigParser
 from enum import Enum
 
-from emodelrunner.configuration.subgroups import HocPaths, ProtArgs, SynMechArgs, MorphArgs, PresynStimArgs
+from emodelrunner.configuration.subgroups import (
+    HocPaths,
+    ProtArgs,
+    SynMechArgs,
+    MorphArgs,
+    PresynStimArgs,
+)
 
 
 class PackageType(Enum):
@@ -42,7 +48,7 @@ class EModelConfigParser(ConfigParser):
         return PackageType[self.get("Package", "type")]
 
     def hoc_paths_args(self):
-        """Get the config data subgroup containing the paths to the hoc files. """
+        """Get the config data subgroup containing the paths to the hoc files."""
         return HocPaths(
             hoc_dir=self.get("Paths", "memodel_dir"),
             cell_hoc_filename=self.get("Paths", "cell_hoc_file"),
@@ -68,7 +74,7 @@ class EModelConfigParser(ConfigParser):
         """Get the data from config used when loading synapse mechanisms."""
         if add_synapses is None:
             add_synapses = self.getboolean("Synapses", "add_synapses")
-            
+
         return SynMechArgs(
             add_synapses=add_synapses,
             seed=self.getint("Synapses", "seed"),

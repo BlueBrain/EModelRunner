@@ -598,7 +598,6 @@ def create_simul_hoc(
         template_path (str): path to the template to fill in
         add_synapses (bool): whether to add synapses to the cell
         hoc_paths (HocPaths): contains paths of the hoc files to be created
-            See load.get_hoc_paths_args for details
         constants_args (dict): contains data about the constants of the simulation
         protocol_definitions (dict): dictionary defining the protocols.
             Should have the structure of the protocol file in example/sscx/config/protocols

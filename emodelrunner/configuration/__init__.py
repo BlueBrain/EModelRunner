@@ -23,5 +23,9 @@ from emodelrunner.configuration.validator import (
 )
 from emodelrunner.configuration.configparser import PackageType
 from emodelrunner.configuration.subgroups import (
-    HocPaths, ProtArgs, SynMechArgs, MorphArgs, PresynStimArgs
+    HocPaths,
+    ProtArgs,
+    SynMechArgs,
+    MorphArgs,
+    PresynStimArgs,
 )

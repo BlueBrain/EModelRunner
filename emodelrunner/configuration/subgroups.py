@@ -18,9 +18,11 @@
 from dataclasses import dataclass
 from typing import Optional
 
+
 @dataclass
-class HocPaths():
+class HocPaths:
     """Contains paths relative to hoc files creation."""
+
     hoc_dir: str
     cell_hoc_filename: str
     simul_hoc_filename: str
@@ -32,8 +34,9 @@ class HocPaths():
 
 
 @dataclass
-class ProtArgs():
+class ProtArgs:
     """Contains data needed to create protocols."""
+
     emodel: str
     apical_point_isec: int
     mtype: str
@@ -42,11 +45,12 @@ class ProtArgs():
 
 
 @dataclass
-class SynMechArgs():
+class SynMechArgs:
     """Contains data needed to create synapse mechanimsms.
-    
+
     Attributes can be accessed only if add_synapses is True.
     """
+
     add_synapses: bool
     seed: int
     rng_settings_mode: str
@@ -56,7 +60,7 @@ class SynMechArgs():
 
     def __getattribute__(self, item):
         """Modified getattribute to restrict access to when add_synapses is True.
-        
+
         Raises:
             AttributeError when an attribute other than add_synapses is looked for and
                 add_synapses is False
@@ -69,16 +73,18 @@ class SynMechArgs():
 
 
 @dataclass
-class MorphArgs():
+class MorphArgs:
     """Contains data relative to morphology."""
+
     morph_path: str
     do_replace_axon: bool
     axon_hoc_path: Optional[str] = None
 
 
 @dataclass
-class PresynStimArgs():
+class PresynStimArgs:
     """Contains data relative to the presynaptic cell stimuli."""
+
     stim_train: float
     amp: float
     width: float

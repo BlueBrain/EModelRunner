@@ -22,7 +22,7 @@ from bluepyopt import ephys
 
 from emodelrunner.synapses.mechanism import NrnMODPointProcessMechanismCustom
 from emodelrunner.locations import multi_locations
-from emodelrunner.configuration import get_validated_config, PackageType
+from emodelrunner.configuration import get_validated_config
 
 
 def load_config(config_path):
@@ -296,9 +296,7 @@ def get_rin_exp_voltage_base(features_path):
             rin_exp_voltage_base = feature["val"][0]
 
     if rin_exp_voltage_base is None:
-        raise KeyError(
-            f"No voltage_base feature found for 'Rin' in {features_filename}"
-        )
+        raise KeyError(f"No voltage_base feature found for 'Rin' in {features_path}")
 
     return rin_exp_voltage_base
 
