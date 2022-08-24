@@ -82,7 +82,12 @@ class TestProtocolBuilder:
         """Test building sscx protocols with a None cell to raise exception."""
         cell = None
         add_synapses = True
-        prot_args = {}
+
+        with cwd(sscx_sample_dir):
+            config = load_config(
+                config_path=Path("config") / "config_recipe_protocols.ini"
+            )
+        prot_args = get_prot_args(config)
 
         with pytest.raises(RuntimeError):
             ProtocolBuilder.using_sscx_protocols(add_synapses, prot_args, cell)

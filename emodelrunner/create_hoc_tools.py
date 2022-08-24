@@ -480,7 +480,7 @@ def create_synapse_hoc(
     """Returns a string containing the synapse hoc.
 
     Args:
-        syn_mech_args (dict): synapse-related configuration
+        syn_mech_args (SynMechArgs): synapse-related configuration
         syn_hoc_dir (str): path to directory containing synapse-related data
         template_path (str): path to the template to fill in
         gid (int): cell ID
@@ -499,11 +499,11 @@ def create_synapse_hoc(
     return template.render(
         TEMPLATENAME=synapses_template_name,
         GID=gid,
-        SEED=syn_mech_args["seed"],
-        rng_settings_mode=syn_mech_args["rng_settings_mode"],
+        SEED=syn_mech_args.seed,
+        rng_settings_mode=syn_mech_args.rng_settings_mode,
         syn_dir=syn_hoc_dir,
-        syn_conf_file=syn_mech_args["syn_conf_file"],
-        syn_data_file=syn_mech_args["syn_data_file"],
+        syn_conf_file=syn_mech_args.syn_conf_file,
+        syn_data_file=syn_mech_args.syn_data_file,
         dt=dt,
     )
 
@@ -597,7 +597,7 @@ def create_simul_hoc(
     Args:
         template_path (str): path to the template to fill in
         add_synapses (bool): whether to add synapses to the cell
-        hoc_paths (dict): contains paths of the hoc files to be created
+        hoc_paths (HocPaths): contains paths of the hoc files to be created
             See load.get_hoc_paths_args for details
         constants_args (dict): contains data about the constants of the simulation
         protocol_definitions (dict): dictionary defining the protocols.
@@ -608,9 +608,9 @@ def create_simul_hoc(
     Returns:
         str: hoc script to create the simulation
     """
-    syn_dir = hoc_paths["syn_dir_for_hoc"]
-    syn_hoc_file = hoc_paths["syn_hoc_filename"]
-    cell_hoc_file = hoc_paths["cell_hoc_filename"]
+    syn_dir = hoc_paths.syn_dir_for_hoc
+    syn_hoc_file = hoc_paths.syn_hoc_filename
+    cell_hoc_file = hoc_paths.cell_hoc_filename
 
     hoc_stim_creator = HocStimuliCreator(
         protocol_definitions,

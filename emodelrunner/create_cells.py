@@ -50,7 +50,7 @@ def create_cell(
         add_synapses (bool): whether to add synapses to the cell
         morph (ephys.morphologies.NrnFileMorphology): morphology object
         gid (int): cell model ID
-        syn_mech_args (dict): synapse-related configuration
+        syn_mech_args (SynMechArgs): synapse-related configuration
         use_glu_synapse (bool): whether to use GluSynapseCustom class for synapses
         fixhp (bool): to uninsert SK_E2 for hyperpolarization in cell model
         syn_setup_params (dict): contains extra parameters to setup synapses
@@ -69,10 +69,10 @@ def create_cell(
     if add_synapses:
         mechs += [
             load_syn_mechs(
-                syn_mech_args["seed"],
-                syn_mech_args["rng_settings_mode"],
-                os.path.join(syn_mech_args["syn_dir"], syn_mech_args["syn_data_file"]),
-                os.path.join(syn_mech_args["syn_dir"], syn_mech_args["syn_conf_file"]),
+                syn_mech_args.seed,
+                syn_mech_args.rng_settings_mode,
+                os.path.join(syn_mech_args.syn_dir, syn_mech_args.syn_data_file),
+                os.path.join(syn_mech_args.syn_dir, syn_mech_args.syn_conf_file),
                 use_glu_synapse=use_glu_synapse,
                 syn_setup_params=syn_setup_params,
             )
@@ -157,8 +157,8 @@ def get_postcell(
 
     syn_mech_args = get_syn_mech_args(config)
     # rewrite seed and rng setting mode over basic emodelrunner config defaults
-    syn_mech_args["seed"] = base_seed
-    syn_mech_args["rng_settings_mode"] = "Compatibility"
+    syn_mech_args.seed = base_seed
+    syn_mech_args.rng_settings_mode = "Compatibility"
 
     morph = create_morphology(get_synplas_morph_args(config), config.package_type)
 

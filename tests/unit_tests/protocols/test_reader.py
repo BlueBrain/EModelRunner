@@ -54,9 +54,9 @@ class TestProtocolParser:
             prot_args = get_prot_args(config)
 
             protocols_dict = ProtocolParser().parse_sscx_protocols(
-                protocols_filepath=prot_args["prot_path"],
-                prefix=prot_args["mtype"],
-                apical_point_isec=prot_args["apical_point_isec"],
+                protocols_filepath=prot_args.prot_path,
+                prefix=prot_args.mtype,
+                apical_point_isec=prot_args.apical_point_isec,
                 syn_locs=syn_locs,
             )
 
@@ -72,8 +72,8 @@ class TestProtocolParser:
             prot_args = get_prot_args(config)
 
             protocols_dict = ProtocolParser().parse_thalamus_protocols(
-                protocols_filepath=prot_args["prot_path"],
-                prefix=prot_args["mtype"],
+                protocols_filepath=prot_args.prot_path,
+                prefix=prot_args.mtype,
             )
 
             assert set(protocols_dict.keys()) == thalamus_recipe_protocol_keys

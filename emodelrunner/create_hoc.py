@@ -53,7 +53,7 @@ def write_hocs(
     """Write hoc files.
 
     Args:
-        hoc_paths (dict): contains paths of the hoc files to be created
+        hoc_paths (HocPaths): contains paths of the hoc files to be created
             See load.get_hoc_paths_args for details
         cell_hoc (str): content of the cell hoc file
         simul_hoc (str): content of the 'create simulation' hoc file
@@ -62,22 +62,22 @@ def write_hocs(
         main_protocol_hoc (str): content of the main protocol hoc file
     """
     # cell hoc
-    write_hoc(hoc_paths["hoc_dir"], hoc_paths["cell_hoc_filename"], cell_hoc)
+    write_hoc(hoc_paths.hoc_dir, hoc_paths.cell_hoc_filename, cell_hoc)
 
     # createsimulation.hoc
-    write_hoc(hoc_paths["hoc_dir"], hoc_paths["simul_hoc_filename"], simul_hoc)
+    write_hoc(hoc_paths.hoc_dir, hoc_paths.simul_hoc_filename, simul_hoc)
 
     # run.hoc
-    write_hoc(hoc_paths["hoc_dir"], hoc_paths["run_hoc_filename"], run_hoc)
+    write_hoc(hoc_paths.hoc_dir, hoc_paths.run_hoc_filename, run_hoc)
 
     # synapses hoc
     if syn_hoc is not None:
-        write_hoc(hoc_paths["syn_dir"], hoc_paths["syn_hoc_filename"], syn_hoc)
+        write_hoc(hoc_paths.syn_dir, hoc_paths.syn_hoc_filename, syn_hoc)
 
     # main protocol hoc
     if main_protocol_hoc is not None:
         write_hoc(
-            hoc_paths["hoc_dir"], hoc_paths["main_protocol_filename"], main_protocol_hoc
+            hoc_paths.hoc_dir, hoc_paths.main_protocol_filename, main_protocol_hoc
         )
 
 
@@ -147,8 +147,8 @@ def get_hoc(config):
     cell_hoc = cell.create_custom_hoc(
         release_params,
         template_path=cell_template_path,
-        syn_dir=hoc_paths["syn_dir_for_hoc"],
-        syn_hoc_filename=hoc_paths["syn_hoc_filename"],
+        syn_dir=hoc_paths.syn_dir_for_hoc,
+        syn_hoc_filename=hoc_paths.syn_hoc_filename,
         syn_temp_name=syn_temp_name,
     )
 
@@ -199,7 +199,7 @@ def get_hoc(config):
         # get synapse hoc
         syn_hoc = create_synapse_hoc(
             syn_mech_args=syn_mech_args,
-            syn_hoc_dir=hoc_paths["syn_dir_for_hoc"],
+            syn_hoc_dir=hoc_paths.syn_dir_for_hoc,
             template_path=synapses_template_path,
             gid=cell.gid,
             dt=constants_args["dt"],
