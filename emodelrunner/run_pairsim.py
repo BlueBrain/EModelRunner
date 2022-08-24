@@ -22,7 +22,6 @@ from bluepyopt import ephys
 from emodelrunner.create_cells import get_precell, get_postcell
 from emodelrunner.parsing_utilities import get_parser_args, set_verbosity
 from emodelrunner.protocols.create_protocols import define_pairsim_protocols
-from emodelrunner.load import get_presyn_stim_args
 from emodelrunner.load import get_release_params
 from emodelrunner.load import get_syn_setup_params
 from emodelrunner.load import load_config
@@ -87,7 +86,7 @@ def run(
     pre_spike_train = np.unique(np.loadtxt(spike_train_path, skiprows=1)[:, 0])
 
     # get pre-synaptic stimulus parameters
-    presyn_stim_args = get_presyn_stim_args(config, pre_spike_train)
+    presyn_stim_args = config.presyn_stim_args(pre_spike_train)
 
     # Set fitted model parameters
     if syn_setup_params["fit_params"]:

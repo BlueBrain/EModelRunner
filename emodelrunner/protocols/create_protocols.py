@@ -71,7 +71,6 @@ class ProtocolBuilder:
         Args:
             add_synapses (bool): whether to add synapses to the cell
             prot_args (ProtArgs): config data relative to protocols
-                See load.get_prot_args for details
             cell (CellModelCustom): cell model
         Returns:
             ProtocolBuilder: the object with the sscx protocols
@@ -95,7 +94,6 @@ class ProtocolBuilder:
         Args:
             add_synapses (bool): whether to add synapses to the cell
             prot_args (ProtArgs): config data relative to protocols
-                See load.get_prot_args for details
             cell (CellModelCustom): cell model
         Returns:
             ProtocolBuilder: the object with the thalamus protocols
@@ -410,7 +408,6 @@ def define_pairsim_protocols(
         tstop (float): total duration of the simulation (ms)
         fastforward (float): time at which to enable synapse fast-forwarding (ms)
         presyn_stim_args (PresynStimArgs): presynaptic stimulus configuration data
-            See load.get_presyn_stim_args for details
         stim_path (str): path to the pulse stimuli file
 
     Returns:

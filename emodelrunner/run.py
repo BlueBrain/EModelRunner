@@ -24,7 +24,6 @@ from emodelrunner.parsing_utilities import get_parser_args, set_verbosity
 from emodelrunner.protocols.create_protocols import ProtocolBuilder
 from emodelrunner.load import (
     load_config,
-    get_prot_args,
     get_release_params,
 )
 from emodelrunner.output import write_current
@@ -54,7 +53,7 @@ def main(config_path):
 
     # create protocols
     add_synapses = config.getboolean("Synapses", "add_synapses")
-    prot_args = get_prot_args(config)
+    prot_args = config.prot_args()
 
     if config.package_type == PackageType.sscx:
         protocols = ProtocolBuilder.using_sscx_protocols(add_synapses, prot_args, cell)

@@ -43,12 +43,29 @@ class ProtArgs():
 
 @dataclass
 class SynMechArgs():
-    """Contains data needed to create synapse mechanimsms."""
+    """Contains data needed to create synapse mechanimsms.
+    
+    Attributes can be accessed only if add_synapses is True.
+    """
+    add_synapses: bool
     seed: int
     rng_settings_mode: str
     syn_conf_file: str
     syn_data_file: str
     syn_dir: str
+
+    def __getattribute__(self, item):
+        """Modified getattribute to restrict access to when add_synapses is True.
+        
+        Raises:
+            AttributeError when an attribute other than add_synapses is looked for and
+                add_synapses is False
+        """
+        if item != "add_synapses" and not self.add_synapses:
+            raise AttributeError(
+                f"You can not access {item} if add_synapses is {self.add_synapses}."
+            )
+        return super().__getattribute__(item)
 
 
 @dataclass

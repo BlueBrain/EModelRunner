@@ -19,7 +19,7 @@ from pathlib import Path
 from pytest import raises
 
 
-from emodelrunner.load import load_config, get_morph_args
+from emodelrunner.load import load_config
 from emodelrunner.morphology import (
     create_morphology,
     SSCXNrnFileMorphology,
@@ -38,10 +38,10 @@ def test_create_morphology():
     with cwd(sscx_dir):
         config = load_config(config_path=Path("config") / "config_allsteps.ini")
 
-        sscx_morph = create_morphology(get_morph_args(config), PackageType.sscx)
+        sscx_morph = create_morphology(config.morph_args(), PackageType.sscx)
         assert isinstance(sscx_morph, SSCXNrnFileMorphology)
-        thal_morph = create_morphology(get_morph_args(config), PackageType.thalamus)
+        thal_morph = create_morphology(config.morph_args(), PackageType.thalamus)
         assert isinstance(thal_morph, ThalamusNrnFileMorphology)
 
         with raises(ValueError):
-            create_morphology(get_morph_args(config), "unknown_package_type")
+            create_morphology(config.morph_args(), "unknown_package_type")

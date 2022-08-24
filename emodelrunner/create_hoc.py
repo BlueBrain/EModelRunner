@@ -21,8 +21,7 @@ import shutil
 from emodelrunner.load import (
     load_config,
     get_release_params,
-    get_syn_mech_args,
-    get_hoc_paths_args,
+    get_rin_exp_voltage_base,
 )
 from emodelrunner.create_cells import create_cell_using_config
 from emodelrunner.create_hoc_tools import (
@@ -54,7 +53,6 @@ def write_hocs(
 
     Args:
         hoc_paths (HocPaths): contains paths of the hoc files to be created
-            See load.get_hoc_paths_args for details
         cell_hoc (str): content of the cell hoc file
         simul_hoc (str): content of the 'create simulation' hoc file
         run_hoc (str): content of the hoc file meant to run the simulation
@@ -107,7 +105,7 @@ def get_hoc(config):
     main_protocol_template_path = config.get("Paths", "main_protocol_template_path")
     add_synapses = config.getboolean("Synapses", "add_synapses")
     syn_temp_name = config.get("Synapses", "hoc_synapse_template_name")
-    hoc_paths = get_hoc_paths_args(config)
+    hoc_paths = config.get_hoc_paths_args()
     apical_point_isec = config.get("Protocol", "apical_point_isec")
 
     constants_args = {
@@ -167,20 +165,7 @@ def get_hoc(config):
     )
 
     if main_protocol:
-        # get the features definitions
-        features_filename = config.get("Paths", "features_path")
-        with open(features_filename, "r", encoding="utf-8") as features_file:
-            feature_definitions = json.load(features_file)
-
-        rin_exp_voltage_base = None
-        for feature in feature_definitions["Rin"]["soma.v"]:
-            if feature["feature"] == "voltage_base":
-                rin_exp_voltage_base = feature["val"][0]
-
-        if rin_exp_voltage_base is None:
-            raise KeyError(
-                f"No voltage_base feature found for 'Rin' in {features_filename}"
-            )
+        rin_exp_voltage_base = get_rin_exp_voltage_base(config.get("Paths", "features_path"))
 
         main_protocol_hoc = create_main_protocol_hoc(
             template_path=main_protocol_template_path,
@@ -194,7 +179,7 @@ def get_hoc(config):
     # get synapse hoc
     if cell.add_synapses:
         # load synapse config data
-        syn_mech_args = get_syn_mech_args(config)
+        syn_mech_args = config.syn_mech_args()
 
         # get synapse hoc
         syn_hoc = create_synapse_hoc(
@@ -230,7 +215,7 @@ if __name__ == "__main__":
         config=config_
     )
 
-    hoc_paths_ = get_hoc_paths_args(config_)
+    hoc_paths_ = config_.get_hoc_paths_args()
     if main_protocol_hoc_:
         copy_features_hoc(config_)
     write_hocs(

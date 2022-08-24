@@ -22,9 +22,7 @@ from bluepyopt import ephys
 
 from emodelrunner.synapses.mechanism import NrnMODPointProcessMechanismCustom
 from emodelrunner.locations import multi_locations
-from emodelrunner.configuration import (
-    get_validated_config, PackageType, HocPaths, ProtArgs, SynMechArgs, MorphArgs, PresynStimArgs
-)
+from emodelrunner.configuration import get_validated_config, PackageType
 
 
 def load_config(config_path):
@@ -37,127 +35,6 @@ def load_config(config_path):
         configparser.ConfigParser: loaded config object
     """
     return get_validated_config(config_path)
-
-
-def get_hoc_paths_args(config):
-    """Get the config data subgroup containing the paths to the hoc files.
-
-    Args:
-        config (configparser.ConfigParser): configuration
-
-    Returns:
-        HocPaths: hoc paths related configuration data
-    """
-    return HocPaths(
-        hoc_dir=config.get("Paths", "memodel_dir"),
-        cell_hoc_filename=config.get("Paths", "cell_hoc_file"),
-        simul_hoc_filename=config.get("Paths", "simul_hoc_file"),
-        run_hoc_filename=config.get("Paths", "run_hoc_file"),
-        syn_dir=config.get("Paths", "syn_dir"),
-        syn_dir_for_hoc=config.get("Paths", "syn_dir_for_hoc"),
-        syn_hoc_filename=config.get("Paths", "syn_hoc_file"),
-        main_protocol_filename=config.get("Paths", "main_protocol_file"),
-    )
-
-
-def get_prot_args(config):
-    """Get the subgroup containing protocols configuration data.
-
-    Args:
-        config (configparser.ConfigParser): configuration
-
-    Returns:
-        ProtArgs: protocol related configuration data
-    """
-    return ProtArgs(
-        emodel=config.get("Cell", "emodel"),
-        apical_point_isec=config.getint("Protocol", "apical_point_isec"),
-        mtype=config.get("Morphology", "mtype"),
-        prot_path=config.get("Paths", "prot_path"),
-        features_path=config.get("Paths", "features_path"),
-    )
-
-
-def get_syn_mech_args(config):
-    """Get the data from config used when loading synapse mechanisms.
-
-    Args:
-        config (configparser.ConfigParser): configuration
-
-    Returns:
-        SynMechArgs: synapse related configuration data
-    """
-    return SynMechArgs(
-        seed=config.getint("Synapses", "seed"),
-        rng_settings_mode=config.get("Synapses", "rng_settings_mode"),
-        syn_conf_file=config.get("Paths", "syn_conf_file"),
-        syn_data_file=config.get("Paths", "syn_data_file"),
-        syn_dir=config.get("Paths", "syn_dir"),
-    )
-
-
-def get_morph_args(config):
-    """Get morphology arguments for SSCX from the configuration object.
-
-    Args:
-        config (configparser.ConfigParser): configuration object.
-
-    Returns:
-        MorphArgs: morphology-related configuration data.
-    """
-    morph_args = {}
-    morph_args["morph_path"] = config.get("Paths", "morph_path")
-    morph_args["do_replace_axon"] = config.getboolean("Morphology", "do_replace_axon")
-
-    if config.package_type == PackageType.sscx:
-        morph_args["axon_hoc_path"] = config.get("Paths", "replace_axon_hoc_path")
-
-    return MorphArgs(**morph_args)
-
-
-def get_synplas_morph_args(config, precell=False):
-    """Get morphology arguments for Synplas from the configuration object.
-
-    Args:
-        config (configparser.ConfigParser): configuration
-        precell (bool): True to load precell morph. False to load usual morph.
-
-    Returns:
-        MorphArgs: morphology-related configuration data.
-    """
-    # load morphology path
-    if precell:
-        morph_path = config.get("Paths", "precell_morph_path")
-    else:
-        morph_path = config.get("Paths", "morph_path")
-
-    morph_args = {
-        "morph_path": morph_path,
-        "do_replace_axon": config.getboolean("Morphology", "do_replace_axon"),
-    }
-    return MorphArgs(**morph_args)
-
-
-def get_presyn_stim_args(config, pre_spike_train):
-    """Get the pre-synaptic stimulus config data.
-
-    Args:
-        config (configparser.ConfigParser): configuration
-        pre_spike_train (list): times at which the synapses fire (ms)
-
-    Returns:
-        PresynStimArgs: presynaptic stimuli related configuration data
-    """
-    # spikedelay is the time between the start of the stimulus
-    # and the precell spike time
-    spike_delay = config.getfloat("Protocol", "precell_spikedelay")
-
-    # stim train is the times at which to stimulate the precell
-    return PresynStimArgs(
-        stim_train=pre_spike_train - spike_delay,
-        amp=config.getfloat("Protocol", "precell_amplitude"),
-        width=config.getfloat("Protocol", "precell_width"),
-    )
 
 
 def load_emodel_params(emodel, params_path):
@@ -406,6 +283,24 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
                     )
 
     return parameters
+
+
+def get_rin_exp_voltage_base(features_path):
+    """Get experimental rin voltage base from feature file when having MainProtocol."""
+    with open(features_path, "r", encoding="utf-8") as features_file:
+        feature_definitions = json.load(features_file)
+
+    rin_exp_voltage_base = None
+    for feature in feature_definitions["Rin"]["soma.v"]:
+        if feature["feature"] == "voltage_base":
+            rin_exp_voltage_base = feature["val"][0]
+
+    if rin_exp_voltage_base is None:
+        raise KeyError(
+            f"No voltage_base feature found for 'Rin' in {features_filename}"
+        )
+
+    return rin_exp_voltage_base
 
 
 def load_syn_mechs(

@@ -19,7 +19,6 @@ from pathlib import Path
 from emodelrunner.create_cells import create_cell_using_config
 from emodelrunner.load import (
     load_config,
-    get_prot_args,
 )
 from emodelrunner.protocols.reader import ProtocolParser
 from emodelrunner.synapses.create_locations import get_syn_locs
@@ -51,7 +50,7 @@ class TestProtocolParser:
             )
             cell = create_cell_using_config(config)
             syn_locs = get_syn_locs(cell)
-            prot_args = get_prot_args(config)
+            prot_args = config.prot_args()
 
             protocols_dict = ProtocolParser().parse_sscx_protocols(
                 protocols_filepath=prot_args.prot_path,
@@ -69,7 +68,7 @@ class TestProtocolParser:
             config = load_config(
                 config_path=Path("config") / "config_recipe_prots_short.ini"
             )
-            prot_args = get_prot_args(config)
+            prot_args = config.prot_args()
 
             protocols_dict = ProtocolParser().parse_thalamus_protocols(
                 protocols_filepath=prot_args.prot_path,

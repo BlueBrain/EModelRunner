@@ -18,12 +18,9 @@ import os
 
 from emodelrunner.cell import CellModelCustom
 from emodelrunner.load import (
-    get_morph_args,
     load_mechanisms,
     load_syn_mechs,
     load_unoptimized_parameters,
-    get_synplas_morph_args,
-    get_syn_mech_args,
 )
 from emodelrunner.morphology import create_morphology
 from emodelrunner.configuration import PackageType
@@ -111,11 +108,11 @@ def create_cell_using_config(config):
 
     # get synapse config data
     add_synapses = config.getboolean("Synapses", "add_synapses")
-    syn_mech_args = get_syn_mech_args(config)
+    syn_mech_args = config.syn_mech_args()
 
     # get morphology config data
     if config.package_type in [PackageType.sscx, PackageType.thalamus]:
-        morph = create_morphology(get_morph_args(config), config.package_type)
+        morph = create_morphology(config.morph_args(), config.package_type)
     else:
         raise ValueError(f"unsupported package type: {config.package_type}")
 
@@ -155,12 +152,12 @@ def get_postcell(
 
     unopt_params_path = config.get("Paths", "unoptimized_params_path")
 
-    syn_mech_args = get_syn_mech_args(config)
+    syn_mech_args = config.syn_mech_args()
     # rewrite seed and rng setting mode over basic emodelrunner config defaults
     syn_mech_args.seed = base_seed
     syn_mech_args.rng_settings_mode = "Compatibility"
 
-    morph = create_morphology(get_synplas_morph_args(config), config.package_type)
+    morph = create_morphology(config.synplas_morph_args(), config.package_type)
 
     add_synapses = True
 
@@ -201,7 +198,7 @@ def get_precell(
     unopt_params_path = config.get("Paths", "precell_unoptimized_params_path")
 
     morph = create_morphology(
-        get_synplas_morph_args(config, precell=True), config.package_type
+        config.synplas_morph_args(precell=True), config.package_type
     )
 
     add_synapses = False
