@@ -64,10 +64,13 @@ class EModelConfigParser(ConfigParser):
             features_path=self.get("Paths", "features_path"),
         )
 
-    def syn_mech_args(self):
+    def syn_mech_args(self, add_synapses=None):
         """Get the data from config used when loading synapse mechanisms."""
+        if add_synapses is None:
+            add_synapses = self.getboolean("Synapses", "add_synapses")
+            
         return SynMechArgs(
-            add_synapses=self.getboolean("Synapses", "add_synapses"),
+            add_synapses=add_synapses,
             seed=self.getint("Synapses", "seed"),
             rng_settings_mode=self.get("Synapses", "rng_settings_mode"),
             syn_conf_file=self.get("Paths", "syn_conf_file"),
@@ -86,7 +89,6 @@ class EModelConfigParser(ConfigParser):
 
         return MorphArgs(**morph_args)
 
-
     def synplas_morph_args(self, precell=False):
         """Get morphology arguments for Synplas from the configuration object.
 
@@ -104,7 +106,6 @@ class EModelConfigParser(ConfigParser):
             "do_replace_axon": self.getboolean("Morphology", "do_replace_axon"),
         }
         return MorphArgs(**morph_args)
-
 
     def presyn_stim_args(self, pre_spike_train):
         """Get the pre-synaptic stimulus config data.

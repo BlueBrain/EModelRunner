@@ -152,7 +152,7 @@ def get_postcell(
 
     unopt_params_path = config.get("Paths", "unoptimized_params_path")
 
-    syn_mech_args = config.syn_mech_args()
+    syn_mech_args = config.syn_mech_args(add_synapses=True)
     # rewrite seed and rng setting mode over basic emodelrunner config defaults
     syn_mech_args.seed = base_seed
     syn_mech_args.rng_settings_mode = "Compatibility"

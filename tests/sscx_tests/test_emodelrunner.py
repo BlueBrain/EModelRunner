@@ -28,7 +28,6 @@ from bluepyopt import ephys
 from emodelrunner.create_hoc import get_hoc, write_hocs, copy_features_hoc
 from emodelrunner.load import (
     load_config,
-    get_hoc_paths_args,
 )
 from emodelrunner.protocols import sscx_protocols
 from emodelrunner.run import main as run_emodel
@@ -72,7 +71,7 @@ def test_voltages():
             cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(
                 config=config
             )
-            hoc_paths = get_hoc_paths_args(config)
+            hoc_paths = config.hoc_paths_args()
             write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
 
             subprocess.call(["sh", "./run_hoc.sh"])
@@ -127,7 +126,7 @@ def test_synapses_hoc_vs_py_script(config_path="config/config_synapses_short.ini
             cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(
                 config=config
             )
-            hoc_paths = get_hoc_paths_args(config)
+            hoc_paths = config.hoc_paths_args()
             write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
 
             subprocess.call(["sh", "./run_hoc.sh"])
@@ -153,7 +152,7 @@ def test_recipe_protocols():
             cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(
                 config=config
             )
-            hoc_paths = get_hoc_paths_args(config)
+            hoc_paths = config.hoc_paths_args()
             copy_features_hoc(config)
             write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
 
@@ -351,7 +350,7 @@ def test_multiprotocols_hoc_vs_py_script(
             cell_hoc, syn_hoc, simul_hoc, run_hoc, main_prot_hoc = get_hoc(
                 config=config
             )
-            hoc_paths = get_hoc_paths_args(config)
+            hoc_paths = config.hoc_paths_args()
             write_hocs(hoc_paths, cell_hoc, simul_hoc, run_hoc, syn_hoc, main_prot_hoc)
 
             subprocess.call(["sh", "./run_hoc.sh"])
