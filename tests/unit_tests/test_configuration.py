@@ -130,3 +130,17 @@ def test_get_validated_config():
     invalid_conf = Path("tests") / "static_files" / "invalid_config.ini"
     with pytest.raises(ValueError):
         get_validated_config(invalid_conf)
+
+
+def test_syn_mech_args_getattribute():
+    """Test the __getattribute__ dunder method of SynMechArgs."""
+    with cwd(sscx_sample_dir):
+        config_path = Path(".") / "config" / "config_allsteps.ini"
+        config = get_validated_config(config_path)
+    syn_mech_args = config.syn_mech_args()
+    assert not syn_mech_args.add_synapses
+    with pytest.raises(AttributeError):
+        _ = syn_mech_args.seed
+
+    syn_mech_args.add_synapses = True
+    _ = syn_mech_args.seed
