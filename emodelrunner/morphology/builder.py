@@ -38,7 +38,7 @@ def create_morphology(morph_args, package_type):
     """Creates the morphology object.
 
     Args:
-        morph_args (dict): morphology-related configuration
+        morph_args (MorphArgs): morphology-related configuration
         package_type (Enum): enum denoting the package type
 
     Raises:
@@ -47,20 +47,20 @@ def create_morphology(morph_args, package_type):
     Returns:
         ephys.morphologies.NrnFileMorphology: morphology object
     """
-    try:
-        replace_axon_hoc = get_axon_hoc(morph_args["axon_hoc_path"])
-    except KeyError:
-        replace_axon_hoc = None
+    replace_axon_hoc = None
+    if morph_args.axon_hoc_path is not None:
+        replace_axon_hoc = get_axon_hoc(morph_args.axon_hoc_path)
+
     if package_type in [PackageType.sscx, PackageType.synplas]:
         morph = SSCXNrnFileMorphology(
-            morph_args["morph_path"],
-            do_replace_axon=morph_args["do_replace_axon"],
+            morph_args.morph_path,
+            do_replace_axon=morph_args.do_replace_axon,
             replace_axon_hoc=replace_axon_hoc,
         )
     elif package_type == PackageType.thalamus:
         morph = ThalamusNrnFileMorphology(
-            morph_args["morph_path"],
-            do_replace_axon=morph_args["do_replace_axon"],
+            morph_args.morph_path,
+            do_replace_axon=morph_args.do_replace_axon,
             replace_axon_hoc=replace_axon_hoc,
         )
     else:

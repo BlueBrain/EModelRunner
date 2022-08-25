@@ -28,7 +28,6 @@ from emodelrunner.load import (
     load_syn_mechs,
     load_unoptimized_parameters,
     load_mechanisms,
-    get_morph_args,
     get_release_params,
 )
 from emodelrunner.morphology import create_morphology
@@ -442,7 +441,7 @@ class NeuronSimulation:
         )
 
         # load morphology
-        morph_config = get_morph_args(self.config)
+        morph_config = self.config.morph_args()
         morph = create_morphology(morph_config, self.config.package_type)
 
         # create cell

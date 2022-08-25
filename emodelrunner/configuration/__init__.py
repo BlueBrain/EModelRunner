@@ -22,3 +22,10 @@ from emodelrunner.configuration.validator import (
     ThalamusConfigValidator,
 )
 from emodelrunner.configuration.configparser import PackageType
+from emodelrunner.configuration.subgroups import (
+    HocPaths,
+    ProtArgs,
+    SynMechArgs,
+    MorphArgs,
+    PresynStimArgs,
+)

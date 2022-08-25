@@ -21,7 +21,6 @@ import pytest
 
 from emodelrunner.load import (
     load_config,
-    get_prot_args,
 )
 from emodelrunner.create_cells import create_cell_using_config
 from emodelrunner.protocols.create_protocols import ProtocolBuilder
@@ -53,7 +52,7 @@ class TestProtocolBuilder:
             )
             cell = create_cell_using_config(config)
             add_synapses = config.getboolean("Synapses", "add_synapses")
-            prot_args = get_prot_args(config)
+            prot_args = config.prot_args()
 
             protocols = ProtocolBuilder.using_sscx_protocols(
                 add_synapses, prot_args, cell
@@ -82,7 +81,12 @@ class TestProtocolBuilder:
         """Test building sscx protocols with a None cell to raise exception."""
         cell = None
         add_synapses = True
-        prot_args = {}
+
+        with cwd(sscx_sample_dir):
+            config = load_config(
+                config_path=Path("config") / "config_recipe_protocols.ini"
+            )
+        prot_args = config.prot_args()
 
         with pytest.raises(RuntimeError):
             ProtocolBuilder.using_sscx_protocols(add_synapses, prot_args, cell)
@@ -95,7 +99,7 @@ class TestProtocolBuilder:
             )
             cell = create_cell_using_config(config)
             add_synapses = config.getboolean("Synapses", "add_synapses")
-            prot_args = get_prot_args(config)
+            prot_args = config.prot_args()
 
             protocols = ProtocolBuilder.using_thalamus_protocols(
                 add_synapses, prot_args, cell

@@ -70,8 +70,7 @@ class ProtocolBuilder:
 
         Args:
             add_synapses (bool): whether to add synapses to the cell
-            prot_args (dict): config data relative to protocols
-                See load.get_prot_args for details
+            prot_args (ProtArgs): config data relative to protocols
             cell (CellModelCustom): cell model
         Returns:
             ProtocolBuilder: the object with the sscx protocols
@@ -79,11 +78,11 @@ class ProtocolBuilder:
         syn_locs = cls._get_syn_locs(add_synapses, cell)
 
         protocols = create_protocols_object(
-            apical_point_isec=prot_args["apical_point_isec"],
-            prot_path=prot_args["prot_path"],
+            apical_point_isec=prot_args.apical_point_isec,
+            prot_path=prot_args.prot_path,
             package_type=PackageType.sscx,
-            features_path=prot_args["features_path"],
-            mtype=prot_args["mtype"],
+            features_path=prot_args.features_path,
+            mtype=prot_args.mtype,
             syn_locs=syn_locs,
         )
         return cls(protocols)
@@ -94,8 +93,7 @@ class ProtocolBuilder:
 
         Args:
             add_synapses (bool): whether to add synapses to the cell
-            prot_args (dict): config data relative to protocols
-                See load.get_prot_args for details
+            prot_args (ProtArgs): config data relative to protocols
             cell (CellModelCustom): cell model
         Returns:
             ProtocolBuilder: the object with the thalamus protocols
@@ -103,11 +101,11 @@ class ProtocolBuilder:
         syn_locs = cls._get_syn_locs(add_synapses, cell)
 
         protocols = create_protocols_object(
-            apical_point_isec=prot_args["apical_point_isec"],
-            prot_path=prot_args["prot_path"],
+            apical_point_isec=prot_args.apical_point_isec,
+            prot_path=prot_args.prot_path,
             package_type=PackageType.thalamus,
-            features_path=prot_args["features_path"],
-            mtype=prot_args["mtype"],
+            features_path=prot_args.features_path,
+            mtype=prot_args.mtype,
             syn_locs=syn_locs,
         )
         return cls(protocols)
@@ -409,8 +407,7 @@ def define_pairsim_protocols(
         synrecs (list of str): the extra synapse variables to record
         tstop (float): total duration of the simulation (ms)
         fastforward (float): time at which to enable synapse fast-forwarding (ms)
-        presyn_stim_args (dict): presynaptic stimulus configuration data
-            See load.get_presyn_stim_args for details
+        presyn_stim_args (PresynStimArgs): presynaptic stimulus configuration data
         stim_path (str): path to the pulse stimuli file
 
     Returns:
@@ -435,9 +432,9 @@ def define_pairsim_protocols(
     presyn_stims = [
         MultipleSteps(
             soma_loc,
-            presyn_stim_args["stim_train"],
-            presyn_stim_args["amp"],
-            presyn_stim_args["width"],
+            presyn_stim_args.stim_train,
+            presyn_stim_args.amp,
+            presyn_stim_args.width,
         )
     ]
 
