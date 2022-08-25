@@ -142,5 +142,5 @@ def test_syn_mech_args_getattribute():
     with pytest.raises(AttributeError):
         _ = syn_mech_args.seed
 
-    syn_mech_args.add_synapses = True
+    syn_mech_args = config.syn_mech_args(add_synapses=True)
     _ = syn_mech_args.seed

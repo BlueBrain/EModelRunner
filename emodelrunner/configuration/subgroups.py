@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 
-@dataclass
+@dataclass(frozen=True)
 class HocPaths:
     """Contains paths relative to hoc files creation."""
 
@@ -33,7 +33,7 @@ class HocPaths:
     main_protocol_filename: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class ProtArgs:
     """Contains data needed to create protocols."""
 
@@ -44,7 +44,7 @@ class ProtArgs:
     features_path: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class SynMechArgs:
     """Contains data needed to create synapse mechanimsms.
 
@@ -72,7 +72,7 @@ class SynMechArgs:
         return super().__getattribute__(item)
 
 
-@dataclass
+@dataclass(frozen=True)
 class MorphArgs:
     """Contains data relative to morphology."""
 
@@ -81,7 +81,7 @@ class MorphArgs:
     axon_hoc_path: Optional[str] = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class PresynStimArgs:
     """Contains data relative to the presynaptic cell stimuli."""
 

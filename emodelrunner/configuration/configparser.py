@@ -70,15 +70,19 @@ class EModelConfigParser(ConfigParser):
             features_path=self.get("Paths", "features_path"),
         )
 
-    def syn_mech_args(self, add_synapses=None):
+    def syn_mech_args(self, add_synapses=None, seed=None, rng_settings_mode=None):
         """Get the data from config used when loading synapse mechanisms."""
         if add_synapses is None:
             add_synapses = self.getboolean("Synapses", "add_synapses")
+        if seed is None:
+            seed = self.getint("Synapses", "seed")
+        if rng_settings_mode is None:
+            rng_settings_mode = self.get("Synapses", "rng_settings_mode")
 
         return SynMechArgs(
             add_synapses=add_synapses,
-            seed=self.getint("Synapses", "seed"),
-            rng_settings_mode=self.get("Synapses", "rng_settings_mode"),
+            seed=seed,
+            rng_settings_mode=rng_settings_mode,
             syn_conf_file=self.get("Paths", "syn_conf_file"),
             syn_data_file=self.get("Paths", "syn_data_file"),
             syn_dir=self.get("Paths", "syn_dir"),
