@@ -27,6 +27,7 @@ from emodelrunner.configuration import (
     PackageType,
     get_validated_config,
 )
+from emodelrunner.configuration.validator import determine_package_type
 
 sscx_sample_dir = Path("examples") / "sscx_sample_dir"
 synplas_sample_dir = Path("examples") / "synplas_sample_dir"
@@ -130,6 +131,17 @@ def test_get_validated_config():
     invalid_conf = Path("tests") / "static_files" / "invalid_config.ini"
     with pytest.raises(ValueError):
         get_validated_config(invalid_conf)
+
+
+def test_determine_package_type():
+    """Test the determine_package_type function."""
+    with cwd(sscx_sample_dir):
+        config_path = Path(".") / "config" / "config_allsteps.ini"
+        assert determine_package_type(config_path) == "sscx"
+
+    with cwd(synplas_sample_dir):
+        config_path = Path(".") / "config" / "config_1Hz_10ms.ini"
+        assert determine_package_type(config_path) == "synplas"
 
 
 def test_syn_mech_args_getattribute():

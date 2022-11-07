@@ -449,10 +449,7 @@ def get_validated_config(config_path):
     Returns:
         configparser.ConfigParser: loaded config object
     """
-    # pylint: disable=protected-access
-    unvalidated_config = ConfigValidator()._get_unvalidated_config(config_path)
-
-    package_type = unvalidated_config.get("Package", "type").lower()
+    package_type = determine_package_type(config_path)
 
     if package_type == "sscx":
         conf_validator = SSCXConfigValidator()
@@ -465,3 +462,22 @@ def get_validated_config(config_path):
 
     validated_config = conf_validator.validate_from_file(config_path)
     return validated_config
+
+
+def determine_package_type(config_path):
+    """Returns the package type from the config file.
+
+    Supports old synplas config files without the Package type.
+
+    Args:
+        config_path (str or Path): path to the configuration file.
+
+    Returns:
+        str: package type
+    """
+    # pylint: disable=protected-access
+    unvalidated_config = ConfigValidator()._get_unvalidated_config(config_path)
+    if "SynapsePlasticity" in unvalidated_config:
+        return "synplas"
+    else:
+        return unvalidated_config.get("Package", "type").lower()
