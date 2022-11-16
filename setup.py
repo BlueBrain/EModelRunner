@@ -51,7 +51,7 @@ setup(
         "Pebble>=4.3.10",
         "importlib_metadata; python_version<'3.8'",
     ],
-    packages=find_packages(),
+    packages=find_packages(exclude=["tests"]),
     python_requires=">=3.7",
     extras_require={"docs": ["sphinx", "sphinx-bluebrain-theme"]},
     classifiers=[
