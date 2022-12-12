@@ -3,6 +3,7 @@
 import os
 from emodelrunner.load import load_synapse_configuration_data
 
+
 def test_load_synapse_configuration_data():
     """Unit test for synconf loading function."""
     synconf_path = os.path.join("tests", "data", "synconf.txt")
