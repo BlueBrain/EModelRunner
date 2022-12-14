@@ -62,10 +62,11 @@ VERBATIM
 
 #ifndef CORENEURON_BUILD
 extern int ifarg(int iarg);
-
+#ifndef NRN_VERSION_GTEQ_8_2_0
 extern void* vector_arg(int iarg);
 extern double* vector_vec(void* vv);
 extern int vector_capacity(void* vv);
+#endif
 #endif
 
 ENDVERBATIM
@@ -175,8 +176,8 @@ NET_RECEIVE (weight, weight_AMPA, weight_NMDA, R, Pr, u, tsyn (ms), nc_type){
             : }
     VERBATIM
             // setup self events for delayed connections to change weights
-            void *vv_delay_times = *((void**)(&_p_delay_times));
-            void *vv_delay_weights = *((void**)(&_p_delay_weights));
+            IvocVect *vv_delay_times = *((IvocVect**)(&_p_delay_times));
+            IvocVect *vv_delay_weights = *((IvocVect**)(&_p_delay_weights));
             if (vv_delay_times && vector_capacity(vv_delay_times)>=1) {
               double* deltm_el = vector_vec(vv_delay_times);
               int delay_times_idx;
@@ -204,7 +205,7 @@ NET_RECEIVE (weight, weight_AMPA, weight_NMDA, R, Pr, u, tsyn (ms), nc_type){
         : self event to set next weight at delay
     VERBATIM
         // setup self events for delayed connections to change weights
-        void *vv_delay_weights = *((void**)(&_p_delay_weights));
+        IvocVect *vv_delay_weights = *((IvocVect**)(&_p_delay_weights));
         if (vv_delay_weights && vector_capacity(vv_delay_weights)>=next_delay) {
           double* weights_v = vector_vec(vv_delay_weights);
           double next_delay_weight = weights_v[(int)next_delay];
@@ -258,8 +259,8 @@ FUNCTION toggleVerbose() {
 VERBATIM
 static void bbcore_write(double* x, int* d, int* x_offset, int* d_offset, _threadargsproto_) {
 
-  void *vv_delay_times = *((void**)(&_p_delay_times));
-  void *vv_delay_weights = *((void**)(&_p_delay_weights));
+  IvocVect *vv_delay_times = *((IvocVect**)(&_p_delay_times));
+  IvocVect *vv_delay_weights = *((IvocVect**)(&_p_delay_weights));
 
   // serialize connection delay vectors
   if (vv_delay_times && vv_delay_weights &&
@@ -309,11 +310,11 @@ static void bbcore_read(double* x, int* d, int* x_offset, int* d_offset, _thread
     double* x_i = x + *x_offset;
 
     // allocate vectors
-    _p_delay_times = vector_new1(delay_times_sz);
-    _p_delay_weights = vector_new1(delay_weights_sz);
+    _p_delay_times = (double*)vector_new1(delay_times_sz);
+    _p_delay_weights = (double*)vector_new1(delay_weights_sz);
 
-    double* delay_times_el = vector_vec(_p_delay_times);
-    double* delay_weights_el = vector_vec(_p_delay_weights);
+    double* delay_times_el = vector_vec((IvocVect*)_p_delay_times);
+    double* delay_weights_el = vector_vec((IvocVect*)_p_delay_weights);
 
     // copy data
     int x_idx;
