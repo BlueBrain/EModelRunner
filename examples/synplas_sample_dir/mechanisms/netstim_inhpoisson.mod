@@ -4,7 +4,7 @@ COMMENT
  * @brief Inhibitory poisson generator by the thinning method.
  * @author Eilif Muller
  * @date 2011-03-16
- * @remark Copyright © BBP/EPFL 2005-2011; All rights reserved. Do not distribute without further notice.
+ * @remark Copyright © BBP/EPFL 2005-2011;
  *  Based on vecstim.mod and netstim2.mod shipped with PyNN. See
  *   Muller, Buesing, Schemmel, Meier (2007). "Spike-Frequency Adapting
  *   Neural Ensembles: Beyond Mean Adaptation and Renewal Theories",
@@ -22,6 +22,13 @@ THREADSAFE
 }
 
 VERBATIM
+#if defined(NRN_VERSION_GTEQ)
+#if NRN_VERSION_GTEQ(9,0,0)
+#define NRN_VERSION_GTEQ_9_0_0
+#endif
+#endif
+
+#ifndef NRN_VERSION_GTEQ_8_2_0
 extern int ifarg(int iarg);
 #ifndef CORENEURON_BUILD
 extern double* vector_vec(void* vv);
@@ -31,6 +38,11 @@ extern void* vector_arg(int iarg);
 double nrn_random_pick(void* r);
 #endif
 void* nrn_random_arg(int argpos);
+#define RANDCAST 
+#else
+#define RANDCAST (Rand*)
+#endif
+
 
 #ifdef STIM_DEBUG
 # define debug_printf(...) printf(__VA_ARGS__)
@@ -73,7 +85,7 @@ INITIAL {
 
    : determine start of spiking.
    VERBATIM
-   void *vvTbins = *((void**)(&_p_vecTbins));
+   IvocVect *vvTbins = *((IvocVect**)(&_p_vecTbins));
    double* px;
 
    if (vvTbins && vector_capacity(vvTbins)>=1) {
@@ -90,7 +102,7 @@ INITIAL {
    event = start;
 
    /* set curRate */
-   void *vvRate = *((void**)(&_p_vecRate));
+   IvocVect *vvRate = *((IvocVect**)(&_p_vecRate));
    px = vector_vec(vvRate);
 
    /* set rmax */
@@ -214,7 +226,7 @@ VERBATIM
 		_lurand = nrnran123_dblpick((nrnran123_State*)_p_uniform_rng);
             } else {
 #ifndef CORENEURON_BUILD
-		_lurand = nrn_random_pick(_p_uniform_rng);
+		_lurand = nrn_random_pick(RANDCAST _p_uniform_rng);
 #endif
             }
 	}else{
@@ -235,7 +247,7 @@ VERBATIM
 		_lerand = nrnran123_negexp((nrnran123_State*)_p_exp_rng);
             } else {
 #ifndef CORENEURON_BUILD
-		_lerand = nrn_random_pick(_p_exp_rng);
+		_lerand = nrn_random_pick(RANDCAST _p_exp_rng);
 #endif
             }
 	}else{
@@ -251,9 +263,9 @@ ENDVERBATIM
 PROCEDURE setTbins() {
 VERBATIM
   #ifndef CORENEURON_BUILD
-  void** vv;
-  vv = (void**)(&_p_vecTbins);
-  *vv = (void*)0;
+  IvocVect** vv;
+  vv = (IvocVect**)(&_p_vecTbins);
+  *vv = (IvocVect*)0;
 
   if (ifarg(1)) {
     *vv = vector_arg(1);
@@ -274,9 +286,9 @@ PROCEDURE setRate() {
 VERBATIM
   #ifndef CORENEURON_BUILD
 
-  void** vv;
-  vv = (void**)(&_p_vecRate);
-  *vv = (void*)0;
+  IvocVect** vv;
+  vv = (IvocVect**)(&_p_vecRate);
+  *vv = (IvocVect*)0;
 
   if (ifarg(1)) {
     *vv = vector_arg(1);
@@ -300,12 +312,12 @@ ENDVERBATIM
 
 PROCEDURE update_time() {
 VERBATIM
-  void* vv; int i, i_prev, size; double* px;
+  IvocVect* vv; int i, i_prev, size; double* px;
   i = (int)index;
   i_prev = i;
 
   if (i >= 0) { // are we disabled?
-    vv = *((void**)(&_p_vecTbins));
+    vv = *((IvocVect**)(&_p_vecTbins));
     if (vv) {
       size = vector_capacity(vv);
       px = vector_vec(vv);
@@ -317,7 +329,7 @@ VERBATIM
       /* did the index change? */
       if (i!=i_prev) {
         /* advance curRate to next vecRate if possible */
-        void *vvRate = *((void**)(&_p_vecRate));
+        IvocVect *vvRate = *((IvocVect**)(&_p_vecRate));
         if (vvRate && vector_capacity(vvRate)>i) {
           px = vector_vec(vvRate);
           curRate = px[i];
@@ -430,7 +442,11 @@ VERBATIM
     double etime = resumeEvent(_threadargs_);
     if (etime < start+duration) {
         debug_printf("InhPoisson: First event after resume at t = %6.3f\n", etime);
-        artcell_net_send(_tqitem, (double*)0, _ppvar[1]._pvoid, etime, activeFlag);
+        #if defined(NRN_VERSION_GTEQ_9_0_0)
+        artcell_net_send(_tqitem, (double*)0, _ppvar[1].get<Point_process*>(), etime, activeFlag);
+        #else
+        artcell_net_send(_tqitem, (double*)0, (Point_process*)_ppvar[1]._pvoid, etime, activeFlag);
+        #endif
     }
 #endif
 ENDVERBATIM
@@ -442,7 +458,7 @@ static void bbcore_write(double* dArray, int* iArray, int* doffset, int* ioffset
         uint32_t dsize = 0;
         if (_p_vecRate)
         {
-          dsize = (uint32_t)vector_capacity(_p_vecRate);
+          dsize = (uint32_t)vector_capacity((IvocVect*)_p_vecRate);
         }
         if (iArray) {
                 uint32_t* ia = ((uint32_t*)iArray) + *ioffset;
@@ -450,7 +466,7 @@ static void bbcore_write(double* dArray, int* iArray, int* doffset, int* ioffset
                 nrnran123_getids3(*pv, ia, ia+1, ia+2);
 
                 // for stream sequence
-                unsigned char which;
+                char which;
 
                 nrnran123_getseq(*pv, ia+3, &which);
                 ia[4] = (int)which;
@@ -463,7 +479,7 @@ static void bbcore_write(double* dArray, int* iArray, int* doffset, int* ioffset
                 ia[4] = (int)which;
 
                 ia = ia + 5;
-                void* vec = _p_vecRate;
+                IvocVect* vec = (IvocVect*)_p_vecRate;
                 ia[0] = dsize;
 
                 double *da = dArray + *doffset;
@@ -478,7 +494,7 @@ static void bbcore_write(double* dArray, int* iArray, int* doffset, int* ioffset
                   da[iInt] = dv[iInt];
                 }
 
-                vec = _p_vecTbins;
+                vec = (IvocVect*)_p_vecTbins;
                 da = dArray + *doffset + dsize;
                 if(dsize)
                 {
@@ -495,15 +511,16 @@ static void bbcore_write(double* dArray, int* iArray, int* doffset, int* ioffset
 }
 
 static void bbcore_read(double* dArray, int* iArray, int* doffset, int* ioffset, _threadargsproto_) {
-        assert(!_p_exp_rng);
-        assert(!_p_uniform_rng);
-        assert(!_p_vecRate);
-        assert(!_p_vecTbins);
         uint32_t* ia = ((uint32_t*)iArray) + *ioffset;
         nrnran123_State** pv;
         if (ia[0] != 0 || ia[1] != 0)
         {
           pv = (nrnran123_State**)(&_p_exp_rng);
+#if !NRNBBCORE
+          if(*pv) {
+              nrnran123_deletestream(*pv);
+          }
+#endif
           *pv = nrnran123_newstream3(ia[0], ia[1], ia[2] );
           nrnran123_setseq(*pv, ia[3], (char)ia[4]);
         }
@@ -512,6 +529,11 @@ static void bbcore_read(double* dArray, int* iArray, int* doffset, int* ioffset,
         if (ia[0] != 0 || ia[1] != 0)
         {
           pv = (nrnran123_State**)(&_p_uniform_rng);
+#if !NRNBBCORE
+          if(*pv) {
+            nrnran123_deletestream(*pv);
+          }
+#endif
           *pv = nrnran123_newstream3(ia[0], ia[1], ia[2] );
           nrnran123_setseq(*pv, ia[2], (char)ia[3]);
         }
@@ -521,8 +543,11 @@ static void bbcore_read(double* dArray, int* iArray, int* doffset, int* ioffset,
         *ioffset += 11;
 
         double *da = dArray + *doffset;
-        _p_vecRate = vector_new1(dsize);  /* works for dsize=0 */
-        double *dv = vector_vec(_p_vecRate);
+        if(!_p_vecRate) {
+          _p_vecRate = (double*)vector_new1(dsize);  /* works for dsize=0 */
+        }
+        assert(dsize == vector_capacity((IvocVect*)_p_vecRate));
+        double *dv = vector_vec((IvocVect*)_p_vecRate);
         int iInt;
         for (iInt = 0; iInt < dsize; ++iInt)
         {
@@ -531,8 +556,11 @@ static void bbcore_read(double* dArray, int* iArray, int* doffset, int* ioffset,
         *doffset += dsize;
 
         da = dArray + *doffset;
-        _p_vecTbins = vector_new1(dsize);
-        dv = vector_vec(_p_vecTbins);
+        if(!_p_vecTbins) {
+          _p_vecTbins = (double*)vector_new1(dsize);
+        }
+        assert(dsize == vector_capacity((IvocVect*)_p_vecTbins));
+        dv = vector_vec((IvocVect*)_p_vecTbins);
         for (iInt = 0; iInt < dsize; ++iInt)
         {
           dv[iInt] = da[iInt];
