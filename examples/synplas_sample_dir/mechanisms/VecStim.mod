@@ -4,7 +4,7 @@ COMMENT
  * @brief
  * @author king
  * @date 2011-03-16
- * @remark Copyright © BBP/EPFL 2005-2011; All rights reserved. Do not distribute without further notice.
+ * @remark Copyright © BBP/EPFL 2005-2011;
  */
 ENDCOMMENT
 

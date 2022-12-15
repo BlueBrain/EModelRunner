@@ -4,7 +4,7 @@ COMMENT
  * @brief Inhibitory poisson generator by the thinning method.
  * @author Eilif Muller
  * @date 2011-03-16
- * @remark Copyright © BBP/EPFL 2005-2011; All rights reserved. Do not distribute without further notice.
+ * @remark Copyright © BBP/EPFL 2005-2011;
  *  Based on vecstim.mod and netstim2.mod shipped with PyNN. See
  *   Muller, Buesing, Schemmel, Meier (2007). "Spike-Frequency Adapting
  *   Neural Ensembles: Beyond Mean Adaptation and Renewal Theories",

@@ -4,7 +4,7 @@ COMMENT
  * @brief Adapted from ProbAMPANMDA_EMS.mod by Eilif, Michael and Srikanth
  * @author chindemi
  * @date 2014-05-25
- * @remark Copyright © BBP/EPFL 2005-2014; All rights reserved. Do not distribute without further notice.
+ * @remark Copyright © BBP/EPFL 2005-2014;
  */
 ENDCOMMENT
 
