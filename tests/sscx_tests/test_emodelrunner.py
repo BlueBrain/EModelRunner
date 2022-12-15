@@ -210,11 +210,11 @@ def test_recipe_protocols():
 
     np.testing.assert_allclose(
         np.loadtxt(os.path.join(py_output_dir, "_.bpo_holding_current.dat")),
-        -0.05801859850038824928
+        -0.05801859850038824928,
     )
     np.testing.assert_allclose(
         np.loadtxt(os.path.join(py_output_dir, "_.bpo_threshold_current.dat")),
-        0.1199864538163320088
+        0.1199864538163320088,
     )
 
 
