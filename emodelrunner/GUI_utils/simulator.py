@@ -493,7 +493,7 @@ class NeuronSimulation:
         """Instantiate cell, simulation & protocol."""
         self.cell.freeze(self.release_params)
         self.cell.instantiate(sim=self.sim)
-        self.protocol.instantiate(sim=self.sim, icell=self.cell.icell)
+        self.protocol.instantiate(sim=self.sim, cell_model=self.cell)
         self.sim.neuron.h.tstop = self.protocol.total_duration
         self.sim.neuron.h.stdinit()
 
