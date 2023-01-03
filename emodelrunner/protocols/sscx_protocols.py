@@ -809,7 +809,7 @@ class StepProtocol(ephys.protocols.SweepProtocol, CurrentOutputKeyMixin):
 
         Args:
             sim (bluepyopt.ephys.NrnSimulator): neuron simulator
-            cell_model (bluepyopt.ephys.CellModel): cell instantiation in simulator
+            cell_model (bluepyopt.ephys.CellModel): cell model
         """
         for stimulus in self.stimuli:
             stimulus.instantiate(sim=sim, icell=cell_model.icell)
