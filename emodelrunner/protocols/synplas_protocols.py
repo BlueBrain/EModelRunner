@@ -109,7 +109,7 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
             cell_model.freeze(param_values)
             cell_model.instantiate(sim=sim)
 
-            self.instantiate(sim=sim, icell=cell_model.icell)
+            self.instantiate(sim=sim, cell_model=cell_model)
 
             try:
                 if self.fastforward is not None:

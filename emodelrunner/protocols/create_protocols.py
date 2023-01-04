@@ -72,6 +72,7 @@ class ProtocolBuilder:
             add_synapses (bool): whether to add synapses to the cell
             prot_args (ProtArgs): config data relative to protocols
             cell (CellModelCustom): cell model
+
         Returns:
             ProtocolBuilder: the object with the sscx protocols
         """
@@ -95,6 +96,7 @@ class ProtocolBuilder:
             add_synapses (bool): whether to add synapses to the cell
             prot_args (ProtArgs): config data relative to protocols
             cell (CellModelCustom): cell model
+
         Returns:
             ProtocolBuilder: the object with the thalamus protocols
         """

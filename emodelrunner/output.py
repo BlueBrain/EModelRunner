@@ -37,7 +37,7 @@ def write_responses(responses, output_dir):
         # Some resp are None when spike is not found
         if resp is None:
             continue
-        if isinstance(resp, (float, np.float)):
+        if isinstance(resp, (float, np.floating)):
             np.savetxt(output_path, np.array([resp]))
         else:
             time = np.array(resp["time"])
