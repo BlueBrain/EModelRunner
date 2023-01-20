@@ -552,7 +552,7 @@ def create_hoc(
     global_params, section_params, range_params, _, location_order = generate_parameters(
         parameters
     )
-    channels = generate_channels_by_location(mechs, location_order)
+    channels, _ = generate_channels_by_location(mechs, location_order)
 
     ignored_global_params = {}
     for ignored_global in ignored_globals:
