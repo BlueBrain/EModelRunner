@@ -43,7 +43,7 @@ setup(
     license="Apache 2.0",
     install_requires=[
         "numpy",
-        "bluepyopt>=1.13.76",
+        "bluepyopt@git+https://github.com/BlueBrain/BluePyOpt.git@api-changes",
         "neurom>=3.1.0",
         "h5py",
         "matplotlib",
