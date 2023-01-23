@@ -82,7 +82,7 @@ def get_extra_recording_location(recording_definition, apical_point_isec=-1):
         location = ephys.locations.NrnSecSomaDistanceCompLocation(
             name=recording_definition["name"],
             soma_distance=recording_definition["somadistance"],
-            sec_name=seclist_to_sec[recording_definition["seclist_name"]],
+            seclist_name=seclist_to_sec[recording_definition["seclist_name"]],
             sec_index=apical_point_isec,
         )
 
