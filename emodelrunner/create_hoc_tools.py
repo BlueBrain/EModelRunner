@@ -22,6 +22,7 @@ from bluepyopt.ephys.create_hoc import (
     generate_parameters,
     generate_channels_by_location,
     generate_reinitrng,
+    range_exprs_to_hoc
 )
 
 from emodelrunner import __version__
@@ -552,6 +553,7 @@ def create_hoc(
     global_params, section_params, range_params, _, location_order = generate_parameters(
         parameters
     )
+    range_params = range_exprs_to_hoc(range_params)
     channels, _ = generate_channels_by_location(mechs, location_order)
 
     ignored_global_params = {}
