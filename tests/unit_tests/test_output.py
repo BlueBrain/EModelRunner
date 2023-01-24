@@ -42,7 +42,7 @@ def test_write_responses():
     responses = {
         "test_wr_none": None,
         "test_wr_float": 0.12,
-        "test_wr_np_float": np.float(0.1),
+        "test_wr_np_float": np.float64(0.1),
         "test_wr_resp": {"time": [1.0, 2.0, 3.0], "voltage": [-80.0, -80.0, -79.0]},
     }
     write_responses(responses, output_dir)

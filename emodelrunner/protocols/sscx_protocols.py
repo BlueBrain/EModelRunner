@@ -804,19 +804,19 @@ class StepProtocol(ephys.protocols.SweepProtocol, CurrentOutputKeyMixin):
         self.holding_stimulus = holding_stimulus
         self.stochkv_det = stochkv_det
 
-    def instantiate(self, sim=None, icell=None):
+    def instantiate(self, sim=None, cell_model=None):
         """Instantiate.
 
         Args:
             sim (bluepyopt.ephys.NrnSimulator): neuron simulator
-            icell (neuron cell): cell instantiation in simulator
+            cell_model (bluepyopt.ephys.CellModel): cell model
         """
         for stimulus in self.stimuli:
-            stimulus.instantiate(sim=sim, icell=icell)
+            stimulus.instantiate(sim=sim, icell=cell_model.icell)
 
         for recording in self.recordings:
             try:
-                recording.instantiate(sim=sim, icell=icell)
+                recording.instantiate(sim=sim, icell=cell_model.icell)
             except ephys.locations.EPhysLocInstantiateException as e:
                 logger.debug(
                     "SweepProtocol: Instantiating recording generated location "

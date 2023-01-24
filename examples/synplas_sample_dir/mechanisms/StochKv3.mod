@@ -99,6 +99,7 @@ for comparison with Pr to decide whether to activate the synapse or not
 ENDCOMMENT
 
 VERBATIM
+#ifndef NRN_VERSION_GTEQ_8_2_0
 #include "nrnran123.h"
 extern int cvode_active_;
 
@@ -109,6 +110,10 @@ extern int cvode_active_;
 #ifndef CORENEURON_BUILD
 double nrn_random_pick(void* r);
 void* nrn_random_arg(int argpos);
+#endif
+#define RANDCAST
+#else
+#define RANDCAST (Rand*)
 #endif
 
 ENDVERBATIM
@@ -317,7 +322,7 @@ VERBATIM
         value = nrnran123_dblpick((nrnran123_State*)_p_rng);
     } else if (_p_rng) {
 #ifndef CORENEURON_BUILD
-        value = nrn_random_pick(_p_rng);
+        value = nrn_random_pick(RANDCAST _p_rng);
 #endif
     } else {
         value = 0.5;
@@ -337,7 +342,7 @@ static void bbcore_write(double* x, int* d, int* xx, int* offset, _threadargspro
         nrnran123_State** pv = (nrnran123_State**)(&_p_rng);
         nrnran123_getids3(*pv, di, di+1, di+2);
         // write stream sequence
-        unsigned char which;
+        char which;
         nrnran123_getseq(*pv, di+3, &which);
         di[4] = (int)which;
       }
@@ -346,11 +351,15 @@ static void bbcore_write(double* x, int* d, int* xx, int* offset, _threadargspro
     *offset += 5;
 }
 static void bbcore_read(double* x, int* d, int* xx, int* offset, _threadargsproto_) {
-    assert(!_p_rng);
     uint32_t* di = ((uint32_t*)d) + *offset;
         if (di[0] != 0 || di[1] != 0|| di[2] != 0)
         {
       nrnran123_State** pv = (nrnran123_State**)(&_p_rng);
+#if !NRNBBCORE
+      if(*pv) {
+          nrnran123_deletestream(*pv);
+      }
+#endif
       *pv = nrnran123_newstream3(di[0], di[1], di[2]);
       nrnran123_setseq(*pv, di[3], (char)di[4]);
         }
@@ -490,9 +499,12 @@ VERBATIM
         // TODO: since N0,N1 are no longer state variables, they will need to be written using this callback
         //  provided that it is the version that supports multivalue writing
         /* first arg is direction (-1 get info, 0 save, 1 restore), second is value*/
-        double *xdir, *xval, *hoc_pgetarg();
+        double *xdir, *xval;
+        #ifndef NRN_VERSION_GTEQ_8_2_0
+        double *hoc_pgetarg();
         long nrn_get_random_sequence(void* r);
         void nrn_set_random_sequence(void* r, int val);
+        #endif
         xdir = hoc_pgetarg(1);
         xval = hoc_pgetarg(2);
         if (_p_rng) {
@@ -508,18 +520,18 @@ VERBATIM
                 else if (*xdir == 0.) {
                     if( usingR123 ) {
                         uint32_t seq;
-                        unsigned char which;
+                        char which;
                         nrnran123_getseq( (nrnran123_State*)_p_rng, &seq, &which );
                         xval[0] = (double) seq;
                         xval[1] = (double) which;
                     } else {
-                        xval[0] = (double)nrn_get_random_sequence(_p_rng);
+                        xval[0] = (double)nrn_get_random_sequence(RANDCAST _p_rng);
                     }
                 } else{
                     if( usingR123 ) {
                         nrnran123_setseq( (nrnran123_State*)_p_rng, (uint32_t)xval[0], (char)xval[1] );
                     } else {
-                        nrn_set_random_sequence(_p_rng, (long)(xval[0]));
+                        nrn_set_random_sequence(RANDCAST _p_rng, (long)(xval[0]));
                     }
                 }
         }

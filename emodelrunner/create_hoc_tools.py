@@ -19,9 +19,10 @@ from datetime import datetime
 import jinja2
 
 from bluepyopt.ephys.create_hoc import (
-    _generate_parameters,
-    _generate_channels_by_location,
-    _generate_reinitrng,
+    generate_parameters,
+    generate_channels_by_location,
+    generate_reinitrng,
+    range_exprs_to_hoc,
 )
 
 from emodelrunner import __version__
@@ -549,10 +550,15 @@ def create_hoc(
         template = template_file.read()
         template = jinja2.Template(template)
 
-    global_params, section_params, range_params, location_order = _generate_parameters(
-        parameters
-    )
-    channels = _generate_channels_by_location(mechs, location_order)
+    (
+        global_params,
+        section_params,
+        range_params,
+        _,
+        location_order,
+    ) = generate_parameters(parameters)
+    range_params = range_exprs_to_hoc(range_params)
+    channels, _ = generate_channels_by_location(mechs, location_order)
 
     ignored_global_params = {}
     for ignored_global in ignored_globals:
@@ -565,7 +571,7 @@ def create_hoc(
     else:
         banner = None
 
-    re_init_rng = _generate_reinitrng(mechs)
+    re_init_rng = generate_reinitrng(mechs)
 
     return template.render(
         template_name=template_name,
