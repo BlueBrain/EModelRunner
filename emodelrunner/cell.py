@@ -249,12 +249,12 @@ class CellModelCustom(ephys.models.CellModel):
 
 
         endtemplate %(template_name)s
-               """ % dict(
-            template_name=template_name,
-            objref_str=objref_str,
-            newseclist_str=newseclist_str,
-            secarrays_str=secarrays_str,
-        )
+               """ % {
+            "template_name": template_name,
+            "objref_str": objref_str,
+            "newseclist_str": newseclist_str,
+            "secarrays_str": secarrays_str,
+        }
         return template
 
     @staticmethod

@@ -99,7 +99,7 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
             sim (bluepyopt.ephys.NrnSimulator): neuron simulator
 
         Raises:
-            Exception: if the instantiation failed
+            RuntimeError: if the instantiation failed
 
         Returns:
             dict containing the responses
@@ -139,7 +139,7 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
 
             return responses
         except BaseException:
-            raise Exception("".join(traceback.format_exception(*sys.exc_info())))
+            raise RuntimeError("".join(traceback.format_exception(*sys.exc_info())))
 
 
 class SweepProtocolPairSim(ephys.protocols.Protocol):
@@ -185,18 +185,18 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
                 Leave None for no fastforward.
 
         Raises:
-            Exception: if stimuli is not of size 2 and is not None
-            Exception: if recordings is not of size 2 and is not None
+            ValueError: if stimuli is not of size 2 and is not None
+            ValueError: if recordings is not of size 2 and is not None
         """
         super().__init__(name)
         if stimuli is not None and len(stimuli) != 2:
-            raise Exception(
+            raise ValueError(
                 "Stimuli should be of size 2 and contain"
                 "[presynaptic_stimuli, postsynaptic_stimuli]"
             )
         self.stimuli = stimuli
         if recordings is not None and len(stimuli) != 2:
-            raise Exception(
+            raise ValueError(
                 "Recordings should be of size 2 and contain"
                 "[presynaptic_recordings, postsynaptic_recordings]"
             )
@@ -243,7 +243,7 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
             sim (bluepyopt.ephys.NrnSimulator): neuron simulator
 
         Raises:
-            Exception: if the instantiation failed
+            RuntimeError: if the instantiation failed
 
         Returns:
             list of 2 dicts containing the responses of both the cells
@@ -298,7 +298,7 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
 
             return responses
         except BaseException:
-            raise Exception("".join(traceback.format_exception(*sys.exc_info())))
+            raise RuntimeError("".join(traceback.format_exception(*sys.exc_info())))
 
     def run(
         self,
@@ -393,7 +393,6 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
         icells = [pre_icell, post_icell]
 
         for i, icell in enumerate(icells):
-
             for stimulus in self.stimuli[i]:
                 stimulus.instantiate(sim=sim, icell=icell)
 

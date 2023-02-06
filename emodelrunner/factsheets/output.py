@@ -116,7 +116,7 @@ def get_stim_params_from_config_for_physiology_factsheet(prot_path, protocol_key
         - stim_duration (int or float): the duration of the stimulus (ms)
 
     Raises:
-        Exception: If a step protocol with multiple steps has been provided
+        TypeError: If a step protocol with multiple steps has been provided
     """
     with open(prot_path, "r", encoding="utf-8") as protocol_file:
         protocol_definitions = json.load(protocol_file)
@@ -129,7 +129,7 @@ def get_stim_params_from_config_for_physiology_factsheet(prot_path, protocol_key
             "ME-type factsheet expects only one step stimulus "
             + "for protocol {key} at {filepath}"
         )
-        raise Exception(exception_message.format(key=protocol_key, filepath=prot_path))
+        raise TypeError(exception_message.format(key=protocol_key, filepath=prot_path))
 
     # get parameters from protocol
     current_amplitude = step_stim["amp"]

@@ -116,7 +116,7 @@ class FrameSetIntFromEntry(ttk.Frame):
 
         # grid
         self.label.grid(row=0, column=0, sticky=tk.W)
-        self.entry.grid(row=0, column=1, sticky=(tk.E))
+        self.entry.grid(row=0, column=1, sticky=tk.E)
 
         self.columnconfigure(1, weight=1)  # only center column grows
 
