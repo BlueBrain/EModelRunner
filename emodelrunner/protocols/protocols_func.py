@@ -58,9 +58,9 @@ def get_extra_recording_location(recording_definition, apical_point_isec=-1):
             Should be given if the recording definition "type" is "somadistanceapic"
 
     Raises:
-        Exception: if the recording definition "type" is "somadistanceapic" and
+        ValueError: if the recording definition "type" is "somadistanceapic" and
             apical_point_isec is -1.
-        Exception: if the 'type' in the recording definition is neither
+        ValueError: if the 'type' in the recording definition is neither
             "somadistance", nor "somadistanceapic", nor "nrnseclistcomp"
 
     Returns:
@@ -75,7 +75,7 @@ def get_extra_recording_location(recording_definition, apical_point_isec=-1):
 
     elif recording_definition["type"] == "somadistanceapic":
         if apical_point_isec == -1:
-            raise Exception(
+            raise ValueError(
                 "Cannot record at a given distance from apical point"
                 f"if apical_point_isec is {apical_point_isec}."
             )
@@ -95,7 +95,7 @@ def get_extra_recording_location(recording_definition, apical_point_isec=-1):
         )
 
     else:
-        raise Exception(f"Recording type {recording_definition['type']} not supported")
+        raise ValueError(f"Recording type {recording_definition['type']} not supported")
 
     return location
 
@@ -148,7 +148,7 @@ def check_for_forbidden_protocol(protocols_dict):
         protocols_dict (dict): contains all protocols to be run
 
     Raises:
-        Exception: If a protocol that should only be used with MainProtocol is present
+        ValueError: If a protocol that should only be used with MainProtocol is present
             in protocols_dict
     """
     # Those protocols cannot be used if they are not in MainProtocol
@@ -162,7 +162,7 @@ def check_for_forbidden_protocol(protocols_dict):
     for prot in protocols_dict.values():
         if type(prot).__name__ in forbidden_prots:
             prot_name = type(prot).__name__
-            raise Exception(
-                "No MainProtocol found, but {prot} was found."
+            raise ValueError(
+                f"No MainProtocol found, but {prot_name} was found."
                 f"To use {prot_name}, please set MainProtocol."
             )

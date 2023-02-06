@@ -1008,7 +1008,7 @@ class StepThresholdProtocol(StepProtocol):
             timeout (float): maximum real time (s) the cell is allowed to run when isolated
 
         Raises:
-            Exception: if the threshold_current is not set to the cell model
+            AttributeError: if the threshold_current is not set to the cell model
 
         Returns:
             dict containing the responses for the step protocol
@@ -1016,7 +1016,7 @@ class StepThresholdProtocol(StepProtocol):
         # pylint: disable=unused-argument
         responses = {}
         if not hasattr(cell_model, "threshold_current"):
-            raise Exception(
+            raise AttributeError(
                 "StepThresholdProtocol: running on cell_model "
                 f"that doesnt have threshold current value set: {cell_model}"
             )
@@ -1220,7 +1220,7 @@ class RampThresholdProtocol(RampProtocol):
             timeout (float): maximum real time (s) the cell is allowed to run when isolated
 
         Raises:
-            Exception: if the threshold_current is not set to the cell model
+            AttributeError: if the threshold_current is not set to the cell model
 
         Returns:
             dict containing the responses for the ramp protocol
@@ -1228,7 +1228,7 @@ class RampThresholdProtocol(RampProtocol):
         # pylint: disable=unused-argument
         responses = {}
         if not hasattr(cell_model, "threshold_current"):
-            raise Exception(
+            raise AttributeError(
                 "RampThresholdProtocol: running on cell_model "
                 f"that doesnt have threshold current value set: {cell_model}"
             )

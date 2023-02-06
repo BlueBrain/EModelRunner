@@ -948,7 +948,7 @@ class StepThresholdProtocol(StepProtocolCustom):
         logger.info("Running protocol %s", self.name)
         responses = {}
         if not hasattr(cell_model, "threshold_current_hyp"):
-            raise Exception(
+            raise AttributeError(
                 f"StepThresholdProtocol: running on cell_model "
                 f"that doesnt have threshold current value set: {str(cell_model)}",
             )
