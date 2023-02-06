@@ -393,7 +393,6 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
         icells = [pre_icell, post_icell]
 
         for i, icell in enumerate(icells):
-
             for stimulus in self.stimuli[i]:
                 stimulus.instantiate(sim=sim, icell=icell)
 

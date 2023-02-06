@@ -68,7 +68,6 @@ class Minis(ephys.stimuli.Stimulus):
         for location in self.locations:
             # self.connections[location.name] = []
             for synapse in location.instantiate(sim=sim, icell=icell):
-
                 sid = synapse.hsynapse.synapseID
 
                 if self.popids is None:

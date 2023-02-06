@@ -125,7 +125,6 @@ def get_recordings(protocol_name, protocol_definition, prefix, apical_point_isec
 
     if "extra_recordings" in protocol_definition:
         for recording_definition in protocol_definition["extra_recordings"]:
-
             location = get_extra_recording_location(
                 recording_definition, apical_point_isec
             )

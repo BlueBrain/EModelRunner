@@ -131,7 +131,6 @@ def load_mechanisms(mechs_path):
 
     mechanisms_list = []
     for sectionlist, channels in mech_definitions.items():
-
         seclist_locs = multi_locations(sectionlist)
 
         for channel in channels["mech"]:
@@ -173,7 +172,6 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
 
     distributions_definitions = definitions["distributions"]
     for distribution, definition in distributions_definitions.items():
-
         if "parameters" in definition:
             dist_param_names = definition["parameters"]
         else:

@@ -59,7 +59,6 @@ def get_feature(
         strict_stim = True
 
     if hasattr(protocol, "stim_start"):
-
         stim_start = protocol.stim_start
 
         if "threshold" in feature_config:
@@ -121,7 +120,6 @@ def define_efeatures(main_protocol, features_path, prefix=""):
     for protocol_name, locations in feature_definitions.items():
         for recording_name, feature_configs in locations.items():
             for feature_config in feature_configs:
-
                 feature_name, feature = get_feature(
                     feature_config,
                     main_protocol,
