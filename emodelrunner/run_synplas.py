@@ -127,7 +127,7 @@ def run(
     write_synplas_output(responses, pre_spike_train, output_path, syn_prop_path)
 
     logger.info("Python Recordings Done.")
-    logger.info("Responses written to %s", output_dir)
+    logger.info("Responses written to %s", output_path)
 
 
 if __name__ == "__main__":
