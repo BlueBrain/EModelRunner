@@ -134,7 +134,7 @@ def run(
     )
 
     logger.info("Python Recordings Done.")
-    logger.info(f"Responses written to {output_path}")
+    logger.info("Responses written to %s", output_path)
 
 
 if __name__ == "__main__":

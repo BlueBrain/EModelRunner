@@ -87,7 +87,7 @@ def main(config_path):
     write_current(currents, output_dir)
 
     logger.info("Python Recordings Done.")
-    logger.info(f"Responses written to {output_dir}")
+    logger.info("Responses written to %s", output_dir)
 
 
 if __name__ == "__main__":
