@@ -31,6 +31,9 @@ from emodelrunner.output import write_synplas_output
 
 # Configure logger
 logger = logging.getLogger(__name__)
+# if logger.level is unset, then set it to INFO
+if logger.level == logging.NOTSET:
+    logger.setLevel(logging.INFO)
 
 
 # taken from glusynapse.simulation.simulator
@@ -124,6 +127,7 @@ def run(
     write_synplas_output(responses, pre_spike_train, output_path, syn_prop_path)
 
     logger.info("Python Recordings Done.")
+    logger.info(f"Responses written to {output_path}.")
 
 
 if __name__ == "__main__":

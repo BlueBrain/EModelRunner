@@ -31,6 +31,9 @@ from emodelrunner.run_synplas import _set_global_params
 
 # Configure logger
 logger = logging.getLogger(__name__)
+# if logger.level is unset, then set it to INFO
+if logger.level == logging.NOTSET:
+    logger.setLevel(logging.INFO)
 
 
 def run(
@@ -131,6 +134,7 @@ def run(
     )
 
     logger.info("Python Recordings Done.")
+    logger.info(f"Responses written to {output_path}")
 
 
 if __name__ == "__main__":

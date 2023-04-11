@@ -31,6 +31,10 @@ from emodelrunner.output import write_responses
 
 logger = logging.getLogger(__name__)
 
+# if logger.level is unset, then set it to INFO
+if logger.level == logging.NOTSET:
+    logger.setLevel(logging.INFO)
+
 
 def main(config_path):
     """Main.
@@ -82,7 +86,8 @@ def main(config_path):
     write_responses(responses, output_dir)
     write_current(currents, output_dir)
 
-    logger.info("Python Recordings Done")
+    logger.info("Python Recordings Done.")
+    logger.info(f"Responses written to {output_dir}")
 
 
 if __name__ == "__main__":
