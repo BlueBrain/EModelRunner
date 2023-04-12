@@ -31,9 +31,6 @@ from emodelrunner.output import write_synplas_output
 
 # Configure logger
 logger = logging.getLogger(__name__)
-# if logger.level is unset, then set it to INFO
-if logger.level == logging.NOTSET:
-    logger.setLevel(logging.INFO)
 
 
 # taken from glusynapse.simulation.simulator

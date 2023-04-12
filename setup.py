@@ -50,6 +50,7 @@ setup(
         "schema",
         "Pebble>=4.3.10",
         "importlib_metadata; python_version<'3.8'",
+        "tqdm>=4.65.0",
     ],
     packages=find_packages(exclude=["tests"]),
     python_requires=">=3.7",

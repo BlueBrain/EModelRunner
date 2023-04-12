@@ -31,9 +31,6 @@ from emodelrunner.run_synplas import _set_global_params
 
 # Configure logger
 logger = logging.getLogger(__name__)
-# if logger.level is unset, then set it to INFO
-if logger.level == logging.NOTSET:
-    logger.setLevel(logging.INFO)
 
 
 def run(

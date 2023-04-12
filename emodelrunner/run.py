@@ -31,10 +31,6 @@ from emodelrunner.output import write_responses
 
 logger = logging.getLogger(__name__)
 
-# if logger.level is unset, then set it to INFO
-if logger.level == logging.NOTSET:
-    logger.setLevel(logging.INFO)
-
 
 def main(config_path):
     """Main.

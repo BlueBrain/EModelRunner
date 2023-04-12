@@ -30,7 +30,7 @@ def get_parser_args():
         default=None,
         help="the path to the config file.",
     )
-    parser.add_argument("-v", "--verbose", action="count", dest="verbosity", default=0)
+    parser.add_argument("-v", "--verbose", type=int, dest="verbosity", default=1)
     return parser.parse_args()
 
 

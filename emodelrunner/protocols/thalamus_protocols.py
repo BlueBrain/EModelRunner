@@ -20,7 +20,9 @@ import collections
 import copy
 import logging
 import numpy as np
+
 from bluepyopt import ephys
+from tqdm import tqdm
 
 from emodelrunner.protocols.protocols_func import CurrentOutputKeyMixin
 
@@ -124,12 +126,14 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
         cell_model.freeze(param_values)
 
         # Find resting membrane potential
+        logger.info("Running RMP protocol")
         rmp_response = self.rmp_protocol.run(cell_model, {}, sim=sim)
         responses.update(rmp_response)
         rmp = self.rmp_efeature.calculate_feature(rmp_response)
 
         # Find Rin and holding current
         if hasattr(self, "rinhold_protocol_dep"):
+            logger.info("Running Rinhold protocol (depolarizing)")
             rinhold_response_dep = self.rinhold_protocol_dep.run(
                 cell_model, {}, sim=sim, rmp=rmp
             )
@@ -138,6 +142,7 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
             rin_dep = self.rin_efeature_dep.calculate_feature(rinhold_response_dep)
             responses.update(rinhold_response_dep)
 
+        logger.info("Running Rinhold protocol (hyperpolarizing)")
         rinhold_response_hyp = self.rinhold_protocol_hyp.run(
             cell_model, {}, sim=sim, rmp=rmp
         )
@@ -148,6 +153,7 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
             responses.update(rinhold_response_hyp)
 
             if hasattr(self, "thdetect_protocol_dep"):
+                logger.info("Running threshold detection protocol (depolarizing)")
                 responses.update(
                     self.thdetect_protocol_dep.run(
                         cell_model,
@@ -159,6 +165,7 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
                     )
                 )
 
+            logger.info("Running threshold detection protocol (hyperpolarizing)")
             responses.update(
                 self.thdetect_protocol_hyp.run(
                     cell_model,
@@ -180,13 +187,15 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
 
     def _run_pre_protocols(self, cell_model, sim, responses):
         """Runs the pre_protocols and updates responses dict."""
-        for pre_protocol in self.pre_protocols:
+        logger.info("Running pre-protocols")
+        for pre_protocol in tqdm(self.pre_protocols):
             response = pre_protocol.run(cell_model, {}, sim=sim)
             responses.update(response)
 
     def _run_other_protocols(self, cell_model, sim, responses):
         """Runs the other_protocols and updates responses dict."""
-        for other_protocol in self.other_protocols:
+        logger.info("Running other protocols")
+        for other_protocol in tqdm(self.other_protocols):
             response = other_protocol.run(cell_model, {}, sim=sim)
             responses.update(response)
 
