@@ -31,19 +31,19 @@ def test_get_parser_args():
     assert args.verbosity == 1
 
     # --verbose case
-    sys.argv = "run.py --config_path mock/config/path --verbose".split()
+    sys.argv = "run.py --config_path mock/config/path --verbose=0".split()
     args = get_parser_args()
 
-    assert args.verbosity == 2
+    assert args.verbosity == 0
 
     # -v case
-    sys.argv = "run.py --config_path mock/config/path -v".split()
+    sys.argv = "run.py --config_path mock/config/path -v=2".split()
     args = get_parser_args()
 
     assert args.verbosity == 2
 
-    # -vv case
-    sys.argv = "run.py --config_path mock/config/path -vv".split()
+    # space separated case
+    sys.argv = "run.py --config_path mock/config/path --verbose 3".split()
     args = get_parser_args()
 
     assert args.verbosity == 3
