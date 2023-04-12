@@ -28,7 +28,7 @@ def test_get_parser_args():
     args = get_parser_args()
 
     assert args.config_path == "mock/config/path"
-    assert args.verbosity == 0
+    assert args.verbosity == 1
 
     # --verbose case
     sys.argv = "run.py --config_path mock/config/path --verbose".split()
