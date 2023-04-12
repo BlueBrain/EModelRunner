@@ -34,19 +34,19 @@ def test_get_parser_args():
     sys.argv = "run.py --config_path mock/config/path --verbose".split()
     args = get_parser_args()
 
-    assert args.verbosity == 1
+    assert args.verbosity == 2
 
     # -v case
     sys.argv = "run.py --config_path mock/config/path -v".split()
     args = get_parser_args()
 
-    assert args.verbosity == 1
+    assert args.verbosity == 2
 
     # -vv case
     sys.argv = "run.py --config_path mock/config/path -vv".split()
     args = get_parser_args()
 
-    assert args.verbosity == 2
+    assert args.verbosity == 3
 
 
 @patch("logging.basicConfig")
