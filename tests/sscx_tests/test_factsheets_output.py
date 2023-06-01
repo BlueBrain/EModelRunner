@@ -20,6 +20,7 @@ import json
 import numpy as np
 import pytest
 
+from emodelrunner.factsheets.units import feature_units
 from emodelrunner.load import load_config
 from emodelrunner.run import main as run_emodel
 from emodelrunner.factsheets import morphology_features
@@ -146,15 +147,10 @@ def test_emodel_factsheet_exists():
     with open(features_path) as json_file:
         features_dict = json.load(json_file)
 
-    feature_units_path = Path(example_dir) / "config" / "features" / "units.json"
-    with open(feature_units_path) as json_file:
-        feature_units_dict = json.load(json_file)
-
     write_emodel_json(
         emodel,
         mtype,
         features_dict,
-        feature_units_dict,
         unoptimized_params_dict,
         optimized_params_dict,
         output_path,
@@ -342,7 +338,7 @@ def test_experimental_feature_values():
 
     Checks that there is no empty list or dictionary.
     Checks that features name, mean, and std are identical to the ones in feature file.
-    Checks that units correspond to the ones in unit file.
+    Checks that units correspond to the ones defined in the package.
     Checks that model fitnesses correspond to the ones in fitness file."""
 
     def check_feature_mean_std(source, feat):
@@ -371,15 +367,12 @@ def test_experimental_feature_values():
     with open(features_path) as json_file:
         original_feat = json.load(json_file)
 
-    feature_units_path = example_dir / "config" / "features" / "units.json"
-    with open(feature_units_path) as json_file:
-        feature_units_dict = json.load(json_file)
     fitness = optimized_params_dict[emodel]["fitness"]
     morph_prefix = "_"
 
     # tested func
     feat_dict = get_exp_features_data(
-        emodel, morph_prefix, original_feat, feature_units_dict, optimized_params_dict
+        emodel, morph_prefix, original_feat, optimized_params_dict
     )
 
     for items in feat_dict["values"]:
@@ -395,7 +388,7 @@ def test_experimental_feature_values():
                     )
 
                     assert check_feature_mean_std(original, feat)
-                    assert feat["unit"] == feature_units_dict[feat["name"]]
+                    assert feat["unit"] == feature_units[feat["name"]]
                     assert feat["model fitness"] == fitness[key_fitness]
 
 

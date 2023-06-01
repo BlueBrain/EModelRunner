@@ -173,7 +173,6 @@ def write_emodel_json(
     emodel,
     morphology_prefix,
     features_dict,
-    feature_units_dict,
     unoptimized_params_dict,
     optimized_params_dict,
     output_path,
@@ -186,7 +185,6 @@ def write_emodel_json(
         emodel (str): name of the emodel
         morphology_prefix (str): prefix used in the fitness key to the experimental feature
         features_dict (dict): contains the experimental features
-        feature_units_dict (dict): contains the units for the experimental features
         unoptimized_params_dict (dict): contains the unoptimized parameters,
             and also contains the decay and exponential equations
         optimized_params_dict (dict): contains the optimized parameters,
@@ -199,7 +197,6 @@ def write_emodel_json(
         emodel,
         morphology_prefix,
         features_dict,
-        feature_units_dict,
         optimized_params_dict,
     )
     channel_mechanisms = get_mechanisms_data(

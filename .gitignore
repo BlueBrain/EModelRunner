@@ -3,6 +3,8 @@
 coverage.xml
 coverage.json
 coverage.html
+.coverage
+.coverage.*
 *.egg-info
 .coverage
 doc/build
