@@ -15,6 +15,7 @@
 # limitations under the License.
 
 import logging
+from emodelrunner.factsheets.units import feature_units
 
 logger = logging.getLogger(__name__)
 
@@ -36,12 +37,11 @@ def morphology_used_in_fitting(optimized_params_dict, emodel):
     return morph_name
 
 
-def get_feature_dict(feature, units, morphology_prefix, stimulus, location, fitness):
+def get_feature_dict(feature, morphology_prefix, stimulus, location, fitness):
     """Return dict containing one feature.
 
     Args:
         feature (dict): contains feature name and mean and std of feature
-        units (dict): contains the units for the feature
         morphology_prefix (str): prefix used in the fitness key to the feature
         stimulus (str): name of the stimulus used for this feature
         location (str): name of the location for which the feature is calculated
@@ -55,7 +55,7 @@ def get_feature_dict(feature, units, morphology_prefix, stimulus, location, fitn
     std = feature["val"][1]
 
     try:
-        unit = units[feature_name]
+        unit = feature_units[feature_name]
     except KeyError:
         logger.warning(
             "%s was not found in units file. Setting unit to ''.", feature_name
@@ -81,7 +81,7 @@ def get_feature_dict(feature, units, morphology_prefix, stimulus, location, fitn
 
 
 def get_exp_features_data(
-    emodel, morphology_prefix, features_dict, units, optimized_params_dict
+    emodel, morphology_prefix, features_dict, optimized_params_dict
 ):
     """Returns a dict containing mean and std of experimental features and model fitness.
 
@@ -89,7 +89,6 @@ def get_exp_features_data(
         emodel (str): name of the emodel
         morphology_prefix (str): prefix used in the fitness key to the feature
         features_dict (dict): contains the features
-        units (dict): contains the units for the features
         optimized_params_dict (dict): contains the optimized parameters,
             as well as the original morphology path
 
@@ -108,7 +107,7 @@ def get_exp_features_data(
             for feature in loc_data:
                 features_list.append(
                     get_feature_dict(
-                        feature, units, morphology_prefix, stimulus, location, fitness
+                        feature, morphology_prefix, stimulus, location, fitness
                     )
                 )
             loc_dict = {"features": features_list}

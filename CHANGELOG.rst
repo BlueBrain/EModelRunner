@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Version 1.1.9
+--------------
+
+New Features
+~~~~~~~~~~~~
+
+- Use efel 4.2 to retrieve units of efeatures
+
 Version 0.1
 -----------
 
