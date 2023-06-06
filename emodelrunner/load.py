@@ -210,11 +210,8 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
             param_name = param_config["name"]
 
             if isinstance(param_config["val"], (list, tuple)):
-                is_frozen = False
                 value = None
-
             else:
-                is_frozen = True
                 value = param_config["val"]
 
             if is_global:
@@ -227,7 +224,6 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
                     ephys.parameters.NrnGlobalParameter(
                         name=param_name,
                         param_name=param_name,
-                        frozen=is_frozen,
                         value=value,
                     )
                 )
@@ -237,7 +233,6 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
                         name=f"{param_name}.{sectionlist}",
                         obj=dist,
                         attr_name=param_name,
-                        frozen=is_frozen,
                         value=value,
                     )
                 )
@@ -257,7 +252,6 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
                             param_name=param_name,
                             value_scaler=dist,
                             value=value,
-                            frozen=is_frozen,
                             locations=seclist_locs,
                         )
                     )
@@ -268,7 +262,6 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
                             param_name=param_name,
                             value_scaler=dist,
                             value=value,
-                            frozen=is_frozen,
                             locations=seclist_locs,
                         )
                     )
