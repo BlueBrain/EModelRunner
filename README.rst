@@ -17,6 +17,8 @@ EModelRunner
 +----------------+------------+
 | Support        | |gitter|   |
 +----------------+------------+
+| Citation       | |zenodo|   |
++----------------+------------+
 
 Introduction
 ============
@@ -40,6 +42,24 @@ It consists of two main modules:
   - a GUI
 
 Note that EModelRunner is a convenience tool and does not aim to be a universal simulator.
+
+Citation
+========
+
+When you use this EModelRunner software for your research, we ask you to cite the following publications (this includes poster presentations):
+
+.. code-block:: 
+
+    @article{emodelrunner, 
+        title={EModelRunner}, 
+        DOI={10.5281/zenodo.8116075},
+        url={https://doi.org/10.5281/zenodo.8116075} 
+        abstractNote={EModelRunner is a python library designed to run the cell models provided by the Blue Brain portals in a simple and straightforward way. It consists of two main modules. The first module is designed to show the synapse plasticity phenomenonand to run the cells and reproduce the results from the paper 'A calcium-based plasticity model for predicting long-term potentiation and depression in the neocortex'. The second module is designed to run the cells from the Blue Brain Project SomatoSensoryCortex portal. Note that EModelRunner is a convenience tool and does not aim to be a universal simulator.}, 
+        publisher={Zenodo}, 
+        author={Jaquier, Aurélien and Tuncel, Anil and Van Geit, Werner}, 
+        year={2023}, 
+        month={Jul} 
+    }
 
 Support
 =======
@@ -261,3 +281,6 @@ Copyright (c) 2020-2022 Blue Brain Project/EPFL
 .. |gitter| image:: https://badges.gitter.im/BlueBrain/EmodelRunner.svg
    :alt: Join the chat at https://gitter.im/BlueBrain/EmodelRunner
    :target: https://gitter.im/BlueBrain/EmodelRunner?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
+.. |zenodo| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.8116075.svg
+                :target: https://doi.org/10.5281/zenodo.8116075
