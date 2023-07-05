@@ -17,6 +17,8 @@ EModelRunner
 +----------------+------------+
 | Support        | |gitter|   |
 +----------------+------------+
+| Citation       | |zenodo|   |
++----------------+------------+
 
 Introduction
 ============
@@ -40,6 +42,11 @@ It consists of two main modules:
   - a GUI
 
 Note that EModelRunner is a convenience tool and does not aim to be a universal simulator.
+
+Citation
+========
+
+When you use this EModelRunner software for your research, we ask you to cite the following publications (this includes poster presentations):
 
 Support
 =======
@@ -261,3 +268,6 @@ Copyright (c) 2020-2022 Blue Brain Project/EPFL
 .. |gitter| image:: https://badges.gitter.im/BlueBrain/EmodelRunner.svg
    :alt: Join the chat at https://gitter.im/BlueBrain/EmodelRunner
    :target: https://gitter.im/BlueBrain/EmodelRunner?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
+.. |zenodo| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.8046484.svg
+                :target: https://doi.org/10.5281/zenodo.8046373
