@@ -16,11 +16,15 @@
 
 from pathlib import Path
 
+from bluepyopt import ephys
+
 from emodelrunner.create_cells import create_cell_using_config
-from emodelrunner.load import (
-    load_config,
-)
+from emodelrunner.load import load_config
+from emodelrunner.locations import SOMA_LOC
+from emodelrunner.protocols import sscx_protocols
 from emodelrunner.protocols.reader import ProtocolParser
+from emodelrunner.protocols.reader import read_ramp_threshold_protocol
+from emodelrunner.recordings import RecordingCustom
 from emodelrunner.synapses.create_locations import get_syn_locs
 
 from tests.utils import cwd
@@ -37,6 +41,14 @@ thalamus_recipe_protocol_keys = {
     "ThresholdDetection_hyp", "Rin_dep", "ThresholdDetection_dep", "Rin_hyp", "Main",
     "RinHoldcurrent_hyp", "RMP", "Step_150", "Step_200", "Step_200_hyp", "RinHoldcurrent_dep"}
 # fmt: on
+
+recordings = [
+    RecordingCustom(
+        name=".RampThresh.soma.v",
+        location=SOMA_LOC,
+        variable="v",
+    )
+]
 
 
 class TestProtocolParser:
@@ -77,3 +89,39 @@ class TestProtocolParser:
 
             assert set(protocols_dict.keys()) == thalamus_recipe_protocol_keys
             assert all(x is not None for x in protocols_dict)
+
+
+def test_read_ramp_threshold_protocol():
+    """Test read_ramp_threshold_protocol."""
+    protocol_definition = {
+        "type": "RampThresholdProtocol",
+        "stimuli": {
+            "ramp": {
+                "ramp_delay": 70.0,
+                "thresh_perc_start": 150.0,
+                "thresh_perc_end": 250.0,
+                "ramp_duration": 200.0,
+                "totduration": 300.0
+            },
+            "holding": {
+                "totduration": 300.0
+            }
+        }
+    }
+    prot = read_ramp_threshold_protocol("RampThresh", protocol_definition, recordings)
+    assert isinstance(prot, sscx_protocols.RampThresholdProtocol)
+    assert prot.name == "RampThresh"
+    assert len(prot.stimuli) == 2
+    assert isinstance(prot.stimuli[0], ephys.stimuli.NrnRampPulse)
+    assert isinstance(prot.stimuli[1], ephys.stimuli.NrnSquarePulse)
+    assert prot.ramp_stimulus == prot.stimuli[0]
+    assert prot.holding_stimulus == prot.stimuli[1]
+    assert prot.ramp_stimulus.location == SOMA_LOC
+    assert prot.holding_stimulus.location == SOMA_LOC
+    assert prot.ramp_stimulus.total_duration == 300.0
+    assert prot.holding_stimulus.total_duration == 300.0
+    assert prot.step_delay == 70.0
+    assert prot.step_duration == 200.0
+    assert prot.thresh_perc_start == 150.0
+    assert prot.thresh_perc_end == 250.0
+    assert prot.recordings == recordings
