@@ -101,12 +101,10 @@ def test_read_ramp_threshold_protocol():
                 "thresh_perc_start": 150.0,
                 "thresh_perc_end": 250.0,
                 "ramp_duration": 200.0,
-                "totduration": 300.0
+                "totduration": 300.0,
             },
-            "holding": {
-                "totduration": 300.0
-            }
-        }
+            "holding": {"totduration": 300.0},
+        },
     }
     prot = read_ramp_threshold_protocol("RampThresh", protocol_definition, recordings)
     assert isinstance(prot, sscx_protocols.RampThresholdProtocol)
