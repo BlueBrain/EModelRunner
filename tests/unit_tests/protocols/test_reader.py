@@ -134,6 +134,7 @@ def test_read_ramp_threshold_protocol():
     assert prot.thresh_perc_end == 250.0
     assert prot.recordings == recordings
 
+
 def test_read_ramp_protocol():
     """Test read_ramp_protocol."""
     protocol_definition = {
@@ -150,8 +151,8 @@ def test_read_ramp_protocol():
                 "delay": 0.0,
                 "amp": -0.0896244038173676,
                 "duration": 300.0,
-                "totduration": 300.0
-            }
+                "totduration": 300.0,
+            },
         },
     }
     prot = read_ramp_protocol("Ramp", protocol_definition, recordings)
@@ -182,6 +183,7 @@ def test_read_ramp_protocol():
     assert isinstance(prot.stimuli[0], ephys.stimuli.NrnRampPulse)
     assert prot.holding_stimulus is None
 
+
 def test_read_step_protocol():
     """Test read_step_protocol."""
     protocol_definition = {
@@ -191,15 +193,15 @@ def test_read_step_protocol():
                 "delay": 70.0,
                 "amp": 0.34859375,
                 "duration": 200.0,
-                "totduration": 300.0
+                "totduration": 300.0,
             },
             "holding": {
                 "delay": 0.0,
                 "amp": -0.0896244038173676,
                 "duration": 300.0,
-                "totduration": 300.0
-            }
-        }
+                "totduration": 300.0,
+            },
+        },
     }
 
     # sscx protocol
@@ -228,7 +230,9 @@ def test_read_step_protocol():
     assert prot.holding_stimulus.step_duration == 300.0
 
     # thalamus protocol
-    prot = read_step_protocol("Step", thalamus_protocols, protocol_definition, recordings)
+    prot = read_step_protocol(
+        "Step", thalamus_protocols, protocol_definition, recordings
+    )
     assert isinstance(prot, thalamus_protocols.StepProtocolCustom)
     assert prot.name == "Step"
     assert len(prot.stimuli) == 2
@@ -252,7 +256,10 @@ def test_read_step_protocol():
 
     # bad module case
     with raises(ValueError):
-        prot = read_step_protocol("Step", "non-existing module", protocol_definition, recordings)
+        prot = read_step_protocol(
+            "Step", "non-existing module", protocol_definition, recordings
+        )
+
 
 def test_read_step_threshold_protocol():
     """Test read_step_protocol."""
@@ -264,13 +271,15 @@ def test_read_step_threshold_protocol():
                 "amp": None,
                 "thresh_perc": 139.7246,
                 "duration": 200.0,
-                "totduration": 300.0
+                "totduration": 300.0,
             }
-        }
+        },
     }
 
     # sscx protocol
-    prot = read_step_threshold_protocol("StepThresh", sscx_protocols, protocol_definition, recordings)
+    prot = read_step_threshold_protocol(
+        "StepThresh", sscx_protocols, protocol_definition, recordings
+    )
     assert isinstance(prot, sscx_protocols.StepThresholdProtocol)
     assert prot.name == "StepThresh"
     assert len(prot.stimuli) == 2
@@ -295,7 +304,9 @@ def test_read_step_threshold_protocol():
     assert prot.holding_stimulus.step_duration == 300.0
 
     # thalamus protocol
-    prot = read_step_threshold_protocol("StepThresh", thalamus_protocols, protocol_definition, recordings)
+    prot = read_step_threshold_protocol(
+        "StepThresh", thalamus_protocols, protocol_definition, recordings
+    )
     assert isinstance(prot, thalamus_protocols.StepThresholdProtocol)
     assert prot.name == "StepThresh"
     assert len(prot.stimuli) == 2
@@ -310,7 +321,10 @@ def test_read_step_threshold_protocol():
 
     # bad module case
     with raises(ValueError):
-        prot = read_step_protocol("Step", "non-existing module", protocol_definition, recordings)
+        prot = read_step_protocol(
+            "Step", "non-existing module", protocol_definition, recordings
+        )
+
 
 def test_read_vecstim_protocol():
     """Test read_vecstim_protocol."""
@@ -320,8 +334,8 @@ def test_read_vecstim_protocol():
             "syn_stop": 3000.0,
             "syn_start": 50.0,
             "syn_stim_seed": 42,
-            "vecstim_random": "neuron"
-        }
+            "vecstim_random": "neuron",
+        },
     }
     # use syn_locs = None for simplicity
     syn_locs = None
@@ -346,7 +360,10 @@ def test_read_vecstim_protocol():
     # stop is None case
     protocol_definition["stimuli"]["syn_stop"] = None
     with raises(ValueError):
-        prot = read_vecstim_protocol("Vecstim", protocol_definition, recordings, syn_locs)
+        prot = read_vecstim_protocol(
+            "Vecstim", protocol_definition, recordings, syn_locs
+        )
+
 
 def test_read_netstim_protocol():
     """Test read_netstim_protocol."""
@@ -357,8 +374,8 @@ def test_read_netstim_protocol():
             "syn_stop": 300.0,
             "syn_nmb_of_spikes": 10.0,
             "syn_interval": 10.0,
-            "syn_noise": 0.0
-        }
+            "syn_noise": 0.0,
+        },
     }
     # use syn_locs = None for simplicity
     syn_locs = None
@@ -378,4 +395,6 @@ def test_read_netstim_protocol():
     # stop is None case
     protocol_definition["stimuli"]["syn_stop"] = None
     with raises(ValueError):
-        prot = read_netstim_protocol("Netstim", protocol_definition, recordings, syn_locs)
+        prot = read_netstim_protocol(
+            "Netstim", protocol_definition, recordings, syn_locs
+        )
