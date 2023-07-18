@@ -17,33 +17,25 @@
 import matplotlib as mpl
 
 
-def get_style_cst():
-    """Returns dict containing style vars such as colors.
+style_dict = {}
+# font & width. has to be an attribute to be accessible.
+# somehow, entry font & width cannot be configurated with style.
+style_dict["base_font"] = "Helvetica 10"
+style_dict["entry_width"] = 8
 
-    Returns:
-        dict: style colors, font and width
-    """
-    style_dict = {}
-    # font & width. has to be an attribute to be accessible.
-    # somehow, entry font & width cannot be configurated with style.
-    style_dict["base_font"] = "Helvetica 10"
-    style_dict["entry_width"] = 8
-
-    # BBP colors
-    style_dict["light_blue"] = "#15D3FF"
-    style_dict["blue"] = "#0B83CD"
-    style_dict["deep_blue"] = "#050A58"
-    style_dict["light_grey"] = "#F2F2F2"
-    style_dict["grey"] = "#888888"
-    style_dict["deep_grey"] = "#333333"
-    style_dict["white"] = "#FFFFFF"
-
-    return style_dict
+# BBP colors
+style_dict["light_blue"] = "#15D3FF"
+style_dict["blue"] = "#0B83CD"
+style_dict["deep_blue"] = "#050A58"
+style_dict["light_grey"] = "#F2F2F2"
+style_dict["grey"] = "#888888"
+style_dict["deep_grey"] = "#333333"
+style_dict["white"] = "#FFFFFF"
 
 
 def set_matplotlib_style():
     """Configure ticks & labels size."""
-    mpl.rcParams["lines.color"] = get_style_cst()["blue"]
+    mpl.rcParams["lines.color"] = style_dict["blue"]
     mpl.rcParams["axes.labelsize"] = 8
     mpl.rcParams["xtick.labelsize"] = 8
     mpl.rcParams["ytick.labelsize"] = 8
@@ -55,8 +47,6 @@ def define_style(style):
     Args:
         style (ttk.Style): style
     """
-    style_dict = get_style_cst()
-
     style.configure(
         "TButton",
         background=style_dict["white"],
