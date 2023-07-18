@@ -32,7 +32,7 @@ except ImportError:
     )
 
 from emodelrunner.GUI_utils.plotshape import get_morph_lines
-from emodelrunner.GUI_utils.style import get_style_cst
+from emodelrunner.GUI_utils.style import style_dict
 
 
 def positive_int_callback(input_):
@@ -88,8 +88,6 @@ class FrameSetIntFromEntry(ttk.Frame):
             label (str): text describing the attribute to display
         """
         ttk.Frame.__init__(self, parent, style="TFrame")
-
-        style_dict = get_style_cst()
 
         # label
         self.label = ttk.Label(self, text=f"{label}:")
@@ -159,8 +157,6 @@ class FrameStepStimulus(ttk.Frame):
             gui (GUI): main class containing main frames and simulation
         """
         ttk.Frame.__init__(self, parent, style="TFrame")
-
-        style_dict = get_style_cst()
 
         self.step_stim = tk.DoubleVar()
         self.step_stim.set(gui.simulation.step_stim)  # step1 is selected
@@ -263,8 +259,6 @@ class FrameHoldStimulus(ttk.Frame):
             gui (GUI): main class containing main frames and simulation
         """
         ttk.Frame.__init__(self, parent, style="TFrame")
-
-        style_dict = get_style_cst()
 
         self.hold_stim = tk.DoubleVar()
         self.hold_stim.set(gui.simulation.hypamp)  # default hold stim is selected
@@ -961,8 +955,6 @@ class FrameSynapses(ttk.LabelFrame):
             title (ttk.Label): frame title to display
         """
         ttk.LabelFrame.__init__(self, parent, style="Boxed.TFrame", labelwidget=title)
-
-        style_dict = get_style_cst()
 
         # -- labels --
         self.labels = []
