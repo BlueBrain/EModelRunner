@@ -262,7 +262,7 @@ def test_read_step_protocol():
 
 
 def test_read_step_threshold_protocol():
-    """Test read_step_protocol."""
+    """Test read_step_threshold_protocol."""
     protocol_definition = {
         "type": "StepThresholdProtocol",
         "stimuli": {
@@ -321,7 +321,7 @@ def test_read_step_threshold_protocol():
 
     # bad module case
     with raises(ValueError):
-        prot = read_step_protocol(
+        prot = read_step_threshold_protocol(
             "Step", "non-existing module", protocol_definition, recordings
         )
 
