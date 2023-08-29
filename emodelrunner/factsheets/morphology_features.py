@@ -83,7 +83,7 @@ class AverageDiameter(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super().__init__()
-        self.name = f"average diameter of {neurite_name}"
+        self.name = f"average diameter, {neurite_name}"
         self.unit = "\u00b5m"
 
         neurites = list(iter_neurites(morphology, filt=is_type(neurite_type)))
@@ -117,7 +117,7 @@ class TotalLength(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super().__init__()
-        self.name = f"total {neurite_name} length"
+        self.name = f"total length, {neurite_name}"
         self.unit = "\u00b5m"
         feature_value = nm.get("total_length", morphology, neurite_type=neurite_type)
         self.value = self.replace_empty_value(feature_value)
@@ -141,7 +141,7 @@ class TotalHeight(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super().__init__()
-        self.name = f"total {neurite_name} height"
+        self.name = f"total height, {neurite_name}"
         self.unit = "\u00b5m"
         feature_value = nm.get("total_height", morphology, neurite_type=neurite_type)
         self.value = self.replace_empty_value(feature_value)
@@ -165,7 +165,7 @@ class TotalWidth(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super().__init__()
-        self.name = f"total {neurite_name} width"
+        self.name = f"total width, {neurite_name}"
         self.unit = "\u00b5m"
         feature_value = nm.get("total_width", morphology, neurite_type=neurite_type)
         self.value = self.replace_empty_value(feature_value)
@@ -189,7 +189,7 @@ class TotalDepth(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super().__init__()
-        self.name = f"total {neurite_name} depth"
+        self.name = f"total depth, {neurite_name}"
         self.unit = "\u00b5m"
         feature_value = nm.get("total_depth", morphology, neurite_type=neurite_type)
         self.value = self.replace_empty_value(feature_value)
@@ -213,7 +213,7 @@ class TotalArea(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super().__init__()
-        self.name = f"total {neurite_name} area"
+        self.name = f"total area, {neurite_name}"
         self.unit = "\u00b5m\u00b2"
         feature_value = nm.get("total_area", morphology, neurite_type=neurite_type)
         self.value = self.replace_empty_value(feature_value)
@@ -237,7 +237,7 @@ class TotalVolume(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super().__init__()
-        self.name = f"total {neurite_name} volume"
+        self.name = f"total volume, {neurite_name}"
         self.unit = "\u00b5m\u00b3"
         feature_value = nm.get("total_volume", morphology, neurite_type=neurite_type)
         self.value = self.replace_empty_value(feature_value)
@@ -261,7 +261,7 @@ class NumberOfSections(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super().__init__()
-        self.name = f"number of {neurite_name} sections"
+        self.name = f"number of sections, {neurite_name}"
         self.unit = ""
         feature_value = nm.get(
             "number_of_sections", morphology, neurite_type=neurite_type
@@ -287,7 +287,7 @@ class NumberOfSegments(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super().__init__()
-        self.name = f"number of {neurite_name} segments"
+        self.name = f"number of segments, {neurite_name}"
         self.unit = ""
         feature_values = nm.get(
             "number_of_segments", morphology, neurite_type=neurite_type
@@ -313,7 +313,7 @@ class MeanNeuriteVolumes(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super().__init__()
-        self.name = f"mean {neurite_name} volume"
+        self.name = f"mean volume, {neurite_name}"
         self.unit = "\u00b5m\u00b3"
         feature_values = nm.get(
             "total_volume_per_neurite", morphology, neurite_type=neurite_type
@@ -340,7 +340,7 @@ class AverageSectionLength(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super().__init__()
-        self.name = f"average {neurite_name} section length"
+        self.name = f"average section length, {neurite_name}"
         self.unit = "\u00b5m"
         feature_values = nm.get(
             "section_lengths", morphology, neurite_type=neurite_type
@@ -367,7 +367,7 @@ class AverageSegmentLength(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super().__init__()
-        self.name = f"average {neurite_name} segment length"
+        self.name = f"average segment length, {neurite_name}"
         self.unit = "\u00b5m"
         feature_values = nm.get(
             "segment_lengths", morphology, neurite_type=neurite_type
@@ -394,7 +394,7 @@ class MaxBranchOrder(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super().__init__()
-        self.name = f"{neurite_name} maximum branch order"
+        self.name = f"maximum branch order, {neurite_name}"
         self.unit = ""
         feature_values = nm.get(
             "section_branch_orders", morphology, neurite_type=neurite_type
@@ -421,7 +421,7 @@ class MaxSectionLength(MorphologyFeature):
             neurite_type (NeuriteType): enum for neurite type encoding
         """
         super().__init__()
-        self.name = f"{neurite_name} maximum section length"
+        self.name = f"maximum section length, {neurite_name}"
         self.unit = "\u00b5m"
         feature_values = nm.get(
             "section_lengths", morphology, neurite_type=neurite_type

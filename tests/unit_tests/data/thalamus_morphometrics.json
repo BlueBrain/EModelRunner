@@ -2,47 +2,47 @@
     "name": "Anatomy",
     "values": [
         {
-            "name": "total axon length",
+            "name": "total length, axon",
             "value": 6365.762633562088,
             "unit": "\u00b5m"
         },
         {
-            "name": "total axon volume",
+            "name": "total volume, axon",
             "value": 900.0448369230417,
             "unit": "\u00b5m\u00b3"
         },
         {
-            "name": "axon maximum branch order",
+            "name": "maximum branch order, axon",
             "value": 11,
             "unit": ""
         },
         {
-            "name": "total apical length",
+            "name": "total length, apical",
             "value": 1745.9480376243591,
             "unit": "\u00b5m"
         },
         {
-            "name": "total apical volume",
+            "name": "total volume, apical",
             "value": 1471.0559661664934,
             "unit": "\u00b5m\u00b3"
         },
         {
-            "name": "apical maximum branch order",
+            "name": "maximum branch order, apical",
             "value": 7,
             "unit": ""
         },
         {
-            "name": "total basal length",
+            "name": "total length, basal",
             "value": 1644.1507340669632,
             "unit": "\u00b5m"
         },
         {
-            "name": "total basal volume",
+            "name": "total volume, basal",
             "value": 789.9963865243965,
             "unit": "\u00b5m\u00b3"
         },
         {
-            "name": "basal maximum branch order",
+            "name": "maximum branch order, basal",
             "value": 3,
             "unit": ""
         },
