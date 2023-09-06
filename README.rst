@@ -210,7 +210,7 @@ Run the simulation using hoc
 
 You can also run the simulation using hoc. In order to do that, you will have to first create the hoc files with the following line::
 
-    python create_hoc.py --config_path config_path
+    python -m emodelrunner.create_hoc --config_path config_path
 
 Where ``config_path`` is the path to a specific config file. You will find the available config files in the config folder.
 Note that not all the protocols in the config files can be turned into hoc yet.
