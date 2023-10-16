@@ -48,17 +48,17 @@ Citation
 
 When you use this EModelRunner software for your research, we ask you to cite the following publications (this includes poster presentations):
 
-.. code-block:: 
+.. code-block::
 
-    @article{emodelrunner, 
-        title={EModelRunner}, 
+    @article{emodelrunner,
+        title={EModelRunner},
         DOI={10.5281/zenodo.8116075},
-        url={https://doi.org/10.5281/zenodo.8116075} 
-        abstractNote={EModelRunner is a python library designed to run the cell models provided by the Blue Brain portals in a simple and straightforward way. It consists of two main modules. The first module is designed to show the synapse plasticity phenomenonand to run the cells and reproduce the results from the paper 'A calcium-based plasticity model for predicting long-term potentiation and depression in the neocortex'. The second module is designed to run the cells from the Blue Brain Project SomatoSensoryCortex portal. Note that EModelRunner is a convenience tool and does not aim to be a universal simulator.}, 
-        publisher={Zenodo}, 
-        author={Jaquier, Aurélien and Tuncel, Anil and Van Geit, Werner}, 
-        year={2023}, 
-        month={Jul} 
+        url={https://doi.org/10.5281/zenodo.8116075}
+        abstractNote={EModelRunner is a python library designed to run the cell models provided by the Blue Brain portals in a simple and straightforward way. It consists of two main modules. The first module is designed to show the synapse plasticity phenomenonand to run the cells and reproduce the results from the paper 'A calcium-based plasticity model for predicting long-term potentiation and depression in the neocortex'. The second module is designed to run the cells from the Blue Brain Project SomatoSensoryCortex portal. Note that EModelRunner is a convenience tool and does not aim to be a universal simulator.},
+        publisher={Zenodo},
+        author={Jaquier, Aurélien and Tuncel, Anil and Van Geit, Werner},
+        year={2023},
+        month={Jul}
     }
 
 Support
@@ -76,16 +76,16 @@ Install using ``pip``::
     pip install emodelrunner
 
 
-Installing from source 
+Installing from source
 ----------------------
 
-If you want to make changes to emodelrunner, you might want to install it using the 
-source repository. The same remarks of the section above apply, 
+If you want to make changes to emodelrunner, you might want to install it using the
+source repository. The same remarks of the section above apply,
 the only difference is that you clone the git repo::
 
    git clone https://github.com/BlueBrain/EModelRunner.git
 
-and run pip from inside the newly created emodelrunner subdirectory 
+and run pip from inside the newly created emodelrunner subdirectory
 (don't forget the dot at the end of the command)::
 
     pip install -e .
@@ -93,7 +93,7 @@ and run pip from inside the newly created emodelrunner subdirectory
 Supported systems
 -----------------
 
-The code of emodelrunner can be installed on any POSIX system that supports 
+The code of emodelrunner can be installed on any POSIX system that supports
 pip-installable python code.
 
 
@@ -102,7 +102,7 @@ Dependencies
 
 The main dependencies of EModelRunner are::
 
-    Python3.7+ 
+    Python3.7+
     Matplotlib
     Numpy
     Neurom
@@ -111,7 +111,7 @@ The main dependencies of EModelRunner are::
     BluePyOpt
     Schema
 
-Ideally, follow the installation instructions of these tools, or use 
+Ideally, follow the installation instructions of these tools, or use
 pre-installed versions.
 
 Python
@@ -145,7 +145,7 @@ Running the simulation should be as easy as::
 Where ``config_path`` is the path to a specific config file. You will find the available config files in the config folder.
 It will run the post-synaptic cell using pre-defined spike train of the pre-synaptic cell to stimulate the synapses.
 
-You can also do a full pair simulation, where both the pre-synaptic and the post-synaptic cells are simulated. 
+You can also do a full pair simulation, where both the pre-synaptic and the post-synaptic cells are simulated.
 This should be as easy as::
 
     sh run_pairsim.sh config_path
@@ -173,7 +173,7 @@ Then create an Experiment instance::
 
     exp = Experiment(data="output_50Hz_10ms.h5", c01duration=, c02duration=, period=)
 
-With data being the path to your output file, or a dictionary containing the output data, 
+With data being the path to your output file, or a dictionary containing the output data,
 ``c01duration``, respectively ``c02duration``, are the duration of the EPSP monitoring before, respectively after, the induction protocol,
 period is the period at which the synapses are stimulated.
 
@@ -183,7 +183,7 @@ The change of EPSPs can then be computed by using the compute_epsp_ratio method,
 
     EPSP_ratio = exp.compute_epsp_ratio(n=60, method="amplitude)
 
-With ``n`` the number of sweeps to be considered for mean EPSP calculation, 
+With ``n`` the number of sweeps to be considered for mean EPSP calculation,
 and method the method to use to compute EPSP ratio (can be "amplitude" or "slope").
 
 
@@ -276,7 +276,7 @@ Copyright (c) 2020-2022 Blue Brain Project/EPFL
 
 .. |GUI_screenshot| image:: doc/source/images/GUI_screenshot.png
 
-.. |banner| image:: doc/source/logo/BBP-eModelRunner.jpg
+.. |banner| image:: https://raw.githubusercontent.com/BlueBrain/EModelRunner/main/doc/source/logo/BBP-eModelRunner.jpg
 
 .. |gitter| image:: https://badges.gitter.im/BlueBrain/EmodelRunner.svg
    :alt: Join the chat at https://gitter.im/BlueBrain/EmodelRunner
