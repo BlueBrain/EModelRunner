@@ -2,7 +2,7 @@
   "title" : "EModelRunner",
   "license": "Apache-2.0",
   "upload_type": "software",
-  "description": "EModelRunner is a python library designed to run the cell models provided by the Blue Brain portals in a simple and straightforward way. It consists of two main modules. The first module is designed to show the synapse plasticity phenomenonand to run the cells and reproduce the results from the paper 'A calcium-based plasticity model for predicting long-term potentiation and depression in the neocortex'. The second module is designed to run the cells from the Blue Brain Project SomatoSensoryCortex portal. Note that EModelRunner is a convenience tool and does not aim to be a universal simulator.",
+  "description": "EModelRunner is a Python package designed to run single cell models from public Blue Brain Project resources. This includes both portals like the Somatosensory Cortex portal or the Thalamus microstudio, and research findings such as those from 'A calcium-based plasticity model for predicting long-term potentiation and depression in the neocortex'. It offers an accessible way to explore these diverse models and findings, all in one convenient package. This tool, while focused on ease of use, is not a universal simulator but rather a convenient way to access and use specific cell models from Blue Brain's resources.",
   "creators": [
     {
       "affiliation": "Blue Brain Project, EPFL",
