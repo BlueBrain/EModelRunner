@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "EModelRunner"
+doi: 10.5281/zenodo.8116075
+url: https://doi.org/10.5281/zenodo.8116075
+abstract: "EModelRunner is a Python package designed to run single cell models from public Blue Brain Project resources. This includes both portals like the Somatosensory Cortex portal or the Thalamus microstudio, and research findings such as those from 'A calcium-based plasticity model for predicting long-term potentiation and depression in the neocortex'. It offers an accessible way to explore these diverse models and findings, all in one convenient package. This tool, while focused on ease of use, is not a universal simulator but rather a convenient way to access and use specific cell models from Blue Brain's resources."
+authors:
+  - family-names: "Jaquier"
+    given-names: "Aurélien"
+  - family-names: "Tuncel"
+    given-names: "Anil"
+  - family-names: "Van Geit"
+    given-names: "Werner"
+date-released: 2023-07-01
+publisher: "Zenodo"
