@@ -166,8 +166,6 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
         # pylint: disable=unused-argument
         responses = collections.OrderedDict()
 
-        cell_model.freeze(param_values)
-
         # Find resting membrane potential
         rmp_response = self.rmp_protocol.run(cell_model, {}, sim=sim)
         responses.update(rmp_response)
@@ -193,8 +191,6 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
             if cell_model.threshold_current is not None:
                 self.run_pre_protocols(responses, cell_model, sim)
                 self.run_other_protocols(responses, cell_model, sim)
-
-        cell_model.unfreeze(param_values.keys())
 
         return responses
 

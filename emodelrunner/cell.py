@@ -99,23 +99,6 @@ class CellModelCustom(ephys.models.CellModel):
 
         return replace_axon
 
-    def freeze_params(self, param_values):
-        """Freeze params and return list of params to unfreze afterwards.
-
-        Args:
-            param_values (dict): contains values of the optimized parameters
-
-        Returns:
-            list: names of the newly frozen parameters
-        """
-        to_unfreeze = []
-        for param in self.params.values():
-            if not param.frozen:
-                param.freeze(param_values[param.name])
-                to_unfreeze.append(param.name)
-
-        return to_unfreeze
-
     def remove_point_process_mechs(self):
         """Return mechanisms without point process mechanisms.
 
@@ -157,8 +140,6 @@ class CellModelCustom(ephys.models.CellModel):
             str: hoc script describing this cell model
         """
         # pylint: disable=too-many-arguments
-        to_unfreeze = self.freeze_params(param_values)
-
         replace_axon = self.get_replace_axon()
 
         mechs = self.remove_point_process_mechs()
@@ -176,9 +157,6 @@ class CellModelCustom(ephys.models.CellModel):
             syn_hoc_filename=syn_hoc_filename,
             syn_dir=syn_dir,
         )
-
-        self.unfreeze(to_unfreeze)
-
         return ret
 
     @staticmethod
