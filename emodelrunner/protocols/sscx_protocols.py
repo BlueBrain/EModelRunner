@@ -792,9 +792,11 @@ class StepProtocol(ephys.protocols.SweepProtocol, CurrentOutputKeyMixin):
         """
         super().__init__(
             name,
-            stimuli=step_stimuli + [holding_stimulus]
-            if holding_stimulus is not None
-            else step_stimuli,
+            stimuli=(
+                step_stimuli + [holding_stimulus]
+                if holding_stimulus is not None
+                else step_stimuli
+            ),
             recordings=recordings,
             cvode_active=cvode_active,
         )
@@ -1099,9 +1101,11 @@ class RampProtocol(ephys.protocols.SweepProtocol, CurrentOutputKeyMixin):
         """
         super().__init__(
             name,
-            stimuli=[ramp_stimulus, holding_stimulus]
-            if holding_stimulus is not None
-            else [ramp_stimulus],
+            stimuli=(
+                [ramp_stimulus, holding_stimulus]
+                if holding_stimulus is not None
+                else [ramp_stimulus]
+            ),
             recordings=recordings,
             cvode_active=cvode_active,
         )

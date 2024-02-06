@@ -176,12 +176,12 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
             dist_param_names = definition["parameters"]
         else:
             dist_param_names = None
-        distributions[
-            distribution
-        ] = ephys.parameterscalers.NrnSegmentSomaDistanceScaler(
-            name=distribution,
-            distribution=definition["fun"],
-            dist_param_names=dist_param_names,
+        distributions[distribution] = (
+            ephys.parameterscalers.NrnSegmentSomaDistanceScaler(
+                name=distribution,
+                distribution=definition["fun"],
+                dist_param_names=dist_param_names,
+            )
         )
 
     params_definitions = definitions["parameters"]
