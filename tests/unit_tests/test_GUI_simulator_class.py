@@ -23,11 +23,11 @@ from tests.utils import cwd
 example_dir = os.path.join("examples", "sscx_sample_dir")
 
 
-class TestNeuronSimulation(object):
+class TestNeuronSimulation:
 
     """Test class for NeuronSimulation"""
 
-    def setup(self):
+    def setup_method(self):
         """Setup"""
         with cwd(example_dir):
             self.simulator = NeuronSimulation("config/config_singlestep.ini")
