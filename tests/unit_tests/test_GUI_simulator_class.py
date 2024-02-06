@@ -24,7 +24,6 @@ example_dir = os.path.join("examples", "sscx_sample_dir")
 
 
 class TestNeuronSimulation:
-
     """Test class for NeuronSimulation"""
 
     def setup_method(self):
