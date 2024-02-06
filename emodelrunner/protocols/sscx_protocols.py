@@ -657,8 +657,8 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         response = protocol.run(cell_model, param_values, sim=sim)
 
         feature = ephys.efeatures.eFELFeature(
-            name="ThresholdDetection.Spikecount",
-            efel_feature_name="Spikecount",
+            name="ThresholdDetection.spike_count",
+            efel_feature_name="spike_count",
             recording_names={"": self.prefix + "ThresholdDetection.soma.v"},
             stim_start=protocol.stim_start,
             stim_end=protocol.stim_end,

@@ -690,8 +690,8 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
 
         if self.name.endswith("_dep"):
             feature = ephys.efeatures.eFELFeature(
-                name="ThresholdDetection_dep.Spikecount",
-                efel_feature_name="Spikecount_stimint",
+                name="ThresholdDetection_dep.spike_count",
+                efel_feature_name="spike_count_stimint",
                 recording_names={"": self.prefix + "ThresholdDetection_dep.soma.v"},
                 stim_start=protocol.step_delay,
                 stim_end=protocol.step_delay + protocol.step_duration,
@@ -701,8 +701,8 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
 
         elif self.name.endswith("_hyp"):
             feature = ephys.efeatures.eFELFeature(
-                name="ThresholdDetection_hyp.Spikecount",
-                efel_feature_name="Spikecount_stimint",
+                name="ThresholdDetection_hyp.spike_count",
+                efel_feature_name="spike_count_stimint",
                 recording_names={"": self.prefix + "ThresholdDetection_hyp.soma.v"},
                 stim_start=protocol.step_delay,
                 stim_end=protocol.step_delay + protocol.step_duration,
