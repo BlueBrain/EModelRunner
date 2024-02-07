@@ -32,7 +32,7 @@
       {"feature": "AP1_amp", "val": [45.8336, 4.5541], "n": 12, "fid": 690, "strict_stim": true},
       {"feature": "AP2_amp", "val": [43.3136, 6.5238], "n": 12, "fid": 872, "strict_stim": true},
       {"feature": "time_to_first_spike", "val": [43.3185, 13.6207], "n": 12, "fid": 534, "strict_stim": true},
-      {"feature": "", "val": [4.5702, 1.8613], "n": 12, "fid": 716, "strict_stim": true},
+      {"feature": "spike_count", "val": [4.5702, 1.8613], "n": 12, "fid": 716, "strict_stim": true},
       {"feature": "inv_first_ISI", "val": [295.2431, 113.0754], "n": 12, "fid": 612, "strict_stim": true},
       {"feature": "inv_second_ISI", "val": [228.57, 142.9415], "n": 12, "fid": 625, "strict_stim": true},
       {"feature": "inv_last_ISI", "val": [158.2836, 58.04], "n": 12, "fid": 677, "strict_stim": true},
@@ -42,7 +42,7 @@
   "RMP": {
     "soma.v": [
       {"feature": "steady_state_voltage_stimend", "val": [-78.2502, 3.4762], "n": 10, "fid": 1109, "strict_stim": true},
-      {"feature": "_stimint", "val": [0.0, 0.001], "n": 10, "fid": 1114, "strict_stim": true}
+      {"feature": "spike_count_stimint", "val": [0.0, 0.001], "n": 10, "fid": 1114, "strict_stim": true}
     ]
   },
   "Rin_dep": {
