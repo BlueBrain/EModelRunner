@@ -102,17 +102,17 @@ class ProtocolParser:
     def _parse_sscx_threshold_detection(self, protocol_definition, recordings, prefix):
         """Parses the sscx threshold detection protocol into self.protocols_dict."""
         if protocol_definition["type"] == "RatSSCxThresholdDetectionProtocol":
-            self.protocols_dict[
-                "ThresholdDetection"
-            ] = sscx_protocols.RatSSCxThresholdDetectionProtocol(
-                "IDRest",
-                step_protocol_template=read_step_protocol(
-                    "Threshold",
-                    sscx_protocols,
-                    protocol_definition["step_template"],
-                    recordings,
-                ),
-                prefix=prefix,
+            self.protocols_dict["ThresholdDetection"] = (
+                sscx_protocols.RatSSCxThresholdDetectionProtocol(
+                    "IDRest",
+                    step_protocol_template=read_step_protocol(
+                        "Threshold",
+                        sscx_protocols,
+                        protocol_definition["step_template"],
+                        recordings,
+                    ),
+                    prefix=prefix,
+                )
             )
 
     def _parse_thalamus_threshold_detection(
@@ -121,30 +121,30 @@ class ProtocolParser:
         """Parses the thalamus threshold detection protocol into self.protocols_dict."""
         if protocol_definition["type"] == "RatSSCxThresholdDetectionProtocol":
             if protocol_name == "ThresholdDetection_dep":
-                self.protocols_dict[
-                    "ThresholdDetection_dep"
-                ] = thalamus_protocols.RatSSCxThresholdDetectionProtocol(
-                    "ThresholdDetection_dep",
-                    step_protocol_template=read_step_protocol(
+                self.protocols_dict["ThresholdDetection_dep"] = (
+                    thalamus_protocols.RatSSCxThresholdDetectionProtocol(
                         "ThresholdDetection_dep",
-                        thalamus_protocols,
-                        protocol_definition["step_template"],
-                        recordings,
-                    ),
-                    prefix=prefix,
+                        step_protocol_template=read_step_protocol(
+                            "ThresholdDetection_dep",
+                            thalamus_protocols,
+                            protocol_definition["step_template"],
+                            recordings,
+                        ),
+                        prefix=prefix,
+                    )
                 )
             elif protocol_name == "ThresholdDetection_hyp":
-                self.protocols_dict[
-                    "ThresholdDetection_hyp"
-                ] = thalamus_protocols.RatSSCxThresholdDetectionProtocol(
-                    "ThresholdDetection_hyp",
-                    step_protocol_template=read_step_protocol(
+                self.protocols_dict["ThresholdDetection_hyp"] = (
+                    thalamus_protocols.RatSSCxThresholdDetectionProtocol(
                         "ThresholdDetection_hyp",
-                        thalamus_protocols,
-                        protocol_definition["step_template"],
-                        recordings,
-                    ),
-                    prefix=prefix,
+                        step_protocol_template=read_step_protocol(
+                            "ThresholdDetection_hyp",
+                            thalamus_protocols,
+                            protocol_definition["step_template"],
+                            recordings,
+                        ),
+                        prefix=prefix,
+                    )
                 )
 
     def _parse_vecstim_netstim(
@@ -162,14 +162,18 @@ class ProtocolParser:
 
     def _parse_sscx_main(self, protocol_definitions, prefix):
         """Parses the main sscx protocol into self.protocols_dict."""
-        self.protocols_dict[
-            "RinHoldcurrent"
-        ] = sscx_protocols.RatSSCxRinHoldcurrentProtocol(
-            "RinHoldCurrent",
-            rin_protocol_template=self.protocols_dict["Rin"],
-            holdi_precision=protocol_definitions["RinHoldcurrent"]["holdi_precision"],
-            holdi_max_depth=protocol_definitions["RinHoldcurrent"]["holdi_max_depth"],
-            prefix=prefix,
+        self.protocols_dict["RinHoldcurrent"] = (
+            sscx_protocols.RatSSCxRinHoldcurrentProtocol(
+                "RinHoldCurrent",
+                rin_protocol_template=self.protocols_dict["Rin"],
+                holdi_precision=protocol_definitions["RinHoldcurrent"][
+                    "holdi_precision"
+                ],
+                holdi_max_depth=protocol_definitions["RinHoldcurrent"][
+                    "holdi_max_depth"
+                ],
+                prefix=prefix,
+            )
         )
 
         other_protocols = []
@@ -196,21 +200,21 @@ class ProtocolParser:
     def _parse_thalamus_main(self, protocol_definitions, prefix):
         """Parses the main thalamus protocol into self.protocols_dict."""
         try:  # Only low-threshold bursting cells have thin protocol
-            self.protocols_dict[
-                "RinHoldcurrent_dep"
-            ] = thalamus_protocols.RatSSCxRinHoldcurrentProtocol(
-                "RinHoldcurrent_dep",
-                rin_protocol_template=self.protocols_dict["Rin_dep"],
-                holdi_estimate_multiplier=protocol_definitions["RinHoldcurrent_dep"][
-                    "holdi_estimate_multiplier"
-                ],
-                holdi_precision=protocol_definitions["RinHoldcurrent_dep"][
-                    "holdi_precision"
-                ],
-                holdi_max_depth=protocol_definitions["RinHoldcurrent_dep"][
-                    "holdi_max_depth"
-                ],
-                prefix=prefix,
+            self.protocols_dict["RinHoldcurrent_dep"] = (
+                thalamus_protocols.RatSSCxRinHoldcurrentProtocol(
+                    "RinHoldcurrent_dep",
+                    rin_protocol_template=self.protocols_dict["Rin_dep"],
+                    holdi_estimate_multiplier=protocol_definitions[
+                        "RinHoldcurrent_dep"
+                    ]["holdi_estimate_multiplier"],
+                    holdi_precision=protocol_definitions["RinHoldcurrent_dep"][
+                        "holdi_precision"
+                    ],
+                    holdi_max_depth=protocol_definitions["RinHoldcurrent_dep"][
+                        "holdi_max_depth"
+                    ],
+                    prefix=prefix,
+                )
             )
             rinhold_protocol_dep = self.protocols_dict["RinHoldcurrent_dep"]
             thdetect_protocol_dep = self.protocols_dict["ThresholdDetection_dep"]
@@ -218,21 +222,21 @@ class ProtocolParser:
             rinhold_protocol_dep = None
             thdetect_protocol_dep = None
 
-        self.protocols_dict[
-            "RinHoldcurrent_hyp"
-        ] = thalamus_protocols.RatSSCxRinHoldcurrentProtocol(
-            "RinHoldcurrent_hyp",
-            rin_protocol_template=self.protocols_dict["Rin_hyp"],
-            holdi_estimate_multiplier=protocol_definitions["RinHoldcurrent_hyp"][
-                "holdi_estimate_multiplier"
-            ],
-            holdi_precision=protocol_definitions["RinHoldcurrent_hyp"][
-                "holdi_precision"
-            ],
-            holdi_max_depth=protocol_definitions["RinHoldcurrent_hyp"][
-                "holdi_max_depth"
-            ],
-            prefix=prefix,
+        self.protocols_dict["RinHoldcurrent_hyp"] = (
+            thalamus_protocols.RatSSCxRinHoldcurrentProtocol(
+                "RinHoldcurrent_hyp",
+                rin_protocol_template=self.protocols_dict["Rin_hyp"],
+                holdi_estimate_multiplier=protocol_definitions["RinHoldcurrent_hyp"][
+                    "holdi_estimate_multiplier"
+                ],
+                holdi_precision=protocol_definitions["RinHoldcurrent_hyp"][
+                    "holdi_precision"
+                ],
+                holdi_max_depth=protocol_definitions["RinHoldcurrent_hyp"][
+                    "holdi_max_depth"
+                ],
+                prefix=prefix,
+            )
         )
 
         other_protocols = [

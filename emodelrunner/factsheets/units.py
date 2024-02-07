@@ -1,4 +1,5 @@
 """Contains the units of the features used in factsheets."""
+
 from types import MappingProxyType
 from efel.units import _units as efel_units
 

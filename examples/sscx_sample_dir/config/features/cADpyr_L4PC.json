@@ -1,7 +1,7 @@
 {
   "bAP": {
     "soma.v": [
-      {"feature": "Spikecount", "val": [1.0, 0.01]}
+      {"feature": "spike_count", "val": [1.0, 0.01]}
     ], 
     "dend1.v": [
       {"feature": "maximum_voltage_from_voltagebase", "val": [81.329833, 7.018952], "weight": 1, "__comment": "Stuart and Sakmann 1994"}
@@ -94,7 +94,7 @@
   "RMP": {
     "soma.v": [
       {"feature": "voltage_base", "val": [-73.9134, 1.6714, -4.817202527918724, 0.027690237877764368, 1.9500000000000002, 0], "n": 2, "fid": 288, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}},
-      {"feature": "Spikecount", "val": [0.0, 0.001, 0.0, 0.001, -3.0, 0], "n": 2, "fid": 308, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}}
+      {"feature": "spike_count", "val": [0.0, 0.001, 0.0, 0.001, -3.0, 0], "n": 2, "fid": 308, "strict_stim": true, "__comment": {"source": "cADpyr/L4PC", "meta": {"version": "aca7043"}}}
     ]
   }, 
   "IV_-100": {

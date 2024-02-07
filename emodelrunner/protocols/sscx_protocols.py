@@ -657,8 +657,8 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         response = protocol.run(cell_model, param_values, sim=sim)
 
         feature = ephys.efeatures.eFELFeature(
-            name="ThresholdDetection.Spikecount",
-            efel_feature_name="Spikecount",
+            name="ThresholdDetection.spike_count",
+            efel_feature_name="spike_count",
             recording_names={"": self.prefix + "ThresholdDetection.soma.v"},
             stim_start=protocol.stim_start,
             stim_end=protocol.stim_end,
@@ -792,9 +792,11 @@ class StepProtocol(ephys.protocols.SweepProtocol, CurrentOutputKeyMixin):
         """
         super().__init__(
             name,
-            stimuli=step_stimuli + [holding_stimulus]
-            if holding_stimulus is not None
-            else step_stimuli,
+            stimuli=(
+                step_stimuli + [holding_stimulus]
+                if holding_stimulus is not None
+                else step_stimuli
+            ),
             recordings=recordings,
             cvode_active=cvode_active,
         )
@@ -1099,9 +1101,11 @@ class RampProtocol(ephys.protocols.SweepProtocol, CurrentOutputKeyMixin):
         """
         super().__init__(
             name,
-            stimuli=[ramp_stimulus, holding_stimulus]
-            if holding_stimulus is not None
-            else [ramp_stimulus],
+            stimuli=(
+                [ramp_stimulus, holding_stimulus]
+                if holding_stimulus is not None
+                else [ramp_stimulus]
+            ),
             recordings=recordings,
             cvode_active=cvode_active,
         )
