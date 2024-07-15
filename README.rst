@@ -274,7 +274,7 @@ Copyright (c) 2020-2022 Blue Brain Project/EPFL
                 :target: https://pypi.org/project/EModelRunner/
                 :alt: Latest Release
 
-.. |GUI_screenshot| image:: doc/source/images/GUI_screenshot.png
+.. |GUI_screenshot| image:: https://raw.githubusercontent.com/BlueBrain/EModelRunner/main/doc/source/images/GUI_screenshot.png
 
 .. |banner| image:: https://raw.githubusercontent.com/BlueBrain/EModelRunner/main/doc/source/logo/BBP-eModelRunner.jpg
 
