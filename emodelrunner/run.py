@@ -39,7 +39,7 @@ def main(config_path):
         config_path (str): path to config file
             The config file should have '.ini' suffix
     """
-    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-locals, possibly-used-before-assignment
     config = load_config(config_path=config_path)
 
     cell = create_cell_using_config(config)

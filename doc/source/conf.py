@@ -74,6 +74,10 @@ autodoc_mock_imports = ["neuron", "matplotlib", "tkinter"]
 # to be able to put multiple return variables in the docstrings
 # napoleon_custom_sections = [("Returns", "params_style")]
 
+suppress_warnings = [
+    'autosummary.import_cycle',
+]
+
 
 # -- Options for HTML output -------------------------------------------------
 

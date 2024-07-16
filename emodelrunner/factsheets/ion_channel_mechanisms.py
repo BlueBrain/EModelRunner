@@ -85,22 +85,26 @@ def get_channel_and_equations(
     elif len(split_name) == 2:
         biophys = split_name[0]
         channel = split_name[1]
+    else:
+        raise ValueError(
+            f"Could not extract channel and parameter name from name {name}"
+        )
 
     # type
     if "dist" in param_config:
-        if param_config["dist"] == "exp":
-            type_ = "exponential"
-            value = exp_fun.format(distance="x", value=value)
-            latex, plot = edit_dist_func(value)
-        elif param_config["dist"] == "decay":
+        if param_config["dist"] == "decay":
             type_ = "decay"
             value = decay_fun.format(distance="x", value=value, constant=decay_cst)
             latex, plot = edit_dist_func(value)
         else:
-            logger.warning(
-                "dist is set to %s. Expected 'exp' or 'decay'. Set type to exponential anyway.",
-                param_config["dist"],
-            )
+            type_ = "exponential"
+            value = exp_fun.format(distance="x", value=value)
+            latex, plot = edit_dist_func(value)
+            if param_config["dist"] != "exp":
+                logger.warning(
+                    "dist is set to %s. Expected 'exp' or 'decay'. Set type to exponential anyway.",
+                    param_config["dist"],
+                )
     else:
         type_ = "uniform"
         latex = value

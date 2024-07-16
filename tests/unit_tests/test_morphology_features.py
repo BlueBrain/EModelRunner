@@ -78,7 +78,7 @@ def test_thalamus_morphology_factsheet_builder():
 
 def test_average_diameter():
     """Test average diameter feature."""
-    morphology = nm.load_neuron(test_morph)
+    morphology = nm.load_morphology(test_morph)
     feature = morphology_features.AverageDiameter(
         morphology, "basal_dendrite", NeuriteType.basal_dendrite
     )
@@ -90,7 +90,7 @@ def test_average_diameter():
 
 def test_total_length():
     """Test total length morphology feature."""
-    morphology = nm.load_neuron(test_morph)
+    morphology = nm.load_morphology(test_morph)
     feature = morphology_features.TotalLength(morphology, "axon", NeuriteType.axon)
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "total length, axon"
@@ -100,7 +100,7 @@ def test_total_length():
 
 def test_total_height():
     """Test total height feature."""
-    morphology = nm.load_neuron(test_morph)
+    morphology = nm.load_morphology(test_morph)
     feature = morphology_features.TotalHeight(morphology, "axon", NeuriteType.axon)
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "total height, axon"
@@ -110,7 +110,7 @@ def test_total_height():
 
 def test_total_width():
     """Test total width feature."""
-    morphology = nm.load_neuron(test_morph)
+    morphology = nm.load_morphology(test_morph)
     feature = morphology_features.TotalWidth(morphology, "axon", NeuriteType.axon)
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "total width, axon"
@@ -120,7 +120,7 @@ def test_total_width():
 
 def test_total_depth():
     """Test total depth feature."""
-    morphology = nm.load_neuron(test_morph)
+    morphology = nm.load_morphology(test_morph)
     feature = morphology_features.TotalDepth(morphology, "axon", NeuriteType.axon)
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "total depth, axon"
@@ -130,7 +130,7 @@ def test_total_depth():
 
 def test_total_area():
     """Test the total area feature."""
-    morphology = nm.load_neuron(test_morph)
+    morphology = nm.load_morphology(test_morph)
     feature = morphology_features.TotalArea(morphology, "axon", NeuriteType.axon)
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "total area, axon"
@@ -140,7 +140,7 @@ def test_total_area():
 
 def test_total_volume():
     """Test the total volume feature."""
-    morphology = nm.load_neuron(test_morph)
+    morphology = nm.load_morphology(test_morph)
     feature = morphology_features.TotalVolume(morphology, "axon", NeuriteType.axon)
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "total volume, axon"
@@ -150,7 +150,7 @@ def test_total_volume():
 
 def test_number_of_sections():
     """Test number of sections feature."""
-    morphology = nm.load_neuron(test_morph)
+    morphology = nm.load_morphology(test_morph)
     feature = morphology_features.NumberOfSections(
         morphology, "basal_dendrite", NeuriteType.basal_dendrite
     )
@@ -162,7 +162,7 @@ def test_number_of_sections():
 
 def test_mean_neurite_volumes():
     """Test neurite volumes feature."""
-    morphology = nm.load_neuron(test_morph)
+    morphology = nm.load_morphology(test_morph)
     feature = morphology_features.MeanNeuriteVolumes(
         morphology, "axon", NeuriteType.axon
     )
@@ -174,7 +174,7 @@ def test_mean_neurite_volumes():
 
 def test_max_branch_order():
     """Test max branch order feature."""
-    morphology = nm.load_neuron(test_morph)
+    morphology = nm.load_morphology(test_morph)
     feature = morphology_features.MaxBranchOrder(
         morphology, "apical_dendrite", NeuriteType.apical_dendrite
     )
@@ -186,7 +186,7 @@ def test_max_branch_order():
 
 def test_max_section_length():
     """Test max section length feature."""
-    morphology = nm.load_neuron(test_morph)
+    morphology = nm.load_morphology(test_morph)
     feature = morphology_features.MaxSectionLength(
         morphology, "basal_dendrite", NeuriteType.basal_dendrite
     )
@@ -198,7 +198,7 @@ def test_max_section_length():
 
 def test_soma_diameter():
     """Test the some diameter feature."""
-    morphology = nm.load_neuron(test_morph)
+    morphology = nm.load_morphology(test_morph)
     feature = morphology_features.SomaDiamater(morphology)
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "soma diameter"
@@ -208,7 +208,7 @@ def test_soma_diameter():
 
 def test_soma_surface_area():
     """Test the soma surface area feature."""
-    morphology = nm.load_neuron(test_morph)
+    morphology = nm.load_morphology(test_morph)
     feature = morphology_features.SomaSurfaceArea(morphology)
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "soma surface area"
@@ -218,7 +218,7 @@ def test_soma_surface_area():
 
 def test_soma_volume():
     """Test the soma volume feature."""
-    morphology = nm.load_neuron(test_morph)
+    morphology = nm.load_morphology(test_morph)
     feature = morphology_features.SomaVolume(morphology)
     feature_dict = feature.to_dict()
     assert feature_dict["name"] == "soma volume"

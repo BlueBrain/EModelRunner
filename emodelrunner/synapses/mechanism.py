@@ -105,6 +105,11 @@ class NrnMODPointProcessMechanismCustom(ephys.mechanisms.Mechanism):
             section = icell.apic[synapse["sectionlist_index"]]
         elif synapse["sectionlist_id"] == 3:
             section = icell.axon[synapse["sectionlist_index"]]
+        else:
+            raise ValueError(
+                f"Unrecognized sectionlist_id: {synapse['sectionlist_id']}. "
+                "Should be 0, 1,, 2 or 3."
+            )
 
         return section
 
