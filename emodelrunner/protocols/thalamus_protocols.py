@@ -311,7 +311,6 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
             rin_noholding = self.rin_efeature_dep.calculate_feature(
                 rin_noholding_response
             )
-
         elif self.name.endswith("_hyp"):
             rin_noholding_protocol = self.create_rin_protocol_hyp(holdi=0)
             rin_noholding_response = rin_noholding_protocol.run(
@@ -320,6 +319,8 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
             rin_noholding = self.rin_efeature_hyp.calculate_feature(
                 rin_noholding_response
             )
+        else:
+            raise ValueError("Rin protocol should end with either '_dep' or '_hyp'.")
 
         logger.info("Rin without holdi is %s", rin_noholding)
 
@@ -512,6 +513,10 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
             )
 
             voltage_base = feature.calculate_feature(response)
+
+        else:
+            raise ValueError("Rin protocol should end with either '_dep' or '_hyp'.")
+
         return voltage_base
 
     def generate_current(self, threshold_current=None, holding_current=None, dt=0.1):
@@ -708,6 +713,10 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
                 stim_end=protocol.step_delay + protocol.step_duration,
                 exp_mean=1,
                 exp_std=0.1,
+            )
+        else:
+            raise ValueError(
+                "Threshold detection protocol should end with either '_dep' or '_hyp'."
             )
 
         spike_count = feature.calculate_feature(response)
