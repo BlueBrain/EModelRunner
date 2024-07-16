@@ -227,7 +227,7 @@ class HocStimuliCreator:
         if isinstance(step_definitions, dict):
             step_definitions = [step_definitions]
         for i, step in enumerate(step_definitions):
-            max_steps = max(max_steps, i + 1)
+            self.max_steps = max(self.max_steps, i + 1)
 
             if step["amp"] is None:
                 amp = f"{step['thresh_perc'] / 100.} * threshold_current"
