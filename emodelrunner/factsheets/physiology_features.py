@@ -58,7 +58,9 @@ def extract_physiology_features(
 
     efel_results = efel.getFeatureValues([trace], ["ohmic_input_resistance_vb_ssse"])
     input_resistance = efel_results[0]["ohmic_input_resistance_vb_ssse"]
-    input_resistance = input_resistance[0] if input_resistance is not None else input_resistance
+    input_resistance = (
+        input_resistance[0] if input_resistance is not None else input_resistance
+    )
 
     return [voltage_base, input_resistance, dct]
 
