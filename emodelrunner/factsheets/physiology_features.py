@@ -50,13 +50,17 @@ def extract_physiology_features(
     )
 
     voltage_base = efel_results[0]["voltage_base"][0]
-    dct = efel_results[0]["decay_time_constant_after_stim"][0]
+    dct = efel_results[0]["decay_time_constant_after_stim"]
+    dct = dct[0] if dct is not None else dct
 
     trace["decay_start_after_stim"] = efel_results[0]["voltage_base"]
     trace["stimulus_current"] = [current_amplitude]
 
     efel_results = efel.getFeatureValues([trace], ["ohmic_input_resistance_vb_ssse"])
-    input_resistance = efel_results[0]["ohmic_input_resistance_vb_ssse"][0]
+    input_resistance = efel_results[0]["ohmic_input_resistance_vb_ssse"]
+    input_resistance = (
+        input_resistance[0] if input_resistance is not None else input_resistance
+    )
 
     return [voltage_base, input_resistance, dct]
 
