@@ -50,7 +50,8 @@ def extract_physiology_features(
     )
 
     voltage_base = efel_results[0]["voltage_base"][0]
-    dct = efel_results[0]["decay_time_constant_after_stim"][0]
+    dct = efel_results[0]["decay_time_constant_after_stim"]
+    dct = dct[0] if dct is not None else dct
 
     trace["decay_start_after_stim"] = efel_results[0]["voltage_base"]
     trace["stimulus_current"] = [current_amplitude]
