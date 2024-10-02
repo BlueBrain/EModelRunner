@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools >= 64", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "EModelRunner"
+authors = [
+    {name = "Blue Brain Project, EPFL"},
+]
+description="Runs cells from Blue Brain Project cell packages, such as sscx, synapse plasticity, etc."
+readme = "README.rst"
+license = {file = "LICENSE.txt"}
+requires-python = ">= 3.8"
+dynamic = ["version"]
+dependencies = [
+    "numpy",
+    "efel>=4.2,<6",
+    "bluepyopt>=1.14.15",
+    "neurom>=3.1.0",
+    "h5py",
+    "matplotlib",
+    "schema",
+    "Pebble>=4.3.10",
+    "tqdm>=4.65.0",
+]
+classifiers=[
+    "Development Status :: 5 - Stable",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+
+[project.optional-dependencies]
+docs = ["sphinx", "sphinx-bluebrain-theme"]
+
+[project.urls]
+Homepage = "https://github.com/BlueBrain/EModelRunner"
+Source = "https://github.com/BlueBrain/EModelRunner"
+Repository = "https://github.com/BlueBrain/EModelRunner.git"
+Tracker = "https://github.com/BlueBrain/EModelRunner/issues"
+Documentation = "https://emodelrunner.readthedocs.io/en/latest"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+exclude = ["tests",]
+
+[tool.setuptools_scm]
+version_scheme = "python-simplified-semver"
+local_scheme = "no-local-version"

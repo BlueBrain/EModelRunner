@@ -59,7 +59,7 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
         pre_protocols=None,
     ):
         """Constructor."""
-        # pylint: disable=too-many-arguments
+        # pylint: disable=too-many-arguments, too-many-positional-arguments
         super().__init__(name=name)
 
         self.rmp_protocol = rmp_protocol
@@ -426,7 +426,7 @@ class RatSSCxRinHoldcurrentProtocol(ephys.protocols.Protocol):
         depth=1,
     ):
         """Do binary search to find holding current."""
-        # pylint: disable=too-many-arguments
+        # pylint: disable=too-many-arguments, too-many-positional-arguments
         middle_bound = upper_bound - abs(upper_bound - lower_bound) / 2
 
         if depth > max_depth:
@@ -739,7 +739,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
 
         Assumption is that lower_bound has no spike, upper_bound has.
         """
-        # pylint: disable=too-many-arguments
+        # pylint: disable=too-many-arguments, too-many-positional-arguments
         if depth > max_depth or abs(upper_bound - lower_bound) < precision:
             return upper_bound
         middle_bound = upper_bound - abs(upper_bound - lower_bound) / 2

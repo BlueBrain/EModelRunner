@@ -65,7 +65,7 @@ class GluSynapseCustom(SynapseMixin):
             number (int/None): force synapse to fire N times when using NetStim
             noise (int/None): force synapse to have given noise when using NetStim
         """
-        # pylint: disable=too-many-arguments
+        # pylint: disable=too-many-arguments, too-many-positional-arguments
         self.seed = seed
         self.rng_settings_mode = rng_settings_mode
         self.section = section

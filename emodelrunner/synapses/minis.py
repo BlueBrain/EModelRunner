@@ -34,7 +34,7 @@ class Minis(ephys.stimuli.Stimulus):
         spont_minis_rate=None,
     ):
         """Constructor."""
-        # pylint: disable=too-many-arguments
+        # pylint: disable=too-many-arguments, too-many-positional-arguments
         super().__init__()
         self.gid = gid
         if stop is None:

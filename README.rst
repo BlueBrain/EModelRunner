@@ -260,7 +260,7 @@ Copyright (c) 2020-2024 Blue Brain Project/EPFL
 
 .. |license| image:: https://img.shields.io/badge/License-Apache_2.0-blue.svg
                 :target: https://github.com/BlueBrain/EModelRunner/blob/main/LICENSE.txt
-                :alt: Build Status
+                :alt: License
 
 .. |docs| image:: https://readthedocs.org/projects/emodelrunner/badge/?version=latest
                 :target: https://emodelrunner.readthedocs.io/en/latest/?badge=latest
@@ -284,3 +284,4 @@ Copyright (c) 2020-2024 Blue Brain Project/EPFL
 
 .. |zenodo| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.8116075.svg
                 :target: https://doi.org/10.5281/zenodo.8116075
+                :alt: Zenodo

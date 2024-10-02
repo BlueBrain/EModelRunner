@@ -56,12 +56,16 @@ def create_morphology(morph_args, package_type):
             morph_args.morph_path,
             do_replace_axon=morph_args.do_replace_axon,
             replace_axon_hoc=replace_axon_hoc,
+            axon_stub_length=60,
+            axon_nseg_frequency=15,
         )
     elif package_type == PackageType.thalamus:
         morph = ThalamusNrnFileMorphology(
             morph_args.morph_path,
             do_replace_axon=morph_args.do_replace_axon,
             replace_axon_hoc=replace_axon_hoc,
+            axon_stub_length=60,
+            axon_nseg_frequency=15,
         )
     else:
         raise ValueError(f"unsupported package type: {package_type}")
