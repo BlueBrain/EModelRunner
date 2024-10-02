@@ -42,6 +42,7 @@ docs = ["sphinx", "sphinx-bluebrain-theme"]
 
 [project.urls]
 Homepage = "https://github.com/BlueBrain/EModelRunner"
+Repository = "https://github.com/BlueBrain/EModelRunner.git"
 
 [tool.setuptools]
 include-package-data = true
