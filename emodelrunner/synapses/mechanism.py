@@ -73,7 +73,7 @@ class NrnMODPointProcessMechanismCustom(ephys.mechanisms.Mechanism):
             syn_setup_params (dict): contains extra parameters to setup synapses
                 when using GluSynapseCustom
         """
-        # pylint: disable=too-many-arguments
+        # pylint: disable=too-many-arguments, too-many-positional-arguments
         super().__init__(name, comment)
         self.synapses_data = synapses_data
         self.synconf_dict = synconf_dict

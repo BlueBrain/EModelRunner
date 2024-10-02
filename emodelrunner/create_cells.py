@@ -58,7 +58,7 @@ def create_cell(
     Returns:
         CellModelCustom: cell model
     """
-    # pylint: disable=too-many-arguments, too-many-locals
+    # pylint: disable=too-many-arguments, too-many-locals, too-many-positional-arguments
     # load mechanisms
     mechs = load_mechanisms(unopt_params_path)
 

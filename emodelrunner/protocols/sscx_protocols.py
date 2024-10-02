@@ -79,7 +79,7 @@ class RatSSCxMainProtocol(ephys.protocols.Protocol):
             pre_protocols (bluepyopt.ephys.protocols.Protocol): protocols to run
                 before the 'other protocols'
         """
-        # pylint: disable=too-many-arguments
+        # pylint: disable=too-many-arguments, too-many-positional-arguments
         super().__init__(name=name)
 
         self.rmp_protocol = rmp_protocol
@@ -697,7 +697,7 @@ class RatSSCxThresholdDetectionProtocol(ephys.protocols.Protocol):
         Returns:
             float: threshold current amplitude (nA)
         """
-        # pylint: disable=undefined-loop-variable, too-many-arguments
+        # pylint: disable=undefined-loop-variable, too-many-arguments, too-many-positional-arguments
         step_currents = np.linspace(lower_bound, upper_bound, num=self.short_steps)
 
         if len(step_currents) == 0:

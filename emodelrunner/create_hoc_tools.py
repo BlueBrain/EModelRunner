@@ -544,7 +544,7 @@ def create_hoc(
     Returns:
         str: hoc script describing the cell model
     """
-    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-locals, too-many-positional-arguments
     with open(template_path, "r", encoding="utf-8") as template_file:
         template = template_file.read()
         template = jinja2.Template(template)

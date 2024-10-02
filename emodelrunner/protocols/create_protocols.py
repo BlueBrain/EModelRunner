@@ -415,7 +415,7 @@ def define_pairsim_protocols(
     Returns:
         synplas_protocols.SweepProtocolPairSim: pair simulation synapse plasticity protocols
     """
-    # pylint: disable=too-many-arguments, too-many-locals
+    # pylint: disable=too-many-arguments, too-many-locals, too-many-positional-arguments
     # locations
     soma_loc = ephys.locations.NrnSeclistCompLocation(
         name="soma", seclist_name="somatic", sec_index=0, comp_x=0.5

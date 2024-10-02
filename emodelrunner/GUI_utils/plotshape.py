@@ -160,6 +160,7 @@ def get_morph_lines(
         - list: voltages previously plotted (mV)
         - bool: True to force the draw of figure, False to blit the figure
     """
+    # pylint: disable=too-many-positional-arguments
     # Adapted from the NEURON package (fct _do_plot in __init__):
     # https://www.neuron.yale.edu/neuron/
     # where this part of the code was itself adapted from

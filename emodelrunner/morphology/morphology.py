@@ -59,7 +59,7 @@ class SSCXNrnFileMorphology(ephys.morphologies.NrnFileMorphology):
         """
         L_target = axon_stub_length  # length of stub axon
 
-        nseg_total = 2 + 4 * int(L_target / 2.0 / axon_nseg_frequency) # -> 10
+        nseg_total = 2 + 4 * int(L_target / 2.0 / axon_nseg_frequency)  # -> 10
         chunkSize = L_target / nseg_total
 
         diams = []
@@ -155,9 +155,10 @@ class ThalamusNrnFileMorphology(ephys.morphologies.NrnFileMorphology):
             axon_stub_length (float): Length of replacement axon
             axon_nseg_frequency (int): frequency of nseg, for axon
         """
+        # pylint: disable=too-many-locals
         L_target = axon_stub_length  # length of stub axon
 
-        nseg_total = 2 + 4 * int(L_target / 2.0 / axon_nseg_frequency) # -> 10
+        nseg_total = 2 + 4 * int(L_target / 2.0 / axon_nseg_frequency)  # -> 10
         chunkSize = L_target / nseg_total
 
         diams = []
