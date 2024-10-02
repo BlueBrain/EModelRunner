@@ -40,7 +40,7 @@ setup(
     install_requires=[
         "numpy",
         "efel>=4.2,<6",
-        "bluepyopt>=1.13.168",
+        "bluepyopt>=1.14.15",
         "neurom>=3.1.0",
         "h5py",
         "matplotlib",

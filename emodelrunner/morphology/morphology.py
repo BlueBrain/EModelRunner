@@ -38,6 +38,8 @@ class SSCXNrnFileMorphology(ephys.morphologies.NrnFileMorphology):
             'proc replace_axon(){ ... }
             If None,the default replace_axon is used
         do_set_nseg (bool): if True, it will use nseg_frequency
+        axon_stub_length (float): Length of replacement axon
+        axon_nseg_frequency (int): frequency of nseg, for axon
         nseg_frequency (float): frequency of nseg
         morph_modifiers (list): list of functions to modify the icell
             with (sim, icell) as arguments
@@ -46,17 +48,18 @@ class SSCXNrnFileMorphology(ephys.morphologies.NrnFileMorphology):
     """
 
     @staticmethod
-    def replace_axon(sim=None, icell=None):
+    def replace_axon(sim=None, icell=None, axon_stub_length=60, axon_nseg_frequency=15):
         """Replace axon.
 
         Args:
             sim (bluepyopt.ephys.NrnSimulator): neuron simulator
             icell (neuron cell): cell instantiation in simulator
+            axon_stub_length (float): Length of replacement axon
+            axon_nseg_frequency (int): frequency of nseg, for axon
         """
-        L_target = 60  # length of stub axon
-        nseg0 = 5  # number of segments for each of the two axon sections
+        L_target = axon_stub_length  # length of stub axon
 
-        nseg_total = nseg0 * 2
+        nseg_total = 2 + 4 * int(L_target / 2.0 / axon_nseg_frequency) # -> 10
         chunkSize = L_target / nseg_total
 
         diams = []
@@ -133,6 +136,8 @@ class ThalamusNrnFileMorphology(ephys.morphologies.NrnFileMorphology):
             'proc replace_axon(){ ... }
             If None,the default replace_axon is used
         do_set_nseg (bool): if True, it will use nseg_frequency
+        axon_stub_length (float): Length of replacement axon
+        axon_nseg_frequency (int): frequency of nseg, for axon
         nseg_frequency (float): frequency of nseg
         morph_modifiers (list): list of functions to modify the icell
             with (sim, icell) as arguments
@@ -141,17 +146,18 @@ class ThalamusNrnFileMorphology(ephys.morphologies.NrnFileMorphology):
     """
 
     @staticmethod
-    def replace_axon(sim=None, icell=None):
+    def replace_axon(sim=None, icell=None, axon_stub_length=60, axon_nseg_frequency=15):
         """Replace axon.
 
         Args:
             sim (bluepyopt.ephys.NrnSimulator): neuron simulator
             icell (neuron cell): cell instantiation in simulator
+            axon_stub_length (float): Length of replacement axon
+            axon_nseg_frequency (int): frequency of nseg, for axon
         """
-        L_target = 60  # length of stub axon
-        nseg0 = 5  # number of segments for each of the two axon sections
+        L_target = axon_stub_length  # length of stub axon
 
-        nseg_total = nseg0 * 2
+        nseg_total = 2 + 4 * int(L_target / 2.0 / axon_nseg_frequency) # -> 10
         chunkSize = L_target / nseg_total
 
         diams = []
