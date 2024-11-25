@@ -205,20 +205,14 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
             is_global = False
             is_dist = False
 
-        bounds = None
         value = None
         for param_config in params:
             param_name = param_config["name"]
 
             if isinstance(param_config["val"], (list, tuple)):
-                is_frozen = False
-                bounds = param_config["val"]
                 value = None
-
             else:
-                is_frozen = True
                 value = param_config["val"]
-                bounds = None
 
             if is_global:
                 # force v_init to the given value
@@ -230,8 +224,6 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
                     ephys.parameters.NrnGlobalParameter(
                         name=param_name,
                         param_name=param_name,
-                        frozen=is_frozen,
-                        bounds=bounds,
                         value=value,
                     )
                 )
@@ -241,8 +233,6 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
                         name=f"{param_name}.{sectionlist}",
                         obj=dist,
                         attr_name=param_name,
-                        frozen=is_frozen,
-                        bounds=bounds,
                         value=value,
                     )
                 )
@@ -262,8 +252,6 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
                             param_name=param_name,
                             value_scaler=dist,
                             value=value,
-                            bounds=bounds,
-                            frozen=is_frozen,
                             locations=seclist_locs,
                         )
                     )
@@ -274,8 +262,6 @@ def load_unoptimized_parameters(params_path, v_init, celsius):
                             param_name=param_name,
                             value_scaler=dist,
                             value=value,
-                            bounds=bounds,
-                            frozen=is_frozen,
                             locations=seclist_locs,
                         )
                     )

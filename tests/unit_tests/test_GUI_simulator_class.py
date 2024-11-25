@@ -97,7 +97,6 @@ class TestNeuronSimulation:
         with cwd(example_dir):
             self.simulator.load_cell_sim()
             self.simulator.sim.mechanisms_directory = "./"
-            self.simulator.cell.freeze(self.simulator.release_params)
             self.simulator.cell.instantiate(sim=self.simulator.sim)
 
         assert self.simulator.syn_display_data is None
@@ -113,4 +112,3 @@ class TestNeuronSimulation:
 
         # destroy cell
         self.simulator.cell.destroy(sim=self.simulator.sim)
-        self.simulator.cell.unfreeze(self.simulator.release_params.keys())

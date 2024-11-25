@@ -106,7 +106,6 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
         """
         # pylint: disable=raise-missing-from
         try:
-            cell_model.freeze(param_values)
             cell_model.instantiate(sim=sim)
 
             self.instantiate(sim=sim, cell_model=cell_model)
@@ -134,8 +133,6 @@ class SweepProtocolCustom(ephys.protocols.SweepProtocol):
             self.destroy(sim=sim)
 
             cell_model.destroy(sim=sim)
-
-            cell_model.unfreeze(param_values.keys())
 
             return responses
         except BaseException:
@@ -252,10 +249,8 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
         """
         # pylint: disable=raise-missing-from
         try:
-            precell_model.freeze(pre_param_values)
             precell_model.instantiate(sim=sim)
 
-            postcell_model.freeze(post_param_values)
             postcell_model.instantiate(sim=sim)
 
             self.instantiate(
@@ -292,9 +287,6 @@ class SweepProtocolPairSim(ephys.protocols.Protocol):
 
             precell_model.destroy(sim=sim)
             postcell_model.destroy(sim=sim)
-
-            precell_model.unfreeze(pre_param_values.keys())
-            postcell_model.unfreeze(post_param_values.keys())
 
             return responses
         except BaseException:

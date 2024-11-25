@@ -491,7 +491,6 @@ class NeuronSimulation:
 
     def instantiate(self):
         """Instantiate cell, simulation & protocol."""
-        self.cell.freeze(self.release_params)
         self.cell.instantiate(sim=self.sim)
         self.protocol.instantiate(sim=self.sim, cell_model=self.cell)
         self.sim.neuron.h.tstop = self.protocol.total_duration
@@ -501,7 +500,6 @@ class NeuronSimulation:
         """Destroy cell & protocol."""
         self.protocol.destroy(sim=self.sim)
         self.cell.destroy(sim=self.sim)
-        self.cell.unfreeze(self.release_params.keys())
 
     def get_voltage(self):
         """Returns voltage response.
